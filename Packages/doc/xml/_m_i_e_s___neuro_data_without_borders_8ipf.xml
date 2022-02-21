@@ -1,0 +1,2038 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___neuro_data_without_borders_8ipf" kind="file" language="C++">
+    <compoundname>MIES_NeuroDataWithoutBorders.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ae9b644894c4e6c82f60b4aba6f3a7021" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double NWB_ASYNC_WRITING_TIMEOUT</definition>
+        <argsstring></argsstring>
+        <name>NWB_ASYNC_WRITING_TIMEOUT</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="36" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="36" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="676" endline="691">NWB_ASYNC_FinishWriting</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___neuro_data_without_borders_8ipf_1abff7287004c7889b344a0a79d1cd7dd1" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double NWB_ASYNC_MAX_ITERATIONS</definition>
+        <argsstring></argsstring>
+        <name>NWB_ASYNC_MAX_ITERATIONS</name>
+        <initializer>= 120</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="37" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="37" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="676" endline="691">NWB_ASYNC_FinishWriting</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1acf50cbf8f2e130dbef461beb4ec5ccb3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_GetStartTimeOfSweep</definition>
+        <argsstring>(WaveText textualValues, variable sweepNo, wave sweepWave)</argsstring>
+        <name>NWB_GetStartTimeOfSweep</name>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweepWave</declname>
+        </param>
+        <briefdescription>
+<para>Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For existing sweeps with <ref refid="_m_i_e_s___constants_8ipf_1aeed453287321d794a0204533a1326dc7" kindref="member">HIGH_PREC_SWEEP_START_KEY</ref> labnotebook entries we use the sweep wave&apos;s modification time. The sweep wave can be either an <computeroutput>DAQDataWave</computeroutput> or a <computeroutput>Sweep_$num</computeroutput> wave. Passing the <computeroutput>DAQDataWave</computeroutput> is more accurate. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="43" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="43" bodyend="61"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeed453287321d794a0204533a1326dc7" compoundref="_m_i_e_s___constants_8ipf" startline="857">HIGH_PREC_SWEEP_START_KEY</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a49ecc9f1818e470856fcbe8ea26f4306" compoundref="_i_p_n_w_b___utils_8ipf" startline="388" endline="427">ParseISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ade86a8a45b483c9edd9500a7b37b0eed" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="66" endline="98">NWB_FirstStartTimeOfAllSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ade86a8a45b483c9edd9500a7b37b0eed" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_FirstStartTimeOfAllSweeps</definition>
+        <argsstring>()</argsstring>
+        <name>NWB_FirstStartTimeOfAllSweeps</name>
+        <briefdescription>
+<para>Return the creation time, in seconds since Igor Pro epoch in UTC, of the oldest sweep wave for all devices. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return NaN if no sweeps could be found </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="66" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="66" bodyend="98"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afb2222dc632722e0575ede5de2f65675" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1953" endline="1994">GetAllDevicesWithContent</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acf50cbf8f2e130dbef461beb4ec5ccb3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="43" endline="61">NWB_GetStartTimeOfSweep</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable &gt; NWB_GetFileForExport</definition>
+        <argsstring>(variable nwbVersion, string overrideFilePath=defaultValue)</argsstring>
+        <name>NWB_GetFileForExport</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>overrideFilePath</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the HDF5 file identifier referring to an open NWB file for export. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Open one if it does not exist yet.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nwbVersion</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Set NWB version if new file is created </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overrideFilePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] file path for new files to override the internal generation algorithm</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="retval"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 file identifier or NaN on user abort </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>createdNewNWBFile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>new NWB file was created (1) or an existing opened (0) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="111" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="111" bodyend="219"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad34031aeb7791833d33dc1b1b959d873" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3523" endline="3535">CleanupExperimentName</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1afdd7055731715283568cb47503b6e2f9" compoundref="_i_p_n_w_b___writer_8ipf" startline="124" endline="138">CreateIntraCellularEphys</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afa88b7975834a25fe5b48415708dc354" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="288" endline="297">GetNWBMajorVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a08928b31b9057f2098cfa7721f5f0a3a" compoundref="_m_i_e_s___utilities_8ipf" startline="1717" endline="1735">GetTimeStamp</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="348" endline="353">H5_IsFileOpen</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa30c9a15c5a6c4fb8f77977172e98abe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="263" endline="272">NWB_AddSpecifications</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ade86a8a45b483c9edd9500a7b37b0eed" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="66" endline="98">NWB_FirstStartTimeOfAllSweeps</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa4077e37d33eab0ebecbd37f6d0a93fd" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="274" endline="282">NWB_ReadSessionStartTime</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="906" endline="925">NWB_PrepareExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AddGeneratorString</definition>
+        <argsstring>(variable fileID, variable nwbVersion)</argsstring>
+        <name>NWB_AddGeneratorString</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="221" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="221" bodyend="261"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1d83dd0074789e90293e5b7bc33be609" compoundref="_m_i_e_s___utilities_8ipf" startline="2820" endline="2827">GetArchitectureBits</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac27c800c64d7427959ecfa7ddd556fae" compoundref="_m_i_e_s___utilities_8ipf" startline="2838" endline="2840">GetIgorProBuildVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a6131be46d04acfb6cb9dc55ff539acf5" compoundref="_i_p_n_w_b___utils_8ipf" startline="879" endline="881">GetIgorProVersion</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a161c46a0f11035c43bef15e80c04b431" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6189" endline="6193">GetMIESVersionAsString</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ada13c8501746fa1b08133df9efc40089" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="733" endline="744">H5_GetLibraryVersion</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76969a13e1416f16dabe267145e73d3a" compoundref="_m_i_e_s___constants_8ipf" startline="645">LABNOTEBOOK_VERSION</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b51595ed8d1af27a8a6f52c54f3b8a4" compoundref="_m_i_e_s___constants_8ipf" startline="653">SWEEP_EPOCH_VERSION</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa30c9a15c5a6c4fb8f77977172e98abe" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AddSpecifications</definition>
+        <argsstring>(variable fileID, variable nwbVersion)</argsstring>
+        <name>NWB_AddSpecifications</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="263" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="263" bodyend="272"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ab55a88a1027596756d2963a669f6fe08" compoundref="_i_p_n_w_b___writer_8ipf" startline="775" endline="781">WriteSpecifications</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa4077e37d33eab0ebecbd37f6d0a93fd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_ReadSessionStartTime</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>NWB_ReadSessionStartTime</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="274" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="274" bodyend="282"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adbb7fa63f8ee634dc3b1c97118606672" compoundref="_m_i_e_s___constants_8ipf" startline="720">IPNWB_PLACEHOLDER</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a49ecc9f1818e470856fcbe8ea26f4306" compoundref="_i_p_n_w_b___utils_8ipf" startline="388" endline="427">ParseISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AddDevice</definition>
+        <argsstring>(NWBAsyncParameters *s)</argsstring>
+        <name>NWB_AddDevice</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="284" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="284" bodyend="289"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" compoundref="_m_i_e_s___structures_8ipf" startline="375">NWBAsyncParameters::numericalValues</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7783ec4cf66e5ba82bb27b3f6331f1c6" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="291" endline="327">NWB_GenerateDeviceDescription</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" compoundref="_m_i_e_s___structures_8ipf" startline="377">NWBAsyncParameters::textualValues</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a7783ec4cf66e5ba82bb27b3f6331f1c6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string NWB_GenerateDeviceDescription</definition>
+        <argsstring>(string device, wave numericalValues, WaveText textualValues)</argsstring>
+        <name>NWB_GenerateDeviceDescription</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="291" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="291" bodyend="327"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref NWB_ASYNC_Worker</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>NWB_ASYNC_Worker</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="329" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="329" bodyend="349"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</references>
+        <references refid="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" compoundref="_m_i_e_s___structures_8ipf" startline="411" endline="454">NWB_ASYNC_DeserializeStruct</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ac61cc66016fbf31b0120ee149a6405ce" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1910" endline="1917">NWB_Flush</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a6470925796d6ea49469fb94e071b937b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ASYNC_Readout</definition>
+        <argsstring>(dfref dfr, variable err, string errmsg)</argsstring>
+        <name>NWB_ASYNC_Readout</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errmsg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="351" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="351" bodyend="358"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_WriteLabnoteBooksAndComments</definition>
+        <argsstring>(NWBAsyncParameters *s)</argsstring>
+        <name>NWB_WriteLabnoteBooksAndComments</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="360" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="360" bodyend="413"/>
+        <references refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::compressionMode</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="struct_n_w_b_async_parameters_1ab725ce3a13beaff472ccc3c9a8acefbb" compoundref="_m_i_e_s___structures_8ipf" startline="376">NWBAsyncParameters::numericalKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" compoundref="_m_i_e_s___structures_8ipf" startline="375">NWBAsyncParameters::numericalValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a84f7942262fad56c3262368980249274" compoundref="_m_i_e_s___utilities_8ipf" startline="5802" endline="5817">RemoveUnusedRows</references>
+        <references refid="struct_n_w_b_async_parameters_1ac247b79093587c9ed5fc8654f03be8ac" compoundref="_m_i_e_s___structures_8ipf" startline="378">NWBAsyncParameters::textualKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" compoundref="_m_i_e_s___structures_8ipf" startline="377">NWBAsyncParameters::textualValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a98c2beea930ed021caac06f3f16a2e87" compoundref="_m_i_e_s___structures_8ipf" startline="368">NWBAsyncParameters::userComment</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_WriteResultsWaves</definition>
+        <argsstring>(NWBAsyncParameters *s)</argsstring>
+        <name>NWB_WriteResultsWaves</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="415" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="415" bodyend="444"/>
+        <references refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::compressionMode</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="struct_n_w_b_async_parameters_1a8befd6cb3e9c7613c91a6cc509c39c0f" compoundref="_m_i_e_s___structures_8ipf" startline="381">NWBAsyncParameters::numericalResultsKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1afe95bb7ef1b8a5ea8e322171d4c9e756" compoundref="_m_i_e_s___structures_8ipf" startline="380">NWBAsyncParameters::numericalResultsValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a84f7942262fad56c3262368980249274" compoundref="_m_i_e_s___utilities_8ipf" startline="5802" endline="5817">RemoveUnusedRows</references>
+        <references refid="struct_n_w_b_async_parameters_1a5b7bfc997402a22f07ba6de33486aec7" compoundref="_m_i_e_s___structures_8ipf" startline="383">NWBAsyncParameters::textualResultsKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1add6b391639ae89a76f09cf53e0de4990" compoundref="_m_i_e_s___structures_8ipf" startline="382">NWBAsyncParameters::textualResultsValues</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AddDeviceSpecificData</definition>
+        <argsstring>(NWBAsyncParameters *s, variable writeStoredTestPulses)</argsstring>
+        <name>NWB_AddDeviceSpecificData</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeStoredTestPulses</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="446" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="446" bodyend="452"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_WriteTestpulseData</definition>
+        <argsstring>(NWBAsyncParameters *s, variable writeStoredTestPulses)</argsstring>
+        <name>NWB_WriteTestpulseData</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeStoredTestPulses</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="454" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="454" bodyend="498"/>
+        <references refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::compressionMode</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5a6795f086853703595f63b4f9229490" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="539" endline="541">GetNoCompression</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a60342b8e59475387ac33be6e0058d6f1" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="547" endline="549">GetSingleChunkCompression</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7906cd0b5f16f426529ffa26c6f61a96" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="844" endline="867">NWB_AppendStoredTestPulses</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a84f7942262fad56c3262368980249274" compoundref="_m_i_e_s___utilities_8ipf" startline="5802" endline="5817">RemoveUnusedRows</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a539d7a470dc4ca48c81eb4959f90b204" compoundref="_m_i_e_s___constants_8ipf" startline="55">TP_STORAGE_REGEXP</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ExportAllData</definition>
+        <argsstring>(variable nwbVersion, string overrideFilePath=defaultValue, variable writeStoredTestPulses=defaultValue, variable writeIgorHistory=defaultValue, variable compressionMode=defaultValue, variable keepFileOpen=defaultValue, variable overwrite=defaultValue)</argsstring>
+        <name>NWB_ExportAllData</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>overrideFilePath</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeStoredTestPulses</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeIgorHistory</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>keepFileOpen</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Programmatically export all acquired data from all devices into a NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Use <ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" kindref="member">NWB_ExportWithDialog()</ref> for interactive export.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nwbVersion</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB format version, one of 1 or 2 (aka NWB_VERSION_LATEST) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overrideFilePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>use this file path instead of an internally derived one </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeStoredTestPulses</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] store the raw test pulse data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeIgorHistory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] store the Igor Pro history and the log file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to chunked compression] One of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>keepFileOpen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] keep the NWB file open after return, or close it </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] overwrite any existing NWB file with the same name, only used when overrideFilePath is passed</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on success, non-zero on failure </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="514" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="514" bodyend="670"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a57583edb466c5e134f4e4475b01dca73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5053" endline="5070">CloseNWBFile</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ac9099a22d163661bf0e9db240ecbefd8" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="551" endline="563">CompressionModeToString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1f591977e983c24a679b9652d02051a6" compoundref="_m_i_e_s___constants_8ipf" startline="878">CONTENT_TYPE_ALL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a81e9e48c6766e5222c4c4214b7173130" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4478" endline="4501">DAP_SerializeCommentNotebook</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afb2222dc632722e0575ede5de2f65675" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1953" endline="1994">GetAllDevicesWithContent</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a32bd72b9f89567de75104e6d39e9cdb8" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="543" endline="545">GetChunkedCompression</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a560cef4b650345cdfd65c2fb7d375a14" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1653" endline="1684">GetNumericalResultsKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a17c16dbf42eb726ee496f179bc0fa083" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1697" endline="1719">GetNumericalResultsValues</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c7707d59a5652bd1c19362c904c51ae" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="444" endline="447">GetNWBFilePathExport</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c6a6b8df5388b983374b8bc7542f7a1" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="451" endline="454">GetSessionStartTimeReadBack</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab0419db7487139f3fdbde0aa3c13e284" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1735" endline="1766">GetTextualResultsKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad360e4675be854fefbe97c2debdbaca5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1779" endline="1801">GetTextualResultsValues</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a81285fc54f95db40c79e7e3c831051c2" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="302" endline="306">GetUserComment</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a537ae82c8a93a95f24a5969a5a765953" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="697" endline="727">NWB_CheckForMissingSweeps</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad66ea1519293474f173e0e5f9b7fdff9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="733" endline="741">NWB_GetExportedFileSize</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a051067b4a63bb68fe27ad457d04b2cef" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="977" endline="985">NWB_GetStimsetFromPanel</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <references refid="struct_n_w_b_async_parameters_1a2826956c0d937926fa527ffcdfbad56b" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::sweep</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2853" endline="2975">AB_ReExport</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1ae4185ef55177889c2051326e7b647c82" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="410" endline="416">IVS_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="792" endline="841">NWB_ExportWithDialog</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="906" endline="925">NWB_PrepareExport</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="130" endline="153">PerformMiesTasks</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ASYNC_FinishWriting</definition>
+        <argsstring>(string device)</argsstring>
+        <name>NWB_ASYNC_FinishWriting</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Wait for ASYNC nwb writing to finish. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Currently wait up to 10min (NWB_ASYNC_WRITING_TIMEOUT * NWB_ASYNC_MAX_ITERATIONS), everything above 5s is considered a bug. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="676" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="676" bodyend="691"/>
+        <references refid="_m_i_e_s___async_8ipf_1a418ad58c03d057974c2e71aa04ff6a75" compoundref="_m_i_e_s___async_8ipf" startline="302" endline="322">ASYNC_WaitForWLCToFinishAndRemove</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abff7287004c7889b344a0a79d1cd7dd1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="37">NWB_ASYNC_MAX_ITERATIONS</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afcf323f284d0abb3f9fb1ccadb810ed3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="693" endline="695">NWB_ASYNC_WorkLoadName</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ae9b644894c4e6c82f60b4aba6f3a7021" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="36">NWB_ASYNC_WRITING_TIMEOUT</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a57583edb466c5e134f4e4475b01dca73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5053" endline="5070">CloseNWBFile</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1afcf323f284d0abb3f9fb1ccadb810ed3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string NWB_ASYNC_WorkLoadName</definition>
+        <argsstring>(string device)</argsstring>
+        <name>NWB_ASYNC_WorkLoadName</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="693" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="693" bodyend="695"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a68b6861c1ccef8512d498f47beafd9c3" compoundref="_m_i_e_s___constants_8ipf" startline="1546">NWB_WORKLOAD_CLASS</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="676" endline="691">NWB_ASYNC_FinishWriting</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a537ae82c8a93a95f24a5969a5a765953" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_CheckForMissingSweeps</definition>
+        <argsstring>(string device, WaveText sweepNames)</argsstring>
+        <name>NWB_CheckForMissingSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>sweepNames</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="697" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="697" bodyend="727"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1714" endline="1742">GetSweepsWithSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad66ea1519293474f173e0e5f9b7fdff9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_GetExportedFileSize</definition>
+        <argsstring>()</argsstring>
+        <name>NWB_GetExportedFileSize</name>
+        <briefdescription>
+<para>Return the file size in MiB of the currently written into NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is only approximately correct as the file is open in HDF5 and thus not everything is flushed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="733" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="733" bodyend="741"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a3ab08a0487a0461ee8a6279a8102a27a" compoundref="_m_i_e_s___utilities_8ipf" startline="5119" endline="5130">GetFileSize</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c7707d59a5652bd1c19362c904c51ae" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="444" endline="447">GetNWBFilePathExport</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ExportAllStimsets</definition>
+        <argsstring>(variable nwbVersion, string overrideFilePath=defaultValue)</argsstring>
+        <name>NWB_ExportAllStimsets</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>overrideFilePath</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Export all stimsets into NWB. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>NWB file is closed after the function returns. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="746" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="746" bodyend="783"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a57583edb466c5e134f4e4475b01dca73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5053" endline="5070">CloseNWBFile</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a32bd72b9f89567de75104e6d39e9cdb8" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="543" endline="545">GetChunkedCompression</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="792" endline="841">NWB_ExportWithDialog</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ExportWithDialog</definition>
+        <argsstring>(variable exportType, variable nwbVersion=defaultValue)</argsstring>
+        <name>NWB_ExportWithDialog</name>
+        <param>
+          <type>variable</type>
+          <declname>exportType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Export all data into NWB using compression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Ask the file location from the user</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exportType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Export all data and referenced stimsets (<ref refid="_m_i_e_s___constants_8ipf_1a3addbcc71b83bf994872880aae17466b" kindref="member">NWB_EXPORT_DATA</ref>) or all stimsets (<ref refid="_m_i_e_s___constants_8ipf_1af983c6e8ca2810293634814eec624d65" kindref="member">NWB_EXPORT_STIMSETS</ref>) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nwbVersion</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to latest version] major NWB version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="792" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="792" bodyend="841"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a57583edb466c5e134f4e4475b01dca73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5053" endline="5070">CloseNWBFile</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a1f89f3cda683d8c914cdf5117b15df19" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="602" endline="604">GetNWBVersion</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a08928b31b9057f2098cfa7721f5f0a3a" compoundref="_m_i_e_s___utilities_8ipf" startline="1717" endline="1735">GetTimeStamp</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3addbcc71b83bf994872880aae17466b" compoundref="_m_i_e_s___constants_8ipf" startline="947">NWB_EXPORT_DATA</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af983c6e8ca2810293634814eec624d65" compoundref="_m_i_e_s___constants_8ipf" startline="948">NWB_EXPORT_STIMSETS</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a7906cd0b5f16f426529ffa26c6f61a96" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AppendStoredTestPulses</definition>
+        <argsstring>(string device, variable nwbVersion, variable locationID, variable compressionMode)</argsstring>
+        <name>NWB_AppendStoredTestPulses</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <briefdescription>
+<para>Write the stored test pulses to the NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="844" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="844" bodyend="867"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4efe03637db5f7efb628a974fdea83" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2820" endline="2835">GetStoredTestPulseWave</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AppendStimset</definition>
+        <argsstring>(variable nwbVersion, variable locationID, string stimsets, variable compressionMode)</argsstring>
+        <name>NWB_AppendStimset</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>stimsets</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <briefdescription>
+<para>Export given stimsets to NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nwbVersion</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Identifier of open hdf5 group or file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stimsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Single stimset as string or list of stimsets sparated by ; </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="876" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="876" bodyend="903"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1390" endline="1426">NWB_WriteStimsetCustomWave</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a8357a4ea2e64ee97c863913eca0e79f4" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2012" endline="2041">WB_CustomWavesFromStimSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aca2b4342a4b20c87656e013f902e654f" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2258" endline="2275">WB_StimsetRecursionForList</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="906" endline="925">NWB_PrepareExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_PrepareExport</definition>
+        <argsstring>(variable nwbVersion)</argsstring>
+        <name>NWB_PrepareExport</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <briefdescription>
+<para>Prepare everything for sweep-by-sweep NWB export. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="906" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="906" bodyend="925"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5a6795f086853703595f63b4f9229490" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="539" endline="541">GetNoCompression</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</references>
+        <references refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_AppendSweepDuringDAQ</definition>
+        <argsstring>(string device, wave DAQDataWave, wave DAQConfigWave, variable sweep, variable nwbVersion)</argsstring>
+        <name>NWB_AppendSweepDuringDAQ</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQConfigWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="927" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="927" bodyend="970"/>
+        <references refid="_m_i_e_s___async_8ipf_1aad3777dd6bb37e4a242b4d53bf1f722a" compoundref="_m_i_e_s___async_8ipf" startline="593" endline="639">ASYNC_Execute</references>
+        <references refid="_m_i_e_s___async_8ipf_1ad0763d663832657d1a935ccb23d9b6ca" compoundref="_m_i_e_s___async_8ipf" startline="557" endline="588">ASYNC_PrepareDF</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a81e9e48c6766e5222c4c4214b7173130" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4478" endline="4501">DAP_SerializeCommentNotebook</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a560cef4b650345cdfd65c2fb7d375a14" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1653" endline="1684">GetNumericalResultsKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a17c16dbf42eb726ee496f179bc0fa083" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1697" endline="1719">GetNumericalResultsValues</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c6a6b8df5388b983374b8bc7542f7a1" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="451" endline="454">GetSessionStartTimeReadBack</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab0419db7487139f3fdbde0aa3c13e284" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1735" endline="1766">GetTextualResultsKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad360e4675be854fefbe97c2debdbaca5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1779" endline="1801">GetTextualResultsValues</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a81285fc54f95db40c79e7e3c831051c2" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="302" endline="306">GetUserComment</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afcf323f284d0abb3f9fb1ccadb810ed3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="693" endline="695">NWB_ASYNC_WorkLoadName</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a051067b4a63bb68fe27ad457d04b2cef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string NWB_GetStimsetFromPanel</definition>
+        <argsstring>(string device, variable sweep)</argsstring>
+        <name>NWB_GetStimsetFromPanel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <briefdescription>
+<para>Get stimsets by analysing currently loaded sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>numericalValues and textualValues are generated from device</para>
+<para><simplesect kind="return"><para>list of stimsets </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="977" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="977" bodyend="985"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ae677c7873191ad09c092c491aa795384" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1010" endline="1050">NWB_GetStimsetFromSweepGeneric</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a5273661d599fa8ebd41037f5de711000" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string NWB_GetStimsetFromSpecificSweep</definition>
+        <argsstring>(string dataFolder, string device, variable sweep)</argsstring>
+        <name>NWB_GetStimsetFromSpecificSweep</name>
+        <param>
+          <type>string</type>
+          <declname>dataFolder</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <briefdescription>
+<para>Get stimsets by analysing dataFolder of loaded sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>numericalValues and textualValues are generated from previously loaded data. used in the context of loading from a stored experiment file. on load a sweep is stored in a device/dataFolder hierarchy.</para>
+<para><simplesect kind="return"><para>list of stimsets </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="994" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="994" bodyend="1003"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acef0c199bb30cc003788d148a9a6cb00" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4714" endline="4717">GetAnalysisLabNBFolder</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ae677c7873191ad09c092c491aa795384" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1010" endline="1050">NWB_GetStimsetFromSweepGeneric</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ae677c7873191ad09c092c491aa795384" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string NWB_GetStimsetFromSweepGeneric</definition>
+        <argsstring>(variable sweep, wave numericalValues, WaveText textualValues)</argsstring>
+        <name>NWB_GetStimsetFromSweepGeneric</name>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <briefdescription>
+<para>Get related Stimsets by corresponding sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>input numerical and textual values storage waves for current sweep</para>
+<para><simplesect kind="return"><para>list of stimsets </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1010" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1010" bodyend="1050"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9093268c0ed35af94d92313312029c39" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4863" endline="4891">GetTTLLabnotebookEntry</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa9d28f24c2981266b67bf80c9095058c" compoundref="_m_i_e_s___constants_8ipf" startline="1630">LABNOTEBOOK_TTL_STIMSETS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a051067b4a63bb68fe27ad457d04b2cef" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="977" endline="985">NWB_GetStimsetFromPanel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5273661d599fa8ebd41037f5de711000" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="994" endline="1003">NWB_GetStimsetFromSpecificSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AppendSweepLowLevel</definition>
+        <argsstring>(NWBAsyncParameters *s)</argsstring>
+        <name>NWB_AppendSweepLowLevel</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1052" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1052" bodyend="1326"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="108" endline="135">AFH_GetDAQDataColumn</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8dd1cf2cd45eca5c2152b02b60df1422" compoundref="_m_i_e_s___constants_8ipf" startline="861">CLAMPMODE_ENTRY_KEY</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::compressionMode</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5fe7e09cc9f0a69e6e36f45dcf6961c7" compoundref="_m_i_e_s___utilities_8ipf" startline="678" endline="682">ConvertSamplingIntervalToRate</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7cc997a42285f300b58fe49496cef123" compoundref="_m_i_e_s___constants_8ipf" startline="162">COUNTOBJECTS_WAVES</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae108771ac43b05625f852e6cdc84c0d9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5579" endline="5597">CreateLBNUnassocKey</references>
+        <references refid="struct_n_w_b_async_parameters_1a6ee153a1b072bb7f25888101281ac7c0" compoundref="_m_i_e_s___structures_8ipf" startline="373">NWBAsyncParameters::DAQConfigWave</references>
+        <references refid="struct_n_w_b_async_parameters_1a371a607b2d7369c582a5fe766c1320f6" compoundref="_m_i_e_s___structures_8ipf" startline="373">NWBAsyncParameters::DAQDataWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1ea8b1ce92091ca4aaa3f914affe2cc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3615" endline="3640">ExtractOneDimDataFromSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ace7700ff00fc00220ba90022796f0bc3" compoundref="_m_i_e_s___utilities_8ipf" startline="392" endline="424">GetAllObjects_TS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a08c9fcc470b8b6a76b596c1e88dc1ec9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5562" endline="5568">GetDefaultElectrodeName</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a15ed5fbb86a4c8d28f5928d33a8e4d4d" compoundref="_i_p_n_w_b___writer_8ipf" startline="332" endline="363">GetNextFreeGroupIndex</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a138bbfab81822c31a0658888b4511987" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2166" endline="2178">GetSamplingInterval</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0a7cd0c9a074dfdcd5583cf4c540ac53" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4658" endline="4676">GetTTLBits</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9093268c0ed35af94d92313312029c39" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4863" endline="4891">GetTTLLabnotebookEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1af7c01467b2116e9254b5944ce5fb5e9d" compoundref="_i_p_n_w_b___structures_8ipf" startline="41" endline="47">InitWriteChannelParams</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9eafda3ac592a5fe959c1c3a17ec5e1d" compoundref="_i_p_n_w_b___constants_8ipf" startline="53">IPNWB_CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adbb7fa63f8ee634dc3b1c97118606672" compoundref="_m_i_e_s___constants_8ipf" startline="720">IPNWB_PLACEHOLDER</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa9d28f24c2981266b67bf80c9095058c" compoundref="_m_i_e_s___constants_8ipf" startline="1630">LABNOTEBOOK_TTL_STIMSETS</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_n_w_b_async_parameters_1ab725ce3a13beaff472ccc3c9a8acefbb" compoundref="_m_i_e_s___structures_8ipf" startline="376">NWBAsyncParameters::numericalKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" compoundref="_m_i_e_s___structures_8ipf" startline="375">NWBAsyncParameters::numericalValues</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1331" endline="1352">NWB_FetchEpochs</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acf50cbf8f2e130dbef461beb4ec5ccb3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="43" endline="61">NWB_GetStartTimeOfSweep</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae5d74da047db0b645587b98ff2932272" compoundref="_m_i_e_s___constants_8ipf" startline="719">NWB_SOURCE_TTL_BIT</references>
+        <references refid="struct_n_w_b_async_parameters_1a10c2391c31b8a93102937e11147768e3" compoundref="_m_i_e_s___structures_8ipf" startline="368">NWBAsyncParameters::nwbFilePath</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a618880f1c668fa78784ae756d2aa3651" compoundref="_m_i_e_s___constants_8ipf" startline="198">PROP_NON_EMPTY</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_n_w_b_async_parameters_1a76793c1263f32b1cf2aceac891ef7a85" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::session_start_time</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a4d5cd8d8f370184c343534f2f2d68731" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5019" endline="5048">SplitTTLWaveIntoComponents</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <references refid="struct_n_w_b_async_parameters_1a2826956c0d937926fa527ffcdfbad56b" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::sweep</references>
+        <references refid="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" compoundref="_m_i_e_s___structures_8ipf" startline="377">NWBAsyncParameters::textualValues</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab681733190c0f29382383000c7e88274" compoundref="_m_i_e_s___constants_8ipf" startline="1277">TTL_RESCALE_OFF</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave NWB_FetchEpochs</definition>
+        <argsstring>(wave numericalValues, WaveTextOrNull textualValues, variable sweep, variable channelNumber, variable channelType)</argsstring>
+        <name>NWB_FetchEpochs</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return free text wave with the epoch information of the given channel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" kindref="member">GetEpochsWave()</ref> for the wave layout. </para>
+        </detaileddescription>
+        <inbodydescription>
+<para><xrefsect id="todo_1_todo000026"><xreftitle>Todo</xreftitle><xrefdescription><para>we don&apos;t yet write epoch info into the LBN </para>
+</xrefdescription></xrefsect></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1331" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1331" bodyend="1352"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae8a9aacc232d865e1c676aead3290755" compoundref="_m_i_e_s___epochs_8ipf" startline="618" endline="624">EP_EpochStrToWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7eb87d6504dab4320331c4024279ec43" compoundref="_m_i_e_s___constants_8ipf" startline="860">EPOCHS_ENTRY_KEY</references>
+        <references refid="group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="842" endline="861">GetLastSettingChannel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aded7c1fd764336bdbdc8a8f3ce2ea541" compoundref="_i_p_n_w_b___utils_8ipf" startline="890" endline="895">SetEpochsDimensionLabels</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_ClearWriteChannelParams</definition>
+        <argsstring>(WriteChannelParams *s)</argsstring>
+        <name>NWB_ClearWriteChannelParams</name>
+        <param>
+          <type><ref refid="struct_write_channel_params" kindref="compound">WriteChannelParams</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Clear all entries which are channel specific. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1355" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1355" bodyend="1382"/>
+        <references refid="struct_write_channel_params_1ad8a8913b309be9629fad45a6f3d941f9" compoundref="_i_p_n_w_b___structures_8ipf" startline="13">WriteChannelParams::device</references>
+        <references refid="struct_write_channel_params_1a412ee394bef25abf535f7ada1e2c8aaa" compoundref="_i_p_n_w_b___structures_8ipf" startline="26">WriteChannelParams::groupIndex</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="struct_write_channel_params_1a767687b67129f64a42465c537151aa71" compoundref="_i_p_n_w_b___structures_8ipf" startline="18">WriteChannelParams::samplingRate</references>
+        <references refid="struct_write_channel_params_1a9a83fabae6dbae9d791e680341e625ba" compoundref="_i_p_n_w_b___structures_8ipf" startline="19">WriteChannelParams::startingTime</references>
+        <references refid="struct_write_channel_params_1a0e5dbafcf650c1fa01257868ca909f85" compoundref="_i_p_n_w_b___structures_8ipf" startline="20">WriteChannelParams::sweep</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_WriteStimsetCustomWave</definition>
+        <argsstring>(variable nwbVersion, variable locationID, wave custom_wave, variable compressionMode)</argsstring>
+        <name>NWB_WriteStimsetCustomWave</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>custom_wave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <briefdescription>
+<para>Save Custom Wave (from stimset) in NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nwbVersion</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Open HDF5 group or file identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>custom_wave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wave reference to the wave that is to be saved </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to NO_COMPRESSION] Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1390" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1390" bodyend="1426"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a917432b29be2c52c30113efdaf85694e" compoundref="_m_i_e_s___utilities_8ipf" startline="1609" endline="1649">RemovePrefix</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_WriteStimsetTemplateWaves</definition>
+        <argsstring>(variable nwbVersion, variable locationID, string stimSet, variable compressionMode)</argsstring>
+        <name>NWB_WriteStimsetTemplateWaves</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>stimSet</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1428" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1428" bodyend="1491"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4533f23cef84ab34e8e5c8a91cbb2646" compoundref="_m_i_e_s___constants_8ipf" startline="887">STIMSET_PARAM_SEGWVTYPE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2ba1b828bedc86f55f2d13a66756ceac" compoundref="_m_i_e_s___constants_8ipf" startline="885">STIMSET_PARAM_WP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abf400f40b0ec03cf107b791f35c50b4c" compoundref="_m_i_e_s___constants_8ipf" startline="886">STIMSET_PARAM_WPT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a1d75dea231fff91bcc9402a0d17dfff4" compoundref="_m_i_e_s___wave_builder_8ipf" startline="101" endline="122">WB_GetParameterWaveName</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a24905ece29b2d96a95717f8173ad5572" compoundref="_m_i_e_s___wave_builder_8ipf" startline="177" endline="197">WB_GetSegWvTypeForSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a2c56e2fbdc897e64a261420513b9c9aa" compoundref="_m_i_e_s___wave_builder_8ipf" startline="127" endline="147">WB_GetWaveParamForSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a0219ef623934f1f341134dbaec836735" compoundref="_m_i_e_s___wave_builder_8ipf" startline="152" endline="172">WB_GetWaveTextParamForSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a642aee3a2e40200b908164b6dc91e561" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2365" endline="2375">WB_StimsetIsFromThirdParty</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_LoadStimset</definition>
+        <argsstring>(variable locationID, string stimset, variable overwrite, variable verbose=defaultValue)</argsstring>
+        <name>NWB_LoadStimset</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>stimset</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>verbose</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Load specified stimset from Stimset Group. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group containing the stimsets </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stimset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string of stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>verbose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] set to get more output to the command line </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>indicate whether the stored stimsets should be deleted if they exist</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1501" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1501" bodyend="1581"/>
+        <references refid="_m_i_e_s___constants_8ipf_1afa147b2492227f2911b82d8e6982394f" compoundref="_m_i_e_s___constants_8ipf" startline="222">CHANNEL_TYPE_UNKNOWN</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a726467a4420729df48929bb59cd36e26" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4625" endline="4635">GetSetParamFolder</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a620333611771c98ab4ac5e5b218343b9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4580" endline="4588">GetStimSetType</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17c1365703f8f4cc83bf51d9027b8ec6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="644" endline="656">H5_ListGroupMembers</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4533f23cef84ab34e8e5c8a91cbb2646" compoundref="_m_i_e_s___constants_8ipf" startline="887">STIMSET_PARAM_SEGWVTYPE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2ba1b828bedc86f55f2d13a66756ceac" compoundref="_m_i_e_s___constants_8ipf" startline="885">STIMSET_PARAM_WP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abf400f40b0ec03cf107b791f35c50b4c" compoundref="_m_i_e_s___constants_8ipf" startline="886">STIMSET_PARAM_WPT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a1d75dea231fff91bcc9402a0d17dfff4" compoundref="_m_i_e_s___wave_builder_8ipf" startline="101" endline="122">WB_GetParameterWaveName</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a785fb1fb2bca15858cee715f0c9d7059" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2318" endline="2334">WB_KillParameterWaves</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a6e1e2cb18c9a84fdd9bd5faa7a95b16d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2337" endline="2358">WB_KillStimset</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aed3211be846ded293afb919fe973bd76" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2280" endline="2292">WB_ParameterWavesExist</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a145ee0c58b216d16cb2a6dd3d9078cf3" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2297" endline="2315">WB_StimsetExists</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a79112af23d0f288e0c5e1df0d18cc8fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1727" endline="1764">NWB_LoadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_LoadCustomWave</definition>
+        <argsstring>(variable locationID, string fullPath, variable overwrite)</argsstring>
+        <name>NWB_LoadCustomWave</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fullPath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+        </param>
+        <briefdescription>
+<para>Load a custom wave from NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>loads waves that were saved by NWB_WriteStimsetCustomWave</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>open file or group from nwb file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fullPath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full Path in igor notation to custom wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>indicate whether the stored custom wave should be deleted if it exists</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on error and 0 on success </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1592" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1592" bodyend="1621"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1eb71cae989ce4dfcfee3dbaeefd3b71" compoundref="_m_i_e_s___utilities_8ipf" startline="715" endline="741">createDFWithAllParents</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" compoundref="_i_p_n_w_b___utils_8ipf" startline="353" endline="361">GetFolder</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a917432b29be2c52c30113efdaf85694e" compoundref="_m_i_e_s___utilities_8ipf" startline="1609" endline="1649">RemovePrefix</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97d14cc8181ef75c44a361f0ffdec54b" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1771" endline="1789">NWB_LoadCustomWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_LoadAllStimsets</definition>
+        <argsstring>(variable overwrite=defaultValue, string fileName=defaultValue, variable loadOnlyBuiltins=defaultValue)</argsstring>
+        <name>NWB_LoadAllStimsets</name>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>loadOnlyBuiltins</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Load all stimsets from specified HDF5 file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, shows a dialog on default] provide full file name/path for loading stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] indicate if the stored stimset should be deleted before the load. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>loadOnlyBuiltins</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] load only builtin stimsets </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on error and 0 on success </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1629" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1629" bodyend="1714"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a3f36d49a62a3c068572932a58456e005" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5693" endline="5746">DAP_UpdateDaEphysStimulusSetPopups</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1f3f21a4c40da09742873b8001129c71" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4898" endline="4918">GetWaveBuilderParameterTypeName</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad21bc4c409cdef354fb9be5b3427f789" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="333" endline="343">H5_CloseFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97d14cc8181ef75c44a361f0ffdec54b" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1771" endline="1789">NWB_LoadCustomWaves</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1501" endline="1581">NWB_LoadStimset</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1af0678448c2bdb1636d630a7f577817cd" compoundref="_i_p_n_w_b___reader_8ipf" startline="343" endline="349">OpenStimset</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1aace3a482f6a59a082ab0d78c78f8db44" compoundref="_i_p_n_w_b___reader_8ipf" startline="130" endline="140">ReadStimsets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4533f23cef84ab34e8e5c8a91cbb2646" compoundref="_m_i_e_s___constants_8ipf" startline="887">STIMSET_PARAM_SEGWVTYPE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2ba1b828bedc86f55f2d13a66756ceac" compoundref="_m_i_e_s___constants_8ipf" startline="885">STIMSET_PARAM_WP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abf400f40b0ec03cf107b791f35c50b4c" compoundref="_m_i_e_s___constants_8ipf" startline="886">STIMSET_PARAM_WPT</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a1c2e9ab4125f06f82e43ee5283e34546" compoundref="_i_p_n_w_b___reader_8ipf" startline="352" endline="356">StimsetPathExists</references>
+        <references refid="_m_i_e_s___wave_builder_panel_8ipf_1ad411a3175b6af1183a576b29cf73ff24" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="935" endline="939">WBP_IsBuiltinStimset</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1517e79cb68ff29950ed6c203660deef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5051" endline="5073">DAP_LoadBuiltinStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1a6cf3715b187021f651ebf98391ea67fc" compoundref="_m_i_e_s___menu_8ipf" startline="260" endline="266">MEN_DownloadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a79112af23d0f288e0c5e1df0d18cc8fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_LoadStimsets</definition>
+        <argsstring>(variable groupID, string stimsets, variable overwrite, string processedStimsets=defaultValue)</argsstring>
+        <name>NWB_LoadStimsets</name>
+        <param>
+          <type>variable</type>
+          <declname>groupID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>stimsets</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>processedStimsets</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Load specified stimsets and their dependencies from NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>see <ref refid="_m_i_e_s___analysis_browser_8ipf_1a7747398a68545383fab9850a84b364ce" kindref="member">AB_LoadStimsets()</ref> for similar structure</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>groupID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Open Stimset Group of HDF5 File. See <ref refid="_i_p_n_w_b___reader_8ipf_1af0678448c2bdb1636d630a7f577817cd" kindref="member">OpenStimset()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stimsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>&quot;;&quot; separated list of all stimsets of the current sweep. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>processedStimsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] the list indicates which stimsets were already loaded. on recursion this parameter avoids duplicate circular references. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>indicate whether the stored stimsets should be deleted if they exist</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 on error and 0 on success </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1727" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1727" bodyend="1764"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a68158e32633bfa84cefc8a02217c0e19" compoundref="_m_i_e_s___utilities_8ipf" startline="1901" endline="1935">ListFromList</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1501" endline="1581">NWB_LoadStimset</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a79112af23d0f288e0c5e1df0d18cc8fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1727" endline="1764">NWB_LoadStimsets</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1ad40f755422620d8b066d7b2ca0fdd99e" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2189" endline="2210">WB_StimsetFamilyNames</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a79112af23d0f288e0c5e1df0d18cc8fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1727" endline="1764">NWB_LoadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a97d14cc8181ef75c44a361f0ffdec54b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_LoadCustomWaves</definition>
+        <argsstring>(variable groupID, string stimsets, variable overwrite)</argsstring>
+        <name>NWB_LoadCustomWaves</name>
+        <param>
+          <type>variable</type>
+          <declname>groupID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>stimsets</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+        </param>
+        <briefdescription>
+<para>Load custom waves for specified stimset from Igor experiment file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>see <ref refid="_m_i_e_s___analysis_browser_8ipf_1a6edc7cc7fd3b09b213848dc2893ae590" kindref="member">AB_LoadCustomWaves()</ref> for similar structure</para>
+<para><simplesect kind="return"><para>1 on error and 0 on success </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1771" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1771" bodyend="1789"/>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1592" endline="1621">NWB_LoadCustomWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1ac7bc9c8d0ecf9cdc8b34f552eb48e9da" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2046" endline="2086">WB_CustomWavesPathFromStimSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aca2b4342a4b20c87656e013f902e654f" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2258" endline="2275">WB_StimsetRecursionForList</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_GetTimeSeriesProperties</definition>
+        <argsstring>(variable nwbVersion, WaveText numericalKeys, wave numericalValues, WriteChannelParams *p, TimeSeriesProperties *tsp)</argsstring>
+        <name>NWB_GetTimeSeriesProperties</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>numericalKeys</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_write_channel_params" kindref="compound">WriteChannelParams</ref> *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1791" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1791" bodyend="1842"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86" compoundref="_i_p_n_w_b___writer_8ipf" startline="313" endline="329">AddCustomProperty</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="struct_write_channel_params_1a38f7d38162427221d630d5f9df57aafe" compoundref="_i_p_n_w_b___structures_8ipf" startline="21">WriteChannelParams::channelType</references>
+        <references refid="struct_write_channel_params_1a1f08154490152e4929a8d2d050080613" compoundref="_i_p_n_w_b___structures_8ipf" startline="25">WriteChannelParams::clampMode</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a85ff4820b61b0f71dde948fcc0b70e9b" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="238" endline="261">DetermineDataTypeFromProperties</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1" compoundref="_i_p_n_w_b___writer_8ipf" startline="853" endline="876">DetermineDataTypeRefTree</references>
+        <references refid="struct_write_channel_params_1a37cdc51087a57cb7413402854fe367bb" compoundref="_i_p_n_w_b___structures_8ipf" startline="23">WriteChannelParams::electrodeNumber</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" compoundref="_i_p_n_w_b___structures_8ipf" startline="193">TimeSeriesProperties::missing_fields</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a100fe9405b34fdd131be180d98ffc382" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1844" endline="1880">NWB_AddSweepDataSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adaeef1da64f41b086024acabf9847e59" compoundref="_m_i_e_s___constants_8ipf" startline="858">STIMSET_SCALE_FACTOR_KEY</references>
+        <references refid="struct_write_channel_params_1a0e5dbafcf650c1fa01257868ca909f85" compoundref="_i_p_n_w_b___structures_8ipf" startline="20">WriteChannelParams::sweep</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a100fe9405b34fdd131be180d98ffc382" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AddSweepDataSets</definition>
+        <argsstring>(WaveText numericalKeys, wave numericalValues, variable sweep, string settingsProp, string nwbProp, variable headstage, TimeSeriesProperties *tsp, variable factor=defaultValue, string enabledProp=defaultValue)</argsstring>
+        <name>NWB_AddSweepDataSets</name>
+        <param>
+          <type>WaveText</type>
+          <declname>numericalKeys</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>settingsProp</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>nwbProp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>factor</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>enabledProp</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1844" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1844" bodyend="1880"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___labnotebook_8ipf_1a8661fa2197a26706cb6dfaf5135a0b99" compoundref="_m_i_e_s___labnotebook_8ipf" startline="41" endline="63">LBN_GetEntryProperties</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a0d55be94ca06f1660ae854fc6a7e859c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_LoadLabNoteBook</definition>
+        <argsstring>(variable locationID, string notebook, dfref dfr)</argsstring>
+        <name>NWB_LoadLabNoteBook</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>notebook</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>function saves contents of specified notebook to data folder </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of nwb file or notebooks folder </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>notebook</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of notebook to be loaded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>igor data folder where data should be loaded into </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1887" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1887" bodyend="1907"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ac61cc66016fbf31b0120ee149a6405ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_Flush</definition>
+        <argsstring>(variable locationID)</argsstring>
+        <name>NWB_Flush</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <briefdescription>
+<para>Flushes the contents of the NWB file to disc. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1910" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1910" bodyend="1917"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a309130d5db14fface8efc0a6d93eb56e" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="710" endline="712">H5_FlushFile</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="122" endline="145">BeforeExperimentSaveHook</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa8e7214ef5ddaa79cd9302c42da8f1c7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AppendLogFileToString</definition>
+        <argsstring>(string path, string *str)</argsstring>
+        <name>NWB_AppendLogFileToString</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1919" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1919" bodyend="1952"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a4ae183ac785c31444a5a2ffe3c7a5bf6" compoundref="_m_i_e_s___utilities_8ipf" startline="4950" endline="4977">LoadTextFile</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5c07f27f11534eb10371c2e9358fe31" compoundref="_m_i_e_s___constants_8ipf" startline="1511">LOGFILE_NWB_MARKER</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable NWB_AppendIgorHistoryAndLogFile</definition>
+        <argsstring>(variable nwbVersion, variable locationID)</argsstring>
+        <name>NWB_AppendIgorHistoryAndLogFile</name>
+        <param>
+          <type>variable</type>
+          <declname>nwbVersion</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" line="1954" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf" bodystart="1954" bodyend="1985"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a32bd72b9f89567de75104e6d39e9cdb8" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="543" endline="545">GetChunkedCompression</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a7f9aed33ad540a6167dad80f5215333f" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="607" endline="616">GetHistoryAndLogFileDatasetName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7a3b02b50ad19f69e3fe35273adf0da6" compoundref="_m_i_e_s___utilities_8ipf" startline="4428" endline="4435">GetHistoryNotebookText</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afa88b7975834a25fe5b48415708dc354" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="288" endline="297">GetNWBMajorVersion</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a96404019e0c7b0aad0655cb1ba7c87df" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="623" endline="625">GetNWBOverrideHistoryAndLogFile</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a52ed5b76d1bef8db0de9d215a2161106" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7375" endline="7379">GetZeroMQXOPLogfile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a8292f14f4dc031dc9500c7ee099cc01b" compoundref="_m_i_e_s___logging_8ipf" startline="17" endline="23">LOG_GetFile</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa8e7214ef5ddaa79cd9302c42da8f1c7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1919" endline="1952">NWB_AppendLogFileToString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>NWB</bold> Functions related to MIES data export into the NeuroDataWithoutBorders format </para>
+    </briefdescription>
+    <detaileddescription>
+<para>For writing a full NWB file the following functions are used:<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" kindref="member">NWB_GetFileForExport()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" kindref="member">NWB_AddDeviceSpecificData()</ref><itemizedlist>
+<listitem><para><ref refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" kindref="member">AddModificationTimeEntry()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" kindref="member">NWB_AddDevice()</ref></para>
+</listitem><listitem><para>NWB_WriteLabnotebooksAndComments()</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" kindref="member">NWB_WriteTestpulseData()</ref></para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" kindref="member">NWB_AppendSweepLowLevel()</ref> for each sweep</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" kindref="member">NWB_AppendStimset()</ref> for each stimset<itemizedlist>
+<listitem><para><ref refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" kindref="member">AddModificationTimeEntry()</ref></para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" kindref="member">NWB_AppendIgorHistoryAndLogFile()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>For exporting sweep-by-sweep:<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" kindref="member">NWB_PrepareExport()</ref>, once from <ref refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" kindref="member">DAP_CheckSettings()</ref> before DAQ<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" kindref="member">NWB_AppendStimset()</ref> for all stimsets<itemizedlist>
+<listitem><para><ref refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" kindref="member">AddModificationTimeEntry()</ref></para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" kindref="member">NWB_AppendSweepDuringDAQ()</ref>:<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" kindref="member">NWB_ASYNC_Worker()</ref><itemizedlist>
+<listitem><para><ref refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" kindref="member">AddModificationTimeEntry()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" kindref="member">NWB_AddDevice()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" kindref="member">NWB_WriteLabnoteBooksAndComments()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" kindref="member">NWB_AppendSweepLowLevel()</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ac61cc66016fbf31b0120ee149a6405ce" kindref="member">NWB_Flush()</ref> </para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_NeuroDataWithoutBorders.ipf"/>
+  </compounddef>
+</doxygen>

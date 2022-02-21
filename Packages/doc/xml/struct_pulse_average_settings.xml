@@ -1,0 +1,523 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_pulse_average_settings" kind="struct" language="C++" prot="public">
+    <compoundname>PulseAverageSettings</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Time alignment settings</header>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a91c2223a6ce8916e2e81d578b8576c7f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::startingPulse</definition>
+        <argsstring></argsstring>
+        <name>startingPulse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>These settings influence the extracted single pulse waves, see also <ref refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" kindref="member">PA_GenerateAllPulseWaves()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="86" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="86" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a595cf389c1138ddbee6c26fb73f6e8fe" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::endingPulse</definition>
+        <argsstring></argsstring>
+        <name>endingPulse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="86" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="86" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1af91cfcd285c9d26f6f2449d62f36c0ac" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::overridePulseLength</definition>
+        <argsstring></argsstring>
+        <name>overridePulseLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="86" column="36" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="86" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1aa03f273ccc12c744fda09f334c6d9a26" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::fixedPulseLength</definition>
+        <argsstring></argsstring>
+        <name>fixedPulseLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="86" column="56" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="86" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a01d6cfcde4912dc4e5fafb4b15bcb622" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::showIndividualPulses</definition>
+        <argsstring></argsstring>
+        <name>showIndividualPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="74" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="73" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b6557a0181ee41ace2fca16827a4915" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3019" endline="3243">PA_AddColorScales</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aad7d2ffd0509a092726d593e3a9098cc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3597" endline="3638">PA_HighligthFailedPulsesInImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9396f45012ca75c27b459f9d22346ca0" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3755" endline="3764">PA_IsDataOnSubPlot</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1aaf52cad5d534404f88c9cc5a2f8d7021" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::showAverage</definition>
+        <argsstring></argsstring>
+        <name>showAverage</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="74" column="31" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="74" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1acef0088f4c056f0aefbc4aec7f1f4690" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::regionSlider</definition>
+        <argsstring></argsstring>
+        <name>regionSlider</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="75" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="75" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a92b6fd09497d771214a59b8bce243cf7" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::multipleGraphs</definition>
+        <argsstring></argsstring>
+        <name>multipleGraphs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="75" column="23" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="75" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b6557a0181ee41ace2fca16827a4915" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3019" endline="3243">PA_AddColorScales</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a128f6a2825bc373efce4817800fb3a7d" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3766" endline="3807">PA_DrawXZeroLines</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a915f46390e76a5933e99686a7991f88a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="222" endline="235">PA_GetAxes</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a4727e3bbe4540e2c270a7ef12d92f2a7" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="149" endline="219">PA_GetGraph</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac885689ef623143b230f627c2a1e9331" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="101" endline="110">PA_GetGraphName</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a8c3cae0ede80633a70cd595d19ef7d20" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2907" endline="3006">PA_LayoutGraphs</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a5fc4578f1024f226168b392886eb5a0f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::zeroPulses</definition>
+        <argsstring></argsstring>
+        <name>zeroPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="76" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="76" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b6557a0181ee41ace2fca16827a4915" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3019" endline="3243">PA_AddColorScales</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a232f3d18f41cc263a17f2564a6f33baa" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::autoTimeAlignment</definition>
+        <argsstring></argsstring>
+        <name>autoTimeAlignment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="76" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="76" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1acd38233671566e3b1caaf014c5329fe6" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2086" endline="2133">PA_CalculateAllAverages</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a4079b87d9f3078c44f8afea308ea0fe8" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::enabled</definition>
+        <argsstring></argsstring>
+        <name>enabled</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="76" column="39" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="76" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a17a72cdc286444f54b7cfb683be72209" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::hideFailedPulses</definition>
+        <argsstring></argsstring>
+        <name>hideFailedPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="77" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="77" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aad7d2ffd0509a092726d593e3a9098cc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3597" endline="3638">PA_HighligthFailedPulsesInImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a453a5c95c5eaf6c7671e5f0df5f98b9e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::searchFailedPulses</definition>
+        <argsstring></argsstring>
+        <name>searchFailedPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="77" column="27" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="77" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aad7d2ffd0509a092726d593e3a9098cc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3597" endline="3638">PA_HighligthFailedPulsesInImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a5a3428b5df57c240daf168afc9cea51a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1425" endline="1511">PA_MarkFailedPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a836a629316a90b9dbd0730eb4da60f31" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2546" endline="2593">PA_PulseHasFailed</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a2f80fd989e1f9b9fa5d08f4ae90378fb" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::failedPulsesLevel</definition>
+        <argsstring></argsstring>
+        <name>failedPulsesLevel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="78" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="78" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a836a629316a90b9dbd0730eb4da60f31" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2546" endline="2593">PA_PulseHasFailed</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afc23f2b460436dc6b530c2284b2f8100" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1513" endline="1517">PA_TagSearchedPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a6b3aaadf21e87d37967dfd1d6c0fa7f2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::failedNumberOfSpikes</definition>
+        <argsstring></argsstring>
+        <name>failedNumberOfSpikes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="78" column="28" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="78" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a836a629316a90b9dbd0730eb4da60f31" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2546" endline="2593">PA_PulseHasFailed</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afc23f2b460436dc6b530c2284b2f8100" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1513" endline="1517">PA_TagSearchedPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1ae74fed4e7f19e4e8bd3cca5c6f7ab9bc" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::yScaleBarLength</definition>
+        <argsstring></argsstring>
+        <name>yScaleBarLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="78" column="49" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="78" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1ad664c4c942c5c98d32bce90e9672d49a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::showImages</definition>
+        <argsstring></argsstring>
+        <name>showImages</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="79" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="79" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a4e057f1b99ea7416b22b53268c25ecda" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::showTraces</definition>
+        <argsstring></argsstring>
+        <name>showTraces</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="79" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="79" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1acdfbdff160304eae3e86a6dd90274bcb" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::drawXZeroLine</definition>
+        <argsstring></argsstring>
+        <name>drawXZeroLine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="79" column="32" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="79" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a128f6a2825bc373efce4817800fb3a7d" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3766" endline="3807">PA_DrawXZeroLines</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a40040b21569f612b9722c615a3b08cd6" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageSettings::pulseSortOrder</definition>
+        <argsstring></argsstring>
+        <name>pulseSortOrder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="80" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="80" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a52a2eda25309e3f10c4fb9128747dec5" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1179" endline="1216">PA_ApplyPulseSortingOrder</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a01e5f108699be85838a45a06fbc44600" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string PulseAverageSettings::imageColorScale</definition>
+        <argsstring></argsstring>
+        <name>imageColorScale</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="81" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="81" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b6557a0181ee41ace2fca16827a4915" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3019" endline="3243">PA_AddColorScales</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1a42481d8e5104c6e27d42129827d6962a" prot="public" static="no" mutable="no">
+        <type>DFREF</type>
+        <definition>DFREF PulseAverageSettings::dfr</definition>
+        <argsstring></argsstring>
+        <name>dfr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="89" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="89" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" compoundref="_m_i_e_s___structures_8ipf" startline="45" endline="69">InitPulseAverageSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9f9978b91cfbe331eabf0d2787089086" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1000" endline="1060">PA_InitPASIInParts</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_settings_1adc58d2cee97c6e97b2f792a0a2207eb4" prot="public" static="no" mutable="no">
+        <type><ref refid="struct_pulse_average_deconv_settings" kindref="compound">PulseAverageDeconvSettings</ref></type>
+        <definition>PulseAverageDeconvSettings PulseAverageSettings::deconvolution</definition>
+        <argsstring></argsstring>
+        <name>deconvolution</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="91" column="29" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="91" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>PulseAverageDeconvSettings</label>
+        <link refid="struct_pulse_average_deconv_settings"/>
+      </node>
+      <node id="1">
+        <label>PulseAverageSettings</label>
+        <link refid="struct_pulse_average_settings"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>deconvolution</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="73" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="73" bodyend="92"/>
+    <listofallmembers>
+      <member refid="struct_pulse_average_settings_1a232f3d18f41cc263a17f2564a6f33baa" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>autoTimeAlignment</name></member>
+      <member refid="struct_pulse_average_settings_1adc58d2cee97c6e97b2f792a0a2207eb4" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>deconvolution</name></member>
+      <member refid="struct_pulse_average_settings_1a42481d8e5104c6e27d42129827d6962a" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>dfr</name></member>
+      <member refid="struct_pulse_average_settings_1acdfbdff160304eae3e86a6dd90274bcb" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>drawXZeroLine</name></member>
+      <member refid="struct_pulse_average_settings_1a4079b87d9f3078c44f8afea308ea0fe8" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>enabled</name></member>
+      <member refid="struct_pulse_average_settings_1a595cf389c1138ddbee6c26fb73f6e8fe" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>endingPulse</name></member>
+      <member refid="struct_pulse_average_settings_1a6b3aaadf21e87d37967dfd1d6c0fa7f2" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>failedNumberOfSpikes</name></member>
+      <member refid="struct_pulse_average_settings_1a2f80fd989e1f9b9fa5d08f4ae90378fb" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>failedPulsesLevel</name></member>
+      <member refid="struct_pulse_average_settings_1aa03f273ccc12c744fda09f334c6d9a26" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>fixedPulseLength</name></member>
+      <member refid="struct_pulse_average_settings_1a17a72cdc286444f54b7cfb683be72209" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>hideFailedPulses</name></member>
+      <member refid="struct_pulse_average_settings_1a01e5f108699be85838a45a06fbc44600" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>imageColorScale</name></member>
+      <member refid="struct_pulse_average_settings_1a92b6fd09497d771214a59b8bce243cf7" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>multipleGraphs</name></member>
+      <member refid="struct_pulse_average_settings_1af91cfcd285c9d26f6f2449d62f36c0ac" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>overridePulseLength</name></member>
+      <member refid="struct_pulse_average_settings_1a40040b21569f612b9722c615a3b08cd6" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>pulseSortOrder</name></member>
+      <member refid="struct_pulse_average_settings_1acef0088f4c056f0aefbc4aec7f1f4690" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>regionSlider</name></member>
+      <member refid="struct_pulse_average_settings_1a453a5c95c5eaf6c7671e5f0df5f98b9e" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>searchFailedPulses</name></member>
+      <member refid="struct_pulse_average_settings_1aaf52cad5d534404f88c9cc5a2f8d7021" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>showAverage</name></member>
+      <member refid="struct_pulse_average_settings_1ad664c4c942c5c98d32bce90e9672d49a" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>showImages</name></member>
+      <member refid="struct_pulse_average_settings_1a01d6cfcde4912dc4e5fafb4b15bcb622" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>showIndividualPulses</name></member>
+      <member refid="struct_pulse_average_settings_1a4e057f1b99ea7416b22b53268c25ecda" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>showTraces</name></member>
+      <member refid="struct_pulse_average_settings_1a91c2223a6ce8916e2e81d578b8576c7f" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>startingPulse</name></member>
+      <member refid="struct_pulse_average_settings_1ae74fed4e7f19e4e8bd3cca5c6f7ab9bc" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>yScaleBarLength</name></member>
+      <member refid="struct_pulse_average_settings_1a5fc4578f1024f226168b392886eb5a0f" prot="public" virt="non-virtual"><scope>PulseAverageSettings</scope><name>zeroPulses</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

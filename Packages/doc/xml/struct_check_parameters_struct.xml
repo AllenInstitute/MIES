@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_check_parameters_struct" kind="struct" language="C++" prot="public">
+    <compoundname>CheckParametersStruct</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string CheckParametersStruct::params</definition>
+        <argsstring></argsstring>
+        <name>params</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="585" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="584" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="817" endline="891">AFH_CheckAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae9a99226c5f4702b18bcad159f0399fd" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1112" endline="1130">MSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a1af1b8887d50095d551c310ae519d364" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="579" endline="606">MSQ_FastRheoEst_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb69c65d8bfa27945b975b853b45dd64" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1522" endline="1616">PSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb3600c2335841ed276f1fc2412922e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2779" endline="2799">PSQ_Ramp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad6ad996f936630d138cf31f39513925f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2363" endline="2374">PSQ_Rheobase_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7c476cf2cec2164c1567ce20ffa3b6b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2119" endline="2132">PSQ_SquarePulse_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a42a359d53411eab3114bc93ed771f00a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="995" endline="1020">ReachTargetVoltage_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4ea6c398b14ac7a5bb3db352f7a293a0" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="842" endline="919">SC_SpikeControl_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a3dc331ccd70ddb58407379b28b5de782" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2444" endline="2499">WB_SaveStimSet</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_check_parameters_struct_1a74ae3f106d61420a4df482c10ca61a9a" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string CheckParametersStruct::setName</definition>
+        <argsstring></argsstring>
+        <name>setName</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="586" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="586" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="584" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="584" bodyend="587"/>
+    <listofallmembers>
+      <member refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" prot="public" virt="non-virtual"><scope>CheckParametersStruct</scope><name>params</name></member>
+      <member refid="struct_check_parameters_struct_1a74ae3f106d61420a4df482c10ca61a9a" prot="public" virt="non-virtual"><scope>CheckParametersStruct</scope><name>setName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

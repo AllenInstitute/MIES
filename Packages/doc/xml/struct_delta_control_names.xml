@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_delta_control_names" kind="struct" language="C++" prot="public">
+    <compoundname>DeltaControlNames</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_delta_control_names_1a24b7f3f9b72b73880510cdc1882ea1d5" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DeltaControlNames::main</definition>
+        <argsstring></argsstring>
+        <name>main</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="290" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="289" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" compoundref="_m_i_e_s___structures_8ipf" startline="278" endline="286">InitDeltaControlNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_delta_control_names_1ade80e7fed830de094426d506698dfc6e" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DeltaControlNames::delta</definition>
+        <argsstring></argsstring>
+        <name>delta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="290" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="290" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" compoundref="_m_i_e_s___structures_8ipf" startline="278" endline="286">InitDeltaControlNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_delta_control_names_1a03d5993049c8af089681fc4fc1497cf8" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DeltaControlNames::dme</definition>
+        <argsstring></argsstring>
+        <name>dme</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="290" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="290" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" compoundref="_m_i_e_s___structures_8ipf" startline="278" endline="286">InitDeltaControlNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_delta_control_names_1a77856c616e969cbf64f0e2b81f9cedc9" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DeltaControlNames::op</definition>
+        <argsstring></argsstring>
+        <name>op</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="290" column="23" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="290" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" compoundref="_m_i_e_s___structures_8ipf" startline="278" endline="286">InitDeltaControlNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_delta_control_names_1a6ef3bdfa3a5fe6a0aa89230a1d609637" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DeltaControlNames::ldelta</definition>
+        <argsstring></argsstring>
+        <name>ldelta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="290" column="26" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="290" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" compoundref="_m_i_e_s___structures_8ipf" startline="278" endline="286">InitDeltaControlNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" kindref="member">WB_GetDeltaDimLabel()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="289" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="289" bodyend="291"/>
+    <listofallmembers>
+      <member refid="struct_delta_control_names_1ade80e7fed830de094426d506698dfc6e" prot="public" virt="non-virtual"><scope>DeltaControlNames</scope><name>delta</name></member>
+      <member refid="struct_delta_control_names_1a03d5993049c8af089681fc4fc1497cf8" prot="public" virt="non-virtual"><scope>DeltaControlNames</scope><name>dme</name></member>
+      <member refid="struct_delta_control_names_1a6ef3bdfa3a5fe6a0aa89230a1d609637" prot="public" virt="non-virtual"><scope>DeltaControlNames</scope><name>ldelta</name></member>
+      <member refid="struct_delta_control_names_1a24b7f3f9b72b73880510cdc1882ea1d5" prot="public" virt="non-virtual"><scope>DeltaControlNames</scope><name>main</name></member>
+      <member refid="struct_delta_control_names_1a77856c616e969cbf64f0e2b81f9cedc9" prot="public" virt="non-virtual"><scope>DeltaControlNames</scope><name>op</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

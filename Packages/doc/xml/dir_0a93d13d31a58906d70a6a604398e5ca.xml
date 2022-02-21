@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="dir_0a93d13d31a58906d70a6a604398e5ca" kind="dir">
+    <compoundname>IPNWB</compoundname>
+    <innerfile refid="_i_p_n_w_b___constants_8ipf">IPNWB_Constants.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___debugging_8ipf">IPNWB_Debugging.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___h_d_f5_helpers_8ipf">IPNWB_HDF5Helpers.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___include_8ipf">IPNWB_Include.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___n_w_b_utils_8ipf">IPNWB_NWBUtils.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___reader_8ipf">IPNWB_Reader.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___structures_8ipf">IPNWB_Structures.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___utils_8ipf">IPNWB_Utils.ipf</innerfile>
+    <innerfile refid="_i_p_n_w_b___writer_8ipf">IPNWB_Writer.ipf</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/"/>
+  </compounddef>
+</doxygen>

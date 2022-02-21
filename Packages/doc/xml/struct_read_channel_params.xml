@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_read_channel_params" kind="struct" language="C++" prot="public">
+    <compoundname>ReadChannelParams</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_read_channel_params_1a6467de6fdfbdf20d310d3ea4b9674c3f" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ReadChannelParams::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+<para>name of the measure device, e.g. &quot;ITC18USB_Dev_0&quot; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="51" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="50" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1a963213ddf67bff221e09fe70507bbc53" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ReadChannelParams::channelSuffix</definition>
+        <argsstring></argsstring>
+        <name>channelSuffix</name>
+        <briefdescription>
+<para>custom channel suffix, in case the channel number is ambiguous </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="52" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="52" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1a3f0406f51ffee8fcf858432d45a26f7d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::sweep</definition>
+        <argsstring></argsstring>
+        <name>sweep</name>
+        <briefdescription>
+<para>running number for each measurement </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="53" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="53" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1afa027d82186b7229cf79777335f10ce2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::channelType</definition>
+        <argsstring></argsstring>
+        <name>channelType</name>
+        <briefdescription>
+<para>channel type, one of <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWBChannelTypes" kindref="member">IPNWBChannelTypes</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="54" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="54" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1ad5dd35126fab64a86a7c6b4c20142e08" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::channelNumber</definition>
+        <argsstring></argsstring>
+        <name>channelNumber</name>
+        <briefdescription>
+<para>running number of the channel </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="55" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="55" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1ad75dbe148248470cdcfa721292707e39" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::electrodeNumber</definition>
+        <argsstring></argsstring>
+        <name>electrodeNumber</name>
+        <briefdescription>
+<para>electrode identifier the channel was acquired with </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="56" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="56" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1ab04e0260174d0b80b43896f61c8e22f2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::groupIndex</definition>
+        <argsstring></argsstring>
+        <name>groupIndex</name>
+        <briefdescription>
+<para>constant for all channels in this measurement. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="57" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="57" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_read_channel_params_1a8c6b57af365703d9dc957954f3b9758a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ReadChannelParams::ttlBit</definition>
+        <argsstring></argsstring>
+        <name>ttlBit</name>
+        <briefdescription>
+<para>unambigous ttl-channel-number </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="58" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="58" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1ae4c3251609eaaddb977a85515f35e984" compoundref="_i_p_n_w_b___structures_8ipf" startline="62" endline="73">InitReadChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Loader structure analog to <ref refid="struct_write_channel_params" kindref="compound">WriteChannelParams</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="50" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="50" bodyend="59"/>
+    <listofallmembers>
+      <member refid="struct_read_channel_params_1ad5dd35126fab64a86a7c6b4c20142e08" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>channelNumber</name></member>
+      <member refid="struct_read_channel_params_1a963213ddf67bff221e09fe70507bbc53" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>channelSuffix</name></member>
+      <member refid="struct_read_channel_params_1afa027d82186b7229cf79777335f10ce2" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>channelType</name></member>
+      <member refid="struct_read_channel_params_1a6467de6fdfbdf20d310d3ea4b9674c3f" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>device</name></member>
+      <member refid="struct_read_channel_params_1ad75dbe148248470cdcfa721292707e39" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>electrodeNumber</name></member>
+      <member refid="struct_read_channel_params_1ab04e0260174d0b80b43896f61c8e22f2" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>groupIndex</name></member>
+      <member refid="struct_read_channel_params_1a3f0406f51ffee8fcf858432d45a26f7d" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>sweep</name></member>
+      <member refid="struct_read_channel_params_1a8c6b57af365703d9dc957954f3b9758a" prot="public" virt="non-virtual"><scope>ReadChannelParams</scope><name>ttlBit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

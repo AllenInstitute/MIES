@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="dir_1f9d9abe027a76e443a6532889cf96ca" kind="dir">
+    <compoundname>MIES</compoundname>
+    <innerfile refid="_d_r___m_i_e_s___tango_interact_8ipf">DR_MIES_TangoInteract.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___acquisition_state_handling_8ipf">MIES_AcquisitionStateHandling.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___amplifier_interaction_8ipf">MIES_AmplifierInteraction.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_browser_8ipf">MIES_AnalysisBrowser.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf">MIES_AnalysisBrowser_SweepBrowser.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf">MIES_AnalysisBrowser_SweepBrowser_Export.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_function_helpers_8ipf">MIES_AnalysisFunctionHelpers.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_function_management_8ipf">MIES_AnalysisFunctionManagement.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_function_prototypes_8ipf">MIES_AnalysisFunctionPrototypes.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_functions_8ipf">MIES_AnalysisFunctions.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_functions___dashboard_8ipf">MIES_AnalysisFunctions_Dashboard.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf">MIES_AnalysisFunctions_MultiPatchSeq.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf">MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___analysis_functions___patch_seq_8ipf">MIES_AnalysisFunctions_PatchSeq.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___artefact_removal_8ipf">MIES_ArtefactRemoval.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___async_8ipf">MIES_Async.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___asynchronous_data_8ipf">MIES_AsynchronousData.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___background_watchdog_8ipf">MIES_BackgroundWatchdog.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___blowout_8ipf">MIES_Blowout.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___browser_settings_panel_8ipf">MIES_BrowserSettingsPanel.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___cache_8ipf">MIES_Cache.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___check_installation_8ipf">MIES_CheckInstallation.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___configuration_8ipf">MIES_Configuration.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___constants_8ipf">MIES_Constants.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___d_a_c-_hardware_8ipf">MIES_DAC-Hardware.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___d_a_ephys_8ipf">MIES_DAEphys.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___d_a_ephys___gui_state_8ipf">MIES_DAEphys_GuiState.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___d_a_ephys___macro_8ipf">MIES_DAEphys_Macro.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___d_a_n_d_i_8ipf">MIES_DANDI.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_acquisition_8ipf">MIES_DataAcquisition.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_acquisition___multi_8ipf">MIES_DataAcquisition_Multi.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_acquisition___single_8ipf">MIES_DataAcquisition_Single.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_browser_8ipf">MIES_DataBrowser.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_browser___macro_8ipf">MIES_DataBrowser_Macro.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___data_configurator_8ipf">MIES_DataConfigurator.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___debugging_8ipf">MIES_Debugging.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___debug_panel_8ipf">MIES_DebugPanel.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___downsample_8ipf">MIES_Downsample.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___enhanced_w_m_routines_8ipf">MIES_EnhancedWMRoutines.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___epochs_8ipf">MIES_Epochs.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___experiment_documentation_8ipf">MIES_ExperimentDocumentation.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___foreign_function_interface_8ipf">MIES_ForeignFunctionInterface.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___global_string_and_variable_access_8ipf">MIES_GlobalStringAndVariableAccess.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___gui_popup_menu_ext_8ipf">MIES_GuiPopupMenuExt.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___gui_utilities_8ipf">MIES_GuiUtilities.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___h_d_f5_ops_8ipf">MIES_HDF5Ops.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___igor_hooks_8ipf">MIES_IgorHooks.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___indexing_8ipf">MIES_Indexing.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___input_dialog_8ipf">MIES_InputDialog.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___i_v_s_c_c_8ipf">MIES_IVSCC.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___labnotebook_8ipf">MIES_Labnotebook.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___logbook_viewer_8ipf">MIES_LogbookViewer.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___logging_8ipf">MIES_Logging.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___menu_8ipf">MIES_Menu.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___mies_utilities_8ipf">MIES_MiesUtilities.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___neuro_data_without_borders_8ipf">MIES_NeuroDataWithoutBorders.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf">MIES_OptimzedOverlapDistributedAcquisition.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___oscilloscope_8ipf">MIES_Oscilloscope.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___overlay_sweeps_8ipf">MIES_OverlaySweeps.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___package_settings_8ipf">MIES_PackageSettings.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___pictures_8ipf">MIES_Pictures.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___pressure_control_8ipf">MIES_PressureControl.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___programmatic_g_u_i_control_8ipf">MIES_ProgrammaticGUIControl.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___pulse_averaging_8ipf">MIES_PulseAveraging.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___repeated_acquisition_8ipf">MIES_RepeatedAcquisition.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___sampling_interval_8ipf">MIES_SamplingInterval.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___stimset_a_p_i_8ipf">MIES_StimsetAPI.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___structures_8ipf">MIES_Structures.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___sweep_formula_8ipf">MIES_SweepFormula.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___sweep_saving_8ipf">MIES_SweepSaving.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___tango_interact_8ipf">MIES_TangoInteract.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___test_pulse_8ipf">MIES_TestPulse.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___test_pulse___multi_8ipf">MIES_TestPulse_Multi.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___test_pulse___single_8ipf">MIES_TestPulse_Single.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf">MIES_ThreadedFIFOHandling.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___threadsafe_data_sharing_8ipf">MIES_ThreadsafeDataSharing.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___threadsafe_utilities_8ipf">MIES_ThreadsafeUtilities.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___trace_user_data_8ipf">MIES_TraceUserData.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___utilities_8ipf">MIES_Utilities.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___wave_builder_8ipf">MIES_WaveBuilder.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___wave_builder___macro_8ipf">MIES_WaveBuilder_Macro.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___wave_builder_panel_8ipf">MIES_WaveBuilderPanel.ipf</innerfile>
+    <innerfile refid="_m_i_e_s___wave_data_folder_getters_8ipf">MIES_WaveDataFolderGetters.ipf</innerfile>
+    <innerfile refid="_zero_m_q___interop_8ipf">ZeroMQ_Interop.ipf</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/"/>
+  </compounddef>
+</doxygen>

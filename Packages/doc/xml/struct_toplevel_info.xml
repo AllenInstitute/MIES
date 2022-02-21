@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_toplevel_info" kind="struct" language="C++" prot="public">
+    <compoundname>ToplevelInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_toplevel_info_1ad462d108ef668d23d06497a7261ad41e" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ToplevelInfo::session_description</definition>
+        <argsstring></argsstring>
+        <name>session_description</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="141" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="140" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_toplevel_info_1aaa66c183278d539a36827db7335e67c2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ToplevelInfo::session_start_time</definition>
+        <argsstring></argsstring>
+        <name>session_start_time</name>
+        <briefdescription>
+<para>timestamp in seconds since Igor Pro epoch, UTC timezone </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="143" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="143" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_toplevel_info_1a318816b161bf8fcf8841ade50f156bff" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ToplevelInfo::nwb_version</definition>
+        <argsstring></argsstring>
+        <name>nwb_version</name>
+        <briefdescription>
+<para>NWB specification version. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="144" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="144" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_toplevel_info_1a9a646feee53d0681e33b83351a76cc7d" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ToplevelInfo::identifier</definition>
+        <argsstring></argsstring>
+        <name>identifier</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="145" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="145" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_toplevel_info_1aefaf98ba303a4a294885a25298b3e65a" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText ToplevelInfo::file_create_date</definition>
+        <argsstring></argsstring>
+        <name>file_create_date</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="146" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="146" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Structure to hold all properties of the NWB file directly below <computeroutput>/</computeroutput> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="140" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="140" bodyend="147"/>
+    <listofallmembers>
+      <member refid="struct_toplevel_info_1aefaf98ba303a4a294885a25298b3e65a" prot="public" virt="non-virtual"><scope>ToplevelInfo</scope><name>file_create_date</name></member>
+      <member refid="struct_toplevel_info_1a9a646feee53d0681e33b83351a76cc7d" prot="public" virt="non-virtual"><scope>ToplevelInfo</scope><name>identifier</name></member>
+      <member refid="struct_toplevel_info_1a318816b161bf8fcf8841ade50f156bff" prot="public" virt="non-virtual"><scope>ToplevelInfo</scope><name>nwb_version</name></member>
+      <member refid="struct_toplevel_info_1ad462d108ef668d23d06497a7261ad41e" prot="public" virt="non-virtual"><scope>ToplevelInfo</scope><name>session_description</name></member>
+      <member refid="struct_toplevel_info_1aaa66c183278d539a36827db7335e67c2" prot="public" virt="non-virtual"><scope>ToplevelInfo</scope><name>session_start_time</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

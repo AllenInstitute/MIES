@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___menu_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Menu.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1ae286c925103dbefdbcf3c79e0a81f61d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_CloseMies</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_CloseMies</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="74" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="74" bodyend="93"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a699ae0f0de19d8a1c676e02114b8960e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4161" endline="4179">DAP_UnlockAllDevices</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_OpenAboutDialog</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_OpenAboutDialog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="95" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="95" bodyend="148"/>
+        <references refid="_m_i_e_s___pictures_8ipf_1a0ebaad3cbc1fd7fda996f8cb3af9bba2" compoundref="_m_i_e_s___pictures_8ipf" startline="1210" endline="2252">CellTypes</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="131" endline="141">GetMiesVersion</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a917432b29be2c52c30113efdaf85694e" compoundref="_m_i_e_s___utilities_8ipf" startline="1609" endline="1649">RemovePrefix</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <references refid="_m_i_e_s___pictures_8ipf_1ab2c46e25c517f097d5ca358bfe2b79f7" compoundref="_m_i_e_s___pictures_8ipf" startline="45" endline="1207">SynPhys</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1a58dc73fb8ae8869abd4bc3f9aaf9a568" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_OpenBackgroundWatcherPanel</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_OpenBackgroundWatcherPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="150" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="150" bodyend="158"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a60dc2d5036f9120303d88fd28e34b119" compoundref="_m_i_e_s___utilities_8ipf" startline="2673" endline="2709">QuerySetIgorOption</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1af2a679d7f195c16967ab0c20cc6fdadb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_CreateIssueOnGithub</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_CreateIssueOnGithub</name>
+        <briefdescription>
+<para>Custom notebook action for the &quot;About MIES&quot; dialog. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Opens a prefilled new issue on github. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="163" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="163" bodyend="199"/>
+        <references refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="131" endline="141">GetMiesVersion</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1a3b07e50b2ffb7dabf99d70b4314056fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_ClearPackageSettings</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_ClearPackageSettings</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="201" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="201" bodyend="208"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae0c8bf2bf6773845518e3b7c68495493" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6733" endline="6746">GenerateSettingsDefaults</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1ac3eef04e71139d72b98539394b162c05" compoundref="_m_i_e_s___package_settings_8ipf" startline="60" endline="70">PS_WriteSettings</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1aa5153d85bb064aa85b81836c1edfd074" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_OpenPackageSettingsAsNotebook</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_OpenPackageSettingsAsNotebook</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="210" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="210" bodyend="214"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a2150ff6da7f3eaa1cd0133612a69456a" compoundref="_m_i_e_s___package_settings_8ipf" startline="253" endline="266">PS_OpenNotebook</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1a1bf2b4857e20faf976336ae98a2c76d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_OpenMIESLogFile</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_OpenMIESLogFile</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="216" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="216" bodyend="236"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a8292f14f4dc031dc9500c7ee099cc01b" compoundref="_m_i_e_s___logging_8ipf" startline="17" endline="23">LOG_GetFile</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ab772b21671c33505c33d529ba39333aa" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1635" endline="1641">NotebookSelectionAtEnd</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1a4acec6e8c708f3667e3f76be837a47eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_OpenZeroMQXOPLogFile</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_OpenZeroMQXOPLogFile</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="238" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="238" bodyend="258"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a52ed5b76d1bef8db0de9d215a2161106" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7375" endline="7379">GetZeroMQXOPLogfile</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ab772b21671c33505c33d529ba39333aa" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1635" endline="1641">NotebookSelectionAtEnd</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___menu_8ipf_1a6cf3715b187021f651ebf98391ea67fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MEN_DownloadStimsets</definition>
+        <argsstring>()</argsstring>
+        <name>MEN_DownloadStimsets</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" line="260" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf" bodystart="260" bodyend="266"/>
+        <references refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0810369773f1b83abf70372cffbf85e0" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="110" endline="131">DND_FetchAssetFromSet</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a13494cd9ba6c6ffe43e69f4b88261624" compoundref="_m_i_e_s___constants_8ipf" startline="1556">DND_STIMSET_DANDI_SET</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>MEN</bold> Definition of the menu items </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Menu.ipf"/>
+  </compounddef>
+</doxygen>

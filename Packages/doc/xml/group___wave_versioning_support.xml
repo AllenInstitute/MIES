@@ -1,0 +1,531 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="group___wave_versioning_support" kind="group">
+    <compoundname>WaveVersioningSupport</compoundname>
+    <title>Wave versioning support</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group___wave_versioning_support_1ga6855576336de95961a286c6adfbab288" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ExistsWithCorrectLayoutVersion</definition>
+        <argsstring>(WaveOrNull wv, variable versionOfNewWave)</argsstring>
+        <name>ExistsWithCorrectLayoutVersion</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>versionOfNewWave</declname>
+        </param>
+        <briefdescription>
+<para>Check if wv exists and has the correct version UTF_NOINSTRUMENTATION. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="200" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="200" bodyend="206"/>
+        <references refid="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="238" endline="242">GetWaveVersion</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afab93ee0bf6cfb487fce8d9e1557b69f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6942" endline="6967">GetAcqStateTracking</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a25a6895dbf3cb622b4a05e9a039eac6b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6658" endline="6681">GetAnaFuncDashboardColorWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2b9b300314bd87f34e33af0a51345c11" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6685" endline="6704">GetAnaFuncDashboardHelpWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af344ba3d002a8c8b752fa5313b1497fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6605" endline="6630">GetAnaFuncDashboardInfoWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9a60998a3949a664cc4191ac48a9cbff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6576" endline="6601">GetAnaFuncDashboardListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7cf42c99c2ca3875018d9c9f6b809031" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6634" endline="6654">GetAnaFuncDashboardSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a26b2e876b3a4e9d0d0fa785786c54390" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4938" endline="4973">GetAnalysisBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0f56ce024b2b1cce252024fba8326636" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4813" endline="4834">GetAnalysisChannelStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acb1296913252a84e42e910cf86d09947" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6240" endline="6260">GetAnalysisFuncDAScaleDeltaI</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac468e92207d2a206ad01c9aa14fbcb70" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6358" endline="6382">GetAnalysisFuncDAScaleFreqFit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a78061211244f7907476a889a006fe1e2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6272" endline="6294">GetAnalysisFuncDAScaleRes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab70e1a0a7c9098626e64355a0d2785e8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6299" endline="6324">GetAnalysisFuncDAScaleResFit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936f1745b37cb013dca5c398ced8b0f9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6387" endline="6411">GetAnalysisFuncDAScales</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab3e7a946de6d44993d9171b4f6556e22" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6329" endline="6353">GetAnalysisFuncDAScaleSpikeFreq</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae11df98795575034741f5ce2a7bd2fa4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6178" endline="6194">GetAnalysisFuncIndexingHelper</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe70457faa70d9f0d34f4be7711f808a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6427" endline="6446">GetAnalysisFunctionStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a183c486b4d10bca9cb81a0f0e43798c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5589" endline="5606">GetCellElectrodeNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="43" endline="92">GetChanAmpAssign</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ba66dba82209c52f01b621278216dc2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="105" endline="135">GetChanAmpAssignUnit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6a79aff1627fced5be033a9d86be2b75" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="509" endline="539">GetChannelClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7f64c2cb68fe38348a379a8e35df5e84" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6057" endline="6082">GetChannelSelectionWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae04b782e860ed95f61b67793bc9d7023" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6154" endline="6169">GetDebugPanelListSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a05c96f82c78eb3ccc7830927b2a45853" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6136" endline="6151">GetDebugPanelListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a333e0402d78a09204e2226b403beb3f6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6707" endline="6734">GetDeviceInfoWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a375dd8de53e030fe452c32b9d9d21826" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5400" endline="5426">GetDeviceMapping</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a767944d945f52965f7fdf230aa6d840f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6739" endline="6762">GetElapsedTimeWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b49b98d5c49dbb2e185a7c3c3590f4d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4978" endline="5011">GetExperimentBrowserGUIList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad5b58591c9272510f3c57258dc64be8f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5015" endline="5034">GetExperimentBrowserGUISel</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a560cef4b650345cdfd65c2fb7d375a14" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1653" endline="1684">GetNumericalResultsKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aedaa674553d5f00c1c591532948c2463" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6872" endline="6893">GetPAGraphData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9ab3009b8196c1369a75a0e4dd4731fe" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5857" endline="5876">GetPulseAverageDisplayMapping</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2bd37c8d6727735897766d852fa77f7e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5796" endline="5826">GetPulseAverageProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9842d989f6353ca81ce7d93958248396" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5832" endline="5851">GetPulseAveragePropertiesWaves</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aece7c1ed64093fd0bddc5d21e68a984b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5768" endline="5791">GetPulseAverageSetImageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af970146062d0218d2426e79ca6a784b4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5734" endline="5760">GetPulseAverageSetIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a39cd50f0d6a4f9728833cf31959694af" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5671" endline="5694">GetPulseAverageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0e75b455c5c9a513e442cb45471b63a4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5704" endline="5728">GetPulseAverageWaveNoteWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936cd1f1a7f39a48ef9985ec23cac357" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6482" endline="6504">GetRAPerfWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a194185f6f3dcfedbfe9568b2e54e92c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6098" endline="6121">GetSweepBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab0419db7487139f3fdbde0aa3c13e284" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1735" endline="1766">GetTextualResultsKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3fa616255e8ae41f149bde165dc8b7e1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="458" endline="492">GetTPResultAsyncBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad160e64624a55553a590d272ed91df9e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2891" endline="2917">GetTPResultsBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a50efcbb37be7a670410b7ad8a0ce547e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7233" endline="7315">GetTPSettingsLabnotebookKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aba399acdb8289dde333011e9eea8a8b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6973" endline="7026">GetValidAcqStateTransitions</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab70f61c86d418de4d7b51fe68dfe5da7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4551" endline="4587">P_PressureDataTxtWaveRef</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6ef7b54244e3d232b18a5df532dc3ffa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3888" endline="3899">UpgradeSegWvType</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8d4d70165994b59a13a6c6c924daf935" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3447" endline="3495">UpgradeWaveParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9138434bc32c6b969966cd8e230e020" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6551" endline="6572">WBP_GetAnalysisParamGUIHelpWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a225f92ac79dc6c33fcd10fb9c4783c47" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6507" endline="6530">WBP_GetAnalysisParamGUIListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e159070dc6a31ef63169b6909e7a6b5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6533" endline="6548">WBP_GetAnalysisParamGUISelWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1gaed4ce3b532835da1a8b4d2b3ccae443e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable WaveVersionIsAtLeast</definition>
+        <argsstring>(WaveOrNull wv, variable existingVersion)</argsstring>
+        <name>WaveVersionIsAtLeast</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>existingVersion</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given wave&apos;s version is equal or larger than the given version, if version is not set false is returned. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="209" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="209" bodyend="220"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="238" endline="242">GetWaveVersion</references>
+        <references refid="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="254" endline="256">IsValidWaveVersion</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1gad594ea44aa39c25df70e7efe3a48c091" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable WaveVersionIsSmaller</definition>
+        <argsstring>(WaveOrNull wv, variable existingVersion)</argsstring>
+        <name>WaveVersionIsSmaller</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>existingVersion</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given wave&apos;s version is smaller than the given version, if version is not set true is returned. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="223" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="223" bodyend="234"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="238" endline="242">GetWaveVersion</references>
+        <references refid="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="254" endline="256">IsValidWaveVersion</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a61ba931d234702c472908f3166242cea" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1173" endline="1383">UpgradeLabNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8d4d70165994b59a13a6c6c924daf935" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3447" endline="3495">UpgradeWaveParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetWaveVersion</definition>
+        <argsstring>(WaveOrNull wv)</argsstring>
+        <name>GetWaveVersion</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>return the Version of the Wave, returns NaN if no version was set UTF_NOINSTRUMENTATION </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="238" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="238" bodyend="242"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2d47a7b08a72c9517981efc21446e4c4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="20">WAVE_NOTE_LAYOUT_KEY</references>
+        <referencedby refid="group___wave_versioning_support_1ga6913c7a4d9472ebdf9243661f9909d80" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="259" endline="268">ClearWaveNoteExceptWaveVersion</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga6855576336de95961a286c6adfbab288" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="200" endline="206">ExistsWithCorrectLayoutVersion</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab9782bb9eaa585669198f9dfa56d6d9c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6032" endline="6058">IsValidConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7cbb639839258fce0ff6a7dfad5d46fa" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7564" endline="7598">RecreateConfigWaveFromLBN</referencedby>
+        <referencedby refid="group___wave_versioning_support_1gaed4ce3b532835da1a8b4d2b3ccae443e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="209" endline="220">WaveVersionIsAtLeast</referencedby>
+        <referencedby refid="group___wave_versioning_support_1gad594ea44aa39c25df70e7efe3a48c091" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="223" endline="234">WaveVersionIsSmaller</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1ga65c056aed5f84f15e4066ea9b63d2088" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SetWaveVersion</definition>
+        <argsstring>(wave wv, variable val)</argsstring>
+        <name>SetWaveVersion</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+<para>Set the wave layout version of wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="245" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="245" bodyend="251"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="254" endline="256">IsValidWaveVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2d47a7b08a72c9517981efc21446e4c4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="20">WAVE_NOTE_LAYOUT_KEY</references>
+        <referencedby refid="group___wave_versioning_support_1ga6913c7a4d9472ebdf9243661f9909d80" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="259" endline="268">ClearWaveNoteExceptWaveVersion</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afab93ee0bf6cfb487fce8d9e1557b69f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6942" endline="6967">GetAcqStateTracking</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a25a6895dbf3cb622b4a05e9a039eac6b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6658" endline="6681">GetAnaFuncDashboardColorWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2b9b300314bd87f34e33af0a51345c11" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6685" endline="6704">GetAnaFuncDashboardHelpWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af344ba3d002a8c8b752fa5313b1497fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6605" endline="6630">GetAnaFuncDashboardInfoWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9a60998a3949a664cc4191ac48a9cbff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6576" endline="6601">GetAnaFuncDashboardListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7cf42c99c2ca3875018d9c9f6b809031" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6634" endline="6654">GetAnaFuncDashboardSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a26b2e876b3a4e9d0d0fa785786c54390" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4938" endline="4973">GetAnalysisBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0f56ce024b2b1cce252024fba8326636" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4813" endline="4834">GetAnalysisChannelStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acb1296913252a84e42e910cf86d09947" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6240" endline="6260">GetAnalysisFuncDAScaleDeltaI</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac468e92207d2a206ad01c9aa14fbcb70" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6358" endline="6382">GetAnalysisFuncDAScaleFreqFit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a78061211244f7907476a889a006fe1e2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6272" endline="6294">GetAnalysisFuncDAScaleRes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab70e1a0a7c9098626e64355a0d2785e8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6299" endline="6324">GetAnalysisFuncDAScaleResFit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936f1745b37cb013dca5c398ced8b0f9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6387" endline="6411">GetAnalysisFuncDAScales</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab3e7a946de6d44993d9171b4f6556e22" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6329" endline="6353">GetAnalysisFuncDAScaleSpikeFreq</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe70457faa70d9f0d34f4be7711f808a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6427" endline="6446">GetAnalysisFunctionStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a183c486b4d10bca9cb81a0f0e43798c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5589" endline="5606">GetCellElectrodeNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="43" endline="92">GetChanAmpAssign</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ba66dba82209c52f01b621278216dc2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="105" endline="135">GetChanAmpAssignUnit</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6a79aff1627fced5be033a9d86be2b75" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="509" endline="539">GetChannelClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7f64c2cb68fe38348a379a8e35df5e84" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6057" endline="6082">GetChannelSelectionWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a333e0402d78a09204e2226b403beb3f6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6707" endline="6734">GetDeviceInfoWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a375dd8de53e030fe452c32b9d9d21826" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5400" endline="5426">GetDeviceMapping</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a767944d945f52965f7fdf230aa6d840f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6739" endline="6762">GetElapsedTimeWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b49b98d5c49dbb2e185a7c3c3590f4d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4978" endline="5011">GetExperimentBrowserGUIList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad5b58591c9272510f3c57258dc64be8f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5015" endline="5034">GetExperimentBrowserGUISel</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a560cef4b650345cdfd65c2fb7d375a14" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1653" endline="1684">GetNumericalResultsKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aedaa674553d5f00c1c591532948c2463" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6872" endline="6893">GetPAGraphData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9ab3009b8196c1369a75a0e4dd4731fe" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5857" endline="5876">GetPulseAverageDisplayMapping</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2bd37c8d6727735897766d852fa77f7e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5796" endline="5826">GetPulseAverageProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9842d989f6353ca81ce7d93958248396" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5832" endline="5851">GetPulseAveragePropertiesWaves</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aece7c1ed64093fd0bddc5d21e68a984b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5768" endline="5791">GetPulseAverageSetImageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af970146062d0218d2426e79ca6a784b4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5734" endline="5760">GetPulseAverageSetIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a39cd50f0d6a4f9728833cf31959694af" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5671" endline="5694">GetPulseAverageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0e75b455c5c9a513e442cb45471b63a4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5704" endline="5728">GetPulseAverageWaveNoteWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936cd1f1a7f39a48ef9985ec23cac357" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6482" endline="6504">GetRAPerfWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3daa71e2a627a5ad75cc0d7326486998" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3954" endline="3965">GetSegmentTypeWaveAsFree</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab0419db7487139f3fdbde0aa3c13e284" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1735" endline="1766">GetTextualResultsKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3fa616255e8ae41f149bde165dc8b7e1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="458" endline="492">GetTPResultAsyncBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad160e64624a55553a590d272ed91df9e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2891" endline="2917">GetTPResultsBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aba399acdb8289dde333011e9eea8a8b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6973" endline="7026">GetValidAcqStateTransitions</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a978cf936498a6cf8a7755a8a3d49a21d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3640" endline="3661">GetWaveBuilderWaveParamAsFree</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afa35813c7d350f41c3a0d2dc682bffda" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3870" endline="3876">GetWaveBuilderWaveTextParamAsFree</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab70f61c86d418de4d7b51fe68dfe5da7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4551" endline="4587">P_PressureDataTxtWaveRef</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a12420e2b946570e391e3e2b50d2d3810" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1582" endline="1597">SaveLBNumericalDescription</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6ef7b54244e3d232b18a5df532dc3ffa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3888" endline="3899">UpgradeSegWvType</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8d4d70165994b59a13a6c6c924daf935" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3447" endline="3495">UpgradeWaveParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9138434bc32c6b969966cd8e230e020" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6551" endline="6572">WBP_GetAnalysisParamGUIHelpWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a225f92ac79dc6c33fcd10fb9c4783c47" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6507" endline="6530">WBP_GetAnalysisParamGUIListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e159070dc6a31ef63169b6909e7a6b5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6533" endline="6548">WBP_GetAnalysisParamGUISelWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsValidWaveVersion</definition>
+        <argsstring>(variable value)</argsstring>
+        <name>IsValidWaveVersion</name>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>A valid wave version is a positive non-zero integer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="254" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="254" bodyend="256"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <referencedby refid="group___wave_versioning_support_1ga6913c7a4d9472ebdf9243661f9909d80" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="259" endline="268">ClearWaveNoteExceptWaveVersion</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga65c056aed5f84f15e4066ea9b63d2088" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="245" endline="251">SetWaveVersion</referencedby>
+        <referencedby refid="group___wave_versioning_support_1gaed4ce3b532835da1a8b4d2b3ccae443e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="209" endline="220">WaveVersionIsAtLeast</referencedby>
+        <referencedby refid="group___wave_versioning_support_1gad594ea44aa39c25df70e7efe3a48c091" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="223" endline="234">WaveVersionIsSmaller</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1ga6913c7a4d9472ebdf9243661f9909d80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ClearWaveNoteExceptWaveVersion</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>ClearWaveNoteExceptWaveVersion</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Clear the wave note but keep any valid wave version. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="259" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="259" bodyend="268"/>
+        <references refid="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="238" endline="242">GetWaveVersion</references>
+        <references refid="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="254" endline="256">IsValidWaveVersion</references>
+        <references refid="group___wave_versioning_support_1ga65c056aed5f84f15e4066ea9b63d2088" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="245" endline="251">SetWaveVersion</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae0b6caf6f2f7d1c5c8e2986f28972bce" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="554" endline="599">PA_CreateAndFillPulseWaveIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1ga8abaacf40aaf250fefd4aa37cfcc79f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref UpgradeDataFolderLocation</definition>
+        <argsstring>(string oldFolder, string newFolder)</argsstring>
+        <name>UpgradeDataFolderLocation</name>
+        <param>
+          <type>string</type>
+          <declname>oldFolder</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>newFolder</declname>
+        </param>
+        <briefdescription>
+<para>Move/Rename a datafolder across different locations. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Both parameters must be absolute datafolder locations. Cases where both exist are also handled gracefully.</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       Function/DF GetMyFolder()
+*           return UpgradeDataFolderLocation(&quot;root:old&quot;, &quot;root:new&quot;)
+*       End
+*  </verbatim></para>
+<para><simplesect kind="return"><para>DFREF to the <computeroutput>newFolder</computeroutput> with the contents of <computeroutput>oldFolder</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="284" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="284" bodyend="341"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1eb71cae989ce4dfcfee3dbaeefd3b71" compoundref="_m_i_e_s___utilities_8ipf" startline="715" endline="741">createDFWithAllParents</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" compoundref="_m_i_e_s___debugging_8ipf" startline="263" endline="303">DEBUGPRINT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ace5a028c689ab80d1f533ccecc886b59" compoundref="_m_i_e_s___utilities_8ipf" startline="3507" endline="3509">IsValidObjectName</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04472ac28f5c004cbc1ad3fc8d4f79a5" compoundref="_m_i_e_s___utilities_8ipf" startline="1530" endline="1561">UniqueDataFolderName</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave UpgradeWaveLocationAndGetIt</definition>
+        <argsstring>(WaveLocationMod *p)</argsstring>
+        <name>UpgradeWaveLocationAndGetIt</name>
+        <param>
+          <type><ref refid="struct_wave_location_mod" kindref="compound">WaveLocationMod</ref> *</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+<para>Rename/Move a wave to a new location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Valid transformations (and all combinations of them):<itemizedlist>
+<listitem><para>Moving into a new datafolder</para>
+</listitem><listitem><para>Renaming to a new name</para>
+</listitem><listitem><para>Nothing</para>
+</listitem></itemizedlist>
+</para>
+<para>The function is idempotent (i.e. it can be called also on already relocated waves). Cases where new == old are also handled gracefully.</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       Function/WAVE GetMyWave(device)
+*           string device
+* 
+*           variable versionOfNewWave = 1
+*           string newName = &quot;newAndNiceName&quot;
+*           DFREF newDFR = GetNewAndFancyFolder(device)
+* 
+*           STRUCT WaveLocationMod p
+*           p.dfr     = $(GetSomeFolder(device) + &quot;:oldSubFolder&quot;)
+*           p.newDFR  = newDFR
+*           p.name    = &quot;oldAndUglyName&quot;
+*           p.newName = newName
+* 
+*           WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+* 
+*           if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+*               return wv
+*           elseif(WaveExists(wv))
+*               // handle upgrade
+*           else
+*               Make/R/N=(10, 2) newDFR:newName/Wave=wv
+*           end
+* 
+*           SetWaveVersion(wv, versionOfNewWave)
+* 
+*           return wv
+*       End
+*  </verbatim></para>
+<para><simplesect kind="return"><para>wave reference to the wave in the new location, an invalid one if the wave does not exist at the specified former location </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" line="387" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveDataFolderGetters.ipf" bodystart="387" bodyend="433"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="struct_wave_location_mod_1ad5e136d65946224f108ffc4e8014fff8" compoundref="_m_i_e_s___structures_8ipf" startline="184">WaveLocationMod::dfr</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ace5a028c689ab80d1f533ccecc886b59" compoundref="_m_i_e_s___utilities_8ipf" startline="3507" endline="3509">IsValidObjectName</references>
+        <references refid="struct_wave_location_mod_1a8a2e52d5ea20a0a87da1d9a72a6a837c" compoundref="_m_i_e_s___structures_8ipf" startline="187">WaveLocationMod::name</references>
+        <references refid="struct_wave_location_mod_1aaa99e0f72ff9348d8f871807b4579045" compoundref="_m_i_e_s___structures_8ipf" startline="186">WaveLocationMod::newDFR</references>
+        <references refid="struct_wave_location_mod_1a5101b3861b2b8b152d6e886b52f08b47" compoundref="_m_i_e_s___structures_8ipf" startline="188">WaveLocationMod::newName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ada073dc7820a186e4a8272533761a7d0" compoundref="_m_i_e_s___utilities_8ipf" startline="979" endline="992">RemoveEmptyDataFolder</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a26b2e876b3a4e9d0d0fa785786c54390" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4938" endline="4973">GetAnalysisBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a32ed09f2a8784b97dbcf5362fa8d1080" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5092" endline="5103">GetAnalysLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af5f138562eec9afacfebfce8e3a1687d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5064" endline="5075">GetAnalysLBNumericalValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a14288bbaba5e5c0689bdf1764f80f328" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5106" endline="5117">GetAnalysLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab42e274c2ce7fe73fdb40ac7eec5f8f4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5078" endline="5089">GetAnalysLBTextualValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>The wave getter functions always return an existing wave. This can result in problems if the layout of the wave changes.</para>
+<para>Layout in this context means:<itemizedlist>
+<listitem><para>Sizes of all dimensions</para>
+</listitem><listitem><para>Labels of all dimensions</para>
+</listitem><listitem><para>Wave data type</para>
+</listitem><listitem><para>Prefilled wave content or wave note</para>
+</listitem></itemizedlist>
+</para>
+<para>This also means that the name and location of the wave does <emphasis>not</emphasis> influence the wave version. Use <ref refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" kindref="member">UpgradeWaveLocationAndGetIt()</ref> if you need to move the wave. The main reason is that for being able to query the wave version you already need to know where it is.</para>
+<para>In order to enable smooth upgrades between old and new wave layouts the following code pattern can be used: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/Wave GetMyWave(device)
+*       string device
+* 
+*       DFREF dfr = GetMyPath(device)
+*       variable versionOfNewWave = 2
+* 
+*       Wave/Z/SDFR=dfr wv = myWave
+* 
+*       if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+*           return wv
+*       elseif(WaveExists(wv)) // handle upgrade
+*           if(WaveVersionIsAtLeast(wv, 1)) // 1-&gt;2
+*               Redimension/D wv
+*           else // no-version-&gt;2
+*               // change the required dimensions and leave all others untouched with -1
+*               // the extended dimensions are initialized with zero
+*               Redimension/D/N=(10, -1, -1, -1) wv
+*           endif
+*       else
+*           Make/R/N=(10, 2) dfr:myWave/Wave=wv
+*       endif
+* 
+*       SetWaveVersion(wv, versionOfNewWave)
+* 
+*       return wv
+*   End
+*  </verbatim></para>
+<para>Now everytime the layout of <computeroutput>myWave</computeroutput> changes, raise <computeroutput>versionOfNewWave</computeroutput> by 1 and add a new <computeroutput>WaveVersionIsAtLeast</computeroutput> branch. When <computeroutput>GetMyWave</computeroutput> is called the first time, the wave is redimensioned or rebuilt as double wave depending on the current version, and on successive calls the wave is returned as is.</para>
+<para>Hints:<itemizedlist>
+<listitem><para>Wave layout versioning is <emphasis>mandatory</emphasis> if you change the layout of the wave</para>
+</listitem><listitem><para>Wave layout versions start with 1 and are integers</para>
+</listitem><listitem><para>Rule of thumb: Raise the version if you change anything in or below the <computeroutput>Make</computeroutput> line</para>
+</listitem><listitem><para>Wave versioning needs a special wave note style, see <ref refid="_m_i_e_s___utilities_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" kindref="member">GetNumberFromWaveNote</ref> </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

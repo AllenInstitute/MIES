@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_compilation_tester_utils_8ipf" kind="file" language="C++">
+    <compoundname>CompilationTesterUtils.ipf</compoundname>
+    <innernamespace refid="namespace_compilation_tester">CompilationTester</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf"/>
+  </compounddef>
+</doxygen>

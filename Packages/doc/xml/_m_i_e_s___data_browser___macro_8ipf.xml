@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___data_browser___macro_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DataBrowser_Macro.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___data_browser___macro_8ipf_1a78b26ece52c02a8edf0c4d32e08b8fab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DataBrowser</definition>
+        <argsstring>()</argsstring>
+        <name>DataBrowser</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser_Macro.ipf" line="12" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser_Macro.ipf" bodystart="12" bodyend="1396"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DB</bold> Macro for DataBrowser </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser_Macro.ipf"/>
+  </compounddef>
+</doxygen>

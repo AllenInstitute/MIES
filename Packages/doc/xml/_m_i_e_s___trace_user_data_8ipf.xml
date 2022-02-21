@@ -1,0 +1,580 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___trace_user_data_8ipf" kind="file" language="C++">
+    <compoundname>MIES_TraceUserData.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a54a71aa90fcdb3ee6d88c9d2e84133d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_RemoveUserDataWave</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>TUD_RemoveUserDataWave</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Window hook for clearing the user data of the attached graph. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="17" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="17" bodyend="29"/>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="34" endline="61">TUD_Clear</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_Clear</definition>
+        <argsstring>(string graph, variable recursive=defaultValue)</argsstring>
+        <name>TUD_Clear</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>recursive</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Clear the user data wave and release the indexing JSON document. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Works recursively on all child windows and calls TUD_ClearImpl on each graph. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="34" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="34" bodyend="61"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a18b7b3ace4463b9b49003b7d8133183d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1734" endline="1741">GetAllWindows</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a231c687ffa2dd202792203e9926d8940" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="63" endline="94">TUD_ClearImpl</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ab54f4674f253898b070c913bf7f8e43e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="267" endline="335">SB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a54a71aa90fcdb3ee6d88c9d2e84133d2" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="17" endline="29">TUD_RemoveUserDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a231c687ffa2dd202792203e9926d8940" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_ClearImpl</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>TUD_ClearImpl</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="63" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="63" bodyend="94"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a9dfec7880efbf60bb075d39e1b455fbb" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="244" endline="248">TUD_GraphIsManaged</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a17bf14bb3c031e9f862c10086b8b6473" compoundref="_m_i_e_s___constants_8ipf" startline="1402">TUD_INDEX_JSON</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="34" endline="61">TUD_Clear</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string TUD_GetUserData</definition>
+        <argsstring>(string graph, string trace, string key)</argsstring>
+        <name>TUD_GetUserData</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Return the user data the given <computeroutput>graph</computeroutput> and <computeroutput>trace</computeroutput> named <computeroutput>key</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="97" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="97" bodyend="105"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab2f836520b97d454022dc8d052e35513" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4392" endline="4542">EqualizeVerticalAxesRanges</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="650" endline="696">OVS_HighlightSweep</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ae9eb58f7f9077ff3bfd627b1c8cb45c1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="17" endline="63">OVS_IgnoreHeadstageInOverlay</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad58c4e85043b0de5fdabb8698ccaf53a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3848" endline="3893">TimeAlignCursorMovedHook</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3302ac5ebc86122ec14c46d8778cdaf5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4251" endline="4348">TimeAlignmentIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1adf59633248beab8bcbe6bf5c9c5a7bd1" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="39" endline="98">WB_OpenStimulusSetInWaveBuilder</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave TUD_GetUserDataAsWave</definition>
+        <argsstring>(string graph, string key, WaveText keys=defaultValue, WaveText values=defaultValue, variable returnIndizes=defaultValue)</argsstring>
+        <name>TUD_GetUserDataAsWave</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>values</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>returnIndizes</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the user data for <computeroutput>key</computeroutput> of all traces in graph in a 1D text wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>existing graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key value to gather data for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>keys</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] Either both <computeroutput>keys</computeroutput> and <computeroutput>values</computeroutput> are present or none of them. These allow to further restrict the returned result to traces having all of the additional key/value pairs </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] See <computeroutput>key</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>returnIndizes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to false] Return the indizes of the matches instead of the values </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="115" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="115" bodyend="183"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="251" endline="255">TUD_GetTraceCount</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa4d0023165e44117fe586ffcec856042" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="926" endline="990">AD_PlotBounds</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="154" endline="164">AR_GetHighlightTraces</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab2f836520b97d454022dc8d052e35513" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4392" endline="4542">EqualizeVerticalAxesRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7218ddceaaad0616cc4331a83f5ac535" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3955" endline="3966">GetSweepUserData</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7e0e709c4522beda15a5ee223c73f15b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6841" endline="6873">GetTraceInfos</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af7678d54f05a4d6efb44e3f003539052" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2281" endline="2482">LayoutGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="650" endline="696">OVS_HighlightSweep</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae210aba29318a217084618ab1794e527" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6881" endline="6914">RemoveSweepFromGraph</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad58c4e85043b0de5fdabb8698ccaf53a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3848" endline="3893">TimeAlignCursorMovedHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1aed69ab0330c0fe954f1664971463a441" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_SetUserData</definition>
+        <argsstring>(string graph, string trace, string key, string value)</argsstring>
+        <name>TUD_SetUserData</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Set the given user data for the trace of the graph. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="186" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="186" bodyend="206"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aad5064853a8e54ebdf9ad47b4455ff19" compoundref="_m_i_e_s___utilities_8ipf" startline="3319" endline="3339">SetDimensionLabels</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="251" endline="255">TUD_GetTraceCount</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_SetUserDataFromWaves</definition>
+        <argsstring>(string graph, string trace, WaveText keys, WaveText values)</argsstring>
+        <name>TUD_SetUserDataFromWaves</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Set the given user data for the trace of the graph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The <computeroutput>keys</computeroutput>/<computeroutput>values</computeroutput> must span a consecutive range. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="211" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="211" bodyend="242"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aad5064853a8e54ebdf9ad47b4455ff19" compoundref="_m_i_e_s___utilities_8ipf" startline="3319" endline="3339">SetDimensionLabels</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="251" endline="255">TUD_GetTraceCount</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a9dfec7880efbf60bb075d39e1b455fbb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_GraphIsManaged</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>TUD_GraphIsManaged</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="244" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="244" bodyend="248"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66c798174192aebe4bc7f257280a5bf0" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6834" endline="6837">GetGraphUserDataAsString</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a231c687ffa2dd202792203e9926d8940" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="63" endline="94">TUD_ClearImpl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_GetTraceCount</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>TUD_GetTraceCount</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of traces in the user data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="251" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="251" bodyend="255"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af8d83286a1dc5c1d0db84d97496f20b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2548" endline="2565">GetNextTraceIndex</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7e0e709c4522beda15a5ee223c73f15b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6841" endline="6873">GetTraceInfos</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1aed69ab0330c0fe954f1664971463a441" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="186" endline="206">TUD_SetUserData</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="211" endline="242">TUD_SetUserDataFromWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1ab3d6d70193333841c8054f6aaeed6374" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_RemoveUserData</definition>
+        <argsstring>(string graph, string trace)</argsstring>
+        <name>TUD_RemoveUserData</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <briefdescription>
+<para>Remove all user data from the given trace. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="258" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="258" bodyend="262"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="300" endline="321">TUD_RemoveTrace</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a3d5f781622166aa348d60fb0523c4c5a" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="137" endline="151">AR_RemoveTraces</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae210aba29318a217084618ab1794e527" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6881" endline="6914">RemoveSweepFromGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1ae2da780526834d116f3142aa2d5f2395" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_TraceIsOnGraph</definition>
+        <argsstring>(string graph, string trace)</argsstring>
+        <name>TUD_TraceIsOnGraph</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given trace is displayed on the graph. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="265" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="265" bodyend="268"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ae4eae22e753b335b34cea049362b3ba1" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="459" endline="466">LBV_MakeTraceNameUnique</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a806db1f27cc5b31a3804a61194180bb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TUD_Init</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>TUD_Init</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the graph for our user trace data handling. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is done implicitly after the user data wave is created. Once that is cleared with <ref refid="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" kindref="member">TUD_Clear()</ref> and the window is gone, this function can be used to reattach the cleanup hook to the newly created graph. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="275" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="275" bodyend="282"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a33772ce2f8a2dccf417641e0612960ae" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="77" endline="88">BSP_InitPanel</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a2b7b6db6e7b7603d3323b06416682954" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_AddTrace</definition>
+        <argsstring>(variable jsonID, WaveText graphUserData, string trace)</argsstring>
+        <name>TUD_AddTrace</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonID</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>graphUserData</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="284" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="284" bodyend="298"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_RemoveTrace</definition>
+        <argsstring>(WaveText graphUserData, string trace)</argsstring>
+        <name>TUD_RemoveTrace</name>
+        <param>
+          <type>WaveText</type>
+          <declname>graphUserData</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="300" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="300" bodyend="321"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1ab3d6d70193333841c8054f6aaeed6374" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="258" endline="262">TUD_RemoveUserData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_ConvertTraceNameToRowIndex</definition>
+        <argsstring>(WaveText graphUserData, string trace, variable create=defaultValue, variable allowMissing=defaultValue)</argsstring>
+        <name>TUD_ConvertTraceNameToRowIndex</name>
+        <param>
+          <type>WaveText</type>
+          <declname>graphUserData</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>create</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>allowMissing</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="323" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="323" bodyend="353"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ace5a028c689ab80d1f533ccecc886b59" compoundref="_m_i_e_s___utilities_8ipf" startline="3507" endline="3509">IsValidObjectName</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a2b7b6db6e7b7603d3323b06416682954" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="284" endline="298">TUD_AddTrace</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="300" endline="321">TUD_RemoveTrace</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1aed69ab0330c0fe954f1664971463a441" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="186" endline="206">TUD_SetUserData</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="211" endline="242">TUD_SetUserDataFromWaves</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1ae2da780526834d116f3142aa2d5f2395" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="265" endline="268">TUD_TraceIsOnGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_GetIndexJSON</definition>
+        <argsstring>(WaveText graphUserData)</argsstring>
+        <name>TUD_GetIndexJSON</name>
+        <param>
+          <type>WaveText</type>
+          <declname>graphUserData</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="355" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="355" bodyend="370"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a17bf14bb3c031e9f862c10086b8b6473" compoundref="_m_i_e_s___constants_8ipf" startline="1402">TUD_INDEX_JSON</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a73f9eee06a45884d250d8429ac59f564" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="372" endline="380">TUD_RegenerateJSONIndex</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a2b7b6db6e7b7603d3323b06416682954" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="284" endline="298">TUD_AddTrace</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a7219b4332f62b39b65786cc2fcaa0ba5" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="323" endline="353">TUD_ConvertTraceNameToRowIndex</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="300" endline="321">TUD_RemoveTrace</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___trace_user_data_8ipf_1a73f9eee06a45884d250d8429ac59f564" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TUD_RegenerateJSONIndex</definition>
+        <argsstring>(variable jsonID, WaveText graphUserData)</argsstring>
+        <name>TUD_RegenerateJSONIndex</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonID</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>graphUserData</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" line="372" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf" bodystart="372" bodyend="380"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>This file holds helper functions to work with our own trace user data handling. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>It works by storing the trace user data in one wave per graph. It is cleaned up when the graph is killed. For subwindows the window hook responsible for cleaning up is attached to the top-most parent as only that is receiving window hook events. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_TraceUserData.ipf"/>
+  </compounddef>
+</doxygen>

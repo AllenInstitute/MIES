@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="todo" kind="page">
+    <compoundname>todo</compoundname>
+    <title>Todo List</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><variablelist>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" kindref="member">AB_LoadDataWrapper</ref>  (dfref tmpDFR, string expFilePath, string datafolderPath, string listOfNames, variable typeFlags=defaultValue)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000004"/>this is not 100% correct as users might choose a different name for the unpacked experiment folder  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" kindref="member">AB_LoadSweepsFromNWB</ref>  (string discLocation, string dataFolder, string device)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000005"/>: Update this function for the use with SweepTable </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451" kindref="member">AB_StoreChannelsBySweep</ref>  (variable groupID, variable nwbVersion, string channelList, WaveInteger sweeps, WaveText storage)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000006"/>Update this function for the use with SweepTable  </para>
+</listitem>
+<varlistentry><term>Module <ref refid="_m_i_e_s___constants_8ipf_1amgrp7c40338abec3f996e837f5e85b1bcf73" kindref="member">Acquisition states</ref>  </term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000011"/>extend these with PRE_SET_EVENT and POST_SET_EVENT once this is reworked, see <ulink url="https://github.com/AllenInstitute/MIES/issues/658">https://github.com/AllenInstitute/MIES/issues/658</ulink> and <ulink url="https://github.com/AllenInstitute/MIES/issues/39">https://github.com/AllenInstitute/MIES/issues/39</ulink>. </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___debugging_8ipf_1a5a976aabc6746b44d530faa62ee1273b" kindref="member">BUG_TS</ref>  (string msg)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000017"/>IP9: Unify with BUG  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___mies_utilities_8ipf_1ae0f79975754bf6d7dc4a61a21583cae4" kindref="member">CalculateTPLikePropsFromSweep</ref>  (wave numericalValues, wave textualValues, wave sweep, wave deltaI, wave deltaV, wave resistance)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000025"/>unify with TP_Delta code </para>
+<para></para>
+<para>add support for evaluating &quot;inserted TP&quot; only  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___d_a_ephys_8ipf_1a9e84f18f51713a8034dfbb7a4380642e" kindref="member">DAP_FormatStimSetPopupValue</ref>  (variable channelType, string searchString=defaultValue)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000013"/>rework the code to have a fixed popValue  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___d_a_ephys_8ipf_1a6e2725a8a6994cacd17ed5bf5e6f64c5" kindref="member">DAP_UpdateSweepSetVariables</ref>  (string device)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000014"/>display correct values for yoked devices  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" kindref="member">DC_CalculateChannelColumnNo</ref>  (string device, string setName, variable channelNo, variable channelType)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000016"/>this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___data_acquisition_8ipf_1a66223a10da726e697737951f429c708a" kindref="member">DQ_RestartDAQ</ref>  (string device, variable dataAcqRunMode)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000015"/>how to handle yoked devices??  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___utilities_8ipf_1ace7700ff00fc00220ba90022796f0bc3" kindref="member">GetAllObjects_TS</ref>  (dfref dfr, variable typeFlag)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000031"/>merge with GetAllObjects once IP9 is mandatory as then VariableList and StringList are threadsafe </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___mies_utilities_8ipf_1a30345a35195b5f0c8a7f1522f38fa552" kindref="member">GetChanneListFromDAQConfigWave</ref>  (wave config, variable channelType)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000023"/>change to return a 0/1 wave with constant size a la DAG_GetChannelState </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___utilities_8ipf_1a8271d5071d74155084ff0de595e240a4" kindref="member">GetCursorXPositionAB</ref>  (string graph, variable *csrAx, variable *csrBx)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000032"/>make this a generic cursor getter function and merge with <computeroutput>cursors()</computeroutput> in </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" kindref="member">GetLBNumericalKeys</ref>  (string device)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000034"/>move the renaming stuff into one function for all four labnotebook waves  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___downsample_8ipf_1a6f2824cb254bdac8e19b0222f5c331f0" kindref="member">GetPopupMenuDeviceListWithData</ref>  ()</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000018"/>is not very accurate as we should store the yoking dependencies in a permanent way instead of hoping that ListOfFollowerITC1600s is accurate  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a0257840920250c017401be79ecb53e5e" kindref="member">GetRunningSingleDevice</ref>  ()</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000019"/>remove and use background struct members for the deviceID and GetDeviceMapping instead  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___utilities_8ipf_1a26fae6af9b355505ee7d981df13cc3d8" kindref="member">GetSetUnion</ref>  (wave wave1, wave wave2)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000033"/>IP9 make it threadsafe  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___mies_utilities_8ipf_1a87b9979c84f5680874c165f64789144e" kindref="member">GetTypeListFromITCConfig</ref>  (wave config, variable channelType)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000024"/>change to return a 0/1 wave with constant size a la DAG_GetChannelState </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" kindref="member">GetUniqueEntries</ref>  (wave wv, variable caseSensitive=defaultValue)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000003"/>this should be removed as it does not belong into this function  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4aa8a2cd844ec06a3cd5fee1d526952e" kindref="member">H5_GetLinkTarget</ref>  (string discLocation, string path)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000001"/>Needs HDF5 XOP support for reading link targets use HDF5LinkInfo  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_i_p_n_w_b___reader_8ipf_1a46ef6aed821bc9f61a6eba6a3673af0a" kindref="member">LoadSweepTable</ref>  (variable locationID, variable version)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000002"/>Allow Executions for files with missing SweepTable entry using <ref refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" kindref="member">LoadSweepNumber</ref> </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___logging_8ipf_1a84a17f151d373ec9e0090bc84a8fd788" kindref="member">LOG_AddEntry_TS</ref>  (string package, string action, string caller, WaveText keys=defaultValue, WaveText values=defaultValue)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000022"/>IP9-only: merge with LOG_AddEntry  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___logging_8ipf_1ad6d94e092f873bf46737dab2da3f1709" kindref="member">LOG_AddEntryWithoutChecks</ref>  (string package, variable JSONid)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000021"/>IP9-only: Remove precision specifier  </para>
+</listitem>
+<varlistentry><term>File <ref refid="_m_i_e_s___pressure_control_8ipf" kindref="compound">MIES_PressureControl.ipf</ref>  </term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000027"/>TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a78d65262a77669cce3387a1d008ead0e" kindref="member">MSQ_ForceSetEvent</ref>  (string device, variable headstage)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000009"/>this hack must go away.  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ad301b893cd611f61e8534935bf8c5b57" kindref="member">MSQ_GetLBNEntryForHeadstageSCI</ref>  (wave numericalValues, variable sweepNo, variable type, string str, variable headstage)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000008"/>merge with LBN functions once these are reworked.  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aefc8fe3a8deb731576c4ce87824021a3" kindref="member">MSQ_GetLBNEntryForHSSCIBool</ref>  (wave numericalValues, variable sweepNo, variable type, string str, variable headstage)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000007"/>merge with LBN functions once these are reworked.  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___constants_8ipf_1a01f70f7aabf292e27208328a81667dce" kindref="member">NUM_ENTRIES_FOR_MULTITHREAD</ref>  </term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000012"/>: IP8 convert all call sites to use MultiThread/T=  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" kindref="member">NWB_FetchEpochs</ref>  (wave numericalValues, WaveTextOrNull textualValues, variable sweep, variable channelNumber, variable channelType)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000026"/>we don&apos;t yet write epoch info into the LBN  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___pressure_control_8ipf_1a865e74dae87bca8666c9073f25f96ceb" kindref="member">P_UpdatePressureDataStorageWv</ref>  (string device)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000028"/>Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a8c10f74765d6e5d24d4732b45c1a0950" kindref="member">PSQ_ForceSetEvent</ref>  (string device, variable headstage)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000010"/>this hack must go away.  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___gui_utilities_8ipf_1ac70713989eb01c9f3d906549a163ccd9" kindref="member">SetControlTitleColor</ref>  (string win, string controlName, variable R, variable G, variable B)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000020"/>store color in control user data, check for color change before applying change  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9f7fbab3c2d1df96a067a85ef295ca36" kindref="member">SetPressureWaveDimLabels</ref>  (wave wv)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000035"/>If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used </para>
+<para><anchor id="todo_1_todo000036"/></para>
+<para><anchor id="todo_1_todo000037"/>Enable mode switching with TP running (auto stop TP, switch mode, auto startTP) </para>
+<para><anchor id="todo_1_todo000038"/></para>
+<para><anchor id="todo_1_todo000039"/>Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___sweep_formula_8ipf_1a1c441d1f39d63686b72052467facbd6d" kindref="member">SF_FormulaPlotter</ref>  (string graph, string formula, dfref dfr=defaultValue, variable dmMode=defaultValue)</term></varlistentry>
+<listitem><para><anchor id="todo_1_todo000030"/>Removes dimension labels in COLS and LAYERS </para>
+<para><anchor id="todo_1_todo000029"/>Removes dimension labels in COLS and LAYERS </para>
+</listitem>
+</variablelist>
+</para>
+    </detaileddescription>
+    <location file="todo"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___include_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Include.ipf</compoundname>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="_m_i_e_s___include_8ipf_1a8fa9508322c055f232a2ae0594df11dc" prot="public" static="no">
+        <name>TOO_OLD_IGOR</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="27" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1a3defc21c06386f31b14a27f42abd0de4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void OpenPanelWithDocumentationLink</definition>
+        <argsstring>()</argsstring>
+        <name>OpenPanelWithDocumentationLink</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="39" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="39" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1aceb182c03721753a4961abea757539fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ButtonProc_OpenMiesDocuUpdateNightly</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>ButtonProc_OpenMiesDocuUpdateNightly</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="46" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="46" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1af1903565668ef860cd0030d377310f95" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetDownloadLink</definition>
+        <argsstring>()</argsstring>
+        <name>GetDownloadLink</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="58" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="58" bodyend="73"/>
+        <referencedby refid="_m_i_e_s___include_8ipf_1a5d3fa885a2a9740a01fdc25abce77db5" compoundref="_m_i_e_s___include_8ipf" startline="92" endline="109">ButtonProc_DownloadNightly</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1aa0203843ac5558f7644783b7ff4736e0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetFileNameFromURL</definition>
+        <argsstring>(string url)</argsstring>
+        <name>GetFileNameFromURL</name>
+        <param>
+          <type>string</type>
+          <declname>url</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="75" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="75" bodyend="82"/>
+        <referencedby refid="_m_i_e_s___include_8ipf_1a5d3fa885a2a9740a01fdc25abce77db5" compoundref="_m_i_e_s___include_8ipf" startline="92" endline="109">ButtonProc_DownloadNightly</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1a1823f54d87a84e6a67a4d754f0f7a46a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetDestinationIgorPath</definition>
+        <argsstring>()</argsstring>
+        <name>GetDestinationIgorPath</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="84" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="84" bodyend="90"/>
+        <referencedby refid="_m_i_e_s___include_8ipf_1a5d3fa885a2a9740a01fdc25abce77db5" compoundref="_m_i_e_s___include_8ipf" startline="92" endline="109">ButtonProc_DownloadNightly</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1a5d3fa885a2a9740a01fdc25abce77db5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ButtonProc_DownloadNightly</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>ButtonProc_DownloadNightly</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="92" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="92" bodyend="109"/>
+        <references refid="_m_i_e_s___include_8ipf_1a1823f54d87a84e6a67a4d754f0f7a46a" compoundref="_m_i_e_s___include_8ipf" startline="84" endline="90">GetDestinationIgorPath</references>
+        <references refid="_m_i_e_s___include_8ipf_1af1903565668ef860cd0030d377310f95" compoundref="_m_i_e_s___include_8ipf" startline="58" endline="73">GetDownloadLink</references>
+        <references refid="_m_i_e_s___include_8ipf_1aa0203843ac5558f7644783b7ff4736e0" compoundref="_m_i_e_s___include_8ipf" startline="75" endline="82">GetFileNameFromURL</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___include_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AfterCompiledHook</definition>
+        <argsstring>()</argsstring>
+        <name>AfterCompiledHook</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf" line="111" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES_Include.ipf" bodystart="111" bodyend="122"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Main include. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Developer instructions for raising the required nightly versions:</para>
+<para><itemizedlist>
+<listitem><para>Update the revision numbers for IP8 and or IP9 below in the expression involving &quot;BUILD&quot;</para>
+</listitem><listitem><para>Upload the nightly zip package to the FTP (Thomas&apos; job). Don&apos;t delete the old zip packages, we still need them.</para>
+</listitem><listitem><para>Update the below URLs </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES_Include.ipf"/>
+  </compounddef>
+</doxygen>

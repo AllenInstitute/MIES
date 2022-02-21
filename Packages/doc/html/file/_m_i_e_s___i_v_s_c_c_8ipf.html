@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_IVSCC.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_IgorHooks.ipf" href="_m_i_e_s___igor_hooks_8ipf.html" />
+    <link rel="prev" title="File MIES_HDF5Ops.ipf" href="_m_i_e_s___h_d_f5_ops_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___igor_hooks_8ipf.html" title="File MIES_IgorHooks.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___h_d_f5_ops_8ipf.html" title="File MIES_HDF5Ops.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_IVSCC.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-ivscc-ipf">
+<span id="id1"></span><h1>File MIES_IVSCC.ipf<a class="headerlink" href="#file-mies-ivscc-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>IVS</strong> Routines for IVSCC/PatchSeq automation </p>
+<p>ZeroMQ Infos:<ul class="simple">
+<li><p>Listening port for the REP/ROUTER socket starts at <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ac27047309a31f60bb24e5d8aa9e2328a"><span class="std std-ref">ZEROMQ_BIND_REP_PORT</span></a>.</p></li>
+<li><p>Listening port for the PUBLISHER socket starts at <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1aef8cf72c2619d4054dc430e85d239e8a"><span class="std std-ref">ZEROMQ_BIND_PUB_PORT</span></a></p></li>
+<li><p>If one of those ports is already in use, the next larger port is tried.</p></li>
+<li><p>The publisher socket does include an automatic heartbeat message every 5 seconds. Subscribe to <a class="reference internal" href="_zero_m_q___interop_8ipf.html#_zero_m_q___interop_8ipf_1acd96451869f5609ead784813e2b413cc"><span class="std std-ref">ZeroMQ_HEARTBEAT</span></a> if you want to receive that.</p></li>
+<li><p>All available message filters can be queried via <a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html#_m_i_e_s___foreign_function_interface_8ipf_1a94b052bcf0ae3574a8e84e4d8865db9c"><span class="std std-ref">FFI_GetAvailableMessageFilters()</span></a>.</p></li>
+<li><p>More information regarding the ZeroMQ-XOP is located <a class="reference external" href="https://github.com/AllenInstitute/ZeroMQ-XOP/#readme">here</a></p></li>
+<li><p>See <a class="reference internal" href="#_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649"><span class="std std-ref">IVS_PublishQCState()</span></a> for more infos about the published messages </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416IVS_ConfigureMCCv">
+<span id="_CPPv316IVS_ConfigureMCCv"></span><span id="_CPPv216IVS_ConfigureMCCv"></span><span id="IVS_ConfigureMCC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ConfigureMCC</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416IVS_ConfigureMCCv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422IVS_runBaselineCheckQCv">
+<span id="_CPPv322IVS_runBaselineCheckQCv"></span><span id="_CPPv222IVS_runBaselineCheckQCv"></span><span id="IVS_runBaselineCheckQC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1acb283793846217b0069abd87dbd11b53"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_runBaselineCheckQC</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422IVS_runBaselineCheckQCv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run the baseline QC check. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca"><span class="std std-ref">PSQ_PipetteInBath</span></a> </p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424IVS_runInitAccessResisQCv">
+<span id="_CPPv324IVS_runInitAccessResisQCv"></span><span id="_CPPv224IVS_runInitAccessResisQCv"></span><span id="IVS_runInitAccessResisQC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_runInitAccessResisQC</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424IVS_runInitAccessResisQCv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run the initial access resistance check from the WSE. </p>
+<p>This will check must be &lt; 20MΩ or 15% of the R input. The EXTPBREAKN wave will also be run as a way of making sure the reading is recorded into the data set for post-experiment analysis </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427IVS_finishInitAccessQCCheckP18WMBackgroundStruct">
+<span id="_CPPv327IVS_finishInitAccessQCCheckP18WMBackgroundStruct"></span><span id="_CPPv227IVS_finishInitAccessQCCheckP18WMBackgroundStruct"></span><span id="IVS_finishInitAccessQCCheck__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_finishInitAccessQCCheck</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427IVS_finishInitAccessQCCheckP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Complete the Baseline QC check in the background. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419IVS_RunGigOhmSealQCv">
+<span id="_CPPv319IVS_RunGigOhmSealQCv"></span><span id="_CPPv219IVS_RunGigOhmSealQCv"></span><span id="IVS_RunGigOhmSealQC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_RunGigOhmSealQC</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419IVS_RunGigOhmSealQCv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>run the GigOhm seal QC check from the WSE </p>
+<p>This will make sure the Steady State resistance must be &gt; 1.0 GOhm. The EXTPCIIATT wave will also be run as a way of making sure the baseline is recorded into the data set for post-experiment analysis. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416IVS_Load_StimSet6string">
+<span id="_CPPv316IVS_Load_StimSet6string"></span><span id="_CPPv216IVS_Load_StimSet6string"></span><span id="IVS_Load_StimSet__string"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a819bddd8249ac46e6abe894778f6caf6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_Load_StimSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stim_filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416IVS_Load_StimSet6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Loads a single stimulus for the user when using the ZMQ Proxy. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IVS_PublishQCState8variable6string">
+<span id="_CPPv318IVS_PublishQCState8variable6string"></span><span id="_CPPv218IVS_PublishQCState8variable6string"></span><span id="IVS_PublishQCState__variable.string"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_PublishQCState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">result</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">description</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IVS_PublishQCState8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Push QC results onto ZeroMQ Publisher socket. </p>
+<p>Filter: <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a1e7fb174f10940007c3bea116d7800bc"><span class="std std-ref">IVS_PUB_FILTER</span></a></p>
+<p>Payload: JSON-encoded string with three elements in the top-level object</p>
+<p>Example:</p>
+<p><p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;some text&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Issuer&quot;</span><span class="p">:</span> <span class="s2">&quot;My QC Function&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="mi">123</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427IVS_finishGigOhmSealQCCheckP18WMBackgroundStruct">
+<span id="_CPPv327IVS_finishGigOhmSealQCCheckP18WMBackgroundStruct"></span><span id="_CPPv227IVS_finishGigOhmSealQCCheckP18WMBackgroundStruct"></span><span id="IVS_finishGigOhmSealQCCheck__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_finishGigOhmSealQCCheck</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427IVS_finishGigOhmSealQCCheckP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>finish the Gig Ohm Seal QC in the background </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417IVS_ExportAllData6string">
+<span id="_CPPv317IVS_ExportAllData6string"></span><span id="_CPPv217IVS_ExportAllData6string"></span><span id="IVS_ExportAllData__string"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1ae4185ef55177889c2051326e7b647c82"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ExportAllData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417IVS_ExportAllData6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425IVS_ReturnNWBFileLocationv">
+<span id="_CPPv325IVS_ReturnNWBFileLocationv"></span><span id="_CPPv225IVS_ReturnNWBFileLocationv"></span><span id="IVS_ReturnNWBFileLocation"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a293b4c4fdd1189fcbe701905877619a7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ReturnNWBFileLocation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425IVS_ReturnNWBFileLocationv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IVS_SaveExperiment6string">
+<span id="_CPPv318IVS_SaveExperiment6string"></span><span id="_CPPv218IVS_SaveExperiment6string"></span><span id="IVS_SaveExperiment__string"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1aa36fb7f42fffaa0dbdf0d2119ee5f2cc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_SaveExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IVS_SaveExperiment6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IVS_runStimWave6string8variable">
+<span id="_CPPv315IVS_runStimWave6string8variable"></span><span id="_CPPv215IVS_runStimWave6string8variable"></span><span id="IVS_runStimWave__string.variable"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a4f483a890486bbc56d28fb11bb196981"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_runStimWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimWaveName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scaleFactor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IVS_runStimWave6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run a designated stim wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stimWaveName</strong> – stimWaveName to be used </p></li>
+<li><p><strong>scaleFactor</strong> – scale factor to run the stim wave at </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420IVS_ButtonProc_SetupP14WMButtonAction">
+<span id="_CPPv320IVS_ButtonProc_SetupP14WMButtonAction"></span><span id="_CPPv220IVS_ButtonProc_SetupP14WMButtonAction"></span><span id="IVS_ButtonProc_Setup__WMButtonActionP"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a71e1e1c3b6b14a7b0ea3a2937d2b8598"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ButtonProc_Setup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420IVS_ButtonProc_SetupP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425IVS_ButtonProc_BaselineQCP14WMButtonAction">
+<span id="_CPPv325IVS_ButtonProc_BaselineQCP14WMButtonAction"></span><span id="_CPPv225IVS_ButtonProc_BaselineQCP14WMButtonAction"></span><span id="IVS_ButtonProc_BaselineQC__WMButtonActionP"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a93d7479836d09dec22432f653131c1bc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ButtonProc_BaselineQC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425IVS_ButtonProc_BaselineQCP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427IVS_ButtonProc_AccessResistP14WMButtonAction">
+<span id="_CPPv327IVS_ButtonProc_AccessResistP14WMButtonAction"></span><span id="_CPPv227IVS_ButtonProc_AccessResistP14WMButtonAction"></span><span id="IVS_ButtonProc_AccessResist__WMButtonActionP"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a719a0ac13dc1ae1055857e572290ae57"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ButtonProc_AccessResist</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427IVS_ButtonProc_AccessResistP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423IVS_ButtonProc_GOhmSealP14WMButtonAction">
+<span id="_CPPv323IVS_ButtonProc_GOhmSealP14WMButtonAction"></span><span id="_CPPv223IVS_ButtonProc_GOhmSealP14WMButtonAction"></span><span id="IVS_ButtonProc_GOhmSeal__WMButtonActionP"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a1d53641116fc0fb73f7e126d3ab68304"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_ButtonProc_GOhmSeal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423IVS_ButtonProc_GOhmSealP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IVS_CreatePanelv">
+<span id="_CPPv315IVS_CreatePanelv"></span><span id="_CPPv215IVS_CreatePanelv"></span><span id="IVS_CreatePanel"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a9a0495e6d01991e679ab2d8fdb009f2e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_CreatePanel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IVS_CreatePanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417IVSCCControlPanelv">
+<span id="_CPPv317IVSCCControlPanelv"></span><span id="_CPPv217IVSCCControlPanelv"></span><span id="IVSCCControlPanel"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1ab0f8bcd629b2f4921cc509fab8ba6a3b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVSCCControlPanel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417IVSCCControlPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420IVS_GetSetQCForSweep6string8variable">
+<span id="_CPPv320IVS_GetSetQCForSweep6string8variable"></span><span id="_CPPv220IVS_GetSetQCForSweep6string8variable"></span><span id="IVS_GetSetQCForSweep__string.variable"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1ae0da5713f81cf110e6c0074ca01a297f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_GetSetQCForSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420IVS_GetSetQCForSweep6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the Set QC passed/failed state for the given sweep. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 if passed, 0 if not (or not yet) and asserts out on all other errors. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422IVS_DEFAULT_NWBVERSION">
+<span id="_CPPv322IVS_DEFAULT_NWBVERSION"></span><span id="_CPPv222IVS_DEFAULT_NWBVERSION"></span><span id="IVS_DEFAULT_NWBVERSION__doubleC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1afa3e19b83b708a837f4ae9b4a807941f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_DEFAULT_NWBVERSION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv422IVS_DEFAULT_NWBVERSION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421IVS_DEFAULT_HEADSTAGE">
+<span id="_CPPv321IVS_DEFAULT_HEADSTAGE"></span><span id="_CPPv221IVS_DEFAULT_HEADSTAGE"></span><span id="IVS_DEFAULT_HEADSTAGE__doubleC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_DEFAULT_HEADSTAGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv421IVS_DEFAULT_HEADSTAGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418IVS_DEFAULT_DEVICE">
+<span id="_CPPv318IVS_DEFAULT_DEVICE"></span><span id="_CPPv218IVS_DEFAULT_DEVICE"></span><span id="IVS_DEFAULT_DEVICE__stringC"></span><span class="target" id="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVS_DEFAULT_DEVICE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ITC18USB_Dev_0&quot;</span></span><a class="headerlink" href="#_CPPv418IVS_DEFAULT_DEVICE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___h_d_f5_ops_8ipf.html"
+                          title="previous chapter">File MIES_HDF5Ops.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___igor_hooks_8ipf.html"
+                          title="next chapter">File MIES_IgorHooks.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___igor_hooks_8ipf.html" title="File MIES_IgorHooks.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___h_d_f5_ops_8ipf.html" title="File MIES_HDF5Ops.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_IVSCC.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

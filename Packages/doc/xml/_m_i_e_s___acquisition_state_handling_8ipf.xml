@@ -1,0 +1,253 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___acquisition_state_handling_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AcquisitionStateHandling.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a095bd49442f4d71df7cd0cafda7b01ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AS_StateToString</definition>
+        <argsstring>(variable acqState)</argsstring>
+        <name>AS_StateToString</name>
+        <param>
+          <type>variable</type>
+          <declname>acqState</declname>
+        </param>
+        <briefdescription>
+<para>Get the acquisition state as string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="13" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="13" bodyend="45"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3ea30b7d65ac2206df5b304e5fa95a26" compoundref="_m_i_e_s___constants_8ipf" startline="535">AS_EARLY_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0fae962e87b523e2e946e2692a5b572" compoundref="_m_i_e_s___constants_8ipf" startline="540">AS_ITI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a080392d2c69e8ced2a0592005c248821" compoundref="_m_i_e_s___constants_8ipf" startline="541">AS_POST_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6144de64e082a27a4ecc71ce9ebb01b8" compoundref="_m_i_e_s___constants_8ipf" startline="539">AS_POST_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14ee7011692d457b5722baf3ee927dbb" compoundref="_m_i_e_s___constants_8ipf" startline="536">AS_PRE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9980b7eeddfa07e37466038494a5b537" compoundref="_m_i_e_s___constants_8ipf" startline="537">AS_PRE_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae0445e2c7f302e3370cd381bcdce83ee" compoundref="_m_i_e_s___constants_8ipf" startline="542">AS_PRE_SWEEP_CONFIG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a6b4b6d8d56e0af7a460974ebaa0afb98" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="201" endline="228">AS_GenerateEncounteredTransitions</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aba399acdb8289dde333011e9eea8a8b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6973" endline="7026">GetValidAcqStateTransitions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AS_HandlePossibleTransition</definition>
+        <argsstring>(string device, variable newAcqState, variable call=defaultValue)</argsstring>
+        <name>AS_HandlePossibleTransition</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>newAcqState</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>call</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Takes care of (possible) acquisition state transitions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We track the acquisition state so that we can perform actions for state transitions when required.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>newAcqState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1AcquisitionStates" kindref="member">AcquisitionStates</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>call</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Call analysis function which is connected to the state transition. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="55" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="55" bodyend="119"/>
+        <references refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a76623bbebbedd404dcd027220c42fd78" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="130" endline="135">AS_CheckStateTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3ea30b7d65ac2206df5b304e5fa95a26" compoundref="_m_i_e_s___constants_8ipf" startline="535">AS_EARLY_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0fae962e87b523e2e946e2692a5b572" compoundref="_m_i_e_s___constants_8ipf" startline="540">AS_ITI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a080392d2c69e8ced2a0592005c248821" compoundref="_m_i_e_s___constants_8ipf" startline="541">AS_POST_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6144de64e082a27a4ecc71ce9ebb01b8" compoundref="_m_i_e_s___constants_8ipf" startline="539">AS_POST_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14ee7011692d457b5722baf3ee927dbb" compoundref="_m_i_e_s___constants_8ipf" startline="536">AS_PRE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9980b7eeddfa07e37466038494a5b537" compoundref="_m_i_e_s___constants_8ipf" startline="537">AS_PRE_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae0445e2c7f302e3370cd381bcdce83ee" compoundref="_m_i_e_s___constants_8ipf" startline="542">AS_PRE_SWEEP_CONFIG</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a58ebfdfec1b8819d5e3f0c9e5408a5cd" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="184" endline="196">AS_RecordStateTransition</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a095bd49442f4d71df7cd0cafda7b01ec" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="13" endline="45">AS_StateToString</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a032ec27bc6b7255a21691c2d4e654abc" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="619" endline="625">ED_MarkSweepStart</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d" compoundref="_m_i_e_s___constants_8ipf" startline="554">PRE_SWEEP_CONFIG_EVENT</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a66223a10da726e697737951f429c708a" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="206" endline="233">DQ_RestartDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</referencedby>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="group___background_functions_1ga216a30befc7388a82cb20819096a2077" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="93" endline="107">DQS_BkrdDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</referencedby>
+        <referencedby refid="group___background_functions_1ga180063aa9185bc1412cda48d5aee95ef" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="135" endline="170">DQS_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a76623bbebbedd404dcd027220c42fd78" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AS_CheckStateTransition</definition>
+        <argsstring>(variable oldAcqState, variable newAcqState)</argsstring>
+        <name>AS_CheckStateTransition</name>
+        <param>
+          <type>variable</type>
+          <declname>oldAcqState</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>newAcqState</declname>
+        </param>
+        <briefdescription>
+<para>Check the acquisition state transition between old and new. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The following graph shows the allowed transitions for all states.</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. image:: /dot/acquisition-state-transitions.svg
+*     :width: 300 px
+*     :align: center
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="130" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="130" bodyend="135"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aba399acdb8289dde333011e9eea8a8b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6973" endline="7026">GetValidAcqStateTransitions</references>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AS_GetSweepNumber</definition>
+        <argsstring>(string device, variable allowFallback=defaultValue)</argsstring>
+        <name>AS_GetSweepNumber</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>allowFallback</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the sweep number of the currently active sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The ITI between sweeps belongs to the earlier sweep. The main use is to add a labnotebook entry during data acquisition. The similiar named function <ref refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" kindref="member">AFH_GetLastSweepAcquired()</ref> returns the last acquired sweep in comparison. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="142" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="142" bodyend="182"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3ea30b7d65ac2206df5b304e5fa95a26" compoundref="_m_i_e_s___constants_8ipf" startline="535">AS_EARLY_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0fae962e87b523e2e946e2692a5b572" compoundref="_m_i_e_s___constants_8ipf" startline="540">AS_ITI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a080392d2c69e8ced2a0592005c248821" compoundref="_m_i_e_s___constants_8ipf" startline="541">AS_POST_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6144de64e082a27a4ecc71ce9ebb01b8" compoundref="_m_i_e_s___constants_8ipf" startline="539">AS_POST_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14ee7011692d457b5722baf3ee927dbb" compoundref="_m_i_e_s___constants_8ipf" startline="536">AS_PRE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9980b7eeddfa07e37466038494a5b537" compoundref="_m_i_e_s___constants_8ipf" startline="537">AS_PRE_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae0445e2c7f302e3370cd381bcdce83ee" compoundref="_m_i_e_s___constants_8ipf" startline="542">AS_PRE_SWEEP_CONFIG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="609" endline="611">GetAcquisitionState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a197a007c233d33a95a60a5a4987c9618" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1463" endline="1477">DAP_DocumentStopReason</referencedby>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="61" endline="72">FFI_GetJSONTemplate</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab1f6eff43ab5d2754261b76521e0f524" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="526" endline="543">RA_DocumentSweepSkipping</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a58ebfdfec1b8819d5e3f0c9e5408a5cd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AS_RecordStateTransition</definition>
+        <argsstring>(variable oldAcqState, variable newAcqState)</argsstring>
+        <name>AS_RecordStateTransition</name>
+        <param>
+          <type>variable</type>
+          <declname>oldAcqState</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>newAcqState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="184" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="184" bodyend="196"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afab93ee0bf6cfb487fce8d9e1557b69f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6942" endline="6967">GetAcqStateTracking</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___acquisition_state_handling_8ipf_1a6b4b6d8d56e0af7a460974ebaa0afb98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AS_GenerateEncounteredTransitions</definition>
+        <argsstring>()</argsstring>
+        <name>AS_GenerateEncounteredTransitions</name>
+        <briefdescription>
+<para>Return a wave with all encountered state transitions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires that they were recorded with <ref refid="_m_i_e_s___acquisition_state_handling_8ipf_1a58ebfdfec1b8819d5e3f0c9e5408a5cd" kindref="member">AS_RecordStateTransition()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" line="201" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf" bodystart="201" bodyend="228"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7aa8f54a9daef012ee08cf712d44d6f3" compoundref="_m_i_e_s___constants_8ipf" startline="543">AS_NUM_STATES</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a095bd49442f4d71df7cd0cafda7b01ec" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="13" endline="45">AS_StateToString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afab93ee0bf6cfb487fce8d9e1557b69f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6942" endline="6967">GetAcqStateTracking</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aba399acdb8289dde333011e9eea8a8b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6973" endline="7026">GetValidAcqStateTransitions</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AS</bold> Acquisition state handling </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AcquisitionStateHandling.ipf"/>
+  </compounddef>
+</doxygen>

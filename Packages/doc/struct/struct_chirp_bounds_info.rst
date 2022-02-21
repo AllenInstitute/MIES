@@ -1,0 +1,4 @@
+Struct ChirpBoundsInfo
+======================
+
+.. doxygenstruct:: ChirpBoundsInfo

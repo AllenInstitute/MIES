@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___d_a_ephys___macro_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DAEphys_Macro.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___macro_8ipf_1a769e660fa428d4f1746af3b02d089a6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DA_Ephys</definition>
+        <argsstring>()</argsstring>
+        <name>DA_Ephys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_Macro.ipf" line="12" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_Macro.ipf" bodystart="12" bodyend="4437"/>
+        <references refid="_m_i_e_s___pictures_8ipf_1a73eda4d26e616150fb98c6442f01b18a" compoundref="_m_i_e_s___pictures_8ipf" startline="16" endline="42">HardwareScanButton</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DA</bold> DA_Ephys panel macro </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_Macro.ipf"/>
+  </compounddef>
+</doxygen>

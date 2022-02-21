@@ -1,0 +1,1908 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___utils_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_Utils.ipf</compoundname>
+    <innerclass refid="struct_uuid" prot="public">Uuid</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IsFinite</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>IsFinite</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if var is a finite/normal number, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="21" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="21" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IsNaN</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>IsNaN</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if var is a NaN, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="31" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="31" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a4a909427286bc9649753a8e9d2ce0550" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable isNull</definition>
+        <argsstring>(string *str)</argsstring>
+        <name>isNull</name>
+        <param>
+          <type>string *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if str is null, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>must not be a SVAR </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="42" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="42" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable isEmpty</definition>
+        <argsstring>(string *str)</argsstring>
+        <name>isEmpty</name>
+        <param>
+          <type>string *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Returns one if str is empty or null, zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>must not be a SVAR </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="54" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="54" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DateTimeInUTC</definition>
+        <argsstring>()</argsstring>
+        <name>DateTimeInUTC</name>
+        <briefdescription>
+<para>Return the seconds since Igor Pro epoch (1/1/1904) in UTC time zone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="62" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="62" bodyend="64"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a65af5586de73b535cf5bc13b06af09b7" compoundref="_m_i_e_s___pressure_control_8ipf" startline="118" endline="147">P_RecordUserPressure</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab3a93ef755ff17e507633dfc14c03648" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3389" endline="3520">SaveExperimentSpecial</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad89366a79624371f41ee9f2754c33479" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6763" endline="6788">UploadCrashDumpsDaily</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1acfdc833c0231a1561fcde600c0ee22b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6791" endline="6832">UploadLogFilesDaily</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IsInteger</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>IsInteger</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Returns one if var is an integer and zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="67" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="67" bodyend="71"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5b22a6d115805ba2f7b31c4243d27a32" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="926" endline="945">AFH_GetHeadstageFromActiveADC</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1af53acaa31113f2c64c3c6e6f4a5fc8d9" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="986" endline="1002">BSP_ParseChannelSelectionControl</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae108771ac43b05625f852e6cdc84c0d9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5579" endline="5597">CreateLBNUnassocKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1adb592272f562af730084cb0964622a1a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1581" endline="1603">DC_GenerateStimsetFingerprint</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af9ca40e4253085d18ac139155aaeef2a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6259" endline="6278">GetDecimatedWaveSize</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1afa31ad7f904dd8230dfdb97cfe37b87c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2125" endline="2129">IsValidEpochNumber</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga77ad61982a8945382436bc5fe2f18205" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="254" endline="256">IsValidWaveVersion</referencedby>
+        <referencedby refid="_m_i_e_s___labnotebook_8ipf_1a6e5cc77f25c2a578139cae9ecb59091a" compoundref="_m_i_e_s___labnotebook_8ipf" startline="10" endline="31">LBN_SetDimensionLabels</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1accbf5e1eda5278b1f83bf0c99c89c64c" compoundref="_i_p_n_w_b___utils_8ipf" startline="688" endline="698">NumberToHex</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9911c1b40bc33a63acaa0732fbbb1663" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="243" endline="317">PA_CalculatePulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aa8f7e01e66e76bd92aeed86c0dfa2409" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2596" endline="2603">PA_GeneratePulseWaveName</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac7bc1836f4ccc39a69b4994eec5e5b02" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2496" endline="2544">PA_SpikePositionsForNonVC</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2ecd06912fd8a942cae85cfd76a22abd" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2135" endline="2169">PA_TAAdaptAverageWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4ea6c398b14ac7a5bb3db352f7a293a0" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="842" endline="919">SC_SpikeControl_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1ga615b9032ac8edb677d206a936138be05" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="266" endline="285">ST_CreateStimSet</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67" compoundref="_m_i_e_s___test_pulse_8ipf" startline="818" endline="889">TP_GetValuesFromTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1af42187859222dee168e886b0173eec6a" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1592" endline="1685">WBP_ShowFFTSpectrumIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetISO8601TimeStamp</definition>
+        <argsstring>(variable secondsSinceIgorEpoch=defaultValue, variable numFracSecondsDigits=defaultValue, variable localTimeZone=defaultValue)</argsstring>
+        <name>GetISO8601TimeStamp</name>
+        <param>
+          <type>variable</type>
+          <declname>secondsSinceIgorEpoch</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numFracSecondsDigits</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>localTimeZone</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a string in ISO 8601 format with timezone UTC. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>secondsSinceIgorEpoch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904) in UTC (or local time zone depending on <computeroutput>localTimeZone</computeroutput>) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numFracSecondsDigits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to zero] Number of sub-second digits </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localTimeZone</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Use the local time zone instead of UTC </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="78" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="78" bodyend="112"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a067b1f76ae48b5838434dfcc42d780c5" compoundref="_m_i_e_s___cache_8ipf" startline="574" endline="594">CA_OutputCacheStatistics</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a032ec27bc6b7255a21691c2d4e654abc" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="619" endline="625">ED_MarkSweepStart</referencedby>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="61" endline="72">FFI_GetJSONTemplate</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a70381017ea450fa3c293aa03fc6fc03c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7127" endline="7139">GenerateJSONTemplateForUpload</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1ab73e67d9110aeb54cb90765dcdaeb7a2" compoundref="_m_i_e_s___logging_8ipf" startline="48" endline="57">LOG_GenerateEntryTemplate</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa8e7214ef5ddaa79cd9302c42da8f1c7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1919" endline="1952">NWB_AppendLogFileToString</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac5b405e9cd0d943c5f66d8b1fc3c7530" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7204" endline="7273">UploadLogFiles</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ParseUnit</definition>
+        <argsstring>(string unitWithPrefix, string *prefix, variable *numPrefix, string *unit)</argsstring>
+        <name>ParseUnit</name>
+        <param>
+          <type>string</type>
+          <declname>unitWithPrefix</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>prefix</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>numPrefix</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>unit</declname>
+        </param>
+        <briefdescription>
+<para>Parse a simple unit with prefix into its prefix and unit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: The currently allowed units are the SI base units [1] and other common derived units. And in accordance to SI definitions, &quot;kg&quot; is a <emphasis>base</emphasis> unit. &quot;Simple&quot; unit means means one unit with prefix, not e.g. &quot;km/s&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">unitWithPrefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string to parse, examples are &quot;ms&quot; or &quot;kHz&quot; </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">prefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>symbol of decimal multipler of the unit, see below or [1] chapter 3 for the full list </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">numPrefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical value of the decimal multiplier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">unit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>unit</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<verbatim>embed:rst:leading-asterisk
+* 
+*  =====  ======  ===============
+*  Name   Symbol  Numerical value
+*  =====  ======  ===============
+*  yotta    Y        1e24
+*  zetta    Z        1e21
+*  exa      E        1e18
+*  peta     P        1e15
+*  tera     T        1e12
+*  giga     G        1e9
+*  mega     M        1e6
+*  kilo     k        1e3
+*  hecto    h        1e2
+*  deca     da       1e1
+*  deci     d        1e-1
+*  centi    c        1e-2
+*  milli    m        1e-3
+*  micro    mu       1e-6
+*  nano     n        1e-9
+*  pico     p        1e-12
+*  femto    f        1e-15
+*  atto     a        1e-18
+*  zepto    z        1e-21
+*  yocto    y        1e-24
+*  =====  ======  ===============
+* 
+*  </verbatim></para>
+<para>[1]: 8th edition of the SI Brochure (2014), <ulink url="http://www.bipm.org/en/publications/si-brochure">http://www.bipm.org/en/publications/si-brochure</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="157" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="157" bodyend="177"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ad3afe852231b8568567f27eec6292678" compoundref="_i_p_n_w_b___utils_8ipf" startline="182" endline="197">GetDecimalMultiplierValue</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" compoundref="_i_p_n_w_b___writer_8ipf" startline="245" endline="283">AddTimeSeriesUnitAndRes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ad3afe852231b8568567f27eec6292678" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetDecimalMultiplierValue</definition>
+        <argsstring>(string prefix)</argsstring>
+        <name>GetDecimalMultiplierValue</name>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+<para>Return the numerical value of a SI decimal multiplier. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___utils_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26" kindref="member">ParseUnit</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="182" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="182" bodyend="197"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26" compoundref="_i_p_n_w_b___utils_8ipf" startline="157" endline="177">ParseUnit</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IsTextWave</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>IsTextWave</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if the wave is a text wave, zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="200" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="200" bodyend="204"/>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ab3c9f40af20ab969b7d035383e022f30" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="26" endline="34">ED_AddEntriesToResults</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a1585e80fc9a75cdf3b8183f5c4ba4ae3" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="123" endline="143">ED_GetHeadstageContingency</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad041600384a80af98d0427742a1f1e14" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="229" endline="289">ExtractLogbookSlice</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="880" endline="956">GetLastSettingChannelInternal</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga955f73f68b1e19210e8f4553d8534e49" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1064" endline="1252">GetLastSettingNoCache</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1818" endline="1838">GetLastSweepWithSettingText</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1714" endline="1742">GetSweepsWithSetting</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ae5bce039a8197991d472f3d802ed2a83" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="393" endline="407">ReadTextAttribute</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5cd391792250dd9f3c445e6e535e0b6c" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="415" endline="429">ReadTextAttributeAsString</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a2f3acf3bf0df85add3bf642e1ca55968" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="458" endline="472">ReadTextDataSet</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6c572cdefedd9177038ec8cd6f798077" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="221" endline="239">SC_AddPulseRegionLBNEntries</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1ga758aebd603f1dc498a270fa53e51bc8a" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="365" endline="397">ST_GetStimsetParameterAsString</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1ga7c1e7244a8db5bac9415e8a62302c0fb" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="414" endline="492">ST_SetStimsetParameter</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IsNumericWave</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>IsNumericWave</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if the wave is a numeric wave, zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="207" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="207" bodyend="211"/>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af6435bbdc82b259966b07c7b94e16def" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="508" endline="608">FindRange</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="880" endline="956">GetLastSettingChannelInternal</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1755" endline="1775">GetLastSweepWithSetting</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4631" endline="4657">PSQ_AddLabnotebookEntriesToJSON</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a837437408ad33ce51c762657250e7281" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="437" endline="451">ReadAttributeAsNumber</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a6c2f4f8904430aac5c6182c2b73a5460" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="498" endline="511">ReadDataSetAsNumber</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6c572cdefedd9177038ec8cd6f798077" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="221" endline="239">SC_AddPulseRegionLBNEntries</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1ga78821f3a3ce49d32c577beda1b87cb99" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="335" endline="356">ST_GetStimsetParameterAsVariable</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1ga7c1e7244a8db5bac9415e8a62302c0fb" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="414" endline="492">ST_SetStimsetParameter</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ad686192dcb0a7481dab14d30ef46dc96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string RemovePrefixFromListItem</definition>
+        <argsstring>(string prefix, string list, string listSep=defaultValue)</argsstring>
+        <name>RemovePrefixFromListItem</name>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>listSep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Remove a string prefix from each list item and return the new list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="215" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="215" bodyend="237"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" compoundref="_i_p_n_w_b___reader_8ipf" startline="19" endline="41">ReadDevices</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aae463fa16b4760ffb09794fdba54e441" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave MakeWaveFree</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>MakeWaveFree</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Turn a persistent wave into a free wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="240" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="240" bodyend="248"/>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad041600384a80af98d0427742a1f1e14" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="229" endline="289">ExtractLogbookSlice</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a2d60321500709a76e1ab754c4c8f9d57" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1749" endline="1785">WB_FillWaveFromFormula</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aecf3cff75b4fd770e7e921e6d5b0b117" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string UniqueWaveName</definition>
+        <argsstring>(dfref dfr, string baseName)</argsstring>
+        <name>UniqueWaveName</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>baseName</declname>
+        </param>
+        <briefdescription>
+<para>Returns a wave name not used in the given datafolder. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Basically a datafolder aware version of UniqueName for datafolders</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>datafolder reference where the new datafolder should be created </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>baseName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>first part of the wave name, might be shorted due to Igor Pro limitations </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="256" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="256" bodyend="286"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" compoundref="_i_p_n_w_b___constants_8ipf" startline="98">MAX_OBJECT_NAME_LENGTH_IN_BYTES</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DataFolderExistsDFR</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>DataFolderExistsDFR</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the datafolder referenced by dfr exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Unlike DataFolderExists() a dfref pointing to an empty (&quot;&quot;) dataFolder is considered non-existing here. <simplesect kind="return"><para>one if dfr is valid and references an existing or free datafolder, zero otherwise Taken from <ulink url="http://www.igorexchange.com/node/2055">http://www.igorexchange.com/node/2055</ulink> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="293" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="293" bodyend="310"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1abc09c491b6f446b8dd78ba5ff2fef0e7" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="365" endline="376">BSP_SetFolder</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a25a6895dbf3cb622b4a05e9a039eac6b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6658" endline="6681">GetAnaFuncDashboardColorWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2b9b300314bd87f34e33af0a51345c11" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6685" endline="6704">GetAnaFuncDashboardHelpWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af344ba3d002a8c8b752fa5313b1497fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6605" endline="6630">GetAnaFuncDashboardInfoWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9a60998a3949a664cc4191ac48a9cbff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6576" endline="6601">GetAnaFuncDashboardListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7cf42c99c2ca3875018d9c9f6b809031" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6634" endline="6654">GetAnaFuncDashboardSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7f64c2cb68fe38348a379a8e35df5e84" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6057" endline="6082">GetChannelSelectionWave</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a2423aeb7e32f7d9af36e780b89bed3c4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2070" endline="2079">GetDAQDataSingleColumnWaves</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9ab3009b8196c1369a75a0e4dd4731fe" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5857" endline="5876">GetPulseAverageDisplayMapping</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2bd37c8d6727735897766d852fa77f7e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5796" endline="5826">GetPulseAverageProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9842d989f6353ca81ce7d93958248396" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5832" endline="5851">GetPulseAveragePropertiesWaves</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aece7c1ed64093fd0bddc5d21e68a984b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5768" endline="5791">GetPulseAverageSetImageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af970146062d0218d2426e79ca6a784b4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5734" endline="5760">GetPulseAverageSetIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a39cd50f0d6a4f9728833cf31959694af" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5671" endline="5694">GetPulseAverageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0e75b455c5c9a513e442cb45471b63a4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5704" endline="5728">GetPulseAverageWaveNoteWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7ae068845482ab60143a67830801763d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="710" endline="719">GetSingleSweepFolderAsString</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a194185f6f3dcfedbfe9568b2e54e92c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6098" endline="6121">GetSweepBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1a3750ae02f161d94bc189e21346dfba2e" compoundref="_m_i_e_s___input_dialog_8ipf" startline="98" endline="103">ID_GetFolder</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1add6e9d3012a816a756e6e285e946aa26" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="47" endline="57">LBV_PopupExtGetTPStorageKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac469ba6566f53c232549dd3f8fde49df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2044" endline="2060">MoveToTrash</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0d55be94ca06f1660ae854fc6a7e859c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1887" endline="1907">NWB_LoadLabNoteBook</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aaea06d31c5d819cb5b33fc115773da86" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="343" endline="393">PA_GetPulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2325101f33f631ae2cccafd9ae5b6dbf" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1962" endline="2084">PA_PreProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ab54f4674f253898b070c913bf7f8e43e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="267" endline="335">SB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1aa1b49ca198dc3b7f85c569ff2d2f1b8b" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="128" endline="154">TS_ThreadGroupGetVariable</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a8a2cfd839391abcb7f95e5776d01b700" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="176" endline="194">TS_ThreadGroupPutDFR</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1aecf3cff75b4fd770e7e921e6d5b0b117" compoundref="_i_p_n_w_b___utils_8ipf" startline="256" endline="286">UniqueWaveName</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="387" endline="433">UpgradeWaveLocationAndGetIt</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ae282b7c6bca56413716cb947a7361891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetBaseName</definition>
+        <argsstring>(string filePathWithSuffix, string sep=defaultValue)</argsstring>
+        <name>GetBaseName</name>
+        <param>
+          <type>string</type>
+          <declname>filePathWithSuffix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the base name of the file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Given <computeroutput>path/file.suffix</computeroutput> this gives <computeroutput>file</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePathWithSuffix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;:&quot;] character separating the path components </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="319" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="319" bodyend="327"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1acaca5f044fa38c8405e13925f3b19273" compoundref="_i_p_n_w_b___reader_8ipf" startline="303" endline="310">LoadStimulus</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a941f83fbb1d5320ae9c8bbd535ddb620" compoundref="_i_p_n_w_b___reader_8ipf" startline="286" endline="296">LoadTimeseries</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a4a12f71dda04a2a11c426996c9049ace" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="194" endline="265">SB_GetChannelInfoFromGraph</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ad8fcbcc8c6162fdb7494180261348c11" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="418" endline="450">SB_GetSweepList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1adaf2e6492b4a69f1469a4dbf8c68a043" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFileSuffix</definition>
+        <argsstring>(string filePathWithSuffix, string sep=defaultValue)</argsstring>
+        <name>GetFileSuffix</name>
+        <param>
+          <type>string</type>
+          <declname>filePathWithSuffix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the file extension (suffix) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Given <computeroutput>path/file.suffix</computeroutput> this gives <computeroutput>suffix</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePathWithSuffix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;:&quot;] character separating the path components </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="336" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="336" bodyend="344"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2853" endline="2975">AB_ReExport</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a2209db930184c30ed4eeb01015561768" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2978" endline="3013">BeforeFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ad8fcbcc8c6162fdb7494180261348c11" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="418" endline="450">SB_GetSweepList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFolder</definition>
+        <argsstring>(string filePathWithSuffix, string sep=defaultValue)</argsstring>
+        <name>GetFolder</name>
+        <param>
+          <type>string</type>
+          <declname>filePathWithSuffix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the folder of the file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Given <computeroutput>/path/file.suffix</computeroutput> this gives <computeroutput>path/</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePathWithSuffix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;:&quot;] character separating the path components </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="353" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="353" bodyend="361"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1afd3c1478ceb716778670655726747ca5" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2251" endline="2293">AB_LoadWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2853" endline="2975">AB_ReExport</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a66f0beafab05328987ffc9f03d460b89" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="947" endline="969">BSP_UpdateHelpNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a6e3bf01e38b73ba631821fb2af1d2996" compoundref="_m_i_e_s___configuration_8ipf" startline="2232" endline="2327">CONF_Position_MCC_Win</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1517e79cb68ff29950ed6c203660deef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5051" endline="5073">DAP_LoadBuiltinStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="7" endline="17">GetSavePath</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1592" endline="1621">NWB_LoadCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="130" endline="153">PerformMiesTasks</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a6ed8e8dba1034c546186ef07317cc3fc" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="215" endline="224">SI_StoreMinSampIntOnDisk</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ae48e6561b892e772ed2e5576a58e629b" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="369" endline="371">SpecificationsDiscLocation</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1abc9d0ae67fe6475a0052cf163744b589" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1375" endline="1417">WBP_ButtonProc_OpenAnaFuncs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a3f8c2314ac69c2d2996a85803999cacb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFile</definition>
+        <argsstring>(string filePathWithSuffix, string sep=defaultValue)</argsstring>
+        <name>GetFile</name>
+        <param>
+          <type>string</type>
+          <declname>filePathWithSuffix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the filename with extension. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Given <computeroutput>path/file.suffix</computeroutput> this gives <computeroutput>file.suffix</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePathWithSuffix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;:&quot;] character separating the path components </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="370" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="370" bodyend="378"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2853" endline="2975">AB_ReExport</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a4c35a9c1ed4c6cf852c6fd07b43f5542" compoundref="_m_i_e_s___configuration_8ipf" startline="243" endline="266">CONF_OpenConfigInNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0fc3b2ce11b16c9f3d5924e8f07da1d8" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="44" endline="74">DND_FetchAsset</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a202a3bf16f6d27fe273218e1a1925bd1" compoundref="_m_i_e_s___debug_panel_8ipf" startline="108" endline="139">DP_FillDebugPanelWaves</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3e9bc8a2466d4b92350ef00d816dc707" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7338" endline="7359">FilterLogfileByDate</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a49ecc9f1818e470856fcbe8ea26f4306" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ParseISO8601TimeStamp</definition>
+        <argsstring>(string timestamp)</argsstring>
+        <name>ParseISO8601TimeStamp</name>
+        <param>
+          <type>string</type>
+          <declname>timestamp</declname>
+        </param>
+        <briefdescription>
+<para>Parse a ISO8601 timestamp, e.g. created by <ref refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" kindref="member">GetISO8601TimeStamp()</ref>, and returns the number of seconds, including fractional parts, since Igor Pro epoch (1/1/1904) in UTC time zone. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts also the following specialities:<itemizedlist>
+<listitem><para>no UTC timezone specifier (UTC timezone is still used)</para>
+</listitem><listitem><para>/<computeroutput>T</computeroutput> between date and time</para>
+</listitem><listitem><para>fractional seconds</para>
+</listitem><listitem><para><computeroutput>,</computeroutput>/<computeroutput>.</computeroutput> as decimal separator </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="388" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="388" bodyend="427"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aee7d79ec84f1660b6c2e6ea5d547f457" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7280" endline="7336">FilterByDate</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acf50cbf8f2e130dbef461beb4ec5ccb3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="43" endline="61">NWB_GetStartTimeOfSweep</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa4077e37d33eab0ebecbd37f6d0a93fd" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="274" endline="282">NWB_ReadSessionStartTime</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad89366a79624371f41ee9f2754c33479" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6763" endline="6788">UploadCrashDumpsDaily</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1acfdc833c0231a1561fcde600c0ee22b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6791" endline="6832">UploadLogFilesDaily</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string TextWaveToList</definition>
+        <argsstring>(WaveText txtWave, string sep)</argsstring>
+        <name>TextWaveToList</name>
+        <param>
+          <type>WaveText</type>
+          <declname>txtWave</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+        </param>
+        <briefdescription>
+<para>Convert a text wave to string list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="430" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="430" bodyend="446"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af11c3c7d507644e9925ef3eaa782031b" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1884" endline="1909">AB_SortConfigSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a3f710ef1a81bebcba9598b7308f39daa" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="812" endline="881">AI_OpenMCCs</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="154" endline="164">AR_GetHighlightTraces</referencedby>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a4053a04ad7c95a32dd2ea899fe3b7b8d" compoundref="_m_i_e_s___configuration_8ipf" startline="1427" endline="1571">CONF_WindowToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1abdbf463702610b2601e2c64f41c57ff4" compoundref="_m_i_e_s___epochs_8ipf" startline="606" endline="611">EP_EpochWaveToStr</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3e9bc8a2466d4b92350ef00d816dc707" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7338" endline="7359">FilterLogfileByDate</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeca121555553a1d520838d6133cb1b37" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7058" endline="7069">GetDandiDialogWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab64c2266f0215e4e7f79262dffcb5609" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1546" endline="1578">GetLBNumericalDescription</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1a39ad072cb96c89cacbc7d0b58157db5c" compoundref="_m_i_e_s___input_dialog_8ipf" startline="167" endline="176">ID_GetPopupEntries</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ccb2fe03ff16d90fefc10cd3ce819d4" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="329" endline="359">LBV_GetAllDevicesForExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="68" endline="129">OVS_GetSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a8c3cae0ede80633a70cd595d19ef7d20" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2907" endline="3006">PA_LayoutGraphs</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a4073d87b5409e8b4a03c92e360901be5" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="379" endline="384">ReadTextAttributeAsList</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1af5e7f9c96c08a1b8e166e31b5c619fed" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="258" endline="275">SBE_GetSourceGraphADTraces</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6c572cdefedd9177038ec8cd6f798077" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="221" endline="239">SC_AddPulseRegionLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="500" endline="550">SC_SpikePositionQC</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5186e9c2d462452e840c6de5308c56c9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3751" endline="3761">TimeAlignGetAllTraces</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="211" endline="242">TUD_SetUserDataFromWaves</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1977" endline="2043">WBP_ListBoxProc_AnalysisParams</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aa85fd6a39ca680260a3a54c185625e1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ResolveAlias</definition>
+        <argsstring>(string path, string pathName=defaultValue)</argsstring>
+        <name>ResolveAlias</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>pathName</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Recursively resolve shortcuts to files/directories. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>full path or an empty string if the file does not exist or the shortcut points to a non existing file/folder </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="452" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="452" bodyend="474"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa85fd6a39ca680260a3a54c185625e1e" compoundref="_i_p_n_w_b___utils_8ipf" startline="452" endline="474">ResolveAlias</references>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1a2d3e2b05a6ee62a27968d683de6dd153" compoundref="_i_p_n_w_b___utils_8ipf" startline="489" endline="496">FolderExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1aa85fd6a39ca680260a3a54c185625e1e" compoundref="_i_p_n_w_b___utils_8ipf" startline="452" endline="474">ResolveAlias</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable FileExists</definition>
+        <argsstring>(string filepath)</argsstring>
+        <name>FileExists</name>
+        <param>
+          <type>string</type>
+          <declname>filepath</declname>
+        </param>
+        <briefdescription>
+<para>Check wether the given path points to an existing file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Resolves shortcuts and symlinks recursively. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="479" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="479" bodyend="486"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa85fd6a39ca680260a3a54c185625e1e" compoundref="_i_p_n_w_b___utils_8ipf" startline="452" endline="474">ResolveAlias</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a4ced37e8376af8d3a96e5e17a9bda5d5" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="898" endline="918">AI_GetMCCWinFilePath</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af0e1149d7bc46ab9216abcc41cedc7df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5119" endline="5134">CalcHashForFile</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1afe69d6e9c93ba6b922be56596d191ed9" compoundref="_m_i_e_s___configuration_8ipf" startline="671" endline="681">CONF_AddConfigFileUserData</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a6e3bf01e38b73ba631821fb2af1d2996" compoundref="_m_i_e_s___configuration_8ipf" startline="2232" endline="2327">CONF_Position_MCC_Win</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1abe1af21c0ce53fe601416917bd4a6620" compoundref="_m_i_e_s___configuration_8ipf" startline="539" endline="668">CONF_RestoreDAEphys</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="160" endline="257">CreateMiesVersion</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1a1bf2b4857e20faf976336ae98a2c76d1" compoundref="_m_i_e_s___menu_8ipf" startline="216" endline="236">MEN_OpenMIESLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1a4acec6e8c708f3667e3f76be837a47eb" compoundref="_m_i_e_s___menu_8ipf" startline="238" endline="258">MEN_OpenZeroMQXOPLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa8e7214ef5ddaa79cd9302c42da8f1c7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1919" endline="1952">NWB_AppendLogFileToString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="205" endline="218">PostLoadNextExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___package_settings_8ipf_1a422a5f69c7fa4d50b8eb17098549656d" compoundref="_m_i_e_s___package_settings_8ipf" startline="277" endline="316">PS_FixPackageLocation</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac5b405e9cd0d943c5f66d8b1fc3c7530" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7204" endline="7273">UploadLogFiles</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1abc9d0ae67fe6475a0052cf163744b589" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1375" endline="1417">WBP_ButtonProc_OpenAnaFuncs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a2d3e2b05a6ee62a27968d683de6dd153" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable FolderExists</definition>
+        <argsstring>(string folderpath)</argsstring>
+        <name>FolderExists</name>
+        <param>
+          <type>string</type>
+          <declname>folderpath</declname>
+        </param>
+        <briefdescription>
+<para>Check wether the given path points to an existing folder. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="489" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="489" bodyend="496"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa85fd6a39ca680260a3a54c185625e1e" compoundref="_i_p_n_w_b___utils_8ipf" startline="452" endline="474">ResolveAlias</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a874b8d0272d9a3200a9fb5442ee600a1" compoundref="_m_i_e_s___configuration_8ipf" startline="324" endline="360">CONF_GetSettingsPath</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="160" endline="257">CreateMiesVersion</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="130" endline="153">PerformMiesTasks</referencedby>
+        <referencedby refid="_m_i_e_s___package_settings_8ipf_1ae06d342cb72b42fe335659c4bcaaf5e4" compoundref="_m_i_e_s___package_settings_8ipf" startline="16" endline="24">PS_Initialize</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ae06ce11a65d995a76c4c8a66b95285fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AddPrefixToEachListItem</definition>
+        <argsstring>(string prefix, string list)</argsstring>
+        <name>AddPrefixToEachListItem</name>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Add a string prefix to each list item and return the new list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="500" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="500" bodyend="512"/>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a2c3020201b453a5b91a8627445d8389e" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="55" endline="68">IH_KillStimSets</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ac394fef4530d1d1a82ea66f99934548a" compoundref="_i_p_n_w_b___reader_8ipf" startline="104" endline="114">ReadAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5ba3d88f87a9c2e87feca6ed9785cfc6" compoundref="_i_p_n_w_b___reader_8ipf" startline="120" endline="124">ReadStimulus</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a7772fd99baab9df21eb31b087d2d7818" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NewRandomSeed</definition>
+        <argsstring>()</argsstring>
+        <name>NewRandomSeed</name>
+        <briefdescription>
+<para>Initializes the random number generator with a new seed between (0,1] The time base is assumed to be at least 0.1 microsecond precise, so a new seed is available every 0.1 microsecond. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Usage example for the case that one needs n non reproducible random numbers. Whenever the following code block is executed a new seed is set, resulting in a different series of numbers</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       Make/D/N=(n) newRandoms
+*       NewRandomSeed() // Initialize random number series with a new seed
+*       newRandoms[] = GetReproducibleRandom() // Get n randoms from the new series
+* 
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="529" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="529" bodyend="533"/>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a73b316c458ef08c5ac6888b05736c772" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1161" endline="1205">WB_InitializeSeed</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a3f71078a0b95a6dc6ac9e1c1e59c0b5f" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1304" endline="1316">WBP_ButtonProc_NewSeed</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ac8f44eeb5911fbba651d7590c10ce3a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetReproducibleRandom</definition>
+        <argsstring>()</argsstring>
+        <name>GetReproducibleRandom</name>
+        <briefdescription>
+<para>Return a random value in the range (0,1] which can be used as a seed for <computeroutput>SetRandomSeed</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return a reproducible random number depending on the RNG seed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="538" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="538" bodyend="547"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a1b0ce3cd262bc75a7939a91ed0007dfb" compoundref="_i_p_n_w_b___constants_8ipf" startline="94">NOISE_GEN_MERSENNE_TWISTER</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" compoundref="_i_p_n_w_b___utils_8ipf" startline="646" endline="671">GenerateRFC4122UUID</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a88c0ce306cc93b048ad2db67d4165684" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6103" endline="6113">GetNextRandomNumberForDevice</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a73b316c458ef08c5ac6888b05736c772" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1161" endline="1205">WB_InitializeSeed</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a3f71078a0b95a6dc6ac9e1c1e59c0b5f" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1304" endline="1316">WBP_ButtonProc_NewSeed</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GenerateRFC4122UUID</definition>
+        <argsstring>()</argsstring>
+        <name>GenerateRFC4122UUID</name>
+        <briefdescription>
+<para>Generate a version 4 UUID according to <ulink url="https://tools.ietf.org/html/rfc4122">https://tools.ietf.org/html/rfc4122</ulink>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: text
+* 
+*      4.4.  Algorithms for Creating a UUID from Truly Random or
+*            Pseudo-Random Numbers
+* 
+*         The version 4 UUID is meant for generating UUIDs from truly-random or
+*         pseudo-random numbers.
+* 
+*         The algorithm is as follows:
+* 
+*         o  Set the two most significant bits (bits 6 and 7) of the
+*            clock_seq_hi_and_reserved to zero and one, respectively.
+* 
+*         o  Set the four most significant bits (bits 12 through 15) of the
+*            time_hi_and_version field to the 4-bit version number from
+*            Section 4.1.3.
+* 
+*         o  Set all the other bits to randomly (or pseudo-randomly) chosen
+*            values.
+* 
+*      See Section 4.5 for a discussion on random numbers.
+* 
+*      [...]
+* 
+*       In the absence of explicit application or presentation protocol
+*       specification to the contrary, a UUID is encoded as a 128-bit object,
+*       as follows:
+* 
+*       The fields are encoded as 16 octets, with the sizes and order of the
+*       fields defined above, and with each field encoded with the Most
+*       Significant Byte first (known as network byte order).  Note that the
+*       field names, particularly for multiplexed fields, follow historical
+*       practice.
+* 
+*       0                   1                   2                   3
+*        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*       |                          time_low                             |
+*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*       |       time_mid                |         time_hi_and_version   |
+*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*       |clk_seq_hi_res |  clk_seq_low  |         node (0-1)            |
+*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*       |                         node (2-5)                            |
+*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+* 
+*      [...]
+* 
+*      4.1.3.  Version
+* 
+*         The version number is in the most significant 4 bits of the time
+*         stamp (bits 4 through 7 of the time_hi_and_version field).
+* 
+*         The following table lists the currently-defined versions for this
+*         UUID variant.
+* 
+*         Msb0  Msb1  Msb2  Msb3   Version  Description
+* 
+*          0     0     0     1        1     The time-based version
+*                                           specified in this document.
+* 
+*          0     0     1     0        2     DCE Security version, with
+*                                           embedded POSIX UIDs.
+* 
+*          0     0     1     1        3     The name-based version
+*                                           specified in this document
+*                                           that uses MD5 hashing.
+* 
+*          0     1     0     0        4     The randomly or pseudo-
+*                                           randomly generated version
+*                                           specified in this document.
+* 
+*          0     1     0     1        5     The name-based version
+*                                           specified in this document
+*                                           that uses SHA-1 hashing.
+* 
+*         The version is more accurately a sub-type; again, we retain the term
+*         for compatibility.
+* 
+*  </verbatim></para>
+<para>See also <ulink url="https://www.rfc-editor.org/errata/eid3546">https://www.rfc-editor.org/errata/eid3546</ulink> and <ulink url="https://www.rfc-editor.org/errata/eid1957">https://www.rfc-editor.org/errata/eid1957</ulink> for some clarifications. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="646" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="646" bodyend="671"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ac8f44eeb5911fbba651d7590c10ce3a1" compoundref="_i_p_n_w_b___utils_8ipf" startline="538" endline="547">GetReproducibleRandom</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a2840fe48dd3564366c174b795388a30d" compoundref="_i_p_n_w_b___utils_8ipf" startline="703" endline="714">HexToBinary</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" compoundref="_i_p_n_w_b___utils_8ipf" startline="725" endline="736">num2strHighPrec</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac5b405e9cd0d943c5f66d8b1fc3c7530" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7204" endline="7273">UploadLogFiles</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a3ba22f0e2d7124c82ac3f2105f8f250f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable HexToNumber</definition>
+        <argsstring>(string ch)</argsstring>
+        <name>HexToNumber</name>
+        <param>
+          <type>string</type>
+          <declname>ch</declname>
+        </param>
+        <briefdescription>
+<para>Convert a hexadecimal character into a number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="674" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="674" bodyend="685"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1a2840fe48dd3564366c174b795388a30d" compoundref="_i_p_n_w_b___utils_8ipf" startline="703" endline="714">HexToBinary</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1accbf5e1eda5278b1f83bf0c99c89c64c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string NumberToHex</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>NumberToHex</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Convert a number into hexadecimal. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="688" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="688" bodyend="698"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a2840fe48dd3564366c174b795388a30d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave HexToBinary</definition>
+        <argsstring>(string str)</argsstring>
+        <name>HexToBinary</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Convert a string in hex format to an unsigned binary wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function works on a byte level so it does not care about endianess. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="703" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="703" bodyend="714"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a3ba22f0e2d7124c82ac3f2105f8f250f" compoundref="_i_p_n_w_b___utils_8ipf" startline="674" endline="685">HexToNumber</references>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" compoundref="_i_p_n_w_b___utils_8ipf" startline="646" endline="671">GenerateRFC4122UUID</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string num2strHighPrec</definition>
+        <argsstring>(variable val, variable precision=defaultValue)</argsstring>
+        <name>num2strHighPrec</name>
+        <param>
+          <type>variable</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>precision</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Converts a number to a string with specified precision (digits after decimal dot). This function is an extension for the regular num2str that is limited to 5 digits. Input numbers are rounded using the &quot;round-half-to-even&quot; rule to the given precision. The default precision is 5. If val is complex only the real part is converted to a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number that should be converted to a string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">precision</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default 5] number of precision digits after the decimal dot using &quot;round-half-to-even&quot; rounding rule. Precision must be in the range 0 to 15. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>string with textual number representation </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="725" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="725" bodyend="736"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06992acd981b690000662619d50875a2" compoundref="_m_i_e_s___epochs_8ipf" startline="434" endline="466">EP_SortEpochs</referencedby>
+        <referencedby refid="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" compoundref="_i_p_n_w_b___utils_8ipf" startline="646" endline="671">GenerateRFC4122UUID</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ClearRTError</definition>
+        <argsstring>()</argsstring>
+        <name>ClearRTError</name>
+        <briefdescription>
+<para>Helper function for try/catch with AbortOnRTE. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Not clearing the RTE before calling <computeroutput>AbortOnRTE</computeroutput> will always trigger the RTE no matter what you do in that line.</para>
+<para>Usage: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*     try
+*        ClearRTError()
+*        myFunc(); AbortOnRTE
+*     catch
+*       err = GetRTError(1)
+*     endtry
+* 
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="755" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="755" bodyend="758"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="472" endline="534">AB_LoadDataWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="817" endline="891">AFH_CheckAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a0cd12b699c35b03799af6ce6041ad429" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="509" endline="526">AFH_GetHelpForAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="285" endline="302">AfterCompiledHook</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a60aee5a4af84b79bf0cdb2e3047b1dee" compoundref="_m_i_e_s___configuration_8ipf" startline="1372" endline="1413">CONF_AllWindowsToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a56f15bf5f2477d54470158caa21a06c5" compoundref="_m_i_e_s___configuration_8ipf" startline="1595" endline="1811">CONF_ControlToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a76fab7a579bebccfcc5b0f876b1465cb" compoundref="_m_i_e_s___configuration_8ipf" startline="970" endline="1113">CONF_JSONToWindow</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1aa64181a5f39ea00b1c207481b918d10a" compoundref="_m_i_e_s___configuration_8ipf" startline="687" endline="702">CONF_ParseJSON</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1abe1af21c0ce53fe601416917bd4a6620" compoundref="_m_i_e_s___configuration_8ipf" startline="539" endline="668">CONF_RestoreDAEphys</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a0c62f527bf02abe0b8113ec8af51f537" compoundref="_m_i_e_s___configuration_8ipf" startline="411" endline="486">CONF_RestoreWindow</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a5027cf13a0bbbfcf137c2e0fa3505b47" compoundref="_m_i_e_s___configuration_8ipf" startline="491" endline="526">CONF_SaveDAEphys</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1ac9d6ecadcd12e4e6b84eda13fb9d0d8d" compoundref="_m_i_e_s___configuration_8ipf" startline="365" endline="404">CONF_SaveWindow</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a4053a04ad7c95a32dd2ea899fe3b7b8d" compoundref="_m_i_e_s___configuration_8ipf" startline="1427" endline="1571">CONF_WindowToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad9cd55b80fab339f8b5c6ef190864967" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1115" endline="1140">DAP_CheckProc_AD</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a7d1b4f03c2d6148c0bed788fcecd1045" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3330" endline="3361">DAP_CheckProc_ClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a0cfa678c03ec64d0c123e6a8fe448ff9" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3363" endline="3388">DAP_CheckProc_HedstgeChck</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af4d9e19afb08146f844674a150d1ee3b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1007" endline="1030">DAP_DAorTTLCheckProc</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a11edfa5cf202c043a7fbc8b2cec6b594" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="759" endline="809">DAP_WindowHook</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e12f2b2d06bdf99f2b312270a092364" compoundref="_m_i_e_s___data_browser_8ipf" startline="710" endline="743">DB_WindowHook</referencedby>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="158" endline="265">DQM_StartDAQMultiDevice</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1ac943ce95b47035d99ac1425ab74867c4" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="19" endline="49">DQS_StartDAQSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="92" endline="106">FFI_Publish</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+        <referencedby refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1aa36fb7f42fffaa0dbdf0d2119ee5f2cc" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="423" endline="435">IVS_SaveExperiment</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9adf28753f0e29f3ea0617e27622b239" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="342" endline="363">LoadSpecification</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="130" endline="153">PerformMiesTasks</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___package_settings_8ipf_1a0f3ea989dcdb3dba4a1ecb5fe61b39f1" compoundref="_m_i_e_s___package_settings_8ipf" startline="118" endline="145">PS_ApplyStoredWindowCoordinate</referencedby>
+        <referencedby refid="_m_i_e_s___package_settings_8ipf_1a32ad82bdafa61863fc20a64fcbd7c534" compoundref="_m_i_e_s___package_settings_8ipf" startline="241" endline="250">PS_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___package_settings_8ipf_1af0970db055744451d88b4348460c175b" compoundref="_m_i_e_s___package_settings_8ipf" startline="157" endline="181">PS_StoreWindowCoordinates</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="79" endline="104">SWS_AfterSweepDataChangeHook</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52" compoundref="_m_i_e_s___test_pulse_8ipf" startline="411" endline="507">TP_AutoFitBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0b66cfca83590ab7728e5d7adda28649" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1143" endline="1169">TP_FitResistance</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad89366a79624371f41ee9f2754c33479" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6763" endline="6788">UploadCrashDumpsDaily</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1acfdc833c0231a1561fcde600c0ee22b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6791" endline="6832">UploadLogFilesDaily</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string NormalizeToEOL</definition>
+        <argsstring>(string str, string eol)</argsstring>
+        <name>NormalizeToEOL</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>eol</declname>
+        </param>
+        <briefdescription>
+<para>Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (<computeroutput>\r</computeroutput>) or Unix EOLs (<computeroutput>\n</computeroutput>) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="762" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="762" bodyend="776"/>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="160" endline="257">CreateMiesVersion</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3e9bc8a2466d4b92350ef00d816dc707" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7338" endline="7359">FilterLogfileByDate</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a161c46a0f11035c43bef15e80c04b431" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6189" endline="6193">GetMIESVersionAsString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa8e7214ef5ddaa79cd9302c42da8f1c7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1919" endline="1952">NWB_AppendLogFileToString</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a71e9a0e51f9164c664145f82666fe8b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetStackTrace</definition>
+        <argsstring>(string prefix=defaultValue)</argsstring>
+        <name>GetStackTrace</name>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a nicely formatted multiline stacktrace. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="817" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="817" bodyend="854"/>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a5a976aabc6746b44d530faa62ee1273b" compoundref="_m_i_e_s___debugging_8ipf" startline="539" endline="569">BUG_TS</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetExperimentName</definition>
+        <argsstring>()</argsstring>
+        <name>GetExperimentName</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="858" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="858" bodyend="860"/>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="218" endline="244">IgorBeforeNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a1289f5b73d08710832e8d874837319a9" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="187" endline="204">IgorBeforeQuitHook</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ad0d8bf4b1fd98bcd76930c1b2b83048f" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="320" endline="327">LBV_GetExperiments</referencedby>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1ab73e67d9110aeb54cb90765dcdaeb7a2" compoundref="_m_i_e_s___logging_8ipf" startline="48" endline="57">LOG_GenerateEntryTemplate</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="792" endline="841">NWB_ExportWithDialog</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8a5264610ec0c4e51fe70769f57a7a49" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="699" endline="729">OVS_GetSweepAndExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab3a93ef755ff17e507633dfc14c03648" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3389" endline="3520">SaveExperimentSpecial</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1aed0303f3935f540e6a4938b4d42446f6" compoundref="_m_i_e_s___debugging_8ipf" startline="339" endline="356">SaveHistoryLog</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aaefbec13fe21babbe9a028aa898f58ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetExperimentFileType</definition>
+        <argsstring>()</argsstring>
+        <name>GetExperimentFileType</name>
+        <briefdescription>
+<para>Return the experiment file type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="863" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="863" bodyend="876"/>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a6131be46d04acfb6cb9dc55ff539acf5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetIgorProVersion</definition>
+        <argsstring>()</argsstring>
+        <name>GetIgorProVersion</name>
+        <briefdescription>
+<para>Return the Igor Pro version string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="879" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="879" bodyend="881"/>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a96bce9fe68faa625f250f51788bfcd00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetWindowsPath</definition>
+        <argsstring>(string path)</argsstring>
+        <name>GetWindowsPath</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Return the path converted to a windows style path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="884" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="884" bodyend="888"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2853" endline="2975">AB_ReExport</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a6e3bf01e38b73ba631821fb2af1d2996" compoundref="_m_i_e_s___configuration_8ipf" startline="2232" endline="2327">CONF_Position_MCC_Win</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1aded7c1fd764336bdbdc8a8f3ce2ea541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetEpochsDimensionLabels</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>SetEpochsDimensionLabels</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="890" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="890" bodyend="895"/>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" compoundref="_i_p_n_w_b___reader_8ipf" startline="678" endline="697">GetEpochsWaveInternal</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1331" endline="1352">NWB_FetchEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetUniqueEntries</definition>
+        <argsstring>(wave wv, variable caseSensitive=defaultValue)</argsstring>
+        <name>GetUniqueEntries</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>caseSensitive</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns an unsorted free wave with all unique entries from wv neglecting NaN/Inf. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>uses built-in igor function FindDuplicates. Entries are deleted from left to right. </para>
+        </detaileddescription>
+        <inbodydescription>
+<para><xrefsect id="todo_1_todo000003"><xreftitle>Todo</xreftitle><xrefdescription><para>this should be removed as it does not belong into this function </para>
+</xrefdescription></xrefsect></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="900" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="900" bodyend="932"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a512ffa6d51e666dd2c3e8b4e6e77e43f" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="541" endline="560">AB_GetSweepsFromLabNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a3af0ad87eec81963385f8fb6d617b28e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="886" endline="891">AI_GetMCCSerialNumbers</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a21945e559c0ccd5edbfa0c2e39baea14" compoundref="_m_i_e_s___debugging_8ipf" startline="601" endline="623">CheckAllDimensionLabels</referencedby>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a4053a04ad7c95a32dd2ea899fe3b7b8d" compoundref="_m_i_e_s___configuration_8ipf" startline="1427" endline="1571">CONF_WindowToJSON</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" compoundref="_i_p_n_w_b___reader_8ipf" startline="678" endline="697">GetEpochsWaveInternal</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1714" endline="1742">GetSweepsWithSetting</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4452d82971b44d32bd0b1f88747fb693" compoundref="_i_p_n_w_b___reader_8ipf" startline="642" endline="668">GetTimeseriesProperties</referencedby>
+        <referencedby refid="_m_i_e_s___gui_utilities_8ipf_1a7c8f0e4455c6d6b44d8b16c72ae0acf9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1648" endline="1678">GetUserdataKeys</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af7678d54f05a4d6efb44e3f003539052" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2281" endline="2482">LayoutGraph</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="68" endline="129">OVS_GetSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a481c02e40e2fe0802d1b21bda15ce1ef" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="321" endline="333">PA_GetUniqueHeadstages</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a8c3cae0ede80633a70cd595d19ef7d20" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2907" endline="3006">PA_LayoutGraphs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ad8fcbcc8c6162fdb7494180261348c11" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="418" endline="450">SB_GetSweepList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a9e2b9c905299880dc78dcf899f9f2e9d" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="2077" endline="2156">WBP_ListControlsPerStimulusType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetUniqueTextEntriesFromList</definition>
+        <argsstring>(string list, string sep=defaultValue, variable caseSensitive=defaultValue)</argsstring>
+        <name>GetUniqueTextEntriesFromList</name>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>caseSensitive</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Convenience wrapper around <ref refid="_i_p_n_w_b___utils_8ipf_1a7b7ab96c2ebc20701846768a53f62475" kindref="member">GetUniqueTextEntries()</ref> for string lists. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="935" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="935" bodyend="955"/>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aee11810f932eef5d7d7f2152f7400ece" compoundref="_m_i_e_s___data_browser_8ipf" startline="572" endline="580">DB_GetAllDevicesWithData</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1af652499213b7e4030890a1b08def0e98" compoundref="_m_i_e_s___debugging_8ipf" startline="573" endline="594">GetSizeOfAllWavesInExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1ad40f755422620d8b066d7b2ca0fdd99e" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2189" endline="2210">WB_StimsetFamilyNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aca2b4342a4b20c87656e013f902e654f" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2258" endline="2275">WB_StimsetRecursionForList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a7b7ab96c2ebc20701846768a53f62475" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetUniqueTextEntries</definition>
+        <argsstring>(WaveText wv, variable caseSensitive=defaultValue)</argsstring>
+        <name>GetUniqueTextEntries</name>
+        <param>
+          <type>WaveText</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>caseSensitive</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Search and Remove Duplicates from Text Wave wv. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Duplicates are removed from left to right</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>text wave reference </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>caseSensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] Indicates whether comparison should be case sensitive. defaults to True</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>free wave with unique entries </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="965" column="13" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="965" bodyend="998"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetNumberInWaveNote</definition>
+        <argsstring>(wave wv, string key, variable val, string format=defaultValue)</argsstring>
+        <name>SetNumberInWaveNote</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Updates the numeric value of <computeroutput>key</computeroutput> found in the wave note to <computeroutput>val</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key of the Key/Value pair </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value of the Key/Value pair </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] printf compatible format string to set the conversion to string for <computeroutput>val</computeroutput></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+The expected wave note format is: <computeroutput>key1:val1;key2:val2;</computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="1009" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="1009" bodyend="1027"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd716c98d22a4b2e4e2910b5333d144" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="49" endline="67">AB_ClearAnalysisFolder</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af5b6db63db3deeb78b8757989a7b6a84" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="382" endline="458">AB_FillListWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a885581fbf4cb2c86ccfb3754fe6b4e59" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1776" endline="1879">AB_LoadSweepFromNWBgeneric</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a6c0e59ae00830c4f3fe75af9a3283a69" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="579" endline="606">AB_LoadSweepsFromExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a6b8ac34e62f04b2f14452933ac6c14ab" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="136" endline="148">AB_RemoveMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a2d036cb72dca0fcf3859e51abd8d98c6" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="179" endline="195">AB_SaveDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="645" endline="690">AB_StoreChannelsBySweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a58ebfdfec1b8819d5e3f0c9e5408a5cd" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="184" endline="196">AS_RecordStateTransition</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a2dbd1b09f1004095a88dfd6129a0f890" compoundref="_m_i_e_s___cache_8ipf" startline="385" endline="407">CA_MakeSpaceForNewEntry</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1db16676567ab45d1c205f2492d1e0d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1719" endline="1746">DAP_SweepRollback</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad041600384a80af98d0427742a1f1e14" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="229" endline="289">ExtractLogbookSlice</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afab93ee0bf6cfb487fce8d9e1557b69f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6942" endline="6967">GetAcqStateTracking</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9a60998a3949a664cc4191ac48a9cbff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6576" endline="6601">GetAnaFuncDashboardListWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a26b2e876b3a4e9d0d0fa785786c54390" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4938" endline="4973">GetAnalysisBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ffdd16eb3e968844728654f1fdd4b0f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4857" endline="4872">GetAnalysisChannelAcqWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acc3cdbb4bc4a593c7ea97f58bca6abb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4838" endline="4853">GetAnalysisChannelStimWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0f56ce024b2b1cce252024fba8326636" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4813" endline="4834">GetAnalysisChannelStorage</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a72723fd8eb48877929d353c8fe39f455" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4876" endline="4891">GetAnalysisChannelSweepWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac9f70b0e7a6d1047b258b346e9f919d3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4895" endline="4910">GetAnalysisDeviceWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3f0bd8952e92a0359c61aef422c879b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6085" endline="6095">GetAxisLabelCacheWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a767944d945f52965f7fdf230aa6d840f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6739" endline="6762">GetElapsedTimeWave</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" compoundref="_i_p_n_w_b___reader_8ipf" startline="678" endline="697">GetEpochsWaveInternal</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b49b98d5c49dbb2e185a7c3c3590f4d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4978" endline="5011">GetExperimentBrowserGUIList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a17c16dbf42eb726ee496f179bc0fa083" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1697" endline="1719">GetNumericalResultsValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2bd37c8d6727735897766d852fa77f7e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5796" endline="5826">GetPulseAverageProperties</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aece7c1ed64093fd0bddc5d21e68a984b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5768" endline="5791">GetPulseAverageSetImageWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af970146062d0218d2426e79ca6a784b4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5734" endline="5760">GetPulseAverageSetIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a3c345ee73258b93a34c704fd9910c3b2" compoundref="_m_i_e_s___async_8ipf" startline="1007" endline="1021">GetSerialExecutionBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4efe03637db5f7efb628a974fdea83" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2820" endline="2835">GetStoredTestPulseWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a194185f6f3dcfedbfe9568b2e54e92c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6098" endline="6121">GetSweepBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad360e4675be854fefbe97c2debdbaca5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1779" endline="1801">GetTextualResultsValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad160e64624a55553a590d272ed91df9e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2891" endline="2917">GetTPResultsBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a0dee5e6bd5faa704e772fe330f2b1008" compoundref="_m_i_e_s___structures_8ipf" startline="338" endline="348">InitBufferedDrawInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a62f74151ff49f293eaac148f6fb4599e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="271" endline="294">MeasureMidSweepTiming_V3</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aa80280e7b081acf5d5a6dd17ff4b545e" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="274" endline="342">OVS_UpdateSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1afeb5cafb35cb9766d8631bc6635512be" compoundref="_m_i_e_s___pressure_control_8ipf" startline="198" endline="212">P_AddSealedEntryToTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a52a2eda25309e3f10c4fb9128747dec5" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1179" endline="1216">PA_ApplyPulseSortingOrder</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a5c9294da83beba52557ebe9e69916c5e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1063" endline="1070">PA_CopySetIndiceSizeDispRestart</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae0b6caf6f2f7d1c5c8e2986f28972bce" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="554" endline="599">PA_CreateAndFillPulseWaveIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a62efde9b92d558068cec8206dd7e3554" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2814" endline="2828">PA_GetFeaturePosition</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a5a3428b5df57c240daf168afc9cea51a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1425" endline="1511">PA_MarkFailedPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a836a629316a90b9dbd0730eb4da60f31" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2546" endline="2593">PA_PulseHasFailed</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd78ea006a171296304836f0083d8c2c" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="985" endline="991">PA_SetDiagonalityNote</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a503f81beb14ba80d91420748e3cc7063" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2830" endline="2852">PA_SetFeaturePosition</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a65091a6315e45f9838b06d6ad54a02ec" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2200" endline="2213">PA_StoreMaxAndUnitsInWaveNote</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afc23f2b460436dc6b530c2284b2f8100" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1513" endline="1517">PA_TagSearchedPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1abf8807e3f09901be249eb6f69d15d813" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1134" endline="1177">PA_UpdateIndiceNotesImpl</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ad8ca1f99f35666111fce3a56b82d3730" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="601" endline="608">PA_UpdateMinAndMax</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aefda813300ed39b90b0d8722c32ebd46" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2635" endline="2648">PA_ZeroWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76729e99a9e56826bf062de4efa220b3" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3264" endline="3295">PSQ_CR_DetermineBoundsActionFromState</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a73fad4f4d92a2e2908fa3aba3d344aea" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3255" endline="3261">PSQ_CR_DetermineBoundsActionHelper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a27a7acd2df27a194bb1bdffbb25f0053" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="337" endline="369">SB_AddToSweepBrowser</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga65c056aed5f84f15e4066ea9b63d2088" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="245" endline="251">SetWaveVersion</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3302ac5ebc86122ec14c46d8778cdaf5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4251" endline="4348">TimeAlignmentIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a23c277a8aa8786cc64e676baf4e520e8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1013" endline="1034">TP_CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1342" endline="1376">TP_SetupCommon</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a88443c3f326150e25470ce2014fe5e4d" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="406" endline="426">TPM_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1ae90573ff0296f168899e003048746db7" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="380" endline="404">TPM_RemoveDevice</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a2b7b6db6e7b7603d3323b06416682954" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="284" endline="298">TUD_AddTrace</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a231c687ffa2dd202792203e9926d8940" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="63" endline="94">TUD_ClearImpl</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="300" endline="321">TUD_RemoveTrace</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a61ba931d234702c472908f3166242cea" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1173" endline="1383">UpgradeLabNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a9e2b9c905299880dc78dcf899f9f2e9d" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="2077" endline="2156">WBP_ListControlsPerStimulusType</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aad541fb2711f424c7936192cf1e9a0ee" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6214" endline="6226">ZeroWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetNumberFromWaveNote</definition>
+        <argsstring>(wave wv, string key)</argsstring>
+        <name>GetNumberFromWaveNote</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Returns the numeric value of <computeroutput>key</computeroutput> found in the wave note, returns NaN if it could not be found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The expected wave note format is: <computeroutput>key1:val1;key2:val2;</computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="1033" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="1033" bodyend="1041"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af96df1c0ebadf6f737e2dbb6bc68007f" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="201" endline="227">AB_AddFile</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aa60ce0c4c959b75b597c75b100fb9286" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2790" endline="2827">AB_ButtonProc_ResaveAsNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af5b6db63db3deeb78b8757989a7b6a84" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="382" endline="458">AB_FillListWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ae58cef04d16b82d4c7c2aa68464267c2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="3023" endline="3036">AB_GetAllExperiments</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a06a6764ac44dc1cf1135344cca43daa9" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="230" endline="281">AB_LoadFile</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a6b8ac34e62f04b2f14452933ac6c14ab" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="136" endline="148">AB_RemoveMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a984517a408afb32d11abe6a5b5525014" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2317" endline="2365">AB_ScanFolder</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="645" endline="690">AB_StoreChannelsBySweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a6b4b6d8d56e0af7a460974ebaa0afb98" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="201" endline="228">AS_GenerateEncounteredTransitions</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a58ebfdfec1b8819d5e3f0c9e5408a5cd" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="184" endline="196">AS_RecordStateTransition</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a2209db930184c30ed4eeb01015561768" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2978" endline="3013">BeforeFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a6d331d5568bbfceb1675e83700605f92" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1200" endline="1254">BSP_ButtonProc_RestoreData</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a2dbd1b09f1004095a88dfd6129a0f890" compoundref="_m_i_e_s___cache_8ipf" startline="385" endline="407">CA_MakeSpaceForNewEntry</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a067b1f76ae48b5838434dfcc42d780c5" compoundref="_m_i_e_s___cache_8ipf" startline="574" endline="594">CA_OutputCacheStatistics</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1db16676567ab45d1c205f2492d1e0d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1719" endline="1746">DAP_SweepRollback</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad041600384a80af98d0427742a1f1e14" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="229" endline="289">ExtractLogbookSlice</referencedby>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1aa65504453f1122772e92fd2b885bbf1a" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="17" endline="55">FFI_ReturnTPValues</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="group___wave_versioning_support_1gabf2dcd5f72f5e21c82ca805739a0beb4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="238" endline="242">GetWaveVersion</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="771" endline="832">LBV_AddTagsForTextualLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ccb2fe03ff16d90fefc10cd3ce819d4" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="329" endline="359">LBV_GetAllDevicesForExperiment</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7906cd0b5f16f426529ffa26c6f61a96" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="844" endline="867">NWB_AppendStoredTestPulses</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aa80280e7b081acf5d5a6dd17ff4b545e" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="274" endline="342">OVS_UpdateSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1afeb5cafb35cb9766d8631bc6635512be" compoundref="_m_i_e_s___pressure_control_8ipf" startline="198" endline="212">P_AddSealedEntryToTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a65af5586de73b535cf5bc13b06af09b7" compoundref="_m_i_e_s___pressure_control_8ipf" startline="118" endline="147">P_RecordUserPressure</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1aeca549e172609d53e1929217e92866f5" compoundref="_m_i_e_s___pressure_control_8ipf" startline="914" endline="937">P_UpdateSSRSlopeAndSSR</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a2c7e9235438f28aaa3d9413f072cd325" compoundref="_m_i_e_s___pressure_control_8ipf" startline="150" endline="180">P_UpdateTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b6557a0181ee41ace2fca16827a4915" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3019" endline="3243">PA_AddColorScales</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a52a2eda25309e3f10c4fb9128747dec5" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1179" endline="1216">PA_ApplyPulseSortingOrder</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a5c9294da83beba52557ebe9e69916c5e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1063" endline="1070">PA_CopySetIndiceSizeDispRestart</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae0b6caf6f2f7d1c5c8e2986f28972bce" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="554" endline="599">PA_CreateAndFillPulseWaveIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a62efde9b92d558068cec8206dd7e3554" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2814" endline="2828">PA_GetFeaturePosition</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3e9607899f777092783d4bb08ad6e186" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2314" endline="2325">PA_GetMinAndMax</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9f5ef955c2ebcdb11dcab6bab78ad934" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1363" endline="1422">PA_GetSetWaves_TS</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9f9978b91cfbe331eabf0d2787089086" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1000" endline="1060">PA_InitPASIInParts</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a5a3428b5df57c240daf168afc9cea51a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1425" endline="1511">PA_MarkFailedPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a836a629316a90b9dbd0730eb4da60f31" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2546" endline="2593">PA_PulseHasFailed</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a3b70599a851163aff567e2e3a988cf0a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2862" endline="2905">PA_ResetWavesIfRequired</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a503f81beb14ba80d91420748e3cc7063" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2830" endline="2852">PA_SetFeaturePosition</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aefda813300ed39b90b0d8722c32ebd46" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2635" endline="2648">PA_ZeroWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a73fad4f4d92a2e2908fa3aba3d344aea" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3255" endline="3261">PSQ_CR_DetermineBoundsActionHelper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2d453fd7481a889bc759c2f5eb59565f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2744" endline="2756">PSQ_GetFinalDAScaleFake</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a27a7acd2df27a194bb1bdffbb25f0053" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="337" endline="369">SB_AddToSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a4a12f71dda04a2a11c426996c9049ace" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="194" endline="265">SB_GetChannelInfoFromGraph</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a4b909f8bbc51551f3e0b90163502d54e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="140" endline="158">SB_GetListOfExperiments</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a0bfe99919571f225dbffe6a69fbd33aa" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="497" endline="549">SB_GetLogbookWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a2cb36e23ea3351e7f3e81cac9630151d" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="455" endline="470">SB_GetPlainSweepList</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ad8fcbcc8c6162fdb7494180261348c11" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="418" endline="450">SB_GetSweepList</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa7e1deed4447980b4a35e0c0eb795665" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="185" endline="216">SC_FilterPulses</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa4fe23ab29374eef4e8298b3ed9d0126" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="256" endline="272">SC_GetPulseIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="65" endline="94">SCOPE_GetTPTopAxisStart</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="699" endline="776">SCOPE_ITC_UpdateOscilloscope</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="637" endline="697">SCOPE_NI_UpdateOscilloscope</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3302ac5ebc86122ec14c46d8778cdaf5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4251" endline="4348">TimeAlignmentIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a23c277a8aa8786cc64e676baf4e520e8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1013" endline="1034">TP_CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1accdab15aff6c18c3d4394a4386990e37" compoundref="_m_i_e_s___test_pulse_8ipf" startline="88" endline="127">TP_GetStoredTPs</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67" compoundref="_m_i_e_s___test_pulse_8ipf" startline="818" endline="889">TP_GetValuesFromTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1342" endline="1376">TP_SetupCommon</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a825102e1a659436ef7e511ad09e304f6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="131" endline="150">TP_SplitStoredTestPulseWave</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1454" endline="1465">TP_TestPulseHasCycled</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1468" endline="1494">TP_UpdateHoldCmdInTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a88443c3f326150e25470ce2014fe5e4d" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="406" endline="426">TPM_AddDevice</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a7b25551aedb085d46b44c1c7ffb86bcf" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="374" endline="378">TPM_HasActiveDevices</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1ae90573ff0296f168899e003048746db7" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="380" endline="404">TPM_RemoveDevice</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a2b7b6db6e7b7603d3323b06416682954" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="284" endline="298">TUD_AddTrace</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a231c687ffa2dd202792203e9926d8940" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="63" endline="94">TUD_ClearImpl</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1af433ae10d75fe2935e3f4cc32e3dceff" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="355" endline="370">TUD_GetIndexJSON</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="251" endline="255">TUD_GetTraceCount</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a73f9eee06a45884d250d8429ac59f564" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="372" endline="380">TUD_RegenerateJSONIndex</referencedby>
+        <referencedby refid="_m_i_e_s___trace_user_data_8ipf_1a269a6ea2133639d3a908957c1575be49" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="300" endline="321">TUD_RemoveTrace</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a9e2b9c905299880dc78dcf899f9f2e9d" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="2077" endline="2156">WBP_ListControlsPerStimulusType</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aad541fb2711f424c7936192cf1e9a0ee" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6214" endline="6226">ZeroWave</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Utility functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf"/>
+  </compounddef>
+</doxygen>

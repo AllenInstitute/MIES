@@ -1,0 +1,951 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___overlay_sweeps_8ipf" kind="file" language="C++">
+    <compoundname>MIES_OverlaySweeps.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___overlay_sweeps_8ipf_1aca848c1c1acfc1a553d6e0d85a588c22" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string OVS_FULL_UPDATE_NOTE</definition>
+        <argsstring></argsstring>
+        <name>OVS_FULL_UPDATE_NOTE</name>
+        <initializer>= &quot;FullUpdate&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1ae9eb58f7f9077ff3bfd627b1c8cb45c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_IgnoreHeadstageInOverlay</definition>
+        <argsstring>()</argsstring>
+        <name>OVS_IgnoreHeadstageInOverlay</name>
+        <briefdescription>
+<para>This user trace menu function allows the user to select a trace in overlay sweeps mode which should be ignored. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="17" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="17" bodyend="63"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="483" endline="509">OVS_AddToIgnoreList</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a02087cd1bd5df85662be0b4f1b44e67b" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="60" endline="88">SB_GetIndexFromSweepDataPath</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string OVS_GetSweepSelectionChoices</definition>
+        <argsstring>(string win)</argsstring>
+        <name>OVS_GetSweepSelectionChoices</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Return a list of choices for the sweep selection popup. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Includes a unique list of the DA stimsets of all available sweeps </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="68" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="68" bodyend="129"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a35af7aeae9ab9308824bbe3fa1bd9b1a" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="132" endline="161">OVS_RemoveLowCountEntries</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a35af7aeae9ab9308824bbe3fa1bd9b1a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_RemoveLowCountEntries</definition>
+        <argsstring>(WaveText stimsets, WaveText setSweepCounts, WaveText dupsRemovedSetSweepCounts, WaveText dupsRemovedSetCycleCounts)</argsstring>
+        <name>OVS_RemoveLowCountEntries</name>
+        <param>
+          <type>WaveText</type>
+          <declname>stimsets</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>setSweepCounts</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>dupsRemovedSetSweepCounts</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>dupsRemovedSetCycleCounts</declname>
+        </param>
+        <briefdescription>
+<para>Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="132" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="132" bodyend="161"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a215c47910f6ef60c62c7f26a28a0a8ac" compoundref="_m_i_e_s___utilities_8ipf" startline="4987" endline="5025">RemoveTextWaveEntry1D</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="68" endline="129">OVS_GetSweepSelectionChoices</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref OVS_GetFolder</definition>
+        <argsstring>(string win)</argsstring>
+        <name>OVS_GetFolder</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Return the datafolder reference to the folder storing the listbox and selection wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires the user data <computeroutput>PANEL_FOLDER</computeroutput> of the BrowserSettings panel</para>
+<para><simplesect kind="return"><para>a valid DFREF or an invalid one in case the external panel could not be found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="168" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="168" bodyend="178"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="483" endline="509">OVS_AddToIgnoreList</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8d01cfa694b6057aee9c37b35a824e28" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="624" endline="648">OVS_CheckBoxProc_HS_Select</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8dfa4fda54b7223508021e2021a6afb4" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="527" endline="561">OVS_GetHeadstageRemoval</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="353" endline="387">OVS_GetSelectedSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="68" endline="129">OVS_GetSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="512" endline="524">OVS_UpdateHeadstageRemoval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_UpdatePanel</definition>
+        <argsstring>(string win, variable fullUpdate=defaultValue)</argsstring>
+        <name>OVS_UpdatePanel</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fullUpdate</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Update the overlay sweep waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>databrowser panel or graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fullUpdate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Performs a full update instead of an incremental one. Selects the first sweep if nothing is selected as well.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Must be called after the sweeps changed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="187" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="187" bodyend="269"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1afe5a1b70d29ef8ecdb31df2f7d5830bf" compoundref="_m_i_e_s___utilities_8ipf" startline="2096" endline="2100">ClearBit</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0f7767bbb512666184715e50564b8b7c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="431" endline="439">GetPopupMenuIndex</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6de6c03f5aa8ecc03f3f7086b70e80e" compoundref="_m_i_e_s___constants_8ipf" startline="240">LISTBOX_CELL_EDITABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a355babf3983113f2d7692fbb2c0682e9" compoundref="_m_i_e_s___constants_8ipf" startline="244">LISTBOX_CHECKBOX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcdf2eea942a4476d76b2a28528e8a10" compoundref="_m_i_e_s___constants_8ipf" startline="1444">NOTE_NEEDS_UPDATE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5f83165f8c60adde2528eb5d5aa51167" compoundref="_m_i_e_s___utilities_8ipf" startline="2089" endline="2093">SetBit</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a87726902b3ef26ebbed8586e9aa3f570" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1256" endline="1273">BSP_CheckProc_OverlaySweeps</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2" compoundref="_m_i_e_s___data_browser_8ipf" startline="354" endline="379">DB_UpdateLastSweepControls</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1aa80280e7b081acf5d5a6dd17ff4b545e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_UpdateSweepSelectionChoices</definition>
+        <argsstring>(string win, WaveText sweepSelectionChoices)</argsstring>
+        <name>OVS_UpdateSweepSelectionChoices</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>sweepSelectionChoices</declname>
+        </param>
+        <briefdescription>
+<para>Update the sweep selection choices for the popup menu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function is expensive as it iterates over all sweeps. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="274" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="274" bodyend="342"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8dd1cf2cd45eca5c2152b02b60df1422" compoundref="_m_i_e_s___constants_8ipf" startline="861">CLAMPMODE_ENTRY_KEY</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4eef365f3548b8aea607977f484ddb4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5820" endline="5837">ConvertAmplifierModeShortStr</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9093268c0ed35af94d92313312029c39" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4863" endline="4891">GetTTLLabnotebookEntry</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30aea42c3f84d1d797b553a12836db10" compoundref="_m_i_e_s___constants_8ipf" startline="1632">LABNOTEBOOK_TTL_SETCYCLECOUNTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8adc06b69ee6ea9ae3b39ada50f0626c" compoundref="_m_i_e_s___constants_8ipf" startline="1631">LABNOTEBOOK_TTL_SETSWEEPCOUNTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa9d28f24c2981266b67bf80c9095058c" compoundref="_m_i_e_s___constants_8ipf" startline="1630">LABNOTEBOOK_TTL_STIMSETS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcdf2eea942a4476d76b2a28528e8a10" compoundref="_m_i_e_s___constants_8ipf" startline="1444">NOTE_NEEDS_UPDATE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave OVS_GetSelectedSweeps</definition>
+        <argsstring>(string win, variable mode)</argsstring>
+        <name>OVS_GetSelectedSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Return the selected sweeps (either indizes or the real sweep numbers) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>window (databrowser or sweepbrowser) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep property<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___constants_8ipf_1a4c9e30ef5003acf892d37799a3227889" kindref="member">OVS_SWEEP_SELECTION_INDEX</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___constants_8ipf_1a7ae1ed1e6a848dcd5f0f5cca3350f764" kindref="member">OVS_SWEEP_SELECTION_SWEEPNO</ref></para>
+</listitem><listitem><para><ref refid="_m_i_e_s___constants_8ipf_1a48fe62f07a8ce2e3cddf7276b796de80" kindref="member">OVS_SWEEP_ALL_SWEEPNO</ref></para>
+</listitem></itemizedlist>
+</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>invalid wave reference in case nothing is selected or numeric indizes/sweep numbers depending on mode parameter </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="353" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="353" bodyend="387"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a48fe62f07a8ce2e3cddf7276b796de80" compoundref="_m_i_e_s___constants_8ipf" startline="942">OVS_SWEEP_ALL_SWEEPNO</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4c9e30ef5003acf892d37799a3227889" compoundref="_m_i_e_s___constants_8ipf" startline="940">OVS_SWEEP_SELECTION_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ae1ed1e6a848dcd5f0f5cca3350f764" compoundref="_m_i_e_s___constants_8ipf" startline="941">OVS_SWEEP_SELECTION_SWEEPNO</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ab54f4674f253898b070c913bf7f8e43e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="267" endline="335">SB_UpdateSweepPlot</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_ChangeSweepSelectionState</definition>
+        <argsstring>(string win, variable newState, variable sweepNo=defaultValue, variable index=defaultValue, WaveOrNull sweeps=defaultValue, variable invertOthers=defaultValue)</argsstring>
+        <name>OVS_ChangeSweepSelectionState</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>newState</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>sweeps</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>invertOthers</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Change the selection state of the the given sweep in the listbox wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Triggers a update for the affected sweep.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweeps</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] sweeps to change, can be <computeroutput>$&quot;&quot;</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] index into the listbox wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>newState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>new checkbox state of the given sweeps </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>invertOthers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to false] set the other sweeps to !newState if true</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+One of <computeroutput>sweepNo</computeroutput>/<computeroutput>index</computeroutput> is required. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="401" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="401" bodyend="473"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1afe5a1b70d29ef8ecdb31df2f7d5830bf" compoundref="_m_i_e_s___utilities_8ipf" startline="2096" endline="2100">ClearBit</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5f83165f8c60adde2528eb5d5aa51167" compoundref="_m_i_e_s___utilities_8ipf" startline="2089" endline="2093">SetBit</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aa9c2ccd56dc51a338fcb5a1bf349a721" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1376" endline="1407">BSP_ButtonProc_ChangeSweep</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ad35722387426fcb200c458dc20c73c16" compoundref="_m_i_e_s___data_browser_8ipf" startline="548" endline="570">DB_SetVarProc_SweepNo</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1aa41238629b63eb57cdf38380df3b5349" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="551" endline="573">SB_PopupMenuSelectSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_IsActive</definition>
+        <argsstring>(string win)</argsstring>
+        <name>OVS_IsActive</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>checks if OVS is active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="476" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="476" bodyend="480"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a885685361d2e72e28aaf36df880e828e" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="906" endline="943">BSP_IsActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a539575e9c16b2dea6206ebe75a78207b" compoundref="_m_i_e_s___constants_8ipf" startline="380">MIES_BSP_OVS</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aa9c2ccd56dc51a338fcb5a1bf349a721" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1376" endline="1407">BSP_ButtonProc_ChangeSweep</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1ab2e16a1684e6df70e68a6d732e815af9" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="514" endline="522">BSP_SetOVSControlStatus</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ad35722387426fcb200c458dc20c73c16" compoundref="_m_i_e_s___data_browser_8ipf" startline="548" endline="570">DB_SetVarProc_SweepNo</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="483" endline="509">OVS_AddToIgnoreList</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8dfa4fda54b7223508021e2021a6afb4" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="527" endline="561">OVS_GetHeadstageRemoval</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="353" endline="387">OVS_GetSelectedSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1abe010d76f2c7b2917d8dee070f68cdc7" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="68" endline="129">OVS_GetSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="650" endline="696">OVS_HighlightSweep</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1aa41238629b63eb57cdf38380df3b5349" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="551" endline="573">SB_PopupMenuSelectSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_AddToIgnoreList</definition>
+        <argsstring>(string win, variable headstage, variable sweepNo=defaultValue, variable index=defaultValue)</argsstring>
+        <name>OVS_AddToIgnoreList</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add <computeroutput>headstage</computeroutput> to the ignore list of the given <computeroutput>sweepNo/index</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="483" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="483" bodyend="509"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="512" endline="524">OVS_UpdateHeadstageRemoval</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ae9eb58f7f9077ff3bfd627b1c8cb45c1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="17" endline="63">OVS_IgnoreHeadstageInOverlay</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_UpdateHeadstageRemoval</definition>
+        <argsstring>(string win, variable index)</argsstring>
+        <name>OVS_UpdateHeadstageRemoval</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Update the OVS headstage removal wave from the listbox entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="512" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="512" bodyend="524"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1af6f9445dd6426b2d7551fafdb1a4b168" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="577" endline="622">OVS_ParseIgnoreList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adee6420ad3550ce7a475368919f57a56" compoundref="_m_i_e_s___constants_8ipf" startline="1418">POST_PLOT_FULL_UPDATE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1c58969d590d3234c63c6425c560d6ea" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6952" endline="6966">UpdateSweepInGraph</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a4fb549ce7925e83e2fa3cd04baaea460" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="483" endline="509">OVS_AddToIgnoreList</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a94200107143e3c34a24042063212d915" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="954" endline="988">OVS_MainListBoxProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a8dfa4fda54b7223508021e2021a6afb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave OVS_GetHeadstageRemoval</definition>
+        <argsstring>(string win, variable sweepNo=defaultValue, variable index=defaultValue)</argsstring>
+        <name>OVS_GetHeadstageRemoval</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="527" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="527" bodyend="561"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e0cedf86b41106a06d81119b453149b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5988" endline="6006">GetOverlaySweepHeadstageRemoval</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1ad70363b99af78ba09599894693a651de" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1341" endline="1361">BSP_FetchSelectedChannels</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1af6f9445dd6426b2d7551fafdb1a4b168" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OVS_ParseIgnoreList</definition>
+        <argsstring>(string ignoreList, variable sweepNo)</argsstring>
+        <name>OVS_ParseIgnoreList</name>
+        <param>
+          <type>string</type>
+          <declname>ignoreList</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Parse the headstage removal list. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The expected format of the list entries is a semicolon (&quot;;&quot;) separated list of subranges (without the possibility of denoting the step size).</para>
+<para>Examples:<itemizedlist>
+<listitem><para>0 (ignore HS 0)</para>
+</listitem><listitem><para>1,3;0 (ignore HS 0 to 3)</para>
+</listitem><listitem><para>* (ignore all headstages)</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ignoreList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list of entries to parse </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>free wave of size <computeroutput>NUM_HEADSTAGES</computeroutput> denoting with 0/1 the active state of the headstage </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="577" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="577" bodyend="622"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aae1a5a8e49a9dc0486a91bc515923794" compoundref="_m_i_e_s___utilities_8ipf" startline="3439" endline="3502">ExtractFromSubrange</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="512" endline="524">OVS_UpdateHeadstageRemoval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a8d01cfa694b6057aee9c37b35a824e28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_CheckBoxProc_HS_Select</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>OVS_CheckBoxProc_HS_Select</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="624" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="624" bodyend="648"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1afe5a1b70d29ef8ecdb31df2f7d5830bf" compoundref="_m_i_e_s___utilities_8ipf" startline="2096" endline="2100">ClearBit</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6de6c03f5aa8ecc03f3f7086b70e80e" compoundref="_m_i_e_s___constants_8ipf" startline="240">LISTBOX_CELL_EDITABLE</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5f83165f8c60adde2528eb5d5aa51167" compoundref="_m_i_e_s___utilities_8ipf" startline="2089" endline="2093">SetBit</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_HighlightSweep</definition>
+        <argsstring>(string win, variable index)</argsstring>
+        <name>OVS_HighlightSweep</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="650" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="650" bodyend="696"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a8a5264610ec0c4e51fe70769f57a7a49" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="699" endline="729">OVS_GetSweepAndExperiment</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a56682707b62942c2360bf97ad1367ab2" compoundref="_m_i_e_s___utilities_8ipf" startline="5610" endline="5621">ParseColorSpec</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a94200107143e3c34a24042063212d915" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="954" endline="988">OVS_MainListBoxProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a8a5264610ec0c4e51fe70769f57a7a49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, string &gt;</type>
+        <definition>std::tuple&lt; variable, string &gt; OVS_GetSweepAndExperiment</definition>
+        <argsstring>(string win, variable index)</argsstring>
+        <name>OVS_GetSweepAndExperiment</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Return the sweep number and experiment name for the given list index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="699" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="699" bodyend="729"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a194185f6f3dcfedbfe9568b2e54e92c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6098" endline="6121">GetSweepBrowserMap</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a7a40b8f9889d6e20927582a446d508a5" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="18" endline="22">SB_GetSweepBrowserFolder</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474" compoundref="_m_i_e_s___data_browser_8ipf" startline="586" endline="632">DB_AddSweepToGraph</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="650" endline="696">OVS_HighlightSweep</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a78b083579577e86243530070603c5c0c" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="621" endline="643">PA_GetSweepsAndExperimentsFromIndices</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae210aba29318a217084618ab1794e527" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6881" endline="6914">RemoveSweepFromGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_ChangeSweepSelection</definition>
+        <argsstring>(string win, string choiceString)</argsstring>
+        <name>OVS_ChangeSweepSelection</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>choiceString</declname>
+        </param>
+        <briefdescription>
+<para>Change the selected sweep according to one of the popup menu options. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="732" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="732" bodyend="779"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="809" endline="838">OVS_BeginIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aaea1af3c75db5ab81b0b100b72db1a0d" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="168" endline="178">OVS_GetFolder</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1af348beeba032f944f53b456f678818df" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="990" endline="1000">OVS_PopMenuProc_Select</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aa9e8e209ec0e8c3c5b515ad0ea78b984" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="1002" endline="1018">OVS_SetVarProc_SelectionRange</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OVS_BeginIncrementalUpdate</definition>
+        <argsstring>(string win, variable fullUpdate=defaultValue)</argsstring>
+        <name>OVS_BeginIncrementalUpdate</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fullUpdate</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Incremental sweep plot updates for overlay sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When modifying the listbox selection and contents wave this function can be called before doing so. After the modifications <ref refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" kindref="member">OVS_EndIncrementalUpdate()</ref> will take care of updating all sweeps which got changed.</para>
+<para>The returned wave should be considered an opaque handle and <emphasis>not</emphasis> modified.</para>
+<para>Usage:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
+* 
+*       // modify list waves
+*       // ...
+* 
+*       OVS_EndIncrementalUpdate(win, updateHandle)
+* 
+*  </verbatim></para>
+<para>By setting <computeroutput>fullUpdate</computeroutput> to true a conventional full, that means non-incremental, update will be performed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fullUpdate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true when OVS is off, false otherwise] allows to force a full update in <ref refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" kindref="member">OVS_EndIncrementalUpdate()</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="809" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="809" bodyend="838"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aca848c1c1acfc1a553d6e0d85a588c22" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="13">OVS_FULL_UPDATE_NOTE</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8d01cfa694b6057aee9c37b35a824e28" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="624" endline="648">OVS_CheckBoxProc_HS_Select</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OVS_EndIncrementalUpdate</definition>
+        <argsstring>(string win, WaveRefWave updateHandle)</argsstring>
+        <name>OVS_EndIncrementalUpdate</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>updateHandle</declname>
+        </param>
+        <briefdescription>
+<para>Perform the update of all changed sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Counterpart to <ref refid="_m_i_e_s___overlay_sweeps_8ipf_1a2cd1e47a8554bb3f29db215e2f928296" kindref="member">OVS_BeginIncrementalUpdate()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="843" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="843" bodyend="952"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a233d8bb76517bdcee7233bc685527aef" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6923" endline="6944">AddSweepToGraph</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8e563efb46a1e51d5b59a26a706c51f3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5957" endline="5978">GetOverlaySweepsListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___structures_8ipf_1a0dee5e6bd5faa704e772fe330f2b1008" compoundref="_m_i_e_s___structures_8ipf" startline="338" endline="348">InitBufferedDrawInfo</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6de6c03f5aa8ecc03f3f7086b70e80e" compoundref="_m_i_e_s___constants_8ipf" startline="240">LISTBOX_CELL_EDITABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aca848c1c1acfc1a553d6e0d85a588c22" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="13">OVS_FULL_UPDATE_NOTE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a572a14c744abdcbfc8700342beda5deb" compoundref="_m_i_e_s___constants_8ipf" startline="1415">POST_PLOT_ADDED_SWEEPS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adee6420ad3550ce7a475368919f57a56" compoundref="_m_i_e_s___constants_8ipf" startline="1418">POST_PLOT_FULL_UPDATE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a64cc63ced147de27b99782c8e412f2b9" compoundref="_m_i_e_s___constants_8ipf" startline="1416">POST_PLOT_REMOVED_SWEEPS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae210aba29318a217084618ab1794e527" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6881" endline="6914">RemoveSweepFromGraph</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a98a735cad98a7e8915931153ae23cb66" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3082" endline="3186">TiledGraphAccelerateDraw</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1c58969d590d3234c63c6425c560d6ea" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6952" endline="6966">UpdateSweepInGraph</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1a8d01cfa694b6057aee9c37b35a824e28" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="624" endline="648">OVS_CheckBoxProc_HS_Select</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1a94200107143e3c34a24042063212d915" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_MainListBoxProc</definition>
+        <argsstring>(WMListboxAction *lba)</argsstring>
+        <name>OVS_MainListBoxProc</name>
+        <param>
+          <type>WMListboxAction *</type>
+          <declname>lba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="954" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="954" bodyend="988"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a233d8bb76517bdcee7233bc685527aef" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6923" endline="6944">AddSweepToGraph</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ab5b6b3d9095840cdbb4b01ce34703ef6" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="650" endline="696">OVS_HighlightSweep</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aac7c0c0c789abb2eb52cd768d432bfa0" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="512" endline="524">OVS_UpdateHeadstageRemoval</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a572a14c744abdcbfc8700342beda5deb" compoundref="_m_i_e_s___constants_8ipf" startline="1415">POST_PLOT_ADDED_SWEEPS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a64cc63ced147de27b99782c8e412f2b9" compoundref="_m_i_e_s___constants_8ipf" startline="1416">POST_PLOT_REMOVED_SWEEPS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae210aba29318a217084618ab1794e527" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6881" endline="6914">RemoveSweepFromGraph</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1af348beeba032f944f53b456f678818df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_PopMenuProc_Select</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>OVS_PopMenuProc_Select</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="990" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="990" bodyend="1000"/>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___overlay_sweeps_8ipf_1aa9e8e209ec0e8c3c5b515ad0ea78b984" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OVS_SetVarProc_SelectionRange</definition>
+        <argsstring>(WMSetVariableAction *sva)</argsstring>
+        <name>OVS_SetVarProc_SelectionRange</name>
+        <param>
+          <type>WMSetVariableAction *</type>
+          <declname>sva</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" line="1002" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf" bodystart="1002" bodyend="1018"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a36bc7a3160c8be52c7a0357d85b90535" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="732" endline="779">OVS_ChangeSweepSelection</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_OverlaySweeps.ipf"/>
+  </compounddef>
+</doxygen>

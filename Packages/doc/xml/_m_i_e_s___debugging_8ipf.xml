@@ -1,0 +1,765 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___debugging_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Debugging.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___debugging_8ipf_1a09a63e7b15919a810beb339a7c9cf55d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string functionReturnMessage</definition>
+        <argsstring></argsstring>
+        <name>functionReturnMessage</name>
+        <initializer>= &quot;return value&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="42" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="42" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a2e70157cc4677a547ad715dae949db78" compoundref="_m_i_e_s___debugging_8ipf" startline="138" endline="148">DEBUGPRINTs</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_m_i_e_s___debugging_8ipf" startline="67" endline="78">DEBUGPRINTv</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a60663651acfeb60f3f5503f66018db61" compoundref="_m_i_e_s___debugging_8ipf" startline="103" endline="114">DEBUGPRINTw</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a4318db20e5899d75148e9d470caad4df" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable FindFirstOutsideCaller</definition>
+        <argsstring>(string *func, string *line, string *file)</argsstring>
+        <name>FindFirstOutsideCaller</name>
+        <param>
+          <type>string *</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>line</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Return the first function from the stack trace not located in this file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="15" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="15" bodyend="38"/>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINTv</definition>
+        <argsstring>(variable var, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINTv</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Output debug information and return the parameter var. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Debug function especially designed for usage in return statements.</para>
+<para>For example calling the following function <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function doStuff()
+*       variable var = 1 + 2
+*       return DEBUGPRINTv(var)
+*   End
+*  </verbatim></para>
+<para>will output <verbatim>DEBUG doStuff(...)#L5: return value 3 </verbatim> to the history.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical argument for debug output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional format string to override the default of &quot;%g&quot; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="67" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="67" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a60663651acfeb60f3f5503f66018db61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DEBUGPRINTw</definition>
+        <argsstring>(WaveOrNull wv, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINTw</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Output debug information and return the wave wv. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Debug function especially designed for usage in return statements.</para>
+<para>For example calling the following function <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/WAVE doStuff()
+*       Make/D/N=5 data = p
+*       return DEBUGPRINTw(data)
+*   End
+*  </verbatim></para>
+<para>will output <verbatim>DEBUG doStuff(...)#L5: return value {0, 1, 2, 3, 4} </verbatim> to the history.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave argument for debug output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional format string to override the default of &quot;%g&quot; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="103" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="103" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a2e70157cc4677a547ad715dae949db78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DEBUGPRINTs</definition>
+        <argsstring>(string str, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINTs</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Output debug information and return the parameter str. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Debug function especially designed for usage in return statements.</para>
+<para>For example calling the following function <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/s doStuff()
+*       variable str= &quot;a&quot; + &quot;b&quot;
+*       return DEBUGPRINTs(str)
+*   End
+*  </verbatim> will output <verbatim>DEBUG doStuff(...)#L5: return value ab </verbatim> to the history.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string argument for debug output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional format string to override the default of &quot;%s&quot; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="138" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="138" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT</definition>
+        <argsstring>(string msg, variable var=defaultValue, string str=defaultValue, WaveOrNull wv=defaultValue, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINT</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Generic debug output function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Outputs variables and strings with optional format argument.</para>
+<para>Examples: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   DEBUGPRINT(&quot;before a possible crash&quot;)
+*   DEBUGPRINT(&quot;some variable&quot;, var=myVariable)
+*   DEBUGPRINT(&quot;my string&quot;, str=myString)
+*   DEBUGPRINT(&quot;Current state&quot;, var=state, format=&quot;%.5f&quot;)
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>msg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>descriptive string for the debug message </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave (can be null) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>format string overrides the default of &quot;%g&quot; for variables and &quot;%s&quot; for strings </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="172" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="172" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT_TS</definition>
+        <argsstring>(string msg, variable var=defaultValue, string str=defaultValue, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINT_TS</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Generic debug output function (threadsafe variant) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Outputs variables and strings with optional format argument.</para>
+<para>Examples: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       DEBUGPRINT(&quot;before a possible crash&quot;)
+*       DEBUGPRINT(&quot;some variable&quot;, var=myVariable)
+*       DEBUGPRINT(&quot;my string&quot;, str=myString)
+*       DEBUGPRINT(&quot;Current state&quot;, var=state, format=&quot;%.5f&quot;)
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>msg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>descriptive string for the debug message </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>format string overrides the default of &quot;%g&quot; for variables and &quot;%s&quot; for strings </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="263" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="263" bodyend="303"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINTSTACKINFO</definition>
+        <argsstring>()</argsstring>
+        <name>DEBUGPRINTSTACKINFO</name>
+        <briefdescription>
+<para>Print a nicely formatted stack trace to the history. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="306" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="306" bodyend="328"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ad24400026f807d681e80402248d51c4b" compoundref="_m_i_e_s___debugging_8ipf" startline="332" endline="335">CreateHistoryLog</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a2ec8ffead5298260e88dca833b416738" compoundref="_m_i_e_s___debug_panel_8ipf" startline="15" endline="35">DP_DebuggingEnabledForFile</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a4318db20e5899d75148e9d470caad4df" compoundref="_m_i_e_s___debugging_8ipf" startline="15" endline="38">FindFirstOutsideCaller</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a71e9a0e51f9164c664145f82666fe8b4" compoundref="_i_p_n_w_b___utils_8ipf" startline="817" endline="854">GetStackTrace</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1aed0303f3935f540e6a4938b4d42446f6" compoundref="_m_i_e_s___debugging_8ipf" startline="339" endline="356">SaveHistoryLog</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1ad24400026f807d681e80402248d51c4b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CreateHistoryLog</definition>
+        <argsstring>()</argsstring>
+        <name>CreateHistoryLog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates a notebook with the special name &quot;HistoryCarbonCopy&quot; which will hold a copy of the history </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="332" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="332" bodyend="335"/>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1aed0303f3935f540e6a4938b4d42446f6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SaveHistoryLog</definition>
+        <argsstring>()</argsstring>
+        <name>SaveHistoryLog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Save the contents of the history notebook on disk in the same folder as this experiment as timestamped file &quot;run_*_*.log&quot; </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="339" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="339" bodyend="356"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a35b5140430c647c1b49b618772b8e7d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT_OR_ABORT</definition>
+        <argsstring>(string msg)</argsstring>
+        <name>DEBUGPRINT_OR_ABORT</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <briefdescription>
+<para>Prints a message to the command history in debug mode, aborts with dialog in release mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="360" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="360" bodyend="364"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUG_TIMER_START</definition>
+        <argsstring>()</argsstring>
+        <name>DEBUG_TIMER_START</name>
+        <briefdescription>
+<para>Start a timer for performance measurements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Usage: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   variable referenceTime = DEBUG_TIMER_START()
+*   // part one to benchmark
+*   DEBUGPRINT_ELAPSED(referenceTime)
+*   // part two to benchmark
+*   DEBUGPRINT_ELAPSED(referenceTime)
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="378" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="378" bodyend="381"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8d549b12877ebd540461f205d1aeface" compoundref="_m_i_e_s___utilities_8ipf" startline="4706" endline="4708">GetReferenceTime</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT_ELAPSED</definition>
+        <argsstring>(variable referenceTime)</argsstring>
+        <name>DEBUGPRINT_ELAPSED</name>
+        <param>
+          <type>variable</type>
+          <declname>referenceTime</declname>
+        </param>
+        <briefdescription>
+<para>Print the elapsed time for performance measurements in seconds. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" kindref="member">DEBUG_TIMER_START()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="385" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="385" bodyend="389"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ade1c45424de8fc4e7b75162d39a13de3" compoundref="_m_i_e_s___utilities_8ipf" startline="4711" endline="4715">GetElapsedTime</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1aeb4863e5642fd422199d5caf87d32cb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT_ELAPSED_WAVE</definition>
+        <argsstring>(variable referenceTime)</argsstring>
+        <name>DEBUGPRINT_ELAPSED_WAVE</name>
+        <param>
+          <type>variable</type>
+          <declname>referenceTime</declname>
+        </param>
+        <briefdescription>
+<para>Print and store the elapsed time for performance measurements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" kindref="member">DEBUG_TIMER_START()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="393" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="393" bodyend="397"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1aa1cb68ccd97ec011c4351aef963902c8" compoundref="_m_i_e_s___utilities_8ipf" startline="4718" endline="4735">StoreElapsedTime</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a2af0a90aca41a7f32f3d5ba4aef09f63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EnableDebugMode</definition>
+        <argsstring>()</argsstring>
+        <name>EnableDebugMode</name>
+        <briefdescription>
+<para>Enable debug mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="468" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="468" bodyend="471"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a1a35450e9a3c571a26682c687262b2e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DisableDebugMode</definition>
+        <argsstring>()</argsstring>
+        <name>DisableDebugMode</name>
+        <briefdescription>
+<para>Disable debug mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="474" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="474" bodyend="477"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1ab1f2adbeeb7eefbdb9bdbe5bb2dfd730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EnableEvilMode</definition>
+        <argsstring>()</argsstring>
+        <name>EnableEvilMode</name>
+        <briefdescription>
+<para>Enable evil mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="480" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="480" bodyend="483"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1aeef103e7d115e2170d8c7e374e402d01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DisableEvilMode</definition>
+        <argsstring>()</argsstring>
+        <name>DisableEvilMode</name>
+        <briefdescription>
+<para>Disable evil mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="486" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="486" bodyend="489"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a64792f75aa8d428d5d5f7d2c8f3c2093" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DisableThreadsafeSupport</definition>
+        <argsstring>()</argsstring>
+        <name>DisableThreadsafeSupport</name>
+        <briefdescription>
+<para>Disable threadsafe support. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="492" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="492" bodyend="495"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a764eccb35ef44f8bc7f0abec4c0fef99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EnableThreadsafeSupport</definition>
+        <argsstring>()</argsstring>
+        <name>EnableThreadsafeSupport</name>
+        <briefdescription>
+<para>Enable threadsafe support again (default on IP startup) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="498" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="498" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BUG</definition>
+        <argsstring>(string msg)</argsstring>
+        <name>BUG</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <briefdescription>
+<para>Complain and ask the user to report the error. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>In nearly all cases <ref refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" kindref="member">ASSERT()</ref> is the more appropriate method to use.</para>
+<para>If a testcase wants to trigger a BUG message <emphasis>and</emphasis> needs to treat that as non-fatal, it needs to set <computeroutput>bugCount</computeroutput> to NaN before. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="509" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="509" bodyend="534"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a4318db20e5899d75148e9d470caad4df" compoundref="_m_i_e_s___debugging_8ipf" startline="15" endline="38">FindFirstOutsideCaller</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a71e9a0e51f9164c664145f82666fe8b4" compoundref="_i_p_n_w_b___utils_8ipf" startline="817" endline="854">GetStackTrace</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="568" endline="649">AD_GetBaselineFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="524" endline="560">AD_GetChirpFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="365" endline="404">AD_GetSquarePulseFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a7cafd94e841dca646a5c6f96e14a164a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1696" endline="1699">BSP_AddTracesForEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ab78812e72045c498cbf32f8f2908edbf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="495" endline="530">DC_InitDataHoldingWave</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="92" endline="106">FFI_Publish</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="676" endline="691">NWB_ASYNC_FinishWriting</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6470925796d6ea49469fb94e071b937b" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="351" endline="358">NWB_ASYNC_Readout</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1a815d27b928c387af6a46fe6a50e1eea3" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="37" endline="64">TFH_StartFIFODeamonInternal</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad89366a79624371f41ee9f2754c33479" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6763" endline="6788">UploadCrashDumpsDaily</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a5a976aabc6746b44d530faa62ee1273b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BUG_TS</definition>
+        <argsstring>(string msg)</argsstring>
+        <name>BUG_TS</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <briefdescription>
+<para>Threadsafe variant of <ref refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" kindref="member">BUG()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000017"><xreftitle>Todo</xreftitle><xrefdescription><para>IP9: Unify with BUG </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="539" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="539" bodyend="569"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a71e9a0e51f9164c664145f82666fe8b4" compoundref="_i_p_n_w_b___utils_8ipf" startline="817" endline="854">GetStackTrace</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a84a17f151d373ec9e0090bc84a8fd788" compoundref="_m_i_e_s___logging_8ipf" startline="144" endline="151">LOG_AddEntry_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab77c739563f879aa0dda4ed58d2ceb2e" compoundref="_m_i_e_s___constants_8ipf" startline="1679">TSDS_BUGCOUNT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1af652499213b7e4030890a1b08def0e98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetSizeOfAllWavesInExperiment</definition>
+        <argsstring>()</argsstring>
+        <name>GetSizeOfAllWavesInExperiment</name>
+        <briefdescription>
+<para>Debug helper which creates a textwave which will hold the names of all waves and their size in MiB. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="573" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="573" bodyend="594"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abc03730185019abb08c713b4552ecdad" compoundref="_m_i_e_s___utilities_8ipf" startline="644" endline="667">GetWaveSize</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1a21945e559c0ccd5edbfa0c2e39baea14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CheckAllDimensionLabels</definition>
+        <argsstring>()</argsstring>
+        <name>CheckAllDimensionLabels</name>
+        <briefdescription>
+<para>Check that all stored waves (permanent and free) adhere to the liberal naming rules. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>These are only enforced since IP9 beta9 or later.</para>
+<para><simplesect kind="return"><para>Number of waves not matching </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="601" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="601" bodyend="623"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ad3262ea7e1b1486e81b9d22d34478ff9" compoundref="_m_i_e_s___debugging_8ipf" startline="625" endline="684">CheckDimensionLabels</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1ad3262ea7e1b1486e81b9d22d34478ff9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string CheckDimensionLabels</definition>
+        <argsstring>(WaveOrNull wv)</argsstring>
+        <name>CheckDimensionLabels</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="625" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="625" bodyend="684"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ad3262ea7e1b1486e81b9d22d34478ff9" compoundref="_m_i_e_s___debugging_8ipf" startline="625" endline="684">CheckDimensionLabels</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7087b8eee0ca362e46abd6d729f0a51d" compoundref="_m_i_e_s___utilities_8ipf" startline="3514" endline="3516">IsValidLiberalObjectName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a618880f1c668fa78784ae756d2aa3651" compoundref="_m_i_e_s___constants_8ipf" startline="198">PROP_NON_EMPTY</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a21945e559c0ccd5edbfa0c2e39baea14" compoundref="_m_i_e_s___debugging_8ipf" startline="601" endline="623">CheckAllDimensionLabels</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ad3262ea7e1b1486e81b9d22d34478ff9" compoundref="_m_i_e_s___debugging_8ipf" startline="625" endline="684">CheckDimensionLabels</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debugging_8ipf_1af54dd9466d715ed3c4e498a2f7d7d56c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUG_STOREFUNCTION</definition>
+        <argsstring>()</argsstring>
+        <name>DEBUG_STOREFUNCTION</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" line="687" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf" bodystart="687" bodyend="706"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Holds functions for handling debugging information. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Debugging.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1010 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___d_a_ephys___gui_state_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DAEphys_GuiState.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a49d60cb228b1f92e20d962e600e73308" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_RecordGuiStateNum</definition>
+        <argsstring>(string device, wave GUIState=defaultValue)</argsstring>
+        <name>DAG_RecordGuiStateNum</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>GUIState</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Records the state of the DA_ephys panel into the numerical GUI state wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="13" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="13" bodyend="103"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a489290bc9f8a7c5ad98f783cfa08247b" compoundref="_m_i_e_s___constants_8ipf" startline="220">CHANNEL_CONTROL_ALARM_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76d199e8cffac5f43969240830b4e333" compoundref="_m_i_e_s___constants_8ipf" startline="219">CHANNEL_CONTROL_ALARM_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a423cc2db7127dce04d22ac0910f01894" compoundref="_m_i_e_s___constants_8ipf" startline="213">CHANNEL_CONTROL_GAIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1addc24577cddf76afdcbce0479aa7478f" compoundref="_m_i_e_s___constants_8ipf" startline="214">CHANNEL_CONTROL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad58e348c622c424cb0c9fc95edc1e3fe" compoundref="_m_i_e_s___constants_8ipf" startline="218">CHANNEL_TYPE_ALARM</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b8156536b079a3631fb6910e87cef63" compoundref="_m_i_e_s___constants_8ipf" startline="608">COMMON_CONTROL_GROUP_COUNT_NUM</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a71627d1809bd691d5c5a8f84919f4f88" compoundref="_m_i_e_s___constants_8ipf" startline="173">CONTROL_TYPE_POPUPMENU</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a4a79d7dd81f468e070faae2aa2dd4ef8" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="459" endline="476">DAG_ControlStatusWave</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af44f42220703a7cefe5950d67628f2d9" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="482" endline="497">DAG_GetAllHSMode</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a455c52adaa13f619cb3bd56b5484c116" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4953" endline="4966">GetAllDAEphysPopMenuIndex</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a255f5e8b4f309e18f97487924d864863" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4921" endline="4934">GetAllDAEphysSetVarNum</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a5b2671529f6aa07e64005c358ffe5f2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_RecordGuiStateTxT</definition>
+        <argsstring>(string device, wave GUIState=defaultValue)</argsstring>
+        <name>DAG_RecordGuiStateTxT</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>GUIState</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Records the state of the DA_ephys panel into the textual GUI state wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="106" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="106" bodyend="166"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acf35c5b3ffe638281db8501b7a2041ca" compoundref="_m_i_e_s___constants_8ipf" startline="221">CHANNEL_CONTROL_SEARCH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab2963c623101855911f59741dcdd105b" compoundref="_m_i_e_s___constants_8ipf" startline="223">CHANNEL_CONTROL_TITLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4d762a7112dbc3f0a31addfe65d073a0" compoundref="_m_i_e_s___constants_8ipf" startline="212">CHANNEL_CONTROL_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcf956c27772382afcc1beb9cb46c559" compoundref="_m_i_e_s___constants_8ipf" startline="609">COMMON_CONTROL_GROUP_COUNT_TXT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af6533d4b28883eab482bbb682efa060e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4969" endline="4982">GetAllDAEphysPopMenuString</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a075fccef288630a0d8e405f1470afac6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4937" endline="4950">GetAllDAEphysSetVarTxT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_GetNumericalValue</definition>
+        <argsstring>(string device, string ctrl, variable index=defaultValue)</argsstring>
+        <name>DAG_GetNumericalValue</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Query a control value from the numerical gui state wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This does return the zero-based <emphasis>index</emphasis> for PopupMenues.</para>
+<para>Convienience wrapper to make the call sites nicer.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>control name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to NaN] Some control entries have multiple entries per headstage/channel/etc. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="178" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="178" bodyend="219"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2fba114640a1e2276ebfb4c2e9607a4" compoundref="_m_i_e_s___utilities_8ipf" startline="3353" endline="3373">CheckIfClose</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a71627d1809bd691d5c5a8f84919f4f88" compoundref="_m_i_e_s___constants_8ipf" startline="173">CONTROL_TYPE_POPUPMENU</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d8901c0f9c73834cb49edf1e9f65451" compoundref="_m_i_e_s___utilities_8ipf" startline="5820" endline="5823">EqualValuesOrBothNaN</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <referencedby refid="_m_i_e_s___gui_utilities_8ipf_1acba62613630326a6fabc5f91cd7105ae" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="2165" endline="2203">AdaptDependentControls</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a718654a9bbc27fec1384bcf51f7bb341" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="661" endline="676">AI_SetMIESHeadstage</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="142" endline="182">AS_GetSweepNumber</referencedby>
+        <referencedby refid="_m_i_e_s___asynchronous_data_8ipf_1af0c7372cb8a69b0004600fabe65fc85e" compoundref="_m_i_e_s___asynchronous_data_8ipf" startline="15" endline="34">ASD_CheckAsynAlarmState</referencedby>
+        <referencedby refid="_m_i_e_s___asynchronous_data_8ipf_1abeed0ed37415346dafff0300e3a6a7fd" compoundref="_m_i_e_s___asynchronous_data_8ipf" startline="37" endline="53">ASD_ReadChannel</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a6e8b40701c257615f974e7b3d53d1308" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2447" endline="2458">ButtonProc_ManPP</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1aed29078f9980cc9c56ed9a668436fd1a" compoundref="_m_i_e_s___blowout_8ipf" startline="69" endline="112">BWO_CheckGlobalSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ac9edb17c67a11fb14e104eb808b171cf" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2340" endline="2362">CheckProc_ClearEnable</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a59f0c63f41d0ec3753b4141f0439279c" compoundref="_m_i_e_s___configuration_8ipf" startline="1975" endline="2093">CONF_GetAmplifierSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a849bc902b343c7ffeb8ed9cc7d6e9d3a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1177" endline="1227">DAP_AdaptAssocHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae940104cec1b05730323bf86b683b00a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5359" endline="5406">DAP_AllChanDASettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af316ea8e1c3db516b562b08182a7b2bc" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3988" endline="4005">DAP_ButtonProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa45fb2ca2a0311a540f67cf699cce939" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3583" endline="3650">DAP_ChangeHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1261f9225c4da2e6c2fe01b032fa8813" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4007" endline="4025">DAP_CheckProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aba6e5c5715fd05f12f781284ab44d194" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1032" endline="1069">DAP_CheckProc_Channel_All</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad4abf4775b9b091652231f9ae3964c40" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4552" endline="4568">DAP_CheckProc_LockedLogic</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1afb009c0276eccd97688e92c9574b8d9f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5494" endline="5506">DAP_CheckSkipAhead</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1d8b2789fc76c320a05681a12380187f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3023" endline="3097">DAP_CheckStimset</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a59bfb7b3da9d71768c6a83bbf79f9691" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4049" endline="4059">DAP_HandleSingleDeviceDependentControls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a0d3a834d8cd514806b091a17b71ee2e6" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1581" endline="1651">DAP_PopMenuChkProc_StimSetList</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1fa85fe377c21a85280efb6de8f8b6b2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3968" endline="3986">DAP_SetVarProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5852" endline="5893">DAP_TPGUISettingToWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aac5a6c1d4f6a0b72ce91be7567604c34" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5792" endline="5814">DAP_TPSettingsToWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3429c12c8e2f37e8dac77452e8b97563" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3563" endline="3581">DAP_UpdateClampmodeTabs</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8820a689ee7672afb875c75ab1073f7e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1562" endline="1578">DAP_UpdateITIAcrossSets</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a83a7d15303f554acbb5494c1df8c517e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4078" endline="4093">DAP_UpdateOnsetDelay</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af3eb049dc1e1c8e847fcfb521967f6ab" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1748" endline="1809">DAP_UpdateSweepLimitsAndDisplay</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6e2725a8a6994cacd17ed5bf5e6f64c5" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1853" endline="1873">DAP_UpdateSweepSetVariables</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2044" endline="2076">DC_GetStopCollectionPoint</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936" compoundref="_m_i_e_s___data_configurator_8ipf" startline="226" endline="270">DC_LongestOutputWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2004" endline="2041">DC_ReturnTotalLengthIncrease</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="158" endline="265">DQM_StartDAQMultiDevice</referencedby>
+        <referencedby refid="group___background_functions_1ga216a30befc7388a82cb20819096a2077" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="93" endline="107">DQS_BkrdDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1ac943ce95b47035d99ac1425ab74867c4" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="19" endline="49">DQS_StartDAQSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" compoundref="_m_i_e_s___indexing_8ipf" startline="194" endline="205">IDX_GetCurrentSets</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1afb2ba7be3d22f4683c2b708fc685b97f" compoundref="_m_i_e_s___indexing_8ipf" startline="330" endline="367">IDX_GetSetsInRange</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1071" endline="1092">MSQ_CommonPreDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a0bbf396a1828bed80e7d0e3ad59c4615" compoundref="_m_i_e_s___pressure_control_8ipf" startline="474" endline="495">P_ApplyNegV</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1abe403c18593730e35285b091ef0bf8f7" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1660" endline="1684">P_CheckAll</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae16de58da2e96e34b4223c65acbd6e6b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2083" endline="2121">P_Enable</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a80c5b73d56524facdcc8dedcfbe75978" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1806" endline="1831">P_EnableButtonsIfValid</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1aad07b1bd0405f1e48c197f488055c72b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2572" endline="2579">P_GetAutoUserOff</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a3e451270893a4dc2ebcd52c23c128bb3" compoundref="_m_i_e_s___pressure_control_8ipf" startline="729" endline="786">P_GetUserAccess</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a66721d2365eea4774f62178d3b679766" compoundref="_m_i_e_s___pressure_control_8ipf" startline="64" endline="116">P_PressureControl</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a865e74dae87bca8666c9073f25f96ceb" compoundref="_m_i_e_s___pressure_control_8ipf" startline="940" endline="976">P_UpdatePressureDataStorageWv</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3326" endline="3485">PSQ_CR_DetermineBoundsAction</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a0d8ccfd8f2ecdf8b31f115f7be61a39e" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="293" endline="350">PSQ_EvaluateBaselineChunks</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acab15c994a1c0e63c17d2417c337dae7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="710" endline="752">PSQ_GetNumberOfChunks</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab2cdf31f969cb7681d4c106431e5f932" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="137" endline="145">RA_GetTotalNumberOfSweepsLowLev</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab53a7983540796679ab4674f3ad62e6b" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="16" endline="26">RA_RecalculateITI</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1afab270091333ca2d58daf9582f3ff1ee" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="549" endline="568">RA_SkipSweepCalc</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a0d5a4deeefdbc33ae5401309958666d7" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="189" endline="194">SCOPE_GetCheckBoxesForAddons</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ae75c2dade88b290680abb2a70122927e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="51" endline="59">SCOPE_KillScopeWindowIfRequest</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="391" endline="444">SCOPE_SetADAxisLabel</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="498" endline="533">switchHolding</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1aef783d5c066f35312e2cd85e40ce0dd3" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="272" endline="276">SWS_GetRawDataFPType</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a42208c8e04b86af6dfc0605cf929e3cb" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="175" endline="183">TestAnalysisFunction_V1</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DAG_GetTextualValue</definition>
+        <argsstring>(string device, string ctrl, variable index=defaultValue)</argsstring>
+        <name>DAG_GetTextualValue</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Query a control value from the textual gui state wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Convienience wrapper to make the call sites nicer.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>control name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to NaN] Some control entries have multiple entries per headstage/channel/etc. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="229" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="229" bodyend="268"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae96078d18c5710629bd2d4b7920e4c9a" compoundref="_m_i_e_s___utilities_8ipf" startline="43" endline="48">IsNull</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ac799588e399954739f1026dee1dba511" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4389" endline="4417">DAP_AddUserComment</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1d8b2789fc76c320a05681a12380187f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3023" endline="3097">DAP_CheckStimset</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8292eee5c14d43815190ff1dd458fb4d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="827" endline="831">DAP_DeviceIsLeader</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a457f2f9d1bbeae5aec69247581a31d03" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1926" endline="1947">DeviceHasUserComments</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ab3ca90236953ba7b52431f4176030084" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2489" endline="2559">P_ButtonProc_UserPressure</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae2415cec650043d3217816015b8f7104" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4532" endline="4540">PSQ_PB_GetPrePulseBaselineDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2a89cab089b5b9328faedb73b2cd576b" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4165" endline="4171">PSQ_SetSamplingIntervalMultiplier</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DAG_GetChannelState</definition>
+        <argsstring>(string device, variable type)</argsstring>
+        <name>DAG_GetChannelState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave of the status of the checkboxes specified by channelType, uses <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" kindref="member">GetDA_EphysGuiStateNum()</ref> instead of GUI queries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="275" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="275" bodyend="312"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad58e348c622c424cb0c9fc95edc1e3fe" compoundref="_m_i_e_s___constants_8ipf" startline="218">CHANNEL_TYPE_ALARM</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae4bc9e4b70d77d786f4f6519f257a0ac" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3542" endline="3606">GetNumberFromType</references>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a0adb90455a369fd191b080a3100a7fbe" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="173" endline="220">AFM_UpdateAnalysisFunctionWave</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a59f0c63f41d0ec3753b4141f0439279c" compoundref="_m_i_e_s___configuration_8ipf" startline="1975" endline="2093">CONF_GetAmplifierSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa45fb2ca2a0311a540f67cf699cce939" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3583" endline="3650">DAP_ChangeHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1afe134f085eafc3b57c18dc09b213b030" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3101" endline="3116">DAP_SyncChanAmpAssignToActiveHS</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53" compoundref="_m_i_e_s___data_configurator_8ipf" startline="209" endline="219">DC_AreTTLsInRackChecked</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="148" endline="153">DC_NoOfChannelsSelected</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ad753e0cd7ab5f5d06a6fec409fa4e570" compoundref="_m_i_e_s___indexing_8ipf" startline="208" endline="228">IDX_MaxSets</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="555" endline="588">LastStimSetRun</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a6a8a67bf9bcc2577a58698d7c0b43048" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="128" endline="176">MSQ_DeterminePulseDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a95c6b1d082bf5c57a758e28c3a9685df" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3532" endline="3563">PSQ_CR_DetermineCycles</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad51a46ca2e3642920a3150f01dc31627" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="186" endline="247">PSQ_DeterminePulseDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0d771c01655b70f322149078b487ee1e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="446" endline="459">setHolding</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ace2f408ab3904804d16c6c97f09d069d" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="478" endline="492">setIClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a2ee8a10c2d3b8f588f74ecff4871abcc" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="462" endline="475">setVClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a9ee20480d92202d8b615b6f9a8e546e4" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="528" endline="533">SI_NI_CalculateMinSampInterval</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="498" endline="533">switchHolding</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="302" endline="381">TP_AutoBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DAG_GetActiveHeadstages</definition>
+        <argsstring>(string device, variable clampMode)</argsstring>
+        <name>DAG_GetActiveHeadstages</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave with <computeroutput>NUM_HEADSTAGES</computeroutput> rows with <computeroutput>1</computeroutput> where the given headstages is active and in the given clamp mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="316" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="316" bodyend="325"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="321" endline="360">MSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="17" endline="62">SC_GetTrials</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ae031ad77659e691b06f9734b59d326bf" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="633" endline="647">SC_HeadstageQC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="339" endline="358">SC_ProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1afa72c2d751afa1d476db7d07b430b8e5" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="412" endline="431">SC_SpikeCountsCalc</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="500" endline="550">SC_SpikePositionQC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a90c0656cc0c0d56dd62053fa33aced20" compoundref="_m_i_e_s___test_pulse_8ipf" startline="656" endline="667">TP_AutoTPActive</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_HeadstageIsHighestActive</definition>
+        <argsstring>(string device, variable headstage, variable clampMode=defaultValue)</argsstring>
+        <name>DAG_HeadstageIsHighestActive</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return true/false if the given headstage is the highest active. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>clampMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to all clamp modes] Restrict to the given clamp mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="332" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="332" bodyend="348"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1071" endline="1092">MSQ_CommonPreDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DAG_GetChannelTextual</definition>
+        <argsstring>(string device, variable channelType, variable controlType)</argsstring>
+        <name>DAG_GetChannelTextual</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>controlType</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave of the popup menu strings specified by channelType, uses <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" kindref="member">GetDA_EphysGuiStateTxT()</ref> instead of GUI queries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the channel type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>controlType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the control type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="356" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="356" bodyend="369"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae4bc9e4b70d77d786f4f6519f257a0ac" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3542" endline="3606">GetNumberFromType</references>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac6c5a7d64273ee109ec3a50522844b45" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2080" endline="2101">DC_GotTPChannelWhileDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a96ff77a6b4b4ad061dbc7075dcbcca18" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1744" endline="1843">DC_ITC_MakeTTLWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936" compoundref="_m_i_e_s___data_configurator_8ipf" startline="226" endline="270">DC_LongestOutputWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a9e4724819a2df3a6e4e5db830232b755" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1845" endline="1909">DC_NI_MakeTTLWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a6d893c271bad0ef625d2135d8a35b632" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_GetHeadstageState</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>DAG_GetHeadstageState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Returns the headstage State. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="372" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="372" bodyend="378"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a22e9093a260a0117dfe2819aede2ce7c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3546" endline="3561">DAP_SetHeadstageChanControls</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae26f87cd3b2f85c911d3e441d7e463c7" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1972" endline="1977">P_IsHSActiveAndInVClamp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_GetHeadstageMode</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>DAG_GetHeadstageMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the mode of the headstage defined in the locked DA_ephys panel, can be V_CLAMP_MODE or I_CLAMP_MODE or NC </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="382" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="382" bodyend="387"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a59f0c63f41d0ec3753b4141f0439279c" compoundref="_m_i_e_s___configuration_8ipf" startline="1975" endline="2093">CONF_GetAmplifierSettings</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a1a99dc9125f1d36720b476f1255d06a4" compoundref="_m_i_e_s___configuration_8ipf" startline="2101" endline="2156">CONF_RestoreAmplifierSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae940104cec1b05730323bf86b683b00a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5359" endline="5406">DAP_AllChanDASettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af055d8fb68971b1c10a3cf7e4362c143" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1084" endline="1113">DAP_DACHasExpectedClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6cb733efb1cae0717bb28e2e2e00862d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3938" endline="3966">DAP_SliderProc_MIESHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1afe134f085eafc3b57c18dc09b213b030" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3101" endline="3116">DAP_SyncChanAmpAssignToActiveHS</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="120" endline="145">DC_UpdateHSProperties</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a531d7094ed6c42f450f3e6c2c569ef24" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="317" endline="335">Enforce_IC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1f9eb5cf83246d34c10fbb4731dc49f8" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="296" endline="315">Enforce_VC</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae26f87cd3b2f85c911d3e441d7e463c7" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1972" endline="1977">P_IsHSActiveAndInVClamp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="498" endline="533">switchHolding</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a35652d9f717b5245384c9ab9bfc80a7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DAG_Update</definition>
+        <argsstring>(string device, string controlName, variable val=defaultValue, string str=defaultValue)</argsstring>
+        <name>DAG_Update</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>controlName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>val</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Updates the state of a control in the GUIState numeric wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>One or both parameters have to be passed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>controlName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>control name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] numerical value, 0-based index for popup menues </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] textual value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="397" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="397" bodyend="432"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a48c55785573442f9cf423b1e243b295e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4575" endline="4687">DAP_ParsePanelControl</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3d3e792071e5053a33ba3933f18c6e3a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5336" endline="5376">GetDA_EphysGuiStateTxT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ac9edb17c67a11fb14e104eb808b171cf" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2340" endline="2362">CheckProc_ClearEnable</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad9cd55b80fab339f8b5c6ef190864967" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1115" endline="1140">DAP_CheckProc_AD</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1261f9225c4da2e6c2fe01b032fa8813" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4007" endline="4025">DAP_CheckProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aba6e5c5715fd05f12f781284ab44d194" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1032" endline="1069">DAP_CheckProc_Channel_All</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a0cfa678c03ec64d0c123e6a8fe448ff9" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3363" endline="3388">DAP_CheckProc_HedstgeChck</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a010c0ff471c73d97498dc3afac411a6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1479" endline="1500">DAP_CheckProc_IndexingState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a313e7eb9d0d63ba705a8336c373cdde1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4062" endline="4075">DAP_CheckProc_InsertTP</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad4abf4775b9b091652231f9ae3964c40" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4552" endline="4568">DAP_CheckProc_LockedLogic</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa0efd6735a093172383f7de42f517292" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4028" endline="4044">DAP_CheckProc_MDEnable</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3fce16e5b32f2bd046d95ac415dc849f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5671" endline="5688">DAP_CheckProc_PowerSpectrum</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ac1578f8cbe7d7e3164a92674b28d4462" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5476" endline="5492">DAP_CheckProc_RandomRA</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a22fea97293a0976cc96ad573fdfcba01" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4181" endline="4193">DAP_CheckProc_RepeatedAcq</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a231ff33c2e999f4d7b7d52309ef63411" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4768" endline="4789">DAP_CheckProc_Settings_PUser</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aca7ee625018066a9ed93252923032c78" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1502" endline="1522">DAP_CheckProc_ShowScopeWin</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a500945ab7d7234edc324ec9aedb8db68" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4215" endline="4232">DAP_CheckProc_SyncCtrl</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1adeb39ed8273f7ad17bec328cd10bd896" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4117" endline="4137">DAP_CheckProc_TestPulseSett</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1afedbaafd96cb19e6ac968ffc3b654174" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4723" endline="4733">DAP_CheckProc_UpdateGuiState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af4d9e19afb08146f844674a150d1ee3b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1007" endline="1030">DAP_DAorTTLCheckProc</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a0d3a834d8cd514806b091a17b71ee2e6" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1581" endline="1651">DAP_PopMenuChkProc_StimSetList</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aca41a3468c7b01a690253204531453e4" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5553" endline="5570">DAP_PopMenuProc_FixedSampInt</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a33e3a2f6f40c0988377581b74104bf7b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1965" endline="1983">DAP_PopMenuProc_Headstage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a127ac38892a0dfffd31866f96a539d40" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5582" endline="5604">DAP_PopMenuProc_OsciUpdMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a98bba0bdfb107eddbefaa47688cd1187" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5528" endline="5545">DAP_PopMenuProc_SampMult</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab1b767e05222634a514096217cd7fe4b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5508" endline="5518">DAP_PopMenuProc_UpdateGuiState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aaf7516709e70ed75490fbfb03295b824" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4735" endline="4751">DAP_SetVar_SetScale</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a5b0bf9b888476e13b794958beba46b09" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4753" endline="4766">DAP_SetVar_UpdateGuiState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1fa85fe377c21a85280efb6de8f8b6b2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3968" endline="3986">DAP_SetVarProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a800dafc9331e476a6eb01b9a50b94823" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2003" endline="2037">DAP_SetVarProc_CAA</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae73243b4c645649e7af729b71192ec2c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="938" endline="1005">DAP_SetVarProc_Channel_Search</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a67c7944a0760f24925f17fcd5b675aab" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1653" endline="1691">DAP_SetVarProc_DA_Scale</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa7d41a9e35c6030ee6dc0e696dd3a08b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1693" endline="1717">DAP_SetVarProc_NextSweepLimit</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a4fdea68c5bdf6a18cda2028f079e02b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5461" endline="5474">DAP_SetVarProc_skipAhead</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa62e20cce23c8fb502fd65ed48e6cce1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4234" endline="4247">DAP_SetVarProc_SyncCtrl</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aec969c1ec63a73d65e6eee4cb222e56c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4095" endline="4115">DAP_SetVarProc_TestPulseSett</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae7492409a4b0338ccd7c48f265d28ce2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1875" endline="1892">DAP_SetVarProc_TotSweepCount</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6cb733efb1cae0717bb28e2e2e00862d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3938" endline="3966">DAP_SliderProc_MIESHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a9e4bac40e99cd1eea441072ebf6dd9a9" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4199" endline="4213">DAP_ToggleCheckBoxes</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8331010e3c4b8c7bc206e362130c4cd2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5748" endline="5765">DAP_UpdateStimulusSetPopup</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af3eb049dc1e1c8e847fcfb521967f6ab" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1748" endline="1809">DAP_UpdateSweepLimitsAndDisplay</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a12d554858b23ded08ca4497f090a4b11" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6175" endline="6186">EqualizeCheckBoxes</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3947c87ee6e52bf72479cb9cf9433bf8" compoundref="_m_i_e_s___indexing_8ipf" startline="32" endline="56">IDX_ResetStartFinishForIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9c5213b966f26f378ed5cd260ab936b1" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2460" endline="2473">P_Check_ApproachNear</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1abd17dcf4102178ded15383192d5e2d37" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2475" endline="2487">P_Check_SealAtm</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a75a4aaf29e1faaaaf514546583188bf7" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6157" endline="6167">ToggleCheckBoxes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a1e472c8e0abadb4e6eef489e99d917ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DAG_GetUniqueSpecCtrlListNum</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DAG_GetUniqueSpecCtrlListNum</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns a list of unique and type specific controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="436" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="436" bodyend="442"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1adffcd09d5cc5ef266d68f404ed6612fb" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="537" endline="570">DAG_GetSpecificCtrlNum</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a51ff0a3e29f9dd21815ff3f80629f748" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="500" endline="534">DAG_GetUniqueCtrlList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1acda3464d3e505f5971673baf02c50602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DAG_GetUniqueSpecCtrlListTxT</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DAG_GetUniqueSpecCtrlListTxT</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns a list of unique and type specific controls with textual values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="445" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="445" bodyend="451"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a2ed96e8fa1ef046705afa45b26f738ac" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="573" endline="604">DAG_GetSpecificCtrlTxT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a51ff0a3e29f9dd21815ff3f80629f748" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="500" endline="534">DAG_GetUniqueCtrlList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a4a79d7dd81f468e070faae2aa2dd4ef8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave DAG_ControlStatusWave</definition>
+        <argsstring>(string device, variable type)</argsstring>
+        <name>DAG_ControlStatusWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Returns a free wave of the status of the checkboxes specified by channelType. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The only caller should be <ref refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a49d60cb228b1f92e20d962e600e73308" kindref="member">DAG_RecordGuiStateNum()</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="459" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="459" bodyend="476"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae4bc9e4b70d77d786f4f6519f257a0ac" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3542" endline="3606">GetNumberFromType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a49d60cb228b1f92e20d962e600e73308" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="13" endline="103">DAG_RecordGuiStateNum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af44f42220703a7cefe5950d67628f2d9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave DAG_GetAllHSMode</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DAG_GetAllHSMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the mode of all DA_Ephys panel headstages. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All callers, except the ones updating the GUIState wave, should prefer <ref refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" kindref="member">DAG_GetHeadstageMode()</ref> instead. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="482" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="482" bodyend="497"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a100b0a48e39c702cc341b0be2bee8232" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3260" endline="3328">DAP_GetInfoFromControl</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a49d60cb228b1f92e20d962e600e73308" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="13" endline="103">DAG_RecordGuiStateNum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a51ff0a3e29f9dd21815ff3f80629f748" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DAG_GetUniqueCtrlList</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DAG_GetUniqueCtrlList</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Parses a list of controls in the device and returns a list of unique controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="500" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="500" bodyend="534"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a48c55785573442f9cf423b1e243b295e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4575" endline="4687">DAP_ParsePanelControl</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a1e472c8e0abadb4e6eef489e99d917ff" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="436" endline="442">DAG_GetUniqueSpecCtrlListNum</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1acda3464d3e505f5971673baf02c50602" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="445" endline="451">DAG_GetUniqueSpecCtrlListTxT</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1adffcd09d5cc5ef266d68f404ed6612fb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DAG_GetSpecificCtrlNum</definition>
+        <argsstring>(string device, string list)</argsstring>
+        <name>DAG_GetSpecificCtrlNum</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="537" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="537" bodyend="570"/>
+        <references refid="_m_i_e_s___constants_8ipf_1aea649ea4dc480afa61d6b53bab5cb94e" compoundref="_m_i_e_s___constants_8ipf" startline="172">CONTROL_TYPE_CHECKBOX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a71627d1809bd691d5c5a8f84919f4f88" compoundref="_m_i_e_s___constants_8ipf" startline="173">CONTROL_TYPE_POPUPMENU</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8155ff613536716122f1ae9cbb46a91e" compoundref="_m_i_e_s___constants_8ipf" startline="175">CONTROL_TYPE_SETVARIABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a83480d2e6af3b7b2bcba83e8fe45cf59" compoundref="_m_i_e_s___constants_8ipf" startline="177">CONTROL_TYPE_SLIDER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f346a9f3259d3675764571482a62396" compoundref="_m_i_e_s___constants_8ipf" startline="174">CONTROL_TYPE_VALDISPLAY</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a454c0497f7f7dd8a9546108d72f48f99" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1535" endline="1537">DoesControlHaveInternalString</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa28366bc8a1b36aae811ea23194a5fa6" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="2100" endline="2109">GetRecreationMacroAndType</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a1e472c8e0abadb4e6eef489e99d917ff" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="436" endline="442">DAG_GetUniqueSpecCtrlListNum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a2ed96e8fa1ef046705afa45b26f738ac" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DAG_GetSpecificCtrlTxT</definition>
+        <argsstring>(string device, string list)</argsstring>
+        <name>DAG_GetSpecificCtrlTxT</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Parses a list of controls and returns textual valDisplay, setVariable and popUpMenu controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" line="573" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf" bodystart="573" bodyend="604"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a71627d1809bd691d5c5a8f84919f4f88" compoundref="_m_i_e_s___constants_8ipf" startline="173">CONTROL_TYPE_POPUPMENU</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8155ff613536716122f1ae9cbb46a91e" compoundref="_m_i_e_s___constants_8ipf" startline="175">CONTROL_TYPE_SETVARIABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f346a9f3259d3675764571482a62396" compoundref="_m_i_e_s___constants_8ipf" startline="174">CONTROL_TYPE_VALDISPLAY</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a454c0497f7f7dd8a9546108d72f48f99" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1535" endline="1537">DoesControlHaveInternalString</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa28366bc8a1b36aae811ea23194a5fa6" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="2100" endline="2109">GetRecreationMacroAndType</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1acda3464d3e505f5971673baf02c50602" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="445" endline="451">DAG_GetUniqueSpecCtrlListTxT</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DAG</bold> Routines dealing with the DA_Ephys GUI state waves </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DAEphys_GuiState.ipf"/>
+  </compounddef>
+</doxygen>

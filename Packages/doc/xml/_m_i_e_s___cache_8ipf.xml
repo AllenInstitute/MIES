@@ -1,0 +1,832 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___cache_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Cache.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Cache key generators</header>
+      <description><para><anchor id="_m_i_e_s___cache_8ipf_1CacheKeyGenerators"/></para>
+</description>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a3d26c7b337569593a134c240048a5c40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_DistDAQCreateCacheKey</definition>
+        <argsstring>(OOdDAQParams *params)</argsstring>
+        <name>CA_DistDAQCreateCacheKey</name>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for oodDAQ offset waves. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="74" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="74" bodyend="95"/>
+        <references refid="struct_o_od_d_a_q_params_1a363b782b13ed1dba6f9c87235414d757" compoundref="_m_i_e_s___structures_8ipf" startline="225">OOdDAQParams::postFeaturePoints</references>
+        <references refid="struct_o_od_d_a_q_params_1a8f6ee3ae8fd00f7cd785f87f7f0736c1" compoundref="_m_i_e_s___structures_8ipf" startline="224">OOdDAQParams::preFeaturePoints</references>
+        <references refid="struct_o_od_d_a_q_params_1aafdf321e29199e2a2c80a04e778a799f" compoundref="_m_i_e_s___structures_8ipf" startline="216">OOdDAQParams::preload</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_o_od_d_a_q_params_1ade070174bf7b196596bdecd11d2abf85" compoundref="_m_i_e_s___structures_8ipf" startline="223">OOdDAQParams::setColumns</references>
+        <references refid="struct_o_od_d_a_q_params_1a1c1088e413db2967f6e3b5e51581a24e" compoundref="_m_i_e_s___structures_8ipf" startline="222">OOdDAQParams::stimSets</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a86cb122576432a33c014ac7d319bb6ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_PulseTimes</definition>
+        <argsstring>(wave wv, string fullPath, variable channelNumber, variable totalOnsetDelay)</argsstring>
+        <name>CA_PulseTimes</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fullPath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalOnsetDelay</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for <computeroutput>FindLevel</computeroutput> in PA_CalculatePulseTimes() </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="98" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="98" bodyend="112"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a093cac8107a611b8c2c481ca745e3ad1" compoundref="_m_i_e_s___utilities_8ipf" startline="4334" endline="4345">WaveModCountWrapper</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9911c1b40bc33a63acaa0732fbbb1663" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="243" endline="317">PA_CalculatePulseInfos</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1ab35cc2210efb6e8d88baf134ee83b122" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_SmoothDeconv</definition>
+        <argsstring>(wave wv, variable smoothingFactor, variable range_pnts)</argsstring>
+        <name>CA_SmoothDeconv</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>smoothingFactor</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>range_pnts</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for <ref refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" kindref="member">PA_SmoothDeconv()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input wave (average) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>smoothingFactor</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>smoothing factor </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>range_pnts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of points (p) the smoothing was performed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="119" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="119" bodyend="131"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2650" endline="2674">PA_SmoothDeconv</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1ac786f553849c9e524f8ffb0106995d12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_Deconv</definition>
+        <argsstring>(wave wv, variable tau)</argsstring>
+        <name>CA_Deconv</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>tau</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for <ref refid="_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796" kindref="member">PA_Deconvolution()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input wave (smoothed average) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tau</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>convolution time </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="137" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="137" bodyend="148"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2676" endline="2707">PA_Deconvolution</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a54ec1862ee17609d964b9056258c2370" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_ArtefactRemovalRangesKey</definition>
+        <argsstring>(dfref singleSweepDFR, variable sweepNo)</argsstring>
+        <name>CA_ArtefactRemovalRangesKey</name>
+        <param>
+          <type>dfref</type>
+          <declname>singleSweepDFR</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for artefact removal ranges. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="151" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="151" bodyend="161"/>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1ad14ced48ec463a07ebffd588541b1870" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_AveragingKey</definition>
+        <argsstring>(WaveRefWave waveRefs)</argsstring>
+        <name>CA_AveragingKey</name>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>waveRefs</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for averaging. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="164" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="164" bodyend="168"/>
+        <references refid="_m_i_e_s___cache_8ipf_1a2fde132d1deb4f50f7151dcf95203eb3" compoundref="_m_i_e_s___cache_8ipf" startline="265" endline="295">CA_WaveCRCs</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1abe2e1a25fc13052c5606b06bce022735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_AveragingWaveModKey</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>CA_AveragingWaveModKey</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Cache key generator for averaging info from non-free waves. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="171" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="171" bodyend="173"/>
+        <references refid="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c" compoundref="_m_i_e_s___cache_8ipf" startline="178" endline="225">CA_RecursiveWavemodCRC</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1acd38233671566e3b1caaf014c5329fe6" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2086" endline="2133">PA_CalculateAllAverages</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CA_RecursiveWavemodCRC</definition>
+        <argsstring>(WaveOrNull wv, variable prevCRC=defaultValue)</argsstring>
+        <name>CA_RecursiveWavemodCRC</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>prevCRC</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location. If the given wave is a wave reference wave, then the CRC is calculated recursively from all non wave reference waves and null wave references found. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="178" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="178" bodyend="225"/>
+        <references refid="_m_i_e_s___cache_8ipf_1a142b0494e83c12ebebdcb70ecd91871d" compoundref="_m_i_e_s___cache_8ipf" startline="227" endline="230">CA_GetWaveModCRC</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c" compoundref="_m_i_e_s___cache_8ipf" startline="178" endline="225">CA_RecursiveWavemodCRC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ae39f67d188d5c5e8f5fc3d2c35f5bdad" compoundref="_i_p_n_w_b___constants_8ipf" startline="80">CHUNKS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1abe2e1a25fc13052c5606b06bce022735" compoundref="_m_i_e_s___cache_8ipf" startline="171" endline="173">CA_AveragingWaveModKey</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c" compoundref="_m_i_e_s___cache_8ipf" startline="178" endline="225">CA_RecursiveWavemodCRC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a142b0494e83c12ebebdcb70ecd91871d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CA_GetWaveModCRC</definition>
+        <argsstring>(wave wv, variable crc)</argsstring>
+        <name>CA_GetWaveModCRC</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>crc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="227" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="227" bodyend="230"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a093cac8107a611b8c2c481ca745e3ad1" compoundref="_m_i_e_s___utilities_8ipf" startline="4334" endline="4345">WaveModCountWrapper</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a8fe43bef6e34abc5c9b25fed3311431c" compoundref="_m_i_e_s___cache_8ipf" startline="178" endline="225">CA_RecursiveWavemodCRC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a7269f1c8c871a35bfbf0bd400405de73" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CA_WaveScalingCRC</definition>
+        <argsstring>(variable crc, wave wv, variable dimension=defaultValue)</argsstring>
+        <name>CA_WaveScalingCRC</name>
+        <param>
+          <type>variable</type>
+          <declname>crc</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dimension</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Calculate the CRC of all metadata of all or the given dimension. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="233" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="233" bodyend="257"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ae39f67d188d5c5e8f5fc3d2c35f5bdad" compoundref="_i_p_n_w_b___constants_8ipf" startline="80">CHUNKS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a2fde132d1deb4f50f7151dcf95203eb3" compoundref="_m_i_e_s___cache_8ipf" startline="265" endline="295">CA_WaveCRCs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a2fde132d1deb4f50f7151dcf95203eb3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string CA_WaveCRCs</definition>
+        <argsstring>(WaveRefWave waveRefs, variable crcMode=defaultValue, variable includeWaveScalingAndUnits=defaultValue, variable dims=defaultValue)</argsstring>
+        <name>CA_WaveCRCs</name>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>waveRefs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>crcMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>includeWaveScalingAndUnits</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dims</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Calculate all CRC values of the waves referenced in waveRefs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>waveRefs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave reference wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>crcMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] parameter to WaveCRC </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>includeWaveScalingAndUnits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] include the wave scaling and units of filled dimensions </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dims</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] number of dimensions to include wave scaling and units in crc </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="265" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="265" bodyend="295"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a7269f1c8c871a35bfbf0bd400405de73" compoundref="_m_i_e_s___cache_8ipf" startline="233" endline="257">CA_WaveScalingCRC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a01f70f7aabf292e27208328a81667dce" compoundref="_m_i_e_s___constants_8ipf" startline="1190">NUM_ENTRIES_FOR_MULTITHREAD</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1ad14ced48ec463a07ebffd588541b1870" compoundref="_m_i_e_s___cache_8ipf" startline="164" endline="168">CA_AveragingKey</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_SamplingIntervalKey</definition>
+        <argsstring>(wave lut, ActiveChannels *s)</argsstring>
+        <name>CA_SamplingIntervalKey</name>
+        <param>
+          <type>wave</type>
+          <declname>lut</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_active_channels" kindref="compound">ActiveChannels</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the cache key for SI_FindMatchingTableEntry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We are deliberatly not using a WaveCRC here as know that the wave is not changed in IP once loaded. Therefore using its name and ModDate is enough. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="301" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="301" bodyend="316"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1a1d3af58998e5e6754a9eab7341d955" compoundref="_m_i_e_s___utilities_8ipf" startline="4325" endline="4329">IsFreeWave</references>
+        <references refid="struct_active_channels_1a7a6b6d8f42ca78304055a8dba7807359" compoundref="_m_i_e_s___structures_8ipf" startline="570">ActiveChannels::numADRack1</references>
+        <references refid="struct_active_channels_1afe711bddbcab83bbbe0de02cb9bf7170" compoundref="_m_i_e_s___structures_8ipf" startline="573">ActiveChannels::numADRack2</references>
+        <references refid="struct_active_channels_1ac494681c600fc06fe0d3c049f59501aa" compoundref="_m_i_e_s___structures_8ipf" startline="568">ActiveChannels::numDARack1</references>
+        <references refid="struct_active_channels_1a8afba645feeba9de90a211d8f3b30cbe" compoundref="_m_i_e_s___structures_8ipf" startline="572">ActiveChannels::numDARack2</references>
+        <references refid="struct_active_channels_1aee6d831c3d9f897b2c2b4356cc42b01e" compoundref="_m_i_e_s___structures_8ipf" startline="571">ActiveChannels::numTTLRack1</references>
+        <references refid="struct_active_channels_1a54ff98cfe49bdec1b42f9eb55f88cec1" compoundref="_m_i_e_s___structures_8ipf" startline="574">ActiveChannels::numTTLRack2</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a99b32cb4314d07355b5fe0b722062004" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_TemporaryWaveKey</definition>
+        <argsstring>(wave dims)</argsstring>
+        <name>CA_TemporaryWaveKey</name>
+        <param>
+          <type>wave</type>
+          <declname>dims</declname>
+        </param>
+        <briefdescription>
+<para>Generic key generator for storing throw away waves used for Multithread assignments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Only the size is relevant, the rest is undefined. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="322" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="322" bodyend="335"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab605453ff33ec5794cb494e452906b5e" compoundref="_m_i_e_s___constants_8ipf" startline="128">MAX_DIMENSION_COUNT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a812e0e1939895c5c828978819ef58396" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6311" endline="6428">DecimateWithMethod</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1aaf0df7bce7ca22ca2703175f99a80456" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_HWDeviceInfoKey</definition>
+        <argsstring>(string device, variable hardwareType, variable deviceID)</argsstring>
+        <name>CA_HWDeviceInfoKey</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>hardwareType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the cache key for the hardware device info wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="338" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="338" bodyend="349"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CA_HardwareDataTPKey</definition>
+        <argsstring>(HardwareDataTPInput *s)</argsstring>
+        <name>CA_HardwareDataTPKey</name>
+        <param>
+          <type><ref refid="struct_hardware_data_t_p_input" kindref="compound">HardwareDataTPInput</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Generate a key for the DAQDataWave in TEST_PULSE_MODE. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Properties which influence the Testpulse:<itemizedlist>
+<listitem><para>hardwareType</para>
+</listitem><listitem><para>numDA (filled columns)</para>
+</listitem><listitem><para>numActiveChannels (number of columns)</para>
+</listitem><listitem><para>number of rows, return from DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE)</para>
+</listitem><listitem><para>samplingInterval</para>
+</listitem><listitem><para>DAGain</para>
+</listitem><listitem><para>DACAmp[][TPAmp] column</para>
+</listitem><listitem><para>testPulseLength, baselineFrac </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="362" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="362" bodyend="378"/>
+        <references refid="struct_hardware_data_t_p_input_1a115a445b8e28f3aa1d0875267004b48b" compoundref="_m_i_e_s___structures_8ipf" startline="332">HardwareDataTPInput::baselineFrac</references>
+        <references refid="struct_hardware_data_t_p_input_1aac9a5b9494197810e70871004872506c" compoundref="_m_i_e_s___structures_8ipf" startline="331">HardwareDataTPInput::DACAmpTP</references>
+        <references refid="struct_hardware_data_t_p_input_1a73bd7a34597a7b5acdaa2622f349de77" compoundref="_m_i_e_s___structures_8ipf" startline="331">HardwareDataTPInput::DAGain</references>
+        <references refid="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" compoundref="_m_i_e_s___structures_8ipf" startline="326">HardwareDataTPInput::hardwareType</references>
+        <references refid="struct_hardware_data_t_p_input_1a94e9df2c99dab7afcc5f4569aa500ddb" compoundref="_m_i_e_s___structures_8ipf" startline="328">HardwareDataTPInput::numActiveChannels</references>
+        <references refid="struct_hardware_data_t_p_input_1a22b2f85dc7670f7797632bb15ad20793" compoundref="_m_i_e_s___structures_8ipf" startline="329">HardwareDataTPInput::numberOfRows</references>
+        <references refid="struct_hardware_data_t_p_input_1acf90de23632d9c1dfd2eb04252b70945" compoundref="_m_i_e_s___structures_8ipf" startline="328">HardwareDataTPInput::numDACs</references>
+        <references refid="struct_hardware_data_t_p_input_1ae7b9c044081637bcbba877ba389ccb82" compoundref="_m_i_e_s___structures_8ipf" startline="330">HardwareDataTPInput::samplingInterval</references>
+        <references refid="struct_hardware_data_t_p_input_1a3028ec7b9a930708a454d44c30e9e838" compoundref="_m_i_e_s___structures_8ipf" startline="332">HardwareDataTPInput::testPulseLength</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a2dbd1b09f1004095a88dfd6129a0f890" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CA_MakeSpaceForNewEntry</definition>
+        <argsstring>()</argsstring>
+        <name>CA_MakeSpaceForNewEntry</name>
+        <briefdescription>
+<para>Make space for one new entry in the cache waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>index into cache waves </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="385" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="385" bodyend="407"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CA_StoreEntryIntoCache</definition>
+        <argsstring>(string key, wave val, variable options=defaultValue)</argsstring>
+        <name>CA_StoreEntryIntoCache</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>options</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add a new entry into the cache. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string which uniquely identifies the cached wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave to store </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to none] One or multiple constants from <ref refid="_m_i_e_s___constants_8ipf_1CacheFetchOptions" kindref="member">CacheFetchOptions</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Existing entries with the same key are overwritten. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="417" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="417" bodyend="460"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a2dbd1b09f1004095a88dfd6129a0f890" compoundref="_m_i_e_s___cache_8ipf" startline="385" endline="407">CA_MakeSpaceForNewEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab7a7e0e7699d8051322659da38cd4d08" compoundref="_m_i_e_s___constants_8ipf" startline="1213">CA_OPTS_NO_DUPLICATE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2a7a1e58d0101d25bf08190d05ba369e" compoundref="_m_i_e_s___utilities_8ipf" startline="3564" endline="3622">DeepCopyWaveRefWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abc03730185019abb08c713b4552ecdad" compoundref="_m_i_e_s___utilities_8ipf" startline="644" endline="667">GetWaveSize</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a812e0e1939895c5c828978819ef58396" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6311" endline="6428">DecimateWithMethod</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1acd38233671566e3b1caaf014c5329fe6" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2086" endline="2133">PA_CalculateAllAverages</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9911c1b40bc33a63acaa0732fbbb1663" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="243" endline="317">PA_CalculatePulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2676" endline="2707">PA_Deconvolution</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2650" endline="2674">PA_SmoothDeconv</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a6e5797f6b8b5dceb6eaaaf183c2b6b1c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CA_GetCacheIndex</definition>
+        <argsstring>(string key)</argsstring>
+        <name>CA_GetCacheIndex</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Return the index of the entry <computeroutput>key</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>non-negative number or <computeroutput>NaN</computeroutput> if it could not be found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="465" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="465" bodyend="474"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a95de4c6b9d2d345a13e7bf2bb891fc82" compoundref="_m_i_e_s___cache_8ipf" startline="544" endline="563">CA_DeleteCacheEntry</referencedby>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave CA_TryFetchingEntryFromCache</definition>
+        <argsstring>(string key, variable options=defaultValue)</argsstring>
+        <name>CA_TryFetchingEntryFromCache</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>options</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Try to fetch the wave stored under key from the cache. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string which uniquely identifies the cached wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to none] One or multiple constants from <ref refid="_m_i_e_s___constants_8ipf_1CacheFetchOptions" kindref="member">CacheFetchOptions</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A wave reference with the stored data or a invalid wave reference if nothing could be found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="484" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="484" bodyend="539"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a6e5797f6b8b5dceb6eaaaf183c2b6b1c" compoundref="_m_i_e_s___cache_8ipf" startline="465" endline="474">CA_GetCacheIndex</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab7a7e0e7699d8051322659da38cd4d08" compoundref="_m_i_e_s___constants_8ipf" startline="1213">CA_OPTS_NO_DUPLICATE</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" compoundref="_m_i_e_s___debugging_8ipf" startline="263" endline="303">DEBUGPRINT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2a7a1e58d0101d25bf08190d05ba369e" compoundref="_m_i_e_s___utilities_8ipf" startline="3564" endline="3622">DeepCopyWaveRefWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a812e0e1939895c5c828978819ef58396" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6311" endline="6428">DecimateWithMethod</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1acd38233671566e3b1caaf014c5329fe6" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2086" endline="2133">PA_CalculateAllAverages</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9911c1b40bc33a63acaa0732fbbb1663" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="243" endline="317">PA_CalculatePulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2676" endline="2707">PA_Deconvolution</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2650" endline="2674">PA_SmoothDeconv</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a95de4c6b9d2d345a13e7bf2bb891fc82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CA_DeleteCacheEntry</definition>
+        <argsstring>(string key)</argsstring>
+        <name>CA_DeleteCacheEntry</name>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Try to delete a cache entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>One if it could be found and deleted, zero otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="544" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="544" bodyend="563"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a6e5797f6b8b5dceb6eaaaf183c2b6b1c" compoundref="_m_i_e_s___cache_8ipf" startline="465" endline="474">CA_GetCacheIndex</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a91d9ef3e90908e66941751cf3a7aad96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CA_FlushCache</definition>
+        <argsstring>()</argsstring>
+        <name>CA_FlushCache</name>
+        <briefdescription>
+<para>Remove all entries from the wave cache. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="566" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="566" bodyend="571"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a30ffa43d176493c370010529c5d5ce55" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5467" endline="5482">GetCacheKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4bc33e24c8994f2ea15522f70600e7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5446" endline="5461">GetCacheValueWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___cache_8ipf_1a067b1f76ae48b5838434dfcc42d780c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CA_OutputCacheStatistics</definition>
+        <argsstring>()</argsstring>
+        <name>CA_OutputCacheStatistics</name>
+        <briefdescription>
+<para>Output cache statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" line="574" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf" bodystart="574" bodyend="594"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae84aab8730d946e8b7ff7fa423598984" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5497" endline="5548">GetCacheStatsWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>CA</bold> This file holds functions related to caching of waves. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The cache allows to store waves using a unique key for later retrieval. The stored waves are kept until they are explicitly removed.</para>
+<para>Usage:<itemizedlist>
+<listitem><para>Write a key generator function returning a string The parameters to CA_GenKey() must completely determine the wave you will later store. The appended version string to the key allows you to invalidate old keys if the algorithm creating the wave changes, but all input stays the same.</para>
+</listitem></itemizedlist>
+</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/S CA_GenKey(input)
+*       variable input
+* 
+*       return stringCRC(0, num2str(input)) + &quot;Version 1&quot;
+*   End
+*  </verbatim></para>
+<para><itemizedlist>
+<listitem><para>Write your main function as in the following example. The first time MyFancyCalculation(input) is called you get a cache miss and result has to be created from scratch, but all subsequent calls are fast as the entry is fetched from the cache.</para>
+</listitem></itemizedlist>
+</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/WAVE MyFancyCalculation(input)
+*       variable input
+* 
+*       string key = CA_GenKey(input)
+* 
+*       WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+* 
+*       if(WaveExists(result))
+*           return result
+*       endif
+* 
+*       // create result from scratch
+*       // ...
+* 
+*       CA_StoreEntryIntoCache(key, result)
+* 
+*       return result
+*   End
+*  </verbatim></para>
+<para><itemizedlist>
+<listitem><para>Deleting cache entries has to be done <emphasis>manually</emphasis> via <ref refid="_m_i_e_s___cache_8ipf_1a95de4c6b9d2d345a13e7bf2bb891fc82" kindref="member">CA_DeleteCacheEntry()</ref>. The cache is also stored in a packed experiment.</para>
+</listitem><listitem><para>The entries in the cache are stored as free wave copies of what you feed into <ref refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" kindref="member">CA_StoreEntryIntoCache()</ref>. Similiary you get a free wave copy from <ref refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" kindref="member">CA_TryFetchingEntryFromCache()</ref>.</para>
+</listitem><listitem><para>Storing 1D wave reference waves is supported, they are by default deep copied. </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Cache.ipf"/>
+  </compounddef>
+</doxygen>

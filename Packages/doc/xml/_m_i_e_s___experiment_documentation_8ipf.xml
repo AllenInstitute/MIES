@@ -1,0 +1,975 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___experiment_documentation_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ExperimentDocumentation.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_AddEntriesToLabnotebook</definition>
+        <argsstring>(wave vals, WaveText keys, variable sweepNo, string device, variable entrySourceType)</argsstring>
+        <name>ED_AddEntriesToLabnotebook</name>
+        <param>
+          <type>wave</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Add numerical/textual entries to the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" kindref="member">ED_createTextNotes</ref>, ED_createWaveNote </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="15" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="15" bodyend="23"/>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4f01c77d77a4e33125283803c89c8a6a" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="36" endline="43">ED_CheckValuesAndKeys</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a197a007c233d33a95a60a5a4987c9618" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1463" endline="1477">DAP_DocumentStopReason</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1db16676567ab45d1c205f2492d1e0d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1719" endline="1746">DAP_SweepRollback</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ac466ee8daa10b9e320eb9f0d1b677fbb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="872" endline="877">ED_TPSettingsDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ae6f9ceaa3f15e8b31873a12b69b57ee2" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="672" endline="687">ED_WriteUserCommentToLabNB</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab1f6eff43ab5d2754261b76521e0f524" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="526" endline="543">RA_DocumentSweepSkipping</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1ab3c9f40af20ab969b7d035383e022f30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_AddEntriesToResults</definition>
+        <argsstring>(wave vals, WaveText keys, variable entrySourceType)</argsstring>
+        <name>ED_AddEntriesToResults</name>
+        <param>
+          <type>wave</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Add numerical/textual entries to results. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="26" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="26" bodyend="34"/>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4f01c77d77a4e33125283803c89c8a6a" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="36" endline="43">ED_CheckValuesAndKeys</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a4f01c77d77a4e33125283803c89c8a6a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_CheckValuesAndKeys</definition>
+        <argsstring>(wave vals, wave keys)</argsstring>
+        <name>ED_CheckValuesAndKeys</name>
+        <param>
+          <type>wave</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>keys</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="36" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="36" bodyend="43"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ab3c9f40af20ab969b7d035383e022f30" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="26" endline="34">ED_AddEntriesToResults</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_createTextNotes</definition>
+        <argsstring>(WaveText incomingTextualValues, WaveText incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, string device=defaultValue)</argsstring>
+        <name>ED_createTextNotes</name>
+        <param>
+          <type>WaveText</type>
+          <declname>incomingTextualValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>incomingTextualKeys</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>logbookType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add textual entries to the logbook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The text documentation wave will use layers to report the different headstages.</para>
+<para>The incoming value wave can have zero to nine (<ref refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" kindref="member">NUM_HEADSTAGES</ref> + 1) layers. The first eight layers are for headstage dependent data, the last layer for headstage independent data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>incomingTextualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>incoming Text Documentation Wave sent by the each reporting subsystem </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>incomingTextualKeys</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>incoming Text Documentation key wave that is used to reference the incoming settings wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional for logbookType LBT_RESULTS only] device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of reporting subsystem, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>logbookType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the logbook, one of <ref refid="_m_i_e_s___constants_8ipf_1LogbookTypes" kindref="member">LogbookTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="59" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="59" bodyend="107"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7d4d5599673261a687da74e31d0ad976" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="210" endline="213">ExtractLogbookSliceSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="609" endline="611">GetAcquisitionState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1abbae0fc823afc2e0cdec5008484aa36a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="115" endline="163">GetLogbookWaves</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" compoundref="_i_p_n_w_b___utils_8ipf" startline="725" endline="736">num2strHighPrec</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ab3c9f40af20ab969b7d035383e022f30" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="26" endline="34">ED_AddEntriesToResults</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a496ee143d520dd1560afdfed3bfb81eb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_ParseHeadstageContigencyMode</definition>
+        <argsstring>(string str)</argsstring>
+        <name>ED_ParseHeadstageContigencyMode</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="109" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="109" bodyend="120"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a15f340f7e617f18ab45c12bb0d615f56" compoundref="_m_i_e_s___constants_8ipf" startline="1687">HCM_DEPEND</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8ce24719c5fc23b403207f54a1794e31" compoundref="_m_i_e_s___constants_8ipf" startline="1686">HCM_EMPTY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa3cf354410f3c7daae67cfbfed6f78ca" compoundref="_m_i_e_s___constants_8ipf" startline="1688">HCM_INDEP</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a1585e80fc9a75cdf3b8183f5c4ba4ae3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_GetHeadstageContingency</definition>
+        <argsstring>(wave values)</argsstring>
+        <name>ED_GetHeadstageContingency</name>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Return the headstage contigency mode for values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="123" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="123" bodyend="143"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a15f340f7e617f18ab45c12bb0d615f56" compoundref="_m_i_e_s___constants_8ipf" startline="1687">HCM_DEPEND</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8ce24719c5fc23b403207f54a1794e31" compoundref="_m_i_e_s___constants_8ipf" startline="1686">HCM_EMPTY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa3cf354410f3c7daae67cfbfed6f78ca" compoundref="_m_i_e_s___constants_8ipf" startline="1688">HCM_INDEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_createWaveNotes</definition>
+        <argsstring>(wave incomingNumericalValues, WaveText incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, string device=defaultValue)</argsstring>
+        <name>ED_createWaveNotes</name>
+        <param>
+          <type>wave</type>
+          <declname>incomingNumericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>incomingNumericalKeys</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>logbookType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add numerical entries to the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The history wave will use layers to report the different headstages.</para>
+<para>The incoming value wave can have zero to nine <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> layers. The first eight layers are for headstage dependent data, the last layer for headstage independent data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>incomingNumericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>settingsWave sent by the each reporting subsystem </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>incomingNumericalKeys</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key wave that is used to reference the incoming settings wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional for logbooktype LBT_RESULTS only] device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of reporting subsystem, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>logbookType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1LogbookTypes" kindref="member">LogbookTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="159" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="159" bodyend="203"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="609" endline="611">GetAcquisitionState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1abbae0fc823afc2e0cdec5008484aa36a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="115" endline="163">GetLogbookWaves</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a443155ae8852df2f0f755742f9c4f1c9" compoundref="_m_i_e_s___constants_8ipf" startline="1580">LBN_NUMERICAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ab3c9f40af20ab969b7d035383e022f30" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="26" endline="34">ED_AddEntriesToResults</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_AddEntryToLabnotebook</definition>
+        <argsstring>(string device, string key, wave values, string unit=defaultValue, variable tolerance=defaultValue, variable overrideSweepNo=defaultValue)</argsstring>
+        <name>ED_AddEntryToLabnotebook</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>unit</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>tolerance</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overrideSweepNo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add custom entries to the numerical/textual labnotebook for the very last sweep acquired. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The entries are prefixed with <computeroutput>USER_</computeroutput> to distinguish them from stock MIES entries.</para>
+<para>The index of the entry in <computeroutput>values</computeroutput> determines the headstage to which the setting applies. You can not set both headstage dependent and independent values at the same time as this does not make sense.</para>
+<para>Sample invocation: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+*   values[0] = 4711 // setting of the first headstage
+*   ED_AddEntryToLabnotebook(device, &quot;SomeSetting&quot;, values)
+*  </verbatim></para>
+<para>The later on the labnotebook can be queried with: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*       WAVE/Z settings = GetLastSetting(values, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name under which to store the entry. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>entry to add, wave can be numeric (floating point) or text, must have <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows. It can be all NaN or empty (text), this is useful if you want to make the key known without adding an entry. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;&quot;] physical unit of the entry </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tolerance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <ref refid="_m_i_e_s___constants_8ipf_1aa4841c73ea0f2133bfef58068b1ace16" kindref="member">LABNOTEBOOK_NO_TOLERANCE</ref>] tolerance of the entry, used for judging if a change is &quot;relevant&quot; and should then be written to the sweep wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overrideSweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to last acquired sweep] Adds metadata to the given sweep number. Mostly useful for adding labnotebook entries during <ref refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" kindref="member">MID_SWEEP_EVENT</ref> for analysis functions. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="242" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="242" bodyend="289"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a1585e80fc9a75cdf3b8183f5c4ba4ae3" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="123" endline="143">ED_GetHeadstageContingency</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a15f340f7e617f18ab45c12bb0d615f56" compoundref="_m_i_e_s___constants_8ipf" startline="1687">HCM_DEPEND</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa3cf354410f3c7daae67cfbfed6f78ca" compoundref="_m_i_e_s___constants_8ipf" startline="1688">HCM_INDEP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad487ff74aa64a76d6a6288d2352126ab" compoundref="_m_i_e_s___utilities_8ipf" startline="3650" endline="3656">IsFloatingPointWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa4841c73ea0f2133bfef58068b1ace16" compoundref="_m_i_e_s___constants_8ipf" startline="914">LABNOTEBOOK_NO_TOLERANCE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae109604f12f6ba2dbfca5eb41a263a71" compoundref="_m_i_e_s___constants_8ipf" startline="918">LABNOTEBOOK_USER_PREFIX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" compoundref="_i_p_n_w_b___constants_8ipf" startline="98">MAX_OBJECT_NAME_LENGTH_IN_BYTES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="86" endline="123">MSQ_GetPulseDurations</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1402" endline="1429">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3326" endline="3485">PSQ_CR_DetermineBoundsAction</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae27d7213770e56525e674d14dd1145c4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3505" endline="3521">PSQ_CR_GetCycles</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a51506279a5a234f5353406315d984ac8" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="274" endline="291">PSQ_EvaluateBaselinePassed</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a94f0f23a8c8f67aecf32cb606874bb57" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="154" endline="181">PSQ_GetPulseDurations</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ac9f91cea627980be611a7b3afecd4f7d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="258" endline="272">PSQ_StoreRMSThresholdsInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a450d9e998feaba3d2e19cc8b11f173c5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="996" endline="1012">PSQ_StoreStepSizeInLBN</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="17" endline="62">SC_GetTrials</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="339" endline="358">SC_ProcessPulses</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a9f91b320a054dba75b455765737c4bb6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7114" endline="7122">SetAnalysisFunctionVersion</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a3ffafc6f1c44fecb5f3ed88617cc5acb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_WriteChangedValuesToNote</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>ED_WriteChangedValuesToNote</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Record changed labnotebook entries compared to the last sweep to the sweep wave note. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="294" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="294" bodyend="374"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5ce101f041f50c6352367a39e08d9390" compoundref="_m_i_e_s___constants_8ipf" startline="249">INITIAL_KEY_WAVE_COL_COUNT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa4841c73ea0f2133bfef58068b1ace16" compoundref="_m_i_e_s___constants_8ipf" startline="914">LABNOTEBOOK_NO_TOLERANCE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2af68f9516aa38313fb30e39e6906d54" compoundref="_m_i_e_s___utilities_8ipf" startline="3953" endline="3961">str2numSafe</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a3ca21e4d5a5ae755443a7f5620a0ed39" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_WriteChangedValuesToNoteText</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>ED_WriteChangedValuesToNoteText</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Record changed labnotebook entries compared to the last sweep to the sweep wave note. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Textual version.</para>
+<para>Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="381" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="381" bodyend="450"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5ce101f041f50c6352367a39e08d9390" compoundref="_m_i_e_s___constants_8ipf" startline="249">INITIAL_KEY_WAVE_COL_COUNT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WAVE, variable &gt;</type>
+        <definition>static std::tuple&lt; WAVE, variable &gt; ED_FindIndizesAndRedimension</definition>
+        <argsstring>(WaveText incomingKey, wave incomingValues, WaveText key, wave values, variable logbookType)</argsstring>
+        <name>ED_FindIndizesAndRedimension</name>
+        <param>
+          <type>WaveText</type>
+          <declname>incomingKey</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>incomingValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>logbookType</declname>
+        </param>
+        <briefdescription>
+<para>Returns the column indizes of each parameter in incomingKey into the <computeroutput>key</computeroutput> wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Redimensions <computeroutput>key</computeroutput> and <computeroutput>values</computeroutput> waves. Prefills <computeroutput>key</computeroutput> with <computeroutput>incomingKey</computeroutput> data if necessary.</para>
+<para>Ensures that key and values have a matching column size at return.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>incomingKey</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>text wave with the keys to add </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>incomingValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave with the values to add </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>values/data wave of the labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>logbookType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the logbook, one of <ref refid="_m_i_e_s___constants_8ipf_1LogbookTypes" kindref="member">LogbookTypes</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="retval"><parameteritem>
+<parameternamelist>
+<parametername>colIndizes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column indizes of the entries from incomingKey </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rowIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>returns the row index into values at which the new values should be written </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="467" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="467" bodyend="614"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a1585e80fc9a75cdf3b8183f5c4ba4ae3" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="123" endline="143">ED_GetHeadstageContingency</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a496ee143d520dd1560afdfed3bfb81eb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="109" endline="120">ED_ParseHeadstageContigencyMode</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab64c2266f0215e4e7f79262dffcb5609" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1546" endline="1578">GetLBNumericalDescription</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8ce24719c5fc23b403207f54a1794e31" compoundref="_m_i_e_s___constants_8ipf" startline="1686">HCM_EMPTY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa3cf354410f3c7daae67cfbfed6f78ca" compoundref="_m_i_e_s___constants_8ipf" startline="1688">HCM_INDEP</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7087b8eee0ca362e46abd6d729f0a51d" compoundref="_m_i_e_s___utilities_8ipf" startline="3514" endline="3516">IsValidLiberalObjectName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae109604f12f6ba2dbfca5eb41a263a71" compoundref="_m_i_e_s___constants_8ipf" startline="918">LABNOTEBOOK_USER_PREFIX</references>
+        <references refid="_m_i_e_s___labnotebook_8ipf_1a6e5cc77f25c2a578139cae9ecb59091a" compoundref="_m_i_e_s___labnotebook_8ipf" startline="10" endline="31">LBN_SetDimensionLabels</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a032ec27bc6b7255a21691c2d4e654abc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_MarkSweepStart</definition>
+        <argsstring>(string device)</argsstring>
+        <name>ED_MarkSweepStart</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Remember the &quot;exact&quot; start of the sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Should be called immediately after <ref refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" kindref="member">HW_StartAcq()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="619" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="619" bodyend="625"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_createWaveNoteTags</definition>
+        <argsstring>(string device, variable sweepCount)</argsstring>
+        <name>ED_createWaveNoteTags</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepCount</declname>
+        </param>
+        <briefdescription>
+<para>Add sweep specific information to the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="628" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="628" bodyend="669"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1aeeeb243dbf5eeb41b0ce2e6cca1e21b1" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1700" endline="1705">AI_FillAndSendAmpliferSettings</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2fba114640a1e2276ebfb4c2e9607a4" compoundref="_m_i_e_s___utilities_8ipf" startline="3353" endline="3373">CheckIfClose</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1ac466ee8daa10b9e320eb9f0d1b677fbb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="872" endline="877">ED_TPSettingsDocumentation</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a3ffafc6f1c44fecb5f3ed88617cc5acb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="294" endline="374">ED_WriteChangedValuesToNote</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a3ca21e4d5a5ae755443a7f5620a0ed39" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="381" endline="450">ED_WriteChangedValuesToNoteText</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1ae6f9ceaa3f15e8b31873a12b69b57ee2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_WriteUserCommentToLabNB</definition>
+        <argsstring>(string device, string comment, variable sweepNo)</argsstring>
+        <name>ED_WriteUserCommentToLabNB</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>comment</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Write the user comment from the DA_Ephys panel to the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="672" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="672" bodyend="687"/>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa4841c73ea0f2133bfef58068b1ace16" compoundref="_m_i_e_s___constants_8ipf" startline="914">LABNOTEBOOK_NO_TOLERANCE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ac799588e399954739f1026dee1dba511" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4389" endline="4417">DAP_AddUserComment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_createAsyncWaveNoteTags</definition>
+        <argsstring>(string device, variable sweepCount)</argsstring>
+        <name>ED_createAsyncWaveNoteTags</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepCount</declname>
+        </param>
+        <briefdescription>
+<para>This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="690" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="690" bodyend="765"/>
+        <references refid="_m_i_e_s___asynchronous_data_8ipf_1af0c7372cb8a69b0004600fabe65fc85e" compoundref="_m_i_e_s___asynchronous_data_8ipf" startline="15" endline="34">ASD_CheckAsynAlarmState</references>
+        <references refid="_m_i_e_s___asynchronous_data_8ipf_1abeed0ed37415346dafff0300e3a6a7fd" compoundref="_m_i_e_s___asynchronous_data_8ipf" startline="37" endline="53">ASD_ReadChannel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a489290bc9f8a7c5ad98f783cfa08247b" compoundref="_m_i_e_s___constants_8ipf" startline="220">CHANNEL_CONTROL_ALARM_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76d199e8cffac5f43969240830b4e333" compoundref="_m_i_e_s___constants_8ipf" startline="219">CHANNEL_CONTROL_ALARM_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a423cc2db7127dce04d22ac0910f01894" compoundref="_m_i_e_s___constants_8ipf" startline="213">CHANNEL_CONTROL_GAIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab2963c623101855911f59741dcdd105b" compoundref="_m_i_e_s___constants_8ipf" startline="223">CHANNEL_CONTROL_TITLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4d762a7112dbc3f0a31addfe65d073a0" compoundref="_m_i_e_s___constants_8ipf" startline="212">CHANNEL_CONTROL_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad58e348c622c424cb0c9fc95edc1e3fe" compoundref="_m_i_e_s___constants_8ipf" startline="218">CHANNEL_TYPE_ALARM</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa513e0ae4ad57dec0167559fc6174be7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4145" endline="4191">GetAsyncSettingsKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a96c4b17467f155cf497dd060e9223d3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4227" endline="4241">GetAsyncSettingsTextKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a4e2f38b4719f7e64ba73af058d5d20ca" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4206" endline="4215">GetAsyncSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a4a679e0ac30e355a725bdf902ace5e45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4113" endline="4126">GetAsyncSettingsWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a55022802c4ff371d9ba636f540e5a8b2" compoundref="_m_i_e_s___utilities_8ipf" startline="5830" endline="5865">IsConstant</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac68a275e463970ed1f477382c4929b05" compoundref="_m_i_e_s___constants_8ipf" startline="20">NUM_ASYNC_CHANNELS</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ED_TPDocumentation</definition>
+        <argsstring>(string device)</argsstring>
+        <name>ED_TPDocumentation</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Stores test pulse related data in the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="768" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="768" bodyend="862"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1ac4bd0369df4873d417caa3cc67d4244a" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1670" endline="1675">AI_SelectMultiClamp</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1685" endline="1691">AI_SendToAmp</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad20bcc5e3031855e147069d22d3d626c" compoundref="_m_i_e_s___constants_8ipf" startline="713">AMPLIFIER_CONNECTION_SUCCESS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8dd1cf2cd45eca5c2152b02b60df1422" compoundref="_m_i_e_s___constants_8ipf" startline="861">CLAMPMODE_ENTRY_KEY</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1ac466ee8daa10b9e320eb9f0d1b677fbb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="872" endline="877">ED_TPSettingsDocumentation</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa4841c73ea0f2133bfef58068b1ace16" compoundref="_m_i_e_s___constants_8ipf" startline="914">LABNOTEBOOK_NO_TOLERANCE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8cd6695cf0e85f38675d408270c13347" compoundref="_m_i_e_s___constants_8ipf" startline="328">MCC_GETFASTCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0014531f98bddbe274e41318548336" compoundref="_m_i_e_s___constants_8ipf" startline="332">MCC_GETFASTCOMPTAU_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7eebabaac1adba2c51a0ece2ca33c0a5" compoundref="_m_i_e_s___constants_8ipf" startline="330">MCC_GETSLOWCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a094847a9b80a8afd88279e01901b899e" compoundref="_m_i_e_s___constants_8ipf" startline="334">MCC_GETSLOWCOMPTAU_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___experiment_documentation_8ipf_1ac466ee8daa10b9e320eb9f0d1b677fbb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ED_TPSettingsDocumentation</definition>
+        <argsstring>(string device, variable sweepNo, variable entrySourceType)</argsstring>
+        <name>ED_TPSettingsDocumentation</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Document the settings of the Testpulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The source type entry is not fixed. We want to document the testpulse settings during ITI and the testpulse settings for plain test pulses.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of reporting subsystem, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" line="872" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf" bodystart="872" bodyend="877"/>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a50efcbb37be7a670410b7ad8a0ce547e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7233" endline="7315">GetTPSettingsLabnotebookKeyWave</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>ED</bold> Writing numerical/textual information to the labnotebook </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ExperimentDocumentation.ipf"/>
+  </compounddef>
+</doxygen>

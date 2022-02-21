@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___background_watchdog_8ipf" kind="file" language="C++">
+    <compoundname>MIES_BackgroundWatchdog.ipf</compoundname>
+    <innernamespace refid="namespace_bkg_watcher">BkgWatcher</innernamespace>
+    <briefdescription>
+<para><bold>BW</bold> Panel for inspecting the state of the MIES DAQ/TP background functions </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_vector_index" kind="struct" language="C++" prot="public">
+    <compoundname>VectorIndex</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_vector_index_1abfd86c570b997732c9b24c2ad6217463" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string VectorIndex::data_type</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="264" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="263" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1aeed73dd27e3763e0ed61e047f0d9b7d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="268" endline="272">InitVectorIndex</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_vector_index_1a292c9828e8b23c6b5aaa0c12333e7333" prot="public" static="no" mutable="no">
+        <type><ref refid="struct_vector_data" kindref="compound">VectorData</ref></type>
+        <definition>VectorData VectorIndex::target</definition>
+        <argsstring></argsstring>
+        <name>target</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="265" column="13" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="265" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>VectorData</label>
+        <link refid="struct_vector_data"/>
+      </node>
+      <node id="1">
+        <label>VectorIndex</label>
+        <link refid="struct_vector_index"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>target</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="263" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="263" bodyend="266"/>
+    <listofallmembers>
+      <member refid="struct_vector_index_1abfd86c570b997732c9b24c2ad6217463" prot="public" virt="non-virtual"><scope>VectorIndex</scope><name>data_type</name></member>
+      <member refid="struct_vector_index_1a292c9828e8b23c6b5aaa0c12333e7333" prot="public" virt="non-virtual"><scope>VectorIndex</scope><name>target</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1553 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___h_d_f5_helpers_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_HDF5Helpers.ipf</compoundname>
+    <innerclass refid="struct_h_d_f5_data_info" prot="public">HDF5DataInfo</innerclass>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a82b9649a70f3d48ffc974e885a962056" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double kHDF5DataInfoVersion</definition>
+        <argsstring></argsstring>
+        <name>kHDF5DataInfoVersion</name>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Taken from HDF5 Browser.ipf</para>
+<para>Included here for convenience. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="372" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="372" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa8a2285a656dac9fd16948439a936d25" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double H5S_MAX_RANK</definition>
+        <argsstring></argsstring>
+        <name>H5S_MAX_RANK</name>
+        <initializer>= 32</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="373" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="373" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable InitHDF5DataInfo</definition>
+        <argsstring>(HDF5DataInfo *di)</argsstring>
+        <name>InitHDF5DataInfo</name>
+        <param>
+          <type><ref refid="struct_h_d_f5_data_info" kindref="compound">HDF5DataInfo</ref> *</type>
+          <declname>di</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="375" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="375" bodyend="381"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a82b9649a70f3d48ffc974e885a962056" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="372">kHDF5DataInfoVersion</references>
+        <references refid="struct_h_d_f5_data_info_1adc362489ec54acbb7217b5b12ce375a7" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="386">HDF5DataInfo::structName</references>
+        <references refid="struct_h_d_f5_data_info_1a84db83090764268601e0ba2dd5249267" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="383">HDF5DataInfo::version</references>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="494" endline="520">H5_AttributeExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf7905b5e5dd764af0e7631d2a03478c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="461" endline="484">H5_GetDatasetSize</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17a236000af5e1324d9a914739bdc5a6" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double H5_ATTRIBUTE_SIZE_LIMIT</definition>
+        <argsstring></argsstring>
+        <name>H5_ATTRIBUTE_SIZE_LIMIT</name>
+        <initializer>= 60e3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a50de0ebee19b467341e9e73690f4613d" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double H5_CHUNK_SIZE</definition>
+        <argsstring></argsstring>
+        <name>H5_CHUNK_SIZE</name>
+        <initializer>= 8192</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a9fff22dd75c540c361415008066aad69" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="100" endline="118">H5_GetChunkSizes</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_WriteTextDataset</definition>
+        <argsstring>(variable locationID, string name, string str=defaultValue, WaveTextOrNull wvText=defaultValue, variable overwrite=defaultValue, variable compressionMode=defaultValue, variable skipIfExists=defaultValue, variable writeIgorAttr=defaultValue, variable appendData=defaultValue, variable refMode=defaultValue)</argsstring>
+        <name>H5_WriteTextDataset</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>wvText</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipIfExists</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeIgorAttr</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>appendData</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>refMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Write a string or text wave into a HDF5 dataset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wvText</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Should existing datasets be overwritten </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to NO_COMPRESSION] Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>skipIfExists</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Do nothing if the dataset already exists </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeIgorAttr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Add Igor specific attributes to the dataset, see the <computeroutput>/IGOR</computeroutput> flag of <computeroutput>HDF5SaveData</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>appendData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to -1] Set the dimension to append to within the given dataset (requires compression) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>refMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to NO_REFERENCE] Set refMode, one in <ref refid="_i_p_n_w_b___constants_8ipf_1ReferenceMode" kindref="member">ReferenceMode</ref> (DisplayHelpTopic &quot;Saving Reference Data&quot;)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Only one of <computeroutput>str</computeroutput> or <computeroutput>wvText</computeroutput> can be given. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="33" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="33" bodyend="56"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1afdd7055731715283568cb47503b6e2f9" compoundref="_i_p_n_w_b___writer_8ipf" startline="124" endline="138">CreateIntraCellularEphys</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9774586836cd2512087b2d08fbfc1f97" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="519" endline="533">WriteTextDatasetIfSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_WriteDataset</definition>
+        <argsstring>(variable locationID, string name, variable var=defaultValue, variable varType=defaultValue, WaveOrNull wv=defaultValue, variable overwrite=defaultValue, variable compressionMode=defaultValue, variable skipIfExists=defaultValue, variable writeIgorAttr=defaultValue, variable appendData=defaultValue)</argsstring>
+        <name>H5_WriteDataset</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>varType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>wv</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipIfExists</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeIgorAttr</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>appendData</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Write a variable or text wave into a HDF5 dataset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>varType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Type of the data, must be given if <computeroutput>var</computeroutput> is supplied. See <ref refid="_m_i_e_s___constants_8ipf_1IgorTypes" kindref="member">IgorTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Should existing datasets be overwritten </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to NO_COMPRESSION] Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>skipIfExists</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Do nothing if the dataset already exists </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeIgorAttr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Add Igor specific attributes to the dataset, see the <computeroutput>/IGOR</computeroutput> flag of <computeroutput>HDF5SaveData</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>appendData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to -1] Set the dimension to append to within the given dataset (requires compression)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Only one of <computeroutput>var</computeroutput> or <computeroutput>wv</computeroutput> can be given. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="72" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="72" bodyend="96"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7906cd0b5f16f426529ffa26c6f61a96" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="844" endline="867">NWB_AppendStoredTestPulses</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1390" endline="1426">NWB_WriteStimsetCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a9fff22dd75c540c361415008066aad69" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave H5_GetChunkSizes</definition>
+        <argsstring>(wave wv, variable compressionMode)</argsstring>
+        <name>H5_GetChunkSizes</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave for the valid chunk sizes of each dimension taking into account the compression mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="100" column="14" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="100" bodyend="118"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a50de0ebee19b467341e9e73690f4613d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="16">H5_CHUNK_SIZE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a531bd8ea67c849647b879f252a502ba1" compoundref="_i_p_n_w_b___constants_8ipf" startline="107">SINGLE_CHUNK_COMPRESSION</references>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable H5_WriteDatasetLowLevel</definition>
+        <argsstring>(variable locationID, string name, wave wv, variable overwrite, variable compressionMode, variable skipIfExists, variable writeIgorAttr, variable appendData, variable refMode)</argsstring>
+        <name>H5_WriteDatasetLowLevel</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipIfExists</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>writeIgorAttr</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>appendData</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>refMode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" kindref="member">H5_WriteTextDataset</ref> or <ref refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" kindref="member">H5_WriteDataset</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="121" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="121" bodyend="197"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ae39f67d188d5c5e8f5fc3d2c35f5bdad" compoundref="_i_p_n_w_b___constants_8ipf" startline="80">CHUNKS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a3f8c2314ac69c2d2996a85803999cacb" compoundref="_i_p_n_w_b___utils_8ipf" startline="370" endline="378">GetFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17a236000af5e1324d9a914739bdc5a6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="15">H5_ATTRIBUTE_SIZE_LIMIT</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a9fff22dd75c540c361415008066aad69" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="100" endline="118">H5_GetChunkSizes</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a72b08ce99c20dd0a6d992f39d9a9189e" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="633" endline="637">H5_IsValidIdentifier</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_WriteTextAttribute</definition>
+        <argsstring>(variable locationID, string attrName, string path, string list=defaultValue, string str=defaultValue, variable overwrite=defaultValue, variable refMode=defaultValue)</argsstring>
+        <name>H5_WriteTextAttribute</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>attrName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>refMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Attach a text attribute to the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file, group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>attrName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the object onto which the attribute should be attached. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the attribute, list will be always written as 1D-array </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the attribute </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Should existing attributes be overwritten </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>refMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to 0] Set refMode, one in <ref refid="_i_p_n_w_b___constants_8ipf_1ReferenceMode" kindref="member">ReferenceMode</ref> (DisplayHelpTopic &quot;Saving Reference Data&quot;)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Only one of <computeroutput>str</computeroutput> or <computeroutput>list</computeroutput> can be given. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="211" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="211" bodyend="249"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a0bc9eefab0af0e9ad1b89625ec337ce8" compoundref="_i_p_n_w_b___constants_8ipf" startline="113">NO_REFERENCE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a96d2c33fc51000d49ee1fa0726cb8419" compoundref="_i_p_n_w_b___constants_8ipf" startline="114">OBJECT_REFERENCE</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" compoundref="_i_p_n_w_b___writer_8ipf" startline="245" endline="283">AddTimeSeriesUnitAndRes</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf5f210ef163ad8cace9140400010b24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_WriteAttribute</definition>
+        <argsstring>(variable locationID, string attrName, string path, variable var, variable varType, variable overwrite=defaultValue)</argsstring>
+        <name>H5_WriteAttribute</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>attrName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>varType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Attach a numerical attribute to the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file, group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>attrName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the object onto which the attribute should be attached. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the attribute </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>varType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Type of the attribute, see <ref refid="_m_i_e_s___constants_8ipf_1IgorTypes" kindref="member">IgorTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Should existing attributes be overwritten </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="260" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="260" bodyend="281"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" compoundref="_i_p_n_w_b___writer_8ipf" startline="245" endline="283">AddTimeSeriesUnitAndRes</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a696d6a1f4ac46aa537f87924260e5b09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_CreateSoftLink</definition>
+        <argsstring>(variable locationID, string path, string target)</argsstring>
+        <name>H5_CreateSoftLink</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>target</declname>
+        </param>
+        <briefdescription>
+<para>Create a link to a group. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file, group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the link </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>target</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The linked destination </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="288" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="288" bodyend="299"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_OpenFile</definition>
+        <argsstring>(string discLocation, variable write=defaultValue)</argsstring>
+        <name>H5_OpenFile</name>
+        <param>
+          <type>string</type>
+          <declname>discLocation</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>write</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Open HDF5 file and return ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>discLocation</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path to nwb file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>write</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>open file for writing. default is readonly. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>ID for referencing open hdf5 file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="306" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="306" bodyend="327"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="794" endline="831">AB_LoadResultsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="719" endline="744">AB_LoadTPStorageFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad21bc4c409cdef354fb9be5b3427f789" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_CloseFile</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>H5_CloseFile</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Close HDF5 file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ID of open hdf5 file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>open state as true/false </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="333" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="333" bodyend="343"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="348" endline="353">H5_IsFileOpen</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="794" endline="831">AB_LoadResultsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="719" endline="744">AB_LoadTPStorageFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_IsFileOpen</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>H5_IsFileOpen</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if the given HDF5 file is already open, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 locationID from <computeroutput>HDF5OpenFile</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="348" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="348" bodyend="353"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="122" endline="145">BeforeExperimentSaveHook</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad21bc4c409cdef354fb9be5b3427f789" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="333" endline="343">H5_CloseFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aace3a482f6a59a082ab0d78c78f8db44" compoundref="_i_p_n_w_b___reader_8ipf" startline="130" endline="140">ReadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_DatasetExists</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>H5_DatasetExists</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if the given HDF5 dataset exists, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the dataset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="410" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="410" bodyend="418"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</references>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="494" endline="520">H5_AttributeExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1592" endline="1621">NWB_LoadCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1501" endline="1581">NWB_LoadStimset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave H5_LoadDataset</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>H5_LoadDataset</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Load a specified dataset as wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>path on top of <computeroutput>locationID</computeroutput> which identifies the dataset</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to wave containing loaded data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="426" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="426" bodyend="453"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="794" endline="831">AB_LoadResultsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="719" endline="744">AB_LoadTPStorageFromNWB</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4452d82971b44d32bd0b1f88747fb693" compoundref="_i_p_n_w_b___reader_8ipf" startline="642" endline="668">GetTimeseriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a30ecdc03c0ff98b170cce380b202cd2c" compoundref="_i_p_n_w_b___reader_8ipf" startline="265" endline="278">LoadDataWave</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a46ef6aed821bc9f61a6eba6a3673af0a" compoundref="_i_p_n_w_b___reader_8ipf" startline="514" endline="532">LoadSweepTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1592" endline="1621">NWB_LoadCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1501" endline="1581">NWB_LoadStimset</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a6c2f4f8904430aac5c6182c2b73a5460" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="498" endline="511">ReadDataSetAsNumber</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a2f3acf3bf0df85add3bf642e1ca55968" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="458" endline="472">ReadTextDataSet</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf7905b5e5dd764af0e7631d2a03478c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave H5_GetDatasetSize</definition>
+        <argsstring>(variable locationID, string dataset)</argsstring>
+        <name>H5_GetDatasetSize</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>dataset</declname>
+        </param>
+        <briefdescription>
+<para>Return the dimension sizes of the given dataset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the dataset</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>wave with the dimension sizes or an invalid wave reference </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="461" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="461" bodyend="484"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_AttributeExists</definition>
+        <argsstring>(variable locationID, string path, string attribute, variable *objectType=defaultValue)</argsstring>
+        <name>H5_AttributeExists</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>attribute</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>objectType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Check if a given attribute exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">attribute</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">objectType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] Return the type of the element to which the attribute is attached to. Can be used for subsequent HDF5LoadData calls. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="494" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="494" bodyend="520"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a386439db8707dde83124479dd5e04484" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="410" endline="418">H5_DatasetExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</references>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave H5_LoadAttribute</definition>
+        <argsstring>(variable locationID, string path, string attribute)</argsstring>
+        <name>H5_LoadAttribute</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>attribute</declname>
+        </param>
+        <briefdescription>
+<para>Load the given attribute and return its contents. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">attribute</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute to load </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="528" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="528" bodyend="557"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="494" endline="520">H5_AttributeExists</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a4452d82971b44d32bd0b1f88747fb693" compoundref="_i_p_n_w_b___reader_8ipf" startline="642" endline="668">GetTimeseriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a837437408ad33ce51c762657250e7281" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="437" endline="451">ReadAttributeAsNumber</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ae5bce039a8197991d472f3d802ed2a83" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="393" endline="407">ReadTextAttribute</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5cd391792250dd9f3c445e6e535e0b6c" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="415" endline="429">ReadTextAttributeAsString</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_GroupExists</definition>
+        <argsstring>(variable locationID, string path)</argsstring>
+        <name>H5_GroupExists</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if the given HDF5 group exists, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="564" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="564" bodyend="585"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a15ed5fbb86a4c8d28f5928d33a8e4d4d" compoundref="_i_p_n_w_b___writer_8ipf" startline="332" endline="363">GetNextFreeGroupIndex</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="494" endline="520">H5_AttributeExists</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="348" endline="353">H5_IsFileOpen</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a30ecdc03c0ff98b170cce380b202cd2c" compoundref="_i_p_n_w_b___reader_8ipf" startline="265" endline="278">LoadDataWave</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0d55be94ca06f1660ae854fc6a7e859c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1887" endline="1907">NWB_LoadLabNoteBook</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1acb72b03e031c4de78c044873568528b7" compoundref="_i_p_n_w_b___reader_8ipf" startline="87" endline="97">ReadLabNoteBooks</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a1c2e9ab4125f06f82e43ee5283e34546" compoundref="_i_p_n_w_b___reader_8ipf" startline="352" endline="356">StimsetPathExists</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_CreateGroupsRecursively</definition>
+        <argsstring>(variable locationID, string fullPath)</argsstring>
+        <name>H5_CreateGroupsRecursively</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fullPath</declname>
+        </param>
+        <briefdescription>
+<para>Create all groups along the given path. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fullPath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="592" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="592" bodyend="627"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a72b08ce99c20dd0a6d992f39d9a9189e" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="633" endline="637">H5_IsValidIdentifier</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1afdd7055731715283568cb47503b6e2f9" compoundref="_i_p_n_w_b___writer_8ipf" startline="124" endline="138">CreateIntraCellularEphys</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1390" endline="1426">NWB_WriteStimsetCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a72b08ce99c20dd0a6d992f39d9a9189e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_IsValidIdentifier</definition>
+        <argsstring>(string name)</argsstring>
+        <name>H5_IsValidIdentifier</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Return true if <computeroutput>name</computeroutput> is a valid hdf5 identifier. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is more restrictive than the actual HDF5 library checks. See the BNF Grammar <ulink url="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FGroups%2FHDF5_Groups.htm%23TOC_4_2_3_HDF5_Path_Namesbc-5&amp;rhtocid=4.1.0_3">here</ulink>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="633" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="633" bodyend="637"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</referencedby>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a6c067ddbf7ca7229a3f49d73ca90ee76" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="121" endline="197">H5_WriteDatasetLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17c1365703f8f4cc83bf51d9027b8ec6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string H5_ListGroupMembers</definition>
+        <argsstring>(variable locationID, string path)</argsstring>
+        <name>H5_ListGroupMembers</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>List all datasets at path (non-recursively) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="644" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="644" bodyend="656"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="794" endline="831">AB_LoadResultsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="719" endline="744">AB_LoadTPStorageFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1501" endline="1581">NWB_LoadStimset</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" compoundref="_i_p_n_w_b___reader_8ipf" startline="19" endline="41">ReadDevices</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aace3a482f6a59a082ab0d78c78f8db44" compoundref="_i_p_n_w_b___reader_8ipf" startline="130" endline="140">ReadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string H5_ListGroups</definition>
+        <argsstring>(variable fileID, string path)</argsstring>
+        <name>H5_ListGroups</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>List all groups inside a group (non-recursively) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 file identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Full path to the group inside fileID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="662" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="662" bodyend="674"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ac394fef4530d1d1a82ea66f99934548a" compoundref="_i_p_n_w_b___reader_8ipf" startline="104" endline="114">ReadAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" compoundref="_i_p_n_w_b___reader_8ipf" startline="19" endline="41">ReadDevices</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1acb72b03e031c4de78c044873568528b7" compoundref="_i_p_n_w_b___reader_8ipf" startline="87" endline="97">ReadLabNoteBooks</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5ba3d88f87a9c2e87feca6ed9785cfc6" compoundref="_i_p_n_w_b___reader_8ipf" startline="120" endline="124">ReadStimulus</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_OpenGroup</definition>
+        <argsstring>(variable locationID, string path)</argsstring>
+        <name>H5_OpenGroup</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Open the group reachable via <computeroutput>locationID</computeroutput> and <computeroutput>path</computeroutput> and return its ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the groupID of the opened group. Return NaN if the group did not exist. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="683" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="683" bodyend="705"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="794" endline="831">AB_LoadResultsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="746" endline="778">AB_LoadStoredTestpulsesFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="719" endline="744">AB_LoadTPStorageFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1afdd7055731715283568cb47503b6e2f9" compoundref="_i_p_n_w_b___writer_8ipf" startline="124" endline="138">CreateIntraCellularEphys</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a46ef6aed821bc9f61a6eba6a3673af0a" compoundref="_i_p_n_w_b___reader_8ipf" startline="514" endline="532">LoadSweepTable</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1390" endline="1426">NWB_WriteStimsetCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a1411e1af86fe7b8f83a1f951db0cab0a" compoundref="_i_p_n_w_b___reader_8ipf" startline="318" endline="325">OpenAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1af0678448c2bdb1636d630a7f577817cd" compoundref="_i_p_n_w_b___reader_8ipf" startline="343" endline="349">OpenStimset</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ae003d29746a956c2e7d2e9c9e7d4630c" compoundref="_i_p_n_w_b___reader_8ipf" startline="332" endline="336">OpenStimulus</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a10c1bbfd998735db47c6c550c065e131" compoundref="_i_p_n_w_b___reader_8ipf" startline="377" endline="401">ReadGeneralInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a309130d5db14fface8efc0a6d93eb56e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable H5_FlushFile</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>H5_FlushFile</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Flush the file contents to disc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 file identifier </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="710" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="710" bodyend="712"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ac61cc66016fbf31b0120ee149a6405ce" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1910" endline="1917">NWB_Flush</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4aa8a2cd844ec06a3cd5fee1d526952e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string H5_GetLinkTarget</definition>
+        <argsstring>(string discLocation, string path)</argsstring>
+        <name>H5_GetLinkTarget</name>
+        <param>
+          <type>string</type>
+          <declname>discLocation</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>Needs HDF5 XOP support for reading link targets use HDF5LinkInfo </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="716" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="716" bodyend="730"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ada13c8501746fa1b08133df9efc40089" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string H5_GetLibraryVersion</definition>
+        <argsstring>()</argsstring>
+        <name>H5_GetLibraryVersion</name>
+        <briefdescription>
+<para>Return the HDF5 Library version. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="733" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="733" bodyend="744"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>H5</bold> Wrapper functions for convenient use of the HDF5 operations </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf"/>
+  </compounddef>
+</doxygen>

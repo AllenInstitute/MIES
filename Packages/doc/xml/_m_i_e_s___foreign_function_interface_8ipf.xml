@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___foreign_function_interface_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ForeignFunctionInterface.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___foreign_function_interface_8ipf_1aa65504453f1122772e92fd2b885bbf1a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave FFI_ReturnTPValues</definition>
+        <argsstring>()</argsstring>
+        <name>FFI_ReturnTPValues</name>
+        <briefdescription>
+<para>Function to return Peak Resistance, Steady State Resistance to ACQ4 (Neurophysiology Acquisition and Analysis System. See <ulink url="http://acq4.org/">http://acq4.org/</ulink> for more details) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function will pull the values (PeakResistance, SteadyStateResistance, and TimeStamp) out of the TP storage wave and put them in a 3x8 wave, in a designated location where ACQ4 can then find them </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" line="17" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" bodystart="17" bodyend="55"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a40c71ada42a48cce80f7bdaf14f018cd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2729" endline="2739">GetAcqTPStorage</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable FFI_GetJSONTemplate</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>FFI_GetJSONTemplate</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Get a template for publishing messages. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Publishers in MIES should in general supply additional information like device/sweep number/timestamp. This function allows to autofill these entries. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" line="61" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" bodystart="61" bodyend="72"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="142" endline="182">AS_GetSweepNumber</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1abd11fed6c2d38d44ffef7cdd80442864" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1719" endline="1728">AI_PublishAutoBridgeBalance</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af18b01cfe737c79834ae1e41ce10b4f9" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3486" endline="3500">DAP_PublishClampModeChange</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1aa79615bacfd0b52946f85a843b04157d" compoundref="_m_i_e_s___pressure_control_8ipf" startline="238" endline="245">P_PublishBreakin</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ac08dd38397f3496723f1e1a8d9347aad" compoundref="_m_i_e_s___pressure_control_8ipf" startline="214" endline="227">P_PublishPressureMethodChange</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a292c47a6b3a201a2175a839ca8da7da2" compoundref="_m_i_e_s___pressure_control_8ipf" startline="229" endline="236">P_PublishSealedState</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ade27cea3b3b42329a537e740a0b3d7f4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4713" endline="4741">PSQ_PB_Publish</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aec05c539c1ec28fb37fbb4bf40c11bde" compoundref="_m_i_e_s___test_pulse_8ipf" startline="747" endline="783">TP_PublishAutoTPResult</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___foreign_function_interface_8ipf_1a94b052bcf0ae3574a8e84e4d8865db9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave FFI_GetAvailableMessageFilters</definition>
+        <argsstring>()</argsstring>
+        <name>FFI_GetAvailableMessageFilters</name>
+        <briefdescription>
+<para>Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See also <ref refid="_m_i_e_s___constants_8ipf_1ZeroMQMessageFilters" kindref="member">ZeroMQMessageFilters</ref>.</para>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" kindref="member">FFI_GetJSONTemplate</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" line="80" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" bodystart="80" bodyend="89"/>
+        <references refid="_m_i_e_s___constants_8ipf_1afa0a6575b585a1993096e0accdbe6091" compoundref="_m_i_e_s___constants_8ipf" startline="1594">AMPLIFIER_CLAMP_MODE_FILTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb52e3ac6dc4924b49e430e0280a21c3" compoundref="_m_i_e_s___constants_8ipf" startline="1596">ANALYSIS_FUNCTION_PB</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afab62eeb921f8fb91316e3167faea989" compoundref="_m_i_e_s___constants_8ipf" startline="1593">AUTO_TP_FILTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1e7fb174f10940007c3bea116d7800bc" compoundref="_m_i_e_s___constants_8ipf" startline="1589">IVS_PUB_FILTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8a0334448197c60df68c552949314e1d" compoundref="_m_i_e_s___constants_8ipf" startline="1591">PRESSURE_SEALED_FILTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a788a748870500c2f1b25a9f337d969a9" compoundref="_m_i_e_s___constants_8ipf" startline="1590">PRESSURE_STATE_FILTER</references>
+        <references refid="_zero_m_q___interop_8ipf_1acd96451869f5609ead784813e2b413cc" compoundref="_zero_m_q___interop_8ipf" startline="24">ZeroMQ_HEARTBEAT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable FFI_Publish</definition>
+        <argsstring>(variable jsonID, string messageFilter)</argsstring>
+        <name>FFI_Publish</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>messageFilter</declname>
+        </param>
+        <briefdescription>
+<para>Publish the given message as given by the JSON and the filter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" line="92" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf" bodystart="92" bodyend="106"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1abd11fed6c2d38d44ffef7cdd80442864" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1719" endline="1728">AI_PublishAutoBridgeBalance</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af18b01cfe737c79834ae1e41ce10b4f9" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3486" endline="3500">DAP_PublishClampModeChange</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="338" endline="348">IVS_PublishQCState</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1aa79615bacfd0b52946f85a843b04157d" compoundref="_m_i_e_s___pressure_control_8ipf" startline="238" endline="245">P_PublishBreakin</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ac08dd38397f3496723f1e1a8d9347aad" compoundref="_m_i_e_s___pressure_control_8ipf" startline="214" endline="227">P_PublishPressureMethodChange</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a292c47a6b3a201a2175a839ca8da7da2" compoundref="_m_i_e_s___pressure_control_8ipf" startline="229" endline="236">P_PublishSealedState</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ade27cea3b3b42329a537e740a0b3d7f4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4713" endline="4741">PSQ_PB_Publish</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aec05c539c1ec28fb37fbb4bf40c11bde" compoundref="_m_i_e_s___test_pulse_8ipf" startline="747" endline="783">TP_PublishAutoTPResult</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>FFI</bold> ACQ4/ZeroMQ accessible functions </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ForeignFunctionInterface.ipf"/>
+  </compounddef>
+</doxygen>

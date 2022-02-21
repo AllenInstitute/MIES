@@ -1,0 +1,3160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___sweep_formula_8ipf" kind="file" language="C++">
+    <compoundname>MIES_SweepFormula.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aee34425a9ddc2654a52103839a6fc964" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_UNINITIALIZED</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_UNINITIALIZED</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a54de07d3361000508e51d1c10ac0d495" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_DEFAULT</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_DEFAULT</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a3974b3d01675964948d18f374f71ab65" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_COLLECT</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_COLLECT</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aca836bde9a6feafa4bec06707705cb80" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_ADDITION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_ADDITION</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="17" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_SUBTRACTION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_SUBTRACTION</name>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="18" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_MULTIPLICATION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_MULTIPLICATION</name>
+        <initializer>= 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="19" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_DIVISION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_DIVISION</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="20" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a6560bc7a41e15cb06b40852832fde08e" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_PARENTHESIS</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_PARENTHESIS</name>
+        <initializer>= 6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="21" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_FUNCTION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_FUNCTION</name>
+        <initializer>= 7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="22" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="22" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a77553b0b997dac77d79fd638e914e1de" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_ARRAY</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_ARRAY</name>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="23" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_ARRAYELEMENT</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_ARRAYELEMENT</name>
+        <initializer>= 9</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="24" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af8c671b59d1a17bf844868a4748e03d3" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_WHITESPACE</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_WHITESPACE</name>
+        <initializer>= 10</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="25" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="25" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_NEWLINE</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_NEWLINE</name>
+        <initializer>= 12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="26" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="26" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a6358c1bebaf96e8944c6637e1035f3b8" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_OPERATION</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_OPERATION</name>
+        <initializer>= 13</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="27" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="27" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_STRING</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_STRING</name>
+        <initializer>= 14</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="28" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="28" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1abd7e066c51af3564fe2112b920610eb1" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_STATE_STRINGTERMINATOR</definition>
+        <argsstring></argsstring>
+        <name>SF_STATE_STRINGTERMINATOR</name>
+        <initializer>= 15</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="29" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="29" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1afe2f21d8104ac6bfc8470c560322e75f" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_UNINITIALIZED</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_UNINITIALIZED</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="31" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="31" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a31c825bc269fc6ef8b24f7efe997111a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_SKIP</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_SKIP</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="32" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="32" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a1f378f9145947bd611817b682e712ec4" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_COLLECT</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_COLLECT</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="33" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="33" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1abc699ce6dd13374a65d6ebbf5f7965dc" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_CALCULATION</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_CALCULATION</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="34" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="34" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a2bdae39b1e2688603f8891d62dfb6de5" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_SAMECALCULATION</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_SAMECALCULATION</name>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="35" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="35" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a50fc25a29d346da7edba3ed5e26b3349" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_HIGHERORDER</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_HIGHERORDER</name>
+        <initializer>= 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="36" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="36" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ac11bd7180808edbe8807a5c678fced7a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_ARRAYELEMENT</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_ARRAYELEMENT</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="37" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="37" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_PARENTHESIS</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_PARENTHESIS</name>
+        <initializer>= 6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="38" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="38" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aadae63818c171849977a1d4ae0173bb8" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_FUNCTION</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_FUNCTION</name>
+        <initializer>= 7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="39" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="39" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ad591b58999b6e5f532cabe9e2205c47d" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_ACTION_ARRAY</definition>
+        <argsstring></argsstring>
+        <name>SF_ACTION_ARRAY</name>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="40" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="40" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a738a25392a9525a13ef3a588bd647411" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_SWEEPFORMULA_REGEXP</definition>
+        <argsstring></argsstring>
+        <name>SF_SWEEPFORMULA_REGEXP</name>
+        <initializer>= &quot;^(.+?)(?:\\bvs\\b(.+))?$&quot;</initializer>
+        <briefdescription>
+<para>Regular expression which extracts both formulas from <computeroutput>$a vs $b</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="43" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a58298a610f1ed310ececd7282600cea2" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_SWEEPFORMULA_GRAPHS_REGEXP</definition>
+        <argsstring></argsstring>
+        <name>SF_SWEEPFORMULA_GRAPHS_REGEXP</name>
+        <initializer>= &quot;^(.+?)(?:\\r[ \t]*and[ \t]*\\r(.*))?$&quot;</initializer>
+        <briefdescription>
+<para>Regular expression which extracts formulas pairs from <computeroutput>$a vs $b\rand\r$c vs $d\rand\r...</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="45" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a80a18ef49b411f0cbd0072d4539ee93b" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_MAX_NUMPOINTS_FOR_MARKERS</definition>
+        <argsstring></argsstring>
+        <name>SF_MAX_NUMPOINTS_FOR_MARKERS</name>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="47" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a67976a1fdcf6aff9a1b35daa13ac26f6" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_APFREQUENCY_FULL</definition>
+        <argsstring></argsstring>
+        <name>SF_APFREQUENCY_FULL</name>
+        <initializer>= 0x0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="49" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a3a7f8d933707056b66e1779f2f2289db" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_APFREQUENCY_INSTANTANEOUS</definition>
+        <argsstring></argsstring>
+        <name>SF_APFREQUENCY_INSTANTANEOUS</name>
+        <initializer>= 0x1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="50" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a23c1adbcde43aa5597298336396ca95a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_APFREQUENCY_APCOUNT</definition>
+        <argsstring></argsstring>
+        <name>SF_APFREQUENCY_APCOUNT</name>
+        <initializer>= 0x2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="51" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1abcd3902d94593fd56f70bfbd2da2662a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MINUS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MINUS</name>
+        <initializer>= &quot;-&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="53" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ad092fe5d3350bdc422d373483a22a21a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_PLUS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_PLUS</name>
+        <initializer>= &quot;+&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="54" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af02a6363b0837f6b82537bfa69392bd3" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MULT</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MULT</name>
+        <initializer>= &quot;*&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="55" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a444d5737b312712df1230f31ae6b2ec5" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_DIV</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_DIV</name>
+        <initializer>= &quot;~1&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="56" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a9291cf8fc1eafb80238e5060c3451a61" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_RANGE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_RANGE</name>
+        <initializer>= &quot;range&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="57" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a77f9df4c77a0dcc3dc8cb39c2af05610" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_RANGESHORT</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_RANGESHORT</name>
+        <initializer>= &quot;…&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="58" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a486663a3051ae19a843cd07067afe146" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MIN</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MIN</name>
+        <initializer>= &quot;min&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="59" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab0c9865be00e935d601a4fda39989be2" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MAX</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MAX</name>
+        <initializer>= &quot;max&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="60" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab5c556b333703f457e8fb004aa952bee" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_AVG</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_AVG</name>
+        <initializer>= &quot;avg&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="61" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1accf48166eaa6dce1438f6c244a600dbf" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MEAN</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MEAN</name>
+        <initializer>= &quot;mean&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="62" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1adc46e07239a17471b3561d54be325b44" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_RMS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_RMS</name>
+        <initializer>= &quot;rms&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="63" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a5ac86c297286655ca602a85e578b3034" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_VARIANCE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_VARIANCE</name>
+        <initializer>= &quot;variance&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="64" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1acc986618da39f5351dd2b7d779e78a2b" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_STDEV</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_STDEV</name>
+        <initializer>= &quot;stdev&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="65" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a82a94104d30ed3411b81e2c4b8755615" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_DERIVATIVE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_DERIVATIVE</name>
+        <initializer>= &quot;derivative&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="66" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a58bac79a10a464b928da6c553ede9514" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_INTEGRATE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_INTEGRATE</name>
+        <initializer>= &quot;integrate&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="67" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a729b8c35395756f4ae155b36967ddd62" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TIME</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TIME</name>
+        <initializer>= &quot;time&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="68" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a4bde238aa4db80387f93aad93cb3a1bf" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_XVALUES</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_XVALUES</name>
+        <initializer>= &quot;xvalues&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="69" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af12ec92359d4378f128b93ee110bd09f" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_MERGE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_MERGE</name>
+        <initializer>= &quot;merge&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="70" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a218251b2926afc755b31f3cf29b1ffa0" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TEXT</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TEXT</name>
+        <initializer>= &quot;text&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="71" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af287f3eec09d492edff5160fb6605933" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_LOG</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_LOG</name>
+        <initializer>= &quot;log&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="72" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a35cdfe1f10c09fbc5020b9cdc663ee73" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_LOG10</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_LOG10</name>
+        <initializer>= &quot;log10&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="73" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a1a8396f98610e6c6d137f4f0b2301e47" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_APFREQUENCY</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_APFREQUENCY</name>
+        <initializer>= &quot;apfrequency&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="74" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1afff4e9dbe5cee84a40a423d52a380b45" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_CURSORS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_CURSORS</name>
+        <initializer>= &quot;cursors&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="75" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a8ff659b0a60a556dbae81ab0fdde9eb3" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_SWEEPS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_SWEEPS</name>
+        <initializer>= &quot;sweeps&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="76" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a2969b6816335d9b235d8284bd3cd84a3" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_AREA</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_AREA</name>
+        <initializer>= &quot;area&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="77" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a00e32bc4e647b306873ed661b68228ad" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_SETSCALE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_SETSCALE</name>
+        <initializer>= &quot;setscale&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="78" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af1e0a82f7573d592ec027aa4af5088b9" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_BUTTERWORTH</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_BUTTERWORTH</name>
+        <initializer>= &quot;butterworth&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="79" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a227ace7609c0febb62d213f75b44debd" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_CHANNELS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_CHANNELS</name>
+        <initializer>= &quot;channels&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="80" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1af91891611e94a3d0eb4f14f0fe1638b7" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_DATA</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_DATA</name>
+        <initializer>= &quot;data&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="81" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a8dd2d23152164fc8dd19ed07aa345aa7" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_LABNOTEBOOK</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_LABNOTEBOOK</name>
+        <initializer>= &quot;labnotebook&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="82" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a112ac43cc9da353fba5121aaba0bd09b" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_WAVE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_WAVE</name>
+        <initializer>= &quot;wave&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="83" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab494ed3bd394363d55b0e5fba891bd8c" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_FINDLEVEL</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_FINDLEVEL</name>
+        <initializer>= &quot;findlevel&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="84" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a7e4627b511ec3a663e642f17af0420dc" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_EPOCHS</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_EPOCHS</name>
+        <initializer>= &quot;epochs&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="85" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab5cf7c788611efffdcc3b3d2bcdffb9c" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TP</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP</name>
+        <initializer>= &quot;tp&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="86" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1acefd4b682d51319c761a59fd2e18f096" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_STORE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_STORE</name>
+        <initializer>= &quot;store&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="87" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a8d82c1dec11fa69fb5069f104dcf6a5e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_EPOCHS_TYPE_RANGE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_EPOCHS_TYPE_RANGE</name>
+        <initializer>= &quot;range&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="89" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ad939f80b90debad6ece482948e73298f" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_EPOCHS_TYPE_NAME</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_EPOCHS_TYPE_NAME</name>
+        <initializer>= &quot;name&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="90" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a9a022881a72b276ef3ecf99e2ec0e4b2" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_EPOCHS_TYPE_TREELEVEL</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_EPOCHS_TYPE_TREELEVEL</name>
+        <initializer>= &quot;treelevel&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="91" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1adc46029e91d10e9f73928b6e98ed9b81" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TP_TYPE_BASELINE</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_BASELINE</name>
+        <initializer>= &quot;base&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="92" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab9e1cf68ca972ae17c08d78def974308" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TP_TYPE_INSTANT</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_INSTANT</name>
+        <initializer>= &quot;inst&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="93" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a3af0f123e378397b6e8082da841283fc" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_OP_TP_TYPE_STATIC</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_STATIC</name>
+        <initializer>= &quot;ss&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="94" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a71c8be8ea46b6d4cfa091f166191bf3f" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_OP_TP_TYPE_BASELINE_NUM</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_BASELINE_NUM</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="95" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ae20321f6293a87fff522140dd6aaf251" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_OP_TP_TYPE_INSTANT_NUM</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_INSTANT_NUM</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="96" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a25c1ca26e9cd6710c05f92ada0ae3f42" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SF_OP_TP_TYPE_STATIC_NUM</definition>
+        <argsstring></argsstring>
+        <name>SF_OP_TP_TYPE_STATIC_NUM</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="97" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1abef847a9a2958e43e32720446dec1aef" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double EPOCHS_TYPE_INVALID</definition>
+        <argsstring></argsstring>
+        <name>EPOCHS_TYPE_INVALID</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="99" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1aa5a3e3249d25729261046e8243046010" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double EPOCHS_TYPE_RANGE</definition>
+        <argsstring></argsstring>
+        <name>EPOCHS_TYPE_RANGE</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="100" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a6625ebc7b0f6ce8acc4fda0a7f14adb0" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double EPOCHS_TYPE_NAME</definition>
+        <argsstring></argsstring>
+        <name>EPOCHS_TYPE_NAME</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="101" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a660bf5301308feea7cbb12605ec7f250" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double EPOCHS_TYPE_TREELEVEL</definition>
+        <argsstring></argsstring>
+        <name>EPOCHS_TYPE_TREELEVEL</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="102" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1ab610749569b3373010b1343764fd5568" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_CHAR_COMMENT</definition>
+        <argsstring></argsstring>
+        <name>SF_CHAR_COMMENT</name>
+        <initializer>= &quot;#&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="104" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a5e2517fba3023b79cf8d5f8ff74e781d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_CHAR_CR</definition>
+        <argsstring></argsstring>
+        <name>SF_CHAR_CR</name>
+        <initializer>= &quot;\r&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="105" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a27b71ff95dbab9df741bbe0aa029b09a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SF_CHAR_NEWLINE</definition>
+        <argsstring></argsstring>
+        <name>SF_CHAR_NEWLINE</name>
+        <initializer>= &quot;\n&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="106" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___sweep_formula_8ipf_1a7c387b816d580b060d3ca6ab5808b5ee" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string MIXED_UNITS</definition>
+        <argsstring></argsstring>
+        <name>MIXED_UNITS</name>
+        <initializer>= &quot;** undefined **&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="108" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_StringifyState</definition>
+        <argsstring>(variable state)</argsstring>
+        <name>SF_StringifyState</name>
+        <param>
+          <type>variable</type>
+          <declname>state</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="110" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="110" bodyend="148"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aca836bde9a6feafa4bec06707705cb80" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="17">SF_STATE_ADDITION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a77553b0b997dac77d79fd638e914e1de" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="23">SF_STATE_ARRAY</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="24">SF_STATE_ARRAYELEMENT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a3974b3d01675964948d18f374f71ab65" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="16">SF_STATE_COLLECT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a54de07d3361000508e51d1c10ac0d495" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="15">SF_STATE_DEFAULT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="20">SF_STATE_DIVISION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="22">SF_STATE_FUNCTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="19">SF_STATE_MULTIPLICATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="26">SF_STATE_NEWLINE</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a6358c1bebaf96e8944c6637e1035f3b8" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="27">SF_STATE_OPERATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a6560bc7a41e15cb06b40852832fde08e" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="21">SF_STATE_PARENTHESIS</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="28">SF_STATE_STRING</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1abd7e066c51af3564fe2112b920610eb1" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="29">SF_STATE_STRINGTERMINATOR</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="18">SF_STATE_SUBTRACTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aee34425a9ddc2654a52103839a6fc964" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="14">SF_STATE_UNINITIALIZED</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1af8c671b59d1a17bf844868a4748e03d3" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="25">SF_STATE_WHITESPACE</references>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_StringifyAction</definition>
+        <argsstring>(variable action)</argsstring>
+        <name>SF_StringifyAction</name>
+        <param>
+          <type>variable</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="150" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="150" bodyend="176"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ad591b58999b6e5f532cabe9e2205c47d" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="40">SF_ACTION_ARRAY</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ac11bd7180808edbe8807a5c678fced7a" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="37">SF_ACTION_ARRAYELEMENT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1abc699ce6dd13374a65d6ebbf5f7965dc" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="34">SF_ACTION_CALCULATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a1f378f9145947bd611817b682e712ec4" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="33">SF_ACTION_COLLECT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aadae63818c171849977a1d4ae0173bb8" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="39">SF_ACTION_FUNCTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a50fc25a29d346da7edba3ed5e26b3349" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="36">SF_ACTION_HIGHERORDER</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="38">SF_ACTION_PARENTHESIS</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a2bdae39b1e2688603f8891d62dfb6de5" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="35">SF_ACTION_SAMECALCULATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a31c825bc269fc6ef8b24f7efe997111a" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="32">SF_ACTION_SKIP</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1afe2f21d8104ac6bfc8470c560322e75f" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="31">SF_ACTION_UNINITIALIZED</references>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a986f520c3ec77088f302d9beb152ebd0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_Assert</definition>
+        <argsstring>(variable condition, string message, variable jsonId=defaultValue)</argsstring>
+        <name>SF_Assert</name>
+        <param>
+          <type>variable</type>
+          <declname>condition</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>message</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Assertion for sweep formula. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This assertion does <emphasis>not</emphasis> indicate a genearl programmer error but a sweep formula user error.</para>
+<para>All programmer error checks must still use <ref refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" kindref="member">ASSERT()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="184" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="184" bodyend="197"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1aee4b84e0016542764850fa0acdc70788" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="202" endline="212">SF_FormulaPreParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aee4b84e0016542764850fa0acdc70788" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_FormulaPreParser</definition>
+        <argsstring>(string formula)</argsstring>
+        <name>SF_FormulaPreParser</name>
+        <param>
+          <type>string</type>
+          <declname>formula</declname>
+        </param>
+        <briefdescription>
+<para>preparse user input to correct formula patterns </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>parsed formula </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="202" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="202" bodyend="212"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a4227f5ace5c7e7247785a75effc73af8" compoundref="_m_i_e_s___utilities_8ipf" startline="2241" endline="2253">CountSubstrings</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a986f520c3ec77088f302d9beb152ebd0" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="184" endline="197">SF_Assert</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_FormulaParser</definition>
+        <argsstring>(string formula, variable *createdArray=defaultValue, variable indentLevel=defaultValue)</argsstring>
+        <name>SF_FormulaParser</name>
+        <param>
+          <type>string</type>
+          <declname>formula</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>createdArray</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>indentLevel</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>serialize a string formula into JSON </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>formula</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string formula </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>createdArray</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default 0] set on recursive calls, returns boolean if parser created a JSON array </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>indentLevel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[internal use only] recursive call level, used for debug output </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a JSONid representation </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="220" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="220" bodyend="524"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ad591b58999b6e5f532cabe9e2205c47d" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="40">SF_ACTION_ARRAY</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ac11bd7180808edbe8807a5c678fced7a" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="37">SF_ACTION_ARRAYELEMENT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1abc699ce6dd13374a65d6ebbf5f7965dc" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="34">SF_ACTION_CALCULATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a1f378f9145947bd611817b682e712ec4" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="33">SF_ACTION_COLLECT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aadae63818c171849977a1d4ae0173bb8" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="39">SF_ACTION_FUNCTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a50fc25a29d346da7edba3ed5e26b3349" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="36">SF_ACTION_HIGHERORDER</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="38">SF_ACTION_PARENTHESIS</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a2bdae39b1e2688603f8891d62dfb6de5" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="35">SF_ACTION_SAMECALCULATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a31c825bc269fc6ef8b24f7efe997111a" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="32">SF_ACTION_SKIP</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1afe2f21d8104ac6bfc8470c560322e75f" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="31">SF_ACTION_UNINITIALIZED</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a986f520c3ec77088f302d9beb152ebd0" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="184" endline="197">SF_Assert</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a2657a15c56ad804fbb68c2c55cd1c26d" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="562" endline="566">SF_EscapeJsonPath</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1acb11bc8c943a94663fc13483c7ed414c" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="542" endline="559">SF_FPAddArray</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a56a05aa5694ae4a017be674aeb7a58be" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="527" endline="539">SF_FPPutInArrayAtPath</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aca836bde9a6feafa4bec06707705cb80" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="17">SF_STATE_ADDITION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a77553b0b997dac77d79fd638e914e1de" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="23">SF_STATE_ARRAY</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="24">SF_STATE_ARRAYELEMENT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a3974b3d01675964948d18f374f71ab65" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="16">SF_STATE_COLLECT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a54de07d3361000508e51d1c10ac0d495" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="15">SF_STATE_DEFAULT</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="20">SF_STATE_DIVISION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="22">SF_STATE_FUNCTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="19">SF_STATE_MULTIPLICATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="26">SF_STATE_NEWLINE</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a6358c1bebaf96e8944c6637e1035f3b8" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="27">SF_STATE_OPERATION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1a6560bc7a41e15cb06b40852832fde08e" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="21">SF_STATE_PARENTHESIS</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="28">SF_STATE_STRING</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1abd7e066c51af3564fe2112b920610eb1" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="29">SF_STATE_STRINGTERMINATOR</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="18">SF_STATE_SUBTRACTION</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aee34425a9ddc2654a52103839a6fc964" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="14">SF_STATE_UNINITIALIZED</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1af8c671b59d1a17bf844868a4748e03d3" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="25">SF_STATE_WHITESPACE</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="150" endline="176">SF_StringifyAction</references>
+        <references refid="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="110" endline="148">SF_StringifyState</references>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a56a05aa5694ae4a017be674aeb7a58be" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_FPPutInArrayAtPath</definition>
+        <argsstring>(variable subId, string jsonPath)</argsstring>
+        <name>SF_FPPutInArrayAtPath</name>
+        <param>
+          <type>variable</type>
+          <declname>subId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <briefdescription>
+<para>Create a new empty array object, add mainId into it at path and return created json, release subId. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="527" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="527" bodyend="539"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1acb11bc8c943a94663fc13483c7ed414c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_FPAddArray</definition>
+        <argsstring>(variable mainId, string jsonPath, variable subId, variable arrayWasCreated)</argsstring>
+        <name>SF_FPAddArray</name>
+        <param>
+          <type>variable</type>
+          <declname>mainId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>subId</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>arrayWasCreated</declname>
+        </param>
+        <briefdescription>
+<para>Adds subId to mainId, if necessary puts subId into an array, release subId. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="542" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="542" bodyend="559"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a2657a15c56ad804fbb68c2c55cd1c26d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_EscapeJsonPath</definition>
+        <argsstring>(string str)</argsstring>
+        <name>SF_EscapeJsonPath</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>add escape characters to a path element </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="562" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="562" bodyend="566"/>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a1c441d1f39d63686b72052467facbd6d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_FormulaPlotter</definition>
+        <argsstring>(string graph, string formula, dfref dfr=defaultValue, variable dmMode=defaultValue)</argsstring>
+        <name>SF_FormulaPlotter</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>formula</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dmMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Plot the formula using the data from graph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>graph to pass to SF_FormulaExecutor </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>formula</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>formula to plot </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default current] working dataFolder </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dmMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+<para><xrefsect id="todo_1_todo000029"><xreftitle>Todo</xreftitle><xrefdescription><para>Removes dimension labels in COLS and LAYERS </para>
+</xrefdescription></xrefsect></para>
+<para><xrefsect id="todo_1_todo000030"><xreftitle>Todo</xreftitle><xrefdescription><para>Removes dimension labels in COLS and LAYERS </para>
+</xrefdescription></xrefsect></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="781" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="781" bodyend="980"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ac54da8871f54e7fcbe5d06ef0ef884a4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_SplitPlotting</definition>
+        <argsstring>(wave wv, variable dim, variable i, variable split)</argsstring>
+        <name>SF_SplitPlotting</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>split</declname>
+        </param>
+        <briefdescription>
+<para>utility function for <computeroutput>SF_FormulaPlotter</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>split dimension <computeroutput>dim</computeroutput> of wave <computeroutput>wv</computeroutput> into slices of size <computeroutput>split</computeroutput> and get the starting index <computeroutput>i</computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="987" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="987" bodyend="992"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ae292b136a946c4a7a4a25a1330c8cf95" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_GetRangeFromEpoch</definition>
+        <argsstring>(string graph, string epochName, variable sweep, variable channel)</argsstring>
+        <name>SF_GetRangeFromEpoch</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>epochName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <briefdescription>
+<para>Returns a range from a epochName. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of databrowser graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epochName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of sweep </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1001" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1001" bodyend="1036"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a6b4bedbf12c296ba11f1b4461bfaad4b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_GetDAChannel</definition>
+        <argsstring>(string graph, variable sweep, variable channelType, variable channelNumber)</argsstring>
+        <name>SF_GetDAChannel</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1038" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1038" bodyend="1055"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a0a4fe660fdefd52f82c298a7f965f3d8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_GetSweepForFormula</definition>
+        <argsstring>(string graph, wave range, wave channels, wave sweeps)</argsstring>
+        <name>SF_GetSweepForFormula</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>channels</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweeps</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1057" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1057" bodyend="1202"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1af532d409dbdc4e5fbd1538e933e87bf3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_FormulaWaveScaleTransfer</definition>
+        <argsstring>(wave source, wave dest, variable dimSource, variable dimDest)</argsstring>
+        <name>SF_FormulaWaveScaleTransfer</name>
+        <param>
+          <type>wave</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>dest</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dimSource</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dimDest</declname>
+        </param>
+        <briefdescription>
+<para>transfer the wave scaling from one wave to another </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: wave scale transfer requires wave units for the first wave in the array that</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wave whos scaling should get transferred </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wave that accepts the new scaling </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dimSource</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimension of the source wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dimDest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimension of the destination wave</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 if wave scaling was transferred, 1 if not </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1214" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1214" bodyend="1245"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1af6b47dc19f6bbd0536a30e7f2e9487d0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_GetActiveChannelNumbers</definition>
+        <argsstring>(string graph, wave channels, wave sweeps, variable entrySourceType)</argsstring>
+        <name>SF_GetActiveChannelNumbers</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>channels</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweeps</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Use the labnotebook information to return the active channel numbers for a given set of sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DataBrowser or SweepBrowser reference graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>SF_FormulaExecutor</computeroutput> style <computeroutput>channels()</computeroutput> wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweeps</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>SF_FormulaExecutor</computeroutput> style <computeroutput>sweeps()</computeroutput> wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the labnotebook entry, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref>. If you don&apos;t care about the entry source type pass <ref refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" kindref="member">UNKNOWN_MODE</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a <computeroutput>SF_FormulaExecutor</computeroutput> style <computeroutput>channels()</computeroutput> wave with two columns containing channelType and channelNumber </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1257" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1257" bodyend="1352"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1abaa5c489c64a5cb9bb707702991876e9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_PreprocessInput</definition>
+        <argsstring>(string formula)</argsstring>
+        <name>SF_PreprocessInput</name>
+        <param>
+          <type>string</type>
+          <declname>formula</declname>
+        </param>
+        <briefdescription>
+<para>Pre process code entered into the notebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>unify line endings to CR</para>
+</listitem><listitem><para>remove comments at line ending</para>
+</listitem><listitem><para>cut off last CR from back conversion with TextWaveToList </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1358" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1358" bodyend="1381"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1af1cb65280b52aa8f3633e309c4f0c941" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_button_sweepFormula_check</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>SF_button_sweepFormula_check</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1383" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1383" bodyend="1420"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a8cd62e2de7ac4e46a469b33aa0e1f9be" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_CheckInputCode</definition>
+        <argsstring>(string code, dfref dfr)</argsstring>
+        <name>SF_CheckInputCode</name>
+        <param>
+          <type>string</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Checks input code, sets globals for jsonId and error string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1423" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1423" bodyend="1471"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a9a4c9a7ea5169136d7250f20f1cb7e3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_Update</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>SF_Update</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1473" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1473" bodyend="1481"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a99eff8c9ec531a21be1bfbb714418dfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_IsActive</definition>
+        <argsstring>(string win)</argsstring>
+        <name>SF_IsActive</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>checks if SweepFormula (SF) is active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1484" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1484" bodyend="1488"/>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aec051776475711224611899b6fd0a7e4" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="538" endline="545">BSP_SetSFControlStatus</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a5c8d3214e2f419c118fdf66006bdcd79" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="229" endline="250">BSP_SweepFormulaHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a1133808bd74875e4e1708f3024656637" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; string, string &gt;</type>
+        <definition>std::tuple&lt; string, string &gt; SF_GetCode</definition>
+        <argsstring>(string win)</argsstring>
+        <name>SF_GetCode</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Return the sweep formula code in raw and with all necessary preprocesssing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1491" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1491" bodyend="1498"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a65f3f85f963522f7e9e2be5fb0611c81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_button_sweepFormula_display</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>SF_button_sweepFormula_display</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1500" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1500" bodyend="1546"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a3bde9d7ee1259389b95ae12ca6a43c2e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_PrepareDataForResultsWave</definition>
+        <argsstring>(wave data)</argsstring>
+        <name>SF_PrepareDataForResultsWave</name>
+        <param>
+          <type>wave</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1548" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1548" bodyend="1569"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1acb4435255505fe390f526380f8eb31b4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveText, WaveText &gt;</type>
+        <definition>static std::tuple&lt; WaveText, WaveText &gt; SF_CreateResultsWaveWithCode</definition>
+        <argsstring>(string graph, string code, wave data=defaultValue, string name=defaultValue)</argsstring>
+        <name>SF_CreateResultsWaveWithCode</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>data</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1571" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1571" bodyend="1647"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ab3325942396d30f70f56c8e791e444ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_TabProc_Formula</definition>
+        <argsstring>(WMTabControlAction *tca)</argsstring>
+        <name>SF_TabProc_Formula</name>
+        <param>
+          <type>WMTabControlAction *</type>
+          <declname>tca</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1649" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1649" bodyend="1674"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a1118477013e60f3c43875c0906424a5a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_FilterEpochs</definition>
+        <argsstring>(WaveOrNull epochs, WaveOrNull ignoreTPs)</argsstring>
+        <name>SF_FilterEpochs</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>epochs</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>ignoreTPs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1676" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1676" bodyend="1701"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1abd6e151246199b9e1396d83ce02d603b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationTP</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationTP</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1703" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1703" bodyend="1901"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a543c1d6d7624bc82c860577312a3681c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationEpochs</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationEpochs</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="1903" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="1903" bodyend="2023"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ad5931918dfaa976a64592fab01563016" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_EpochsSetOutValues</definition>
+        <argsstring>(variable epType, wave out, variable outCnt, string name=defaultValue, string treeLevel=defaultValue, string startTime=defaultValue, string endtime=defaultValue)</argsstring>
+        <name>SF_EpochsSetOutValues</name>
+        <param>
+          <type>variable</type>
+          <declname>epType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>outCnt</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>treeLevel</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>startTime</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>endtime</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2025" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2025" bodyend="2041"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a2fd0cd4a768b6aec6621ad59ee973718" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationMinus</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationMinus</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2043" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2043" bodyend="2056"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a6c4fb3a749721f4308bdf88caa5c7704" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationPlus</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationPlus</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2058" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2058" bodyend="2067"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a60cae6814b269abc72a746e3ce8d87fe" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationDiv</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationDiv</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2069" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2069" bodyend="2079"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a4a6ca39b2551ad5fb4fc9270479b3102" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationMult</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationMult</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2081" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2081" bodyend="2090"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a54d6c226ac8056585040ecfd11c20ca0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationRange</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationRange</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>range (start[, stop[, step]]) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2093" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2093" bodyend="2109"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aac648c390c12cf08d46ec502cbb7fe49" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationMin</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationMin</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2111" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2111" bodyend="2129"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a0e87ab404af065e47718c5903de00392" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationMax</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationMax</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2131" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2131" bodyend="2149"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a0bb3ca640557a3e7d8c0b347751ed327" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationAvg</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationAvg</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2151" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2151" bodyend="2169"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ac1dcbfd998112cc8a847e67f92c23a9d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationRMS</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationRMS</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2171" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2171" bodyend="2179"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ae17cf4f1ce07b8e9fcef5c703335502d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationVariance</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationVariance</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2181" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2181" bodyend="2189"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a4d82538ce0e479325b107aa2edea2907" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationStdev</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationStdev</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2191" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2191" bodyend="2199"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a111ace3eabb55ac01de06ab06a4d275d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationDerivative</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationDerivative</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2201" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2201" bodyend="2210"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ad204937ec0ac978071ccbf92a797cc4b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationIntegrate</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationIntegrate</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2212" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2212" bodyend="2221"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a26bdce7db999c5c0f3443e7ddba2fd10" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationArea</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationArea</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2223" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2223" bodyend="2250"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a110d1d96ef3198001474d6847d22832a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationButterworth</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationButterworth</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para><computeroutput>butterworth(data, lowPassCutoff, highPassCutoff, order)</computeroutput></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2252" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2252" bodyend="2270"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a68251c968b924959905f91986e423706" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationXValues</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationXValues</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2272" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2272" bodyend="2277"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a5e31c86640b7b2f294432d21c3affcec" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationText</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationText</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2279" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2279" bodyend="2285"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a8d3b7e1e4545fe778adaa5f80db91e32" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationSetScale</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationSetScale</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para><computeroutput>setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])</computeroutput></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2287" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2287" bodyend="2338"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aa390041fe955cb224534d55732400177" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationWave</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationWave</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2340" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2340" bodyend="2346"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a5684ab4a4a178c50869515c6f77292d7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationMerge</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationMerge</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2348" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2348" bodyend="2357"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a7f0cf6d69f6f33f648b04a1f41deba31" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationChannels</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationChannels</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>channels([str name]+)</computeroutput> converts a named channel from string to numbers.</para>
+<para>returns [[channelName, channelNumber]+] </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2362" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2362" bodyend="2389"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a916e4b1593d85aee29056fbbc4e1af0c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationSweeps</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationSweeps</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>sweeps([str type])</computeroutput> <computeroutput>type:</computeroutput> <computeroutput>|displayed|all</computeroutput> displayed (default): get (selected) sweeps all: get all possible sweeps </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2395" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2395" bodyend="2426"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1ad5d51cc9ac55182f378909d2fbc1f492" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationData</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationData</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>data(array range,array channels,array sweeps)</computeroutput></para>
+<para>returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2431" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2431" bodyend="2458"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a7f4689cc017147889de42f6500eabee9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationLabnotebook</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationLabnotebook</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>labnotebook(string key, array channels, array sweeps [, string entrySourceType])</computeroutput></para>
+<para>return lab notebook <computeroutput>key</computeroutput> for all <computeroutput>sweeps</computeroutput> that belong to the channels <computeroutput>channels</computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2463" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2463" bodyend="2552"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a903b8adbaf22b2dc0fbb349fa2d5e18c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationLog</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationLog</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2554" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2554" bodyend="2560"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a11f3e3afafb9db703add481895c6394a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationLog10</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationLog10</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2562" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2562" bodyend="2571"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1afb2054aef8af4bfb6cfc68b60091d632" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationCursors</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationCursors</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2573" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2573" bodyend="2594"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aa1f327ddaac3b1861e3c4c96603a3a5e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationFindLevel</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationFindLevel</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2597" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2597" bodyend="2619"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1aa87237b20e0f02471cf88fad61a8f6b4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationApFrequency</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationApFrequency</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2622" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2622" bodyend="2676"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1abd67a85819ca22423b66f53bcac7cc44" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_OperationStore</definition>
+        <argsstring>(variable jsonId, string jsonPath, string graph)</argsstring>
+        <name>SF_OperationStore</name>
+        <param>
+          <type>variable</type>
+          <declname>jsonId</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>jsonPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2679" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2679" bodyend="2701"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a454954ebaa173e83bb2df1ccba184a90" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_SplitCodeToGraphs</definition>
+        <argsstring>(string code)</argsstring>
+        <name>SF_SplitCodeToGraphs</name>
+        <param>
+          <type>string</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2703" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2703" bodyend="2722"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a741a100883226305d560206f0549e805" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_SplitGraphsToFormulas</definition>
+        <argsstring>(WaveText graphCode)</argsstring>
+        <name>SF_SplitGraphsToFormulas</name>
+        <param>
+          <type>WaveText</type>
+          <declname>graphCode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2724" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2724" bodyend="2744"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a60c678d079341a8efefee664d37eb27e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SF_GetFormulaWinNameTemplate</definition>
+        <argsstring>(string mainWindow)</argsstring>
+        <name>SF_GetFormulaWinNameTemplate</name>
+        <param>
+          <type>string</type>
+          <declname>mainWindow</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2746" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2746" bodyend="2749"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a191318b14c02cd4601f1d56700f15d0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_button_sweepFormula_tofront</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>SF_button_sweepFormula_tofront</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2751" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2751" bodyend="2772"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a7e7ad34df8e43462a171948b76b00d94" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_NewChannelsWave</definition>
+        <argsstring>(variable size)</argsstring>
+        <name>SF_NewChannelsWave</name>
+        <param>
+          <type>variable</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2774" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2774" bodyend="2783"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a305d323a808361c0e57a217bd2232152" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_GetDefaultEmptyWave</definition>
+        <argsstring>()</argsstring>
+        <name>SF_GetDefaultEmptyWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2785" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2785" bodyend="2790"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1af58cb252bc0a9be397610de21f994366" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_AverageTPFromSweep</definition>
+        <argsstring>(WaveText epochMatches, wave sweepData)</argsstring>
+        <name>SF_AverageTPFromSweep</name>
+        <param>
+          <type>WaveText</type>
+          <declname>epochMatches</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweepData</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2792" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2792" bodyend="2811"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a8309c1656d71b2d92139e0225973bfdb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SF_AverageTPFromSweepImpl</definition>
+        <argsstring>(wave tpData, wave tpStart, wave sweepData, variable i)</argsstring>
+        <name>SF_AverageTPFromSweepImpl</name>
+        <param>
+          <type>wave</type>
+          <declname>tpData</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>tpStart</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweepData</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2813" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2813" bodyend="2816"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a6d0f9e8b0e136db40fb111bbafba243c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave SF_GetAllOldCodeForGUI</definition>
+        <argsstring>(string win)</argsstring>
+        <name>SF_GetAllOldCodeForGUI</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2818" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2818" bodyend="2832"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a2a58d2f974f6ad8a2dc1482916468ffc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SF_GetAllOldCode</definition>
+        <argsstring>()</argsstring>
+        <name>SF_GetAllOldCode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2834" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2834" bodyend="2849"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_formula_8ipf_1a80d5d943f2759a79061e1f4cc8ae0324" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SF_PopMenuProc_OldCode</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>SF_PopMenuProc_OldCode</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" line="2851" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf" bodystart="2851" bodyend="2879"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SF</bold> Sweep formula allows to do analysis on sweeps with a dedicated formula language </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepFormula.ipf"/>
+  </compounddef>
+</doxygen>

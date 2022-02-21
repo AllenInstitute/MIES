@@ -1,0 +1,546 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___i_v_s_c_c_8ipf" kind="file" language="C++">
+    <compoundname>MIES_IVSCC.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___i_v_s_c_c_8ipf_1afa3e19b83b708a837f4ae9b4a807941f" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double IVS_DEFAULT_NWBVERSION</definition>
+        <argsstring></argsstring>
+        <name>IVS_DEFAULT_NWBVERSION</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="22" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="22" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1ae4185ef55177889c2051326e7b647c82" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="410" endline="416">IVS_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double IVS_DEFAULT_HEADSTAGE</definition>
+        <argsstring></argsstring>
+        <name>IVS_DEFAULT_HEADSTAGE</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="23" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="26" endline="180">IVS_ConfigureMCC</referencedby>
+        <referencedby refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</referencedby>
+        <referencedby refid="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="240" endline="285">IVS_finishInitAccessQCCheck</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1acb283793846217b0069abd87dbd11b53" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="185" endline="197">IVS_runBaselineCheckQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a4f483a890486bbc56d28fb11bb196981" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="441" endline="459">IVS_runStimWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string IVS_DEFAULT_DEVICE</definition>
+        <argsstring></argsstring>
+        <name>IVS_DEFAULT_DEVICE</name>
+        <initializer>= &quot;ITC18USB_Dev_0&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="24" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="26" endline="180">IVS_ConfigureMCC</referencedby>
+        <referencedby refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</referencedby>
+        <referencedby refid="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="240" endline="285">IVS_finishInitAccessQCCheck</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1acb283793846217b0069abd87dbd11b53" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="185" endline="197">IVS_runBaselineCheckQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a4f483a890486bbc56d28fb11bb196981" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="441" endline="459">IVS_runStimWave</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ConfigureMCC</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_ConfigureMCC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="26" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="26" bodyend="180"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1ac4bd0369df4873d417caa3cc67d4244a" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1670" endline="1675">AI_SelectMultiClamp</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1685" endline="1691">AI_SendToAmp</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad20bcc5e3031855e147069d22d3d626c" compoundref="_m_i_e_s___constants_8ipf" startline="713">AMPLIFIER_CONNECTION_SUCCESS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a6b16972a6dbc44c10f72f57b796fcfb0" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3218" endline="3248">DAP_GetClampModeControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4232b730cf2ea786c61194d5fb6ae646" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="657" endline="664">GetTabID</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af282af9f7df0c8a81e1e4b0a25c2c866" compoundref="_m_i_e_s___constants_8ipf" startline="298">MCC_SETBRIDGEBALENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6a8fff88b6b124301625a37c122149d" compoundref="_m_i_e_s___constants_8ipf" startline="294">MCC_SETHOLDING_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a23df6f6f6115195a90b2ddd423dde291" compoundref="_m_i_e_s___constants_8ipf" startline="296">MCC_SETHOLDINGENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac3aee78e199703f6ccdbcce17a844f2e" compoundref="_m_i_e_s___constants_8ipf" startline="305">MCC_SETNEUTRALIZATIONCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae29bca8d9961df3631a86b5ac22f728e" compoundref="_m_i_e_s___constants_8ipf" startline="303">MCC_SETNEUTRALIZATIONENABL_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a72124863f6ee46fbbb876f782ef7b67d" compoundref="_m_i_e_s___constants_8ipf" startline="322">MCC_SETOSCKILLERENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad79043763d0f4e48bf09ecd07fa92c73" compoundref="_m_i_e_s___constants_8ipf" startline="316">MCC_SETRSCOMPBANDWIDTH_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac320578fe81abce3f39d0ea39c8a5ee8" compoundref="_m_i_e_s___constants_8ipf" startline="318">MCC_SETRSCOMPCORRECTION_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abeddaae1f69c88806df425a8f67732d7" compoundref="_m_i_e_s___constants_8ipf" startline="314">MCC_SETRSCOMPENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a664e44cc24c3698dec95ea706a4e5d81" compoundref="_m_i_e_s___constants_8ipf" startline="320">MCC_SETRSCOMPPREDICTION_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8231f4a30b9f5a7e7dbe815b484c98f8" compoundref="_m_i_e_s___constants_8ipf" startline="335">MCC_SETSLOWCOMPTAUX20ENAB_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af5725547a2c09e3e476e1079d638eec3" compoundref="_m_i_e_s___constants_8ipf" startline="339">MCC_SETSLOWCURRENTINJENABL_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac21671f906e2d0a5b816ed1c6ddc9f01" compoundref="_m_i_e_s___constants_8ipf" startline="341">MCC_SETSLOWCURRENTINJLEVEL_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acdf80831d653b123ffab94a4dad58393" compoundref="_m_i_e_s___constants_8ipf" startline="343">MCC_SETSLOWCURRENTINJSETLT_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a713124cc29b37ab777fe6e148c8375b8" compoundref="_m_i_e_s___constants_8ipf" startline="309">MCC_SETWHOLECELLCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8993ec3059fbda765b2f61053044b7d" compoundref="_m_i_e_s___constants_8ipf" startline="307">MCC_SETWHOLECELLCOMPENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae5ee4a970e0d94d5457b46f085806416" compoundref="_m_i_e_s___constants_8ipf" startline="311">MCC_SETWHOLECELLCOMPRESIST_FUNC</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a71e1e1c3b6b14a7b0ea3a2937d2b8598" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="461" endline="471">IVS_ButtonProc_Setup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1acb283793846217b0069abd87dbd11b53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_runBaselineCheckQC</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_runBaselineCheckQC</name>
+        <briefdescription>
+<para>Run the baseline QC check. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" kindref="member">PSQ_PipetteInBath</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="185" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="185" bodyend="197"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a93d7479836d09dec22432f653131c1bc" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="473" endline="483">IVS_ButtonProc_BaselineQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_runInitAccessResisQC</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_runInitAccessResisQC</name>
+        <briefdescription>
+<para>Run the initial access resistance check from the WSE. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This will check must be &lt; 20MΩ or 15% of the R input. The EXTPBREAKN wave will also be run as a way of making sure the reading is recorded into the data set for post-experiment analysis </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="204" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="204" bodyend="235"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d1b8cc7660209f458d044c319192191" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4595" endline="4610">GetIVSCCTemporaryWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="240" endline="285">IVS_finishInitAccessQCCheck</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a719a0ac13dc1ae1055857e572290ae57" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="485" endline="495">IVS_ButtonProc_AccessResist</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_finishInitAccessQCCheck</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>IVS_finishInitAccessQCCheck</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Complete the Baseline QC check in the background. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="240" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="240" bodyend="285"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d1b8cc7660209f458d044c319192191" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4595" endline="4610">GetIVSCCTemporaryWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="338" endline="348">IVS_PublishQCState</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1454" endline="1465">TP_TestPulseHasCycled</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_RunGigOhmSealQC</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_RunGigOhmSealQC</name>
+        <briefdescription>
+<para>run the GigOhm seal QC check from the WSE </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This will make sure the Steady State resistance must be &gt; 1.0 GOhm. The EXTPCIIATT wave will also be run as a way of making sure the baseline is recorded into the data set for post-experiment analysis. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="292" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="292" bodyend="309"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a1d53641116fc0fb73f7e126d3ab68304" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="497" endline="507">IVS_ButtonProc_GOhmSeal</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a819bddd8249ac46e6abe894778f6caf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_Load_StimSet</definition>
+        <argsstring>(string stim_filename)</argsstring>
+        <name>IVS_Load_StimSet</name>
+        <param>
+          <type>string</type>
+          <declname>stim_filename</declname>
+        </param>
+        <briefdescription>
+<para>Loads a single stimulus for the user when using the ZMQ Proxy. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="312" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="312" bodyend="318"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IVS_PublishQCState</definition>
+        <argsstring>(variable result, string description)</argsstring>
+        <name>IVS_PublishQCState</name>
+        <param>
+          <type>variable</type>
+          <declname>result</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>description</declname>
+        </param>
+        <briefdescription>
+<para>Push QC results onto ZeroMQ Publisher socket. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Filter: <ref refid="_m_i_e_s___constants_8ipf_1a1e7fb174f10940007c3bea116d7800bc" kindref="member">IVS_PUB_FILTER</ref></para>
+<para>Payload: JSON-encoded string with three elements in the top-level object</para>
+<para>Example:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: json
+* 
+*     {
+*       &quot;Description&quot;: &quot;some text&quot;,
+*       &quot;Issuer&quot;: &quot;My QC Function&quot;,
+*       &quot;Value&quot;: 123
+*     }
+* 
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="338" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="338" bodyend="348"/>
+        <references refid="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="92" endline="106">FFI_Publish</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1e7fb174f10940007c3bea116d7800bc" compoundref="_m_i_e_s___constants_8ipf" startline="1589">IVS_PUB_FILTER</references>
+        <referencedby refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</referencedby>
+        <referencedby refid="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="240" endline="285">IVS_finishInitAccessQCCheck</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_finishGigOhmSealQCCheck</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>IVS_finishGigOhmSealQCCheck</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>finish the Gig Ohm Seal QC in the background </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="353" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="353" bodyend="408"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="338" endline="348">IVS_PublishQCState</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1454" endline="1465">TP_TestPulseHasCycled</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1ae4185ef55177889c2051326e7b647c82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ExportAllData</definition>
+        <argsstring>(string filePath)</argsstring>
+        <name>IVS_ExportAllData</name>
+        <param>
+          <type>string</type>
+          <declname>filePath</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="410" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="410" bodyend="416"/>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1afa3e19b83b708a837f4ae9b4a807941f" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="22">IVS_DEFAULT_NWBVERSION</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a293b4c4fdd1189fcbe701905877619a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string IVS_ReturnNWBFileLocation</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_ReturnNWBFileLocation</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="418" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="418" bodyend="421"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1aa36fb7f42fffaa0dbdf0d2119ee5f2cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_SaveExperiment</definition>
+        <argsstring>(string filename)</argsstring>
+        <name>IVS_SaveExperiment</name>
+        <param>
+          <type>string</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="423" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="423" bodyend="435"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a4f483a890486bbc56d28fb11bb196981" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_runStimWave</definition>
+        <argsstring>(string stimWaveName, variable scaleFactor)</argsstring>
+        <name>IVS_runStimWave</name>
+        <param>
+          <type>string</type>
+          <declname>stimWaveName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>scaleFactor</declname>
+        </param>
+        <briefdescription>
+<para>Run a designated stim wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stimWaveName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stimWaveName to be used </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>scaleFactor</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>scale factor to run the stim wave at </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="441" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="441" bodyend="459"/>
+        <references refid="_m_i_e_s___constants_8ipf_1addc24577cddf76afdcbce0479aa7478f" compoundref="_m_i_e_s___constants_8ipf" startline="214">CHANNEL_CONTROL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a71e1e1c3b6b14a7b0ea3a2937d2b8598" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ButtonProc_Setup</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>IVS_ButtonProc_Setup</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="461" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="461" bodyend="471"/>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="26" endline="180">IVS_ConfigureMCC</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a93d7479836d09dec22432f653131c1bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ButtonProc_BaselineQC</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>IVS_ButtonProc_BaselineQC</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="473" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="473" bodyend="483"/>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1acb283793846217b0069abd87dbd11b53" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="185" endline="197">IVS_runBaselineCheckQC</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a719a0ac13dc1ae1055857e572290ae57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ButtonProc_AccessResist</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>IVS_ButtonProc_AccessResist</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="485" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="485" bodyend="495"/>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a1d53641116fc0fb73f7e126d3ab68304" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_ButtonProc_GOhmSeal</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>IVS_ButtonProc_GOhmSeal</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="497" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="497" bodyend="507"/>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1a9a0495e6d01991e679ab2d8fdb009f2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_CreatePanel</definition>
+        <argsstring>()</argsstring>
+        <name>IVS_CreatePanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="509" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="509" bodyend="511"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1ab0f8bcd629b2f4921cc509fab8ba6a3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void IVSCCControlPanel</definition>
+        <argsstring>()</argsstring>
+        <name>IVSCCControlPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="513" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="513" bodyend="520"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___i_v_s_c_c_8ipf_1ae0da5713f81cf110e6c0074ca01a297f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_GetSetQCForSweep</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>IVS_GetSetQCForSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the Set QC passed/failed state for the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>1 if passed, 0 if not (or not yet) and asserts out on all other errors. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="526" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="526" bodyend="556"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac45439ba5d21067d6d6197f775057811" compoundref="_m_i_e_s___constants_8ipf" startline="575">EVENT_NAME_LIST_LBN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35fd4c4f3c44373d8325c027d6e1d3b8" compoundref="_m_i_e_s___constants_8ipf" startline="558">GENERIC_EVENT</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad4a3ed2807f1fe9760c6e3b328ae2217" compoundref="_m_i_e_s___constants_8ipf" startline="1056">INVALID_ANALYSIS_FUNCTION</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a06c7a57af84468b62e909b5b802b19c2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6989" endline="7014">MapAnaFuncToConstant</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af81994bf20db63da6d3341b29a380695" compoundref="_m_i_e_s___constants_8ipf" startline="1016">PSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>IVS</bold> Routines for IVSCC/PatchSeq automation </para>
+    </briefdescription>
+    <detaileddescription>
+<para>ZeroMQ Infos:<itemizedlist>
+<listitem><para>Listening port for the REP/ROUTER socket starts at <ref refid="_m_i_e_s___constants_8ipf_1ac27047309a31f60bb24e5d8aa9e2328a" kindref="member">ZEROMQ_BIND_REP_PORT</ref>.</para>
+</listitem><listitem><para>Listening port for the PUBLISHER socket starts at <ref refid="_m_i_e_s___constants_8ipf_1aef8cf72c2619d4054dc430e85d239e8a" kindref="member">ZEROMQ_BIND_PUB_PORT</ref></para>
+</listitem><listitem><para>If one of those ports is already in use, the next larger port is tried.</para>
+</listitem><listitem><para>The publisher socket does include an automatic heartbeat message every 5 seconds. Subscribe to <ref refid="_zero_m_q___interop_8ipf_1acd96451869f5609ead784813e2b413cc" kindref="member">ZeroMQ_HEARTBEAT</ref> if you want to receive that.</para>
+</listitem><listitem><para>All available message filters can be queried via <ref refid="_m_i_e_s___foreign_function_interface_8ipf_1a94b052bcf0ae3574a8e84e4d8865db9c" kindref="member">FFI_GetAvailableMessageFilters()</ref>.</para>
+</listitem><listitem><para>More information regarding the ZeroMQ-XOP is located <ulink url="https://github.com/AllenInstitute/ZeroMQ-XOP/#readme">here</ulink></para>
+</listitem><listitem><para>See <ref refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" kindref="member">IVS_PublishQCState()</ref> for more infos about the published messages </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf"/>
+  </compounddef>
+</doxygen>

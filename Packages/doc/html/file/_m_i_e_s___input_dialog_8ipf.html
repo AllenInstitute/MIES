@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_InputDialog.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Labnotebook.ipf" href="_m_i_e_s___labnotebook_8ipf.html" />
+    <link rel="prev" title="File MIES_Indexing.ipf" href="_m_i_e_s___indexing_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___labnotebook_8ipf.html" title="File MIES_Labnotebook.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___indexing_8ipf.html" title="File MIES_Indexing.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_InputDialog.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-inputdialog-ipf">
+<span id="id1"></span><h1>File MIES_InputDialog.ipf<a class="headerlink" href="#file-mies-inputdialog-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>ID</strong> Input dialog handling for numeric entries </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421ID_AskUserForSettings8variable6string4wave4wave">
+<span id="_CPPv321ID_AskUserForSettings8variable6string4wave4wave"></span><span id="_CPPv221ID_AskUserForSettings8variable6string4wave4wave"></span><span id="ID_AskUserForSettings__variable.string.wave.wave"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_AskUserForSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">title</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mock</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421ID_AskUserForSettings8variable6string4wave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Shows a dialog and queries numeric values from the user. </p>
+<p>We currently ask for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8"><span class="std std-ref">NUM_HEADSTAGES</span></a> headstage dependent entries and one independent value when mode = ID_HEADSTAGE_SETTINGS. All values must be numeric. For ID_POPUPMENU_SETTINGS the row dimension labels of data fill the popup menu, and on return data will have a 1 at the selected entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AskUserSettingsModeFlag"><span class="std std-ref">AskUserSettingsModeFlag</span></a> </p></li>
+<li><p><strong>title</strong> – dialog title </p></li>
+<li><p><strong>data</strong> – 1D numeric wave, which must be permanent and in an otherwise empty folder </p></li>
+<li><p><strong>mock</strong> – This is mock data for testing which is written into data when <a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html#_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf"><span class="std std-ref">GetInteractiveMode()</span></a> is false</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>0 on success, 1 if the user cancelled the dialog </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411ID_SetTitle6string6string">
+<span id="_CPPv311ID_SetTitle6string6string"></span><span id="_CPPv211ID_SetTitle6string6string"></span><span id="ID_SetTitle__string.string"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a9edd66f621cdfa4b7f6a64934a44ff23"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_SetTitle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">title</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411ID_SetTitle6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ID_GetControl8variable">
+<span id="_CPPv313ID_GetControl8variable"></span><span id="_CPPv213ID_GetControl8variable"></span><span id="ID_GetControl__variable"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a12d80398a6c6c7fffe5f4609a968e975"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_GetControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ID_GetControl8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ID_GetFolder6string">
+<span id="_CPPv312ID_GetFolder6string"></span><span id="_CPPv212ID_GetFolder6string"></span><span id="ID_GetFolder__string"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a3750ae02f161d94bc189e21346dfba2e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_GetFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412ID_GetFolder6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410ID_GetWave6string">
+<span id="_CPPv310ID_GetWave6string"></span><span id="_CPPv210ID_GetWave6string"></span><span id="ID_GetWave__string"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_GetWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410ID_GetWave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ID_ButtonProcP14WMButtonAction">
+<span id="_CPPv313ID_ButtonProcP14WMButtonAction"></span><span id="_CPPv213ID_ButtonProcP14WMButtonAction"></span><span id="ID_ButtonProc__WMButtonActionP"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1aee7cc6c8a20b9423cba1651dfaeadb1e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_ButtonProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ID_ButtonProcP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ID_SetVarProcP19WMSetVariableAction">
+<span id="_CPPv313ID_SetVarProcP19WMSetVariableAction"></span><span id="_CPPv213ID_SetVarProcP19WMSetVariableAction"></span><span id="ID_SetVarProc__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a9a15f6270c8b606b99c94017ae9bdb17"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_SetVarProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMSetVariableAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sva</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ID_SetVarProcP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ID_PopMenuProcP13WMPopupAction">
+<span id="_CPPv314ID_PopMenuProcP13WMPopupAction"></span><span id="_CPPv214ID_PopMenuProcP13WMPopupAction"></span><span id="ID_PopMenuProc__WMPopupActionP"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a39281c3a011e2c9c981c4796a987984a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_PopMenuProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ID_PopMenuProcP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ID_GetPopupEntriesv">
+<span id="_CPPv318ID_GetPopupEntriesv"></span><span id="_CPPv218ID_GetPopupEntriesv"></span><span id="ID_GetPopupEntries"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1a39ad072cb96c89cacbc7d0b58157db5c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_GetPopupEntries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ID_GetPopupEntriesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418ID_Headstage_Panelv">
+<span id="_CPPv318ID_Headstage_Panelv"></span><span id="_CPPv218ID_Headstage_Panelv"></span><span id="ID_Headstage_Panel"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1ab846098effd97141910278865fc21506"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_Headstage_Panel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418ID_Headstage_Panelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ID_Popup_Panelv">
+<span id="_CPPv314ID_Popup_Panelv"></span><span id="_CPPv214ID_Popup_Panelv"></span><span id="ID_Popup_Panel"></span><span class="target" id="_m_i_e_s___input_dialog_8ipf_1af5feb07a9f45a2b85309bda2bc509bb6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ID_Popup_Panel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ID_Popup_Panelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___indexing_8ipf.html"
+                          title="previous chapter">File MIES_Indexing.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___labnotebook_8ipf.html"
+                          title="next chapter">File MIES_Labnotebook.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___labnotebook_8ipf.html" title="File MIES_Labnotebook.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___indexing_8ipf.html" title="File MIES_Indexing.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_InputDialog.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

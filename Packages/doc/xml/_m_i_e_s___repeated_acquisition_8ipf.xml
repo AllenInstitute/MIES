@@ -1,0 +1,755 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___repeated_acquisition_8ipf" kind="file" language="C++">
+    <compoundname>MIES_RepeatedAcquisition.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1ab53a7983540796679ab4674f3ad62e6b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_RecalculateITI</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_RecalculateITI</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Recalculate the Inter trial interval (ITI) for the given device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="16" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="16" bodyend="26"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1ae9c465e630313ea57c1bc3251ea29af1" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="157" endline="177">DQ_StopDAQDeviceTimer</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_HandleITI_MD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_HandleITI_MD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="28" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="28" bodyend="58"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0fae962e87b523e2e946e2692a5b572" compoundref="_m_i_e_s___constants_8ipf" startline="540">AS_ITI</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ab25dbfa5aac7534ca3e673da9665a8d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5606" endline="5624">DAP_ApplyDelayedClampModeChange</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8882c7a341e46800beb58e049a206d21" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="286" endline="300">DQM_StartBackgroundTimer</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1b1effca33001624bd9189f9c1bba794" compoundref="_m_i_e_s___utilities_8ipf" startline="4109" endline="4125">ExecuteListOfFunctions</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2b9212df07b847c7a21ed240a043f30a" compoundref="_m_i_e_s___utilities_8ipf" startline="2386" endline="2391">IsBackgroundTaskRunning</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ab53a7983540796679ab4674f3ad62e6b" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="16" endline="26">RA_RecalculateITI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2d5b008b9a9eca0bf708d3071b58b56b" compoundref="_m_i_e_s___constants_8ipf" startline="434">TEST_PULSE_DURING_RA_MOD</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a3c37a58df2dfdfbcb601e31841afd625" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="363" endline="376">RA_BckgTPwithCallToRACounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1aa4c29a6a627a7bdbc0ae7caaec52c11b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_WaitUntiIITIDone</definition>
+        <argsstring>(string device, variable elapsedTime)</argsstring>
+        <name>RA_WaitUntiIITIDone</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>elapsedTime</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="60" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="60" bodyend="82"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_HandleITI</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_HandleITI</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="84" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="84" bodyend="132"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0fae962e87b523e2e946e2692a5b572" compoundref="_m_i_e_s___constants_8ipf" startline="540">AS_ITI</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ab25dbfa5aac7534ca3e673da9665a8d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5606" endline="5624">DAP_ApplyDelayedClampModeChange</references>
+        <references refid="_m_i_e_s___data_acquisition___single_8ipf_1a2c20af858715bf1f8195cc0ab0339030" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="181" endline="196">DQS_StartBackgroundTimer</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1b1effca33001624bd9189f9c1bba794" compoundref="_m_i_e_s___utilities_8ipf" startline="4109" endline="4125">ExecuteListOfFunctions</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ab53a7983540796679ab4674f3ad62e6b" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="16" endline="26">RA_RecalculateITI</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aa4c29a6a627a7bdbc0ae7caaec52c11b" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="60" endline="82">RA_WaitUntiIITIDone</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a373a0379f40d191a1874f77be4115b8b" compoundref="_m_i_e_s___constants_8ipf" startline="431">TEST_PULSE_BG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2d5b008b9a9eca0bf708d3071b58b56b" compoundref="_m_i_e_s___constants_8ipf" startline="434">TEST_PULSE_DURING_RA_MOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0d11d805ed39cd5f89c63fca4e463e5b" compoundref="_m_i_e_s___constants_8ipf" startline="433">TEST_PULSE_FG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1297" endline="1339">TP_Setup</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1a8eed22e507a0699d485b440c19aba385" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="12" endline="16">TPS_StartBackgroundTestPulse</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="140" endline="187">TPS_StartTestPulseForeground</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a4bef88d4b9f50daebc0df841b0c6c903" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="275" endline="288">RA_BckgTPwithCallToRACounter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1ab2cdf31f969cb7681d4c106431e5f932" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_GetTotalNumberOfSweepsLowLev</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_GetTotalNumberOfSweepsLowLev</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the total number of sweeps for repeated acquisition. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Helper function for plain calculation without lead and follower logic </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="137" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="137" bodyend="145"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_GetTotalNumberOfSweeps</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_GetTotalNumberOfSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the total number of sweeps for repeated acquisition. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="148" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="148" bodyend="167"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ab2cdf31f969cb7681d4c106431e5f932" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="137" endline="145">RA_GetTotalNumberOfSweepsLowLev</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a4bef88d4b9f50daebc0df841b0c6c903" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="275" endline="288">RA_BckgTPwithCallToRACounter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a3c37a58df2dfdfbcb601e31841afd625" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="363" endline="376">RA_BckgTPwithCallToRACounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1afab270091333ca2d58daf9582f3ff1ee" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="549" endline="568">RA_SkipSweepCalc</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_StepSweepsRemaining</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_StepSweepsRemaining</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Update the &quot;Sweeps remaining&quot; control. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="170" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="170" bodyend="181"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_Start</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_Start</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Function gets called after the first sweep is already acquired and if repeated acquisition is on. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="185" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="185" bodyend="202"/>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aa48c9af4507b8dbebf54d002930db115" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="570" endline="577">RA_PerfInitialize</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_Counter</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_Counter</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="204" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="204" bodyend="253"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ab25dbfa5aac7534ca3e673da9665a8d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5606" endline="5624">DAP_ApplyDelayedClampModeChange</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="group___background_functions_1ga216a30befc7388a82cb20819096a2077" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="93" endline="107">DQS_BkrdDataAcq</references>
+        <references refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a977c0d906793ae5b83121b4b7aa998c6" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="262" endline="266">GetDataAcqRunMode</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a239292da59f8ada36ed89a5db2a74871" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="579" endline="587">RA_PerfAddMark</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_FinishAcquisition</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_FinishAcquisition</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="255" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="255" bodyend="273"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae003b77aeb8748fc4bdef70b68c9b8dd" compoundref="_m_i_e_s___constants_8ipf" startline="1536">DQ_STOP_REASON_FINISHED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1ae9c465e630313ea57c1bc3251ea29af1" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="157" endline="177">DQ_StopDAQDeviceTimer</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5b8c5714c062fa8e642d7d54248da817" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5536" endline="5545">GetListofLeaderAndPossFollower</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a36f314a43a0ddd4297b99785783e5027" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="589" endline="610">RA_PerfFinish</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a4bef88d4b9f50daebc0df841b0c6c903" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="275" endline="288">RA_BckgTPwithCallToRACounter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a3c37a58df2dfdfbcb601e31841afd625" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="363" endline="376">RA_BckgTPwithCallToRACounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a4bef88d4b9f50daebc0df841b0c6c903" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_BckgTPwithCallToRACounter</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_BckgTPwithCallToRACounter</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="275" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="275" bodyend="288"/>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_StartMD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_StartMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="290" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="290" bodyend="322"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aa48c9af4507b8dbebf54d002930db115" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="570" endline="577">RA_PerfInitialize</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a43bd529d931ad0b475b7fa6f21201c47" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="405" endline="417">RA_YokedRAStartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_CounterMD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_CounterMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="324" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="324" bodyend="361"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ab25dbfa5aac7534ca3e673da9665a8d1" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5606" endline="5624">DAP_ApplyDelayedClampModeChange</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="158" endline="265">DQM_StartDAQMultiDevice</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a977c0d906793ae5b83121b4b7aa998c6" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="262" endline="266">GetDataAcqRunMode</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a239292da59f8ada36ed89a5db2a74871" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="579" endline="587">RA_PerfAddMark</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a3c37a58df2dfdfbcb601e31841afd625" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_BckgTPwithCallToRACounterMD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_BckgTPwithCallToRACounterMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="363" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="363" bodyend="376"/>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a375585faeb14ad1ed2e6c27a8d42b8ef" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="419" endline="431">RA_YokedRABckgTPCallRACounter</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a327bebbd6ad9d6299fc1344a1d51c096" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_AreLeaderAndFollowerFinished</definition>
+        <argsstring>()</argsstring>
+        <name>RA_AreLeaderAndFollowerFinished</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="378" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="378" bodyend="403"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1af6f4ac96a64b0135ed1cec86b11aa4dd" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="417" endline="430">DQM_GetActiveDeviceRow</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5b8c5714c062fa8e642d7d54248da817" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5536" endline="5545">GetListofLeaderAndPossFollower</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f0050c12fe6292dc0b610d4e36449ad" compoundref="_m_i_e_s___constants_8ipf" startline="32">ITC1600_FIRST_DEVICE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a375585faeb14ad1ed2e6c27a8d42b8ef" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="419" endline="431">RA_YokedRABckgTPCallRACounter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a43bd529d931ad0b475b7fa6f21201c47" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="405" endline="417">RA_YokedRAStartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a43bd529d931ad0b475b7fa6f21201c47" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_YokedRAStartMD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_YokedRAStartMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="405" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="405" bodyend="417"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afa99e588aa43db7a280ca45f889c076b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5475" endline="5484">DeviceCanFollow</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f0050c12fe6292dc0b610d4e36449ad" compoundref="_m_i_e_s___constants_8ipf" startline="32">ITC1600_FIRST_DEVICE</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a327bebbd6ad9d6299fc1344a1d51c096" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="378" endline="403">RA_AreLeaderAndFollowerFinished</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a375585faeb14ad1ed2e6c27a8d42b8ef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_YokedRABckgTPCallRACounter</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_YokedRABckgTPCallRACounter</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="419" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="419" bodyend="431"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afa99e588aa43db7a280ca45f889c076b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5475" endline="5484">DeviceCanFollow</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f0050c12fe6292dc0b610d4e36449ad" compoundref="_m_i_e_s___constants_8ipf" startline="32">ITC1600_FIRST_DEVICE</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a327bebbd6ad9d6299fc1344a1d51c096" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="378" endline="403">RA_AreLeaderAndFollowerFinished</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a3c37a58df2dfdfbcb601e31841afd625" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="363" endline="376">RA_BckgTPwithCallToRACounterMD</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1aa512cabd317ba10c0b244c6c03602360" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_IsFirstSweep</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_IsFirstSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return one if we are acquiring currently the very first sweep of a possible repeated acquisition cycle. Zero means that we acquire a later sweep than the first one in a repeated acquisition cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="436" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="436" bodyend="441"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_SkipSweeps</definition>
+        <argsstring>(string device, variable skipCount, variable limitToSetBorder=defaultValue, variable document=defaultValue)</argsstring>
+        <name>RA_SkipSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipCount</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>limitToSetBorder</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>document</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Allows skipping forward or backwards the sweep count during data acquistion. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>skipCount</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of sweeps to skip (forward or backwards) during repeated acquisition </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>limitToSetBorder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Limits skipCount so that we don&apos;t skip further than after the last sweep of the stimset with the most number of sweeps. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>document</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Add labnotebook entries to document the sweep skipping. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="453" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="453" bodyend="523"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ab1f6eff43ab5d2754261b76521e0f524" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="526" endline="543">RA_DocumentSweepSkipping</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1afab270091333ca2d58daf9582f3ff1ee" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="549" endline="568">RA_SkipSweepCalc</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a76560c1eb9a139e22352630cd2b95fc5" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5420" endline="5430">DAP_ButtonProc_skipBack</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a9cf3495ed1446f8984457db37922a97b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5408" endline="5418">DAP_ButtonProc_skipSweep</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1ab1f6eff43ab5d2754261b76521e0f524" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_DocumentSweepSkipping</definition>
+        <argsstring>(string device, variable skipCount)</argsstring>
+        <name>RA_DocumentSweepSkipping</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipCount</declname>
+        </param>
+        <briefdescription>
+<para>Document the number of skipped sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="526" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="526" bodyend="543"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="142" endline="182">AS_GetSweepNumber</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1adc857d7ce1d971620d10354e46e9a225" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="15" endline="23">ED_AddEntriesToLabnotebook</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a36abdc3c20fa54ee6e570e006385e15c" compoundref="_m_i_e_s___constants_8ipf" startline="923">SKIP_SWEEPS_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1afab270091333ca2d58daf9582f3ff1ee" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_SkipSweepCalc</definition>
+        <argsstring>(string device, variable skipCount)</argsstring>
+        <name>RA_SkipSweepCalc</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>skipCount</declname>
+        </param>
+        <briefdescription>
+<para>Returns valid count after adding skipCount. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>skipCount</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of sweeps to skip (forward or backwards) during repeated acquisition. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="549" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="549" bodyend="568"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a818180123f6cbe751df058b709fe6f7e" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="148" endline="167">RA_GetTotalNumberOfSweeps</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1aa48c9af4507b8dbebf54d002930db115" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_PerfInitialize</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_PerfInitialize</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="570" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="570" bodyend="577"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936cd1f1a7f39a48ef9985ec23cac357" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6482" endline="6504">GetRAPerfWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1af8e8036fa700e616beb5bdd0988190f1" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="290" endline="322">RA_StartMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a239292da59f8ada36ed89a5db2a74871" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_PerfAddMark</definition>
+        <argsstring>(string device, variable idx)</argsstring>
+        <name>RA_PerfAddMark</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="579" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="579" bodyend="587"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936cd1f1a7f39a48ef9985ec23cac357" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6482" endline="6504">GetRAPerfWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a36f314a43a0ddd4297b99785783e5027" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable RA_PerfFinish</definition>
+        <argsstring>(string device)</argsstring>
+        <name>RA_PerfFinish</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="589" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="589" bodyend="610"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a936cd1f1a7f39a48ef9985ec23cac357" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6482" endline="6504">GetRAPerfWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a972328a6f9381e71d054cea3b6f49233" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="255" endline="273">RA_FinishAcquisition</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RA_ContinueOrStop</definition>
+        <argsstring>(string device, variable multiDevice=defaultValue)</argsstring>
+        <name>RA_ContinueOrStop</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>multiDevice</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Continue DAQ if requested or stop it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>multiDevice</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] DAQ mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" line="616" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf" bodystart="616" bodyend="643"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae003b77aeb8748fc4bdef70b68c9b8dd" compoundref="_m_i_e_s___constants_8ipf" startline="1536">DQ_STOP_REASON_FINISHED</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a4bef88d4b9f50daebc0df841b0c6c903" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="275" endline="288">RA_BckgTPwithCallToRACounter</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aa512cabd317ba10c0b244c6c03602360" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="436" endline="441">RA_IsFirstSweep</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aba659e376a2317d2ad2ea676e055f8f4" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="185" endline="202">RA_Start</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a375585faeb14ad1ed2e6c27a8d42b8ef" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="419" endline="431">RA_YokedRABckgTPCallRACounter</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a43bd529d931ad0b475b7fa6f21201c47" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="405" endline="417">RA_YokedRAStartMD</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="357" endline="369">DQM_StopDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a1104d58ee90aca88e6e13fc7f7ae863b" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="110" endline="126">DQS_StopDataAcq</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>comment in to enable repeated acquisition performance measurement code </para>
+    </briefdescription>
+    <detaileddescription>
+<para><bold>RA</bold> Repated acquisition functionality </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_RepeatedAcquisition.ipf"/>
+  </compounddef>
+</doxygen>

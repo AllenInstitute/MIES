@@ -1,0 +1,4 @@
+Struct PulseAverageSetIndices
+=============================
+
+.. doxygenstruct:: PulseAverageSetIndices

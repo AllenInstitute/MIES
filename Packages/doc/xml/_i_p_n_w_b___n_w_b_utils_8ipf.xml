@@ -1,0 +1,1112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___n_w_b_utils_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_NWBUtils.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a5a6795f086853703595f63b4f9229490" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetNoCompression</definition>
+        <argsstring>()</argsstring>
+        <name>GetNoCompression</name>
+        <briefdescription>
+<para>Convenience getters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Igor Pro does not allow cross IM access to constants </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="539" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="539" bodyend="541"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="906" endline="925">NWB_PrepareExport</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a32bd72b9f89567de75104e6d39e9cdb8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetChunkedCompression</definition>
+        <argsstring>()</argsstring>
+        <name>GetChunkedCompression</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="543" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="543" bodyend="545"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a60342b8e59475387ac33be6e0058d6f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetSingleChunkCompression</definition>
+        <argsstring>()</argsstring>
+        <name>GetSingleChunkCompression</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="547" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="547" bodyend="549"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a531bd8ea67c849647b879f252a502ba1" compoundref="_i_p_n_w_b___constants_8ipf" startline="107">SINGLE_CHUNK_COMPRESSION</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1ac9099a22d163661bf0e9db240ecbefd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CompressionModeToString</definition>
+        <argsstring>(variable mode)</argsstring>
+        <name>CompressionModeToString</name>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="551" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="551" bodyend="563"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a531bd8ea67c849647b879f252a502ba1" compoundref="_i_p_n_w_b___constants_8ipf" startline="107">SINGLE_CHUNK_COMPRESSION</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a21f824886bb6e41f8637bd19dc858345" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string NWB_PATCHCLAMPSERIES_V1</definition>
+        <argsstring></argsstring>
+        <name>NWB_PATCHCLAMPSERIES_V1</name>
+        <initializer>= &quot;/acquisition/timeseries&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a32b65daff73482ff93b069895a801d02" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string NWB_PATCHCLAMPSERIES_V2</definition>
+        <argsstring></argsstring>
+        <name>NWB_PATCHCLAMPSERIES_V2</name>
+        <initializer>= &quot;/acquisition&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a1beff525aee6f249e5b500e091f3519d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string NWB_VERSION_V1</definition>
+        <argsstring></argsstring>
+        <name>NWB_VERSION_V1</name>
+        <initializer>= &quot;NWB-1.0.5&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="18" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ac144fb078caa90ab358a7a6d17161990" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="587" endline="598">GetNWBVersionString</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a05852160519df66bbece9047b1071f01" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string NWB_VERSION_V2</definition>
+        <argsstring></argsstring>
+        <name>NWB_VERSION_V2</name>
+        <initializer>= &quot;2.2.4&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="19" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ac144fb078caa90ab358a7a6d17161990" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="587" endline="598">GetNWBVersionString</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a4d12447e5ed1bdc711e5314a1e4dcd17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DetermineNamespace</definition>
+        <argsstring>(string neurodata_type)</argsstring>
+        <name>DetermineNamespace</name>
+        <param>
+          <type>string</type>
+          <declname>neurodata_type</declname>
+        </param>
+        <briefdescription>
+<para>Determine the namespace of the given neurodata type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: - core specification &quot;2.2.0&quot;<itemizedlist>
+<listitem><para>hdmf-common &quot;1.1.0&quot; </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="25" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="25" bodyend="153"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a84d198660804a71c0754740d3438eeea" compoundref="_i_p_n_w_b___constants_8ipf" startline="125">HDMF_SPEC_NAME</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a59ebae4de96af7be2c8c5ecd812da8f5" compoundref="_i_p_n_w_b___constants_8ipf" startline="130">NDX_MIES_SPEC_NAME</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab4a856f41c72878b371428608f1471f0" compoundref="_i_p_n_w_b___constants_8ipf" startline="120">NWB_SPEC_NAME</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a78a128c4dc14248e8474725f373afd14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetTimeSeriesMissingFields</definition>
+        <argsstring>(variable channelType, variable clampMode)</argsstring>
+        <name>GetTimeSeriesMissingFields</name>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Return the initial values for the missing_fields attribute depending on the channel type, one of <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWBChannelTypes" kindref="member">IPNWBChannelTypes</ref>, and the clamp mode, one in <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWB_ClampModes" kindref="member">IPNWB_ClampModes</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="158" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="158" bodyend="177"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a85ff4820b61b0f71dde948fcc0b70e9b" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="238" endline="261">DetermineDataTypeFromProperties</references>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a58f884ced9ff53d7b20ef9fdd752807e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetChannelTypeFromNeurodataType</definition>
+        <argsstring>(string neurodata_type)</argsstring>
+        <name>GetChannelTypeFromNeurodataType</name>
+        <param>
+          <type>string</type>
+          <declname>neurodata_type</declname>
+        </param>
+        <briefdescription>
+<para>Derive the channel type, one of <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWBChannelTypes" kindref="member">IPNWBChannelTypes</ref>, from the <computeroutput>neurodata_type</computeroutput> attribute and return it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>neurodata_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string with neurodata type specification defined in <computeroutput>nwb.icephys.json</computeroutput>_ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="184" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="184" bodyend="202"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1adaeb9a1e231b07bd0dcb8e2d764cd8e9" compoundref="_i_p_n_w_b___constants_8ipf" startline="50">IPNWB_CHANNEL_TYPE_OTHER</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a56ede05860e92adacc2da87393adbe54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetClampModeFromNeurodataType</definition>
+        <argsstring>(string neurodata_type)</argsstring>
+        <name>GetClampModeFromNeurodataType</name>
+        <param>
+          <type>string</type>
+          <declname>neurodata_type</declname>
+        </param>
+        <briefdescription>
+<para>Derive the clamp mode from the <computeroutput>neurodata_type</computeroutput> attribute and return it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>neurodata_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string with neurodata type specification defined in <computeroutput>nwb.icephys.json</computeroutput>_ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="209" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="209" bodyend="227"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a85ff4820b61b0f71dde948fcc0b70e9b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DetermineDataTypeFromProperties</definition>
+        <argsstring>(variable channelType, variable clampMode)</argsstring>
+        <name>DetermineDataTypeFromProperties</name>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Determine the neurodata type based on channel type and clamp mode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a56ede05860e92adacc2da87393adbe54" kindref="member">GetClampModeFromNeurodataType</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one in </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>IPNWBChannelTypes </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>clampMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one in </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>IPNWB_ClampModes</para>
+</simplesect>
+<simplesect kind="return"><para>neurodata_type string with neurodata type specification defined in <computeroutput>nwb.icephys.json</computeroutput>_ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="238" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="238" bodyend="261"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a78a128c4dc14248e8474725f373afd14" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="158" endline="177">GetTimeSeriesMissingFields</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadNWBVersion</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>ReadNWBVersion</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>get the (major) version of the nwb file </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of open hdf5 file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>major version e.g. 1 or 2 </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="267" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="267" bodyend="283"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1313c9bc50b3c9aa763461f0869f9179" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="494" endline="520">H5_AttributeExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" compoundref="_i_p_n_w_b___writer_8ipf" startline="245" endline="283">AddTimeSeriesUnitAndRes</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" compoundref="_i_p_n_w_b___reader_8ipf" startline="484" endline="503">ReadNeuroDataType</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1afa88b7975834a25fe5b48415708dc354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetNWBMajorVersion</definition>
+        <argsstring>(string version)</argsstring>
+        <name>GetNWBMajorVersion</name>
+        <param>
+          <type>string</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>convert version string to major version </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ac144fb078caa90ab358a7a6d17161990" kindref="member">GetNWBVersionString</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="288" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="288" bodyend="297"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afcf78b84de9423a5a9d469ee17dadfe2" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="308" endline="326">AnalyzeNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="73" endline="134">AB_AddMapEntry</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1afcf78b84de9423a5a9d469ee17dadfe2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AnalyzeNWBVersion</definition>
+        <argsstring>(string version, variable *version0, variable *version1, variable *version2)</argsstring>
+        <name>AnalyzeNWBVersion</name>
+        <param>
+          <type>string</type>
+          <declname>version</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>version0</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>version1</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>version2</declname>
+        </param>
+        <briefdescription>
+<para>convert version string to major and all minor numeric versions </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">version0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numeric first part of the version string (major Version) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">version1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numeric second part of the version string (minor Version) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">version2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numeric third part of the version string (sub Version) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>analyzed numeric versions </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="308" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="308" bodyend="326"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afa88b7975834a25fe5b48415708dc354" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="288" endline="297">GetNWBMajorVersion</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EnsureValidNWBVersion</definition>
+        <argsstring>(variable version)</argsstring>
+        <name>EnsureValidNWBVersion</name>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="328" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="328" bodyend="332"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afcf78b84de9423a5a9d469ee17dadfe2" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="308" endline="326">AnalyzeNWBVersion</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1afa88b7975834a25fe5b48415708dc354" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="288" endline="297">GetNWBMajorVersion</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" compoundref="_i_p_n_w_b___reader_8ipf" startline="241" endline="256">LoadSweepNumber</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a941f83fbb1d5320ae9c8bbd535ddb620" compoundref="_i_p_n_w_b___reader_8ipf" startline="286" endline="296">LoadTimeseries</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa30c9a15c5a6c4fb8f77977172e98abe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="263" endline="272">NWB_AddSpecifications</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a1411e1af86fe7b8f83a1f951db0cab0a" compoundref="_i_p_n_w_b___reader_8ipf" startline="318" endline="325">OpenAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ac394fef4530d1d1a82ea66f99934548a" compoundref="_i_p_n_w_b___reader_8ipf" startline="104" endline="114">ReadAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" compoundref="_i_p_n_w_b___reader_8ipf" startline="19" endline="41">ReadDevices</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" compoundref="_i_p_n_w_b___reader_8ipf" startline="484" endline="503">ReadNeuroDataType</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a9adf28753f0e29f3ea0617e27622b239" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LoadSpecification</definition>
+        <argsstring>(string specLoc, string specName)</argsstring>
+        <name>LoadSpecification</name>
+        <param>
+          <type>string</type>
+          <declname>specLoc</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>specName</declname>
+        </param>
+        <briefdescription>
+<para>Load the NWB specification from files in the main directory. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: <computeroutput>Open</computeroutput>, <computeroutput>FbinRead</computeroutput> and <computeroutput>Close</computeroutput> are not threadsafe</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>specLoc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Igor Pro file path to specifications (Path Separator: &quot;:&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>specName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>specifications file identifier (without trailing *.json ending)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>JSON string </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="342" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="342" bodyend="363"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ae48e6561b892e772ed2e5576a58e629b" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="369" endline="371">SpecificationsDiscLocation</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1ae48e6561b892e772ed2e5576a58e629b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SpecificationsDiscLocation</definition>
+        <argsstring>()</argsstring>
+        <name>SpecificationsDiscLocation</name>
+        <briefdescription>
+<para>Return Folder of NWB:N specifications. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: This is typically located at the location of the IPNWB program ipf files. <computeroutput>FunctionPath</computeroutput> is not threadsafe </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="369" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="369" bodyend="371"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" compoundref="_i_p_n_w_b___utils_8ipf" startline="353" endline="361">GetFolder</references>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9adf28753f0e29f3ea0617e27622b239" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="342" endline="363">LoadSpecification</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a4073d87b5409e8b4a03c92e360901be5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadTextAttributeAsList</definition>
+        <argsstring>(variable locationID, string path, string name)</argsstring>
+        <name>ReadTextAttributeAsList</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text attribute as semicolon <computeroutput>;</computeroutput> separated list. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute to load </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="379" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="379" bodyend="384"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1ae5bce039a8197991d472f3d802ed2a83" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="393" endline="407">ReadTextAttribute</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" compoundref="_i_p_n_w_b___reader_8ipf" startline="484" endline="503">ReadNeuroDataType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1ae5bce039a8197991d472f3d802ed2a83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave ReadTextAttribute</definition>
+        <argsstring>(variable locationID, string path, string name)</argsstring>
+        <name>ReadTextAttribute</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text attribute as text wave, return a single element wave with <ref refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" kindref="member">PLACEHOLDER</ref> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute to load </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="393" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="393" bodyend="407"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <referencedby refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a4073d87b5409e8b4a03c92e360901be5" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="379" endline="384">ReadTextAttributeAsList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a5cd391792250dd9f3c445e6e535e0b6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadTextAttributeAsString</definition>
+        <argsstring>(variable locationID, string path, string name)</argsstring>
+        <name>ReadTextAttributeAsString</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text attribute as string, return <ref refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" kindref="member">PLACEHOLDER</ref> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute to load </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="415" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="415" bodyend="429"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" compoundref="_i_p_n_w_b___reader_8ipf" startline="19" endline="41">ReadDevices</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" compoundref="_i_p_n_w_b___reader_8ipf" startline="484" endline="503">ReadNeuroDataType</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a837437408ad33ce51c762657250e7281" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadAttributeAsNumber</definition>
+        <argsstring>(variable locationID, string path, string name)</argsstring>
+        <name>ReadAttributeAsNumber</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text attribute as number, return <computeroutput>NaN</computeroutput> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional path on top of <computeroutput>locationID</computeroutput> which identifies the group or dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the attribute to load </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="437" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="437" bodyend="451"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" compoundref="_i_p_n_w_b___reader_8ipf" startline="241" endline="256">LoadSweepNumber</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a2f3acf3bf0df85add3bf642e1ca55968" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave ReadTextDataSet</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>ReadTextDataSet</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text dataset as text wave, return a single element wave with <ref refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" kindref="member">PLACEHOLDER</ref> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="458" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="458" bodyend="472"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadTextDataSetAsString</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>ReadTextDataSetAsString</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text dataset as string, return <ref refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" kindref="member">PLACEHOLDER</ref> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="478" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="478" bodyend="492"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa4077e37d33eab0ebecbd37f6d0a93fd" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="274" endline="282">NWB_ReadSessionStartTime</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a10c1bbfd998735db47c6c550c065e131" compoundref="_i_p_n_w_b___reader_8ipf" startline="377" endline="401">ReadGeneralInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" compoundref="_i_p_n_w_b___reader_8ipf" startline="359" endline="374">ReadTopLevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a6c2f4f8904430aac5c6182c2b73a5460" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadDataSetAsNumber</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>ReadDataSetAsNumber</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read a text dataset as number, return <computeroutput>NaN</computeroutput> if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="498" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="498" bodyend="511"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a9774586836cd2512087b2d08fbfc1f97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable WriteTextDatasetIfSet</definition>
+        <argsstring>(variable locationID, string name, string str, variable compressionMode=defaultValue)</argsstring>
+        <name>WriteTextDatasetIfSet</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Write a text dataset only if it is not equal to <ref refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" kindref="member">PLACEHOLDER</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier, can be a file or group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the HDF5 dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Contents to write into the dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <ref refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" kindref="member">NO_COMPRESSION</ref>] Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="519" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="519" bodyend="533"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNWBgroupPatchClampSeries</definition>
+        <argsstring>(variable version)</argsstring>
+        <name>GetNWBgroupPatchClampSeries</name>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>get location of the patchclamp series acquisition object </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>target NWB version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>full path to patchclampseries group </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="571" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="571" bodyend="581"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a21f824886bb6e41f8637bd19dc858345" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="15">NWB_PATCHCLAMPSERIES_V1</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a32b65daff73482ff93b069895a801d02" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="16">NWB_PATCHCLAMPSERIES_V2</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a941f83fbb1d5320ae9c8bbd535ddb620" compoundref="_i_p_n_w_b___reader_8ipf" startline="286" endline="296">LoadTimeseries</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a1411e1af86fe7b8f83a1f951db0cab0a" compoundref="_i_p_n_w_b___reader_8ipf" startline="318" endline="325">OpenAcquisition</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1ac394fef4530d1d1a82ea66f99934548a" compoundref="_i_p_n_w_b___reader_8ipf" startline="104" endline="114">ReadAcquisition</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1ac144fb078caa90ab358a7a6d17161990" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNWBVersionString</definition>
+        <argsstring>(variable version)</argsstring>
+        <name>GetNWBVersionString</name>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>get NWB version for current Igor Pro implementation </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>maior NWB version e.g. 2 </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>full version string in the format <computeroutput>(?:NWB-)?[1,2]\.[0-9](?:\.[0-9])?[b]?</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="587" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="587" bodyend="598"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a1beff525aee6f249e5b500e091f3519d" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="18">NWB_VERSION_V1</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a05852160519df66bbece9047b1071f01" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="19">NWB_VERSION_V2</references>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a66d8a16a9644061bafdb2d4f5c772f83" compoundref="_i_p_n_w_b___structures_8ipf" startline="153" endline="168">InitToplevelInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a1f89f3cda683d8c914cdf5117b15df19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetNWBVersion</definition>
+        <argsstring>()</argsstring>
+        <name>GetNWBVersion</name>
+        <briefdescription>
+<para>get latest supported NWB version </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>maior version </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="602" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="602" bodyend="604"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="792" endline="841">NWB_ExportWithDialog</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___n_w_b_utils_8ipf_1a7f9aed33ad540a6167dad80f5215333f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetHistoryAndLogFileDatasetName</definition>
+        <argsstring>(variable version)</argsstring>
+        <name>GetHistoryAndLogFileDatasetName</name>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Return the name of the history dataset. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" line="607" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf" bodystart="607" bodyend="616"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="850" endline="874">AB_LoadUserCommentAndHistoryFromNWB</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>NWB utility functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_NWBUtils.ipf"/>
+  </compounddef>
+</doxygen>

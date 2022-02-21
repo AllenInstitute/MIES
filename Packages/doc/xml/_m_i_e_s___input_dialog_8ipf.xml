@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___input_dialog_8ipf" kind="file" language="C++">
+    <compoundname>MIES_InputDialog.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ID_AskUserForSettings</definition>
+        <argsstring>(variable mode, string title, wave data, wave mock)</argsstring>
+        <name>ID_AskUserForSettings</name>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>title</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>mock</declname>
+        </param>
+        <briefdescription>
+<para>Shows a dialog and queries numeric values from the user. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We currently ask for <ref refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" kindref="member">NUM_HEADSTAGES</ref> headstage dependent entries and one independent value when mode = ID_HEADSTAGE_SETTINGS. All values must be numeric. For ID_POPUPMENU_SETTINGS the row dimension labels of data fill the popup menu, and on return data will have a 1 at the selected entry.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1AskUserSettingsModeFlag" kindref="member">AskUserSettingsModeFlag</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>title</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dialog title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1D numeric wave, which must be permanent and in an otherwise empty folder </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mock</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>This is mock data for testing which is written into data when <ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf" kindref="member">GetInteractiveMode()</ref> is false</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on success, 1 if the user cancelled the dialog </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="26" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="26" bodyend="76"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa8588b6b7329369c25fbd768f02f7c32" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="97" endline="108">DisableControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9f72dcccf06f59c4cad222fb018931e2" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1147" endline="1151">GetCurrentWindow</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="350" endline="353">GetInteractiveMode</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1a12d80398a6c6c7fffe5f4609a968e975" compoundref="_m_i_e_s___input_dialog_8ipf" startline="86" endline="96">ID_GetControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae13dcf8acf7e3811fd3294f51360a344" compoundref="_m_i_e_s___constants_8ipf" startline="1552">ID_HEADSTAGE_SETTINGS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac68b7ec4a58540417e79473752454d36" compoundref="_m_i_e_s___constants_8ipf" startline="1553">ID_POPUPMENU_SETTINGS</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1a9edd66f621cdfa4b7f6a64934a44ff23" compoundref="_m_i_e_s___input_dialog_8ipf" startline="78" endline="84">ID_SetTitle</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1a1d3af58998e5e6754a9eab7341d955" compoundref="_m_i_e_s___utilities_8ipf" startline="4325" endline="4329">IsFreeWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a02181c92e359df5d62958592a088e68b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="321" endline="343">SetSetVariable</references>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1ade1332b5f81fb1119a68e12d8b8fea1b" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="17" endline="37">DND_ChooseAsset</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a9edd66f621cdfa4b7f6a64934a44ff23" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ID_SetTitle</definition>
+        <argsstring>(string win, string title)</argsstring>
+        <name>ID_SetTitle</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>title</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="78" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="78" bodyend="84"/>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a12d80398a6c6c7fffe5f4609a968e975" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string ID_GetControl</definition>
+        <argsstring>(variable index)</argsstring>
+        <name>ID_GetControl</name>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="86" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="86" bodyend="96"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a3750ae02f161d94bc189e21346dfba2e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref ID_GetFolder</definition>
+        <argsstring>(string win)</argsstring>
+        <name>ID_GetFolder</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="98" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="98" bodyend="103"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1aee7cc6c8a20b9423cba1651dfaeadb1e" compoundref="_m_i_e_s___input_dialog_8ipf" startline="114" endline="134">ID_ButtonProc</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781" compoundref="_m_i_e_s___input_dialog_8ipf" startline="105" endline="112">ID_GetWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave ID_GetWave</definition>
+        <argsstring>(string win)</argsstring>
+        <name>ID_GetWave</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="105" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="105" bodyend="112"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1a3750ae02f161d94bc189e21346dfba2e" compoundref="_m_i_e_s___input_dialog_8ipf" startline="98" endline="103">ID_GetFolder</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1a39ad072cb96c89cacbc7d0b58157db5c" compoundref="_m_i_e_s___input_dialog_8ipf" startline="167" endline="176">ID_GetPopupEntries</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1a39281c3a011e2c9c981c4796a987984a" compoundref="_m_i_e_s___input_dialog_8ipf" startline="152" endline="165">ID_PopMenuProc</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1a9a15f6270c8b606b99c94017ae9bdb17" compoundref="_m_i_e_s___input_dialog_8ipf" startline="136" endline="150">ID_SetVarProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1aee7cc6c8a20b9423cba1651dfaeadb1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ID_ButtonProc</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>ID_ButtonProc</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="114" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="114" bodyend="134"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1a3750ae02f161d94bc189e21346dfba2e" compoundref="_m_i_e_s___input_dialog_8ipf" startline="98" endline="103">ID_GetFolder</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a9a15f6270c8b606b99c94017ae9bdb17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ID_SetVarProc</definition>
+        <argsstring>(WMSetVariableAction *sva)</argsstring>
+        <name>ID_SetVarProc</name>
+        <param>
+          <type>WMSetVariableAction *</type>
+          <declname>sva</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="136" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="136" bodyend="150"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781" compoundref="_m_i_e_s___input_dialog_8ipf" startline="105" endline="112">ID_GetWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a39281c3a011e2c9c981c4796a987984a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ID_PopMenuProc</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>ID_PopMenuProc</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="152" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="152" bodyend="165"/>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781" compoundref="_m_i_e_s___input_dialog_8ipf" startline="105" endline="112">ID_GetWave</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1a39ad072cb96c89cacbc7d0b58157db5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ID_GetPopupEntries</definition>
+        <argsstring>()</argsstring>
+        <name>ID_GetPopupEntries</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="167" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="167" bodyend="176"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9f72dcccf06f59c4cad222fb018931e2" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1147" endline="1151">GetCurrentWindow</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1addd8efaa2b124e473f679fa60399e781" compoundref="_m_i_e_s___input_dialog_8ipf" startline="105" endline="112">ID_GetWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1ab846098effd97141910278865fc21506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ID_Headstage_Panel</definition>
+        <argsstring>()</argsstring>
+        <name>ID_Headstage_Panel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="178" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="178" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___input_dialog_8ipf_1af5feb07a9f45a2b85309bda2bc509bb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ID_Popup_Panel</definition>
+        <argsstring>()</argsstring>
+        <name>ID_Popup_Panel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" line="252" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf" bodystart="252" bodyend="274"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>ID</bold> Input dialog handling for numeric entries </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_InputDialog.ipf"/>
+  </compounddef>
+</doxygen>

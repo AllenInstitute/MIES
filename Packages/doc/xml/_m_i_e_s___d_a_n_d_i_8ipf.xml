@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___d_a_n_d_i_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DANDI.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___d_a_n_d_i_8ipf_1aeb308c5d2d6de1bb4c4662454e60f225" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DND_GetDestinationIgorPath</definition>
+        <argsstring>()</argsstring>
+        <name>DND_GetDestinationIgorPath</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" line="9" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" bodystart="9" bodyend="15"/>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0fc3b2ce11b16c9f3d5924e8f07da1d8" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="44" endline="74">DND_FetchAsset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_n_d_i_8ipf_1ade1332b5f81fb1119a68e12d8b8fea1b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DND_ChooseAsset</definition>
+        <argsstring>(WaveText props)</argsstring>
+        <name>DND_ChooseAsset</name>
+        <param>
+          <type>WaveText</type>
+          <declname>props</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" line="17" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" bodystart="17" bodyend="37"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeca121555553a1d520838d6133cb1b37" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7058" endline="7069">GetDandiDialogWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac68b7ec4a58540417e79473752454d36" compoundref="_m_i_e_s___constants_8ipf" startline="1553">ID_POPUPMENU_SETTINGS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0810369773f1b83abf70372cffbf85e0" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="110" endline="131">DND_FetchAssetFromSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_n_d_i_8ipf_1a0fc3b2ce11b16c9f3d5924e8f07da1d8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DND_FetchAsset</definition>
+        <argsstring>(variable setNumber, string assetID, string assetPath)</argsstring>
+        <name>DND_FetchAsset</name>
+        <param>
+          <type>variable</type>
+          <declname>setNumber</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>assetID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>assetPath</declname>
+        </param>
+        <briefdescription>
+<para>Download the given asset from the set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The asset hash is checked before returning.</para>
+<para><simplesect kind="return"><para>absolute path to the downloaded asset </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" line="44" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" bodystart="44" bodyend="74"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_n_d_i_8ipf_1aeb308c5d2d6de1bb4c4662454e60f225" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="9" endline="15">DND_GetDestinationIgorPath</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a3f8c2314ac69c2d2996a85803999cacb" compoundref="_i_p_n_w_b___utils_8ipf" startline="370" endline="378">GetFile</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a4ae183ac785c31444a5a2ffe3c7a5bf6" compoundref="_m_i_e_s___utilities_8ipf" startline="4950" endline="4977">LoadTextFile</references>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0810369773f1b83abf70372cffbf85e0" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="110" endline="131">DND_FetchAssetFromSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_n_d_i_8ipf_1affe9f4d19e23f55e6c9abf73d0bdcf1a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave DND_ParseSetReponse</definition>
+        <argsstring>(string response)</argsstring>
+        <name>DND_ParseSetReponse</name>
+        <param>
+          <type>string</type>
+          <declname>response</declname>
+        </param>
+        <briefdescription>
+<para>Parse the REST API response and fill the DANDI set properties wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have the format as described at <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af869829ace1fc4aa42cb222754d6e60c" kindref="member">GetDandiSetProperties()</ref> and row dimension label with the asset ID.</para>
+<para>Example: <ulink url="https://api.dandiarchive.org/api/dandisets/000068/versions/draft/assets/">https://api.dandiarchive.org/api/dandisets/000068/versions/draft/assets/</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" line="82" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" bodystart="82" bodyend="108"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af869829ace1fc4aa42cb222754d6e60c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7048" endline="7056">GetDandiSetProperties</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0810369773f1b83abf70372cffbf85e0" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="110" endline="131">DND_FetchAssetFromSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___d_a_n_d_i_8ipf_1a0810369773f1b83abf70372cffbf85e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DND_FetchAssetFromSet</definition>
+        <argsstring>(variable setNumber)</argsstring>
+        <name>DND_FetchAssetFromSet</name>
+        <param>
+          <type>variable</type>
+          <declname>setNumber</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" line="110" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf" bodystart="110" bodyend="131"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_n_d_i_8ipf_1ade1332b5f81fb1119a68e12d8b8fea1b" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="17" endline="37">DND_ChooseAsset</references>
+        <references refid="_m_i_e_s___d_a_n_d_i_8ipf_1a0fc3b2ce11b16c9f3d5924e8f07da1d8" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="44" endline="74">DND_FetchAsset</references>
+        <references refid="_m_i_e_s___d_a_n_d_i_8ipf_1affe9f4d19e23f55e6c9abf73d0bdcf1a" compoundref="_m_i_e_s___d_a_n_d_i_8ipf" startline="82" endline="108">DND_ParseSetReponse</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1a6cf3715b187021f651ebf98391ea67fc" compoundref="_m_i_e_s___menu_8ipf" startline="260" endline="266">MEN_DownloadStimsets</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DANDI.ipf"/>
+  </compounddef>
+</doxygen>

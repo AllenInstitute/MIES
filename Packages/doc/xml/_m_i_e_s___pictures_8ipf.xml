@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___pictures_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Pictures.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___pictures_8ipf_1a73eda4d26e616150fb98c6442f01b18a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void HardwareScanButton</definition>
+        <argsstring>()</argsstring>
+        <name>HardwareScanButton</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" line="16" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" bodystart="16" bodyend="42"/>
+        <referencedby refid="_m_i_e_s___d_a_ephys___macro_8ipf_1a769e660fa428d4f1746af3b02d089a6b" compoundref="_m_i_e_s___d_a_ephys___macro_8ipf" startline="12" endline="4437">DA_Ephys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___pictures_8ipf_1ab2c46e25c517f097d5ca358bfe2b79f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void SynPhys</definition>
+        <argsstring>()</argsstring>
+        <name>SynPhys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" line="45" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" bodystart="45" bodyend="1207"/>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" compoundref="_m_i_e_s___menu_8ipf" startline="95" endline="148">MEN_OpenAboutDialog</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___pictures_8ipf_1a0ebaad3cbc1fd7fda996f8cb3af9bba2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void CellTypes</definition>
+        <argsstring>()</argsstring>
+        <name>CellTypes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" line="1210" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf" bodystart="1210" bodyend="2252"/>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" compoundref="_m_i_e_s___menu_8ipf" startline="95" endline="148">MEN_OpenAboutDialog</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Common place to store Igor Pro specific proc pictures. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>All proc pictures should have a corresponding xcf file in Packages/Artwork. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Pictures.ipf"/>
+  </compounddef>
+</doxygen>

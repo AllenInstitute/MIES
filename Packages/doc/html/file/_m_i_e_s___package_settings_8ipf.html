@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_PackageSettings.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Pictures.ipf" href="_m_i_e_s___pictures_8ipf.html" />
+    <link rel="prev" title="File MIES_OverlaySweeps.ipf" href="_m_i_e_s___overlay_sweeps_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___overlay_sweeps_8ipf.html" title="File MIES_OverlaySweeps.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PackageSettings.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-packagesettings-ipf">
+<span id="id1"></span><h1>File MIES_PackageSettings.ipf<a class="headerlink" href="#file-mies-packagesettings-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>LOG</strong> Routines for dealing with JSON log files </p>
+<p><strong>PS</strong> Routines for dealing with JSON settings</p>
+<p>See <a class="reference external" href="https://jsonlines.org">https://jsonlines.org</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/JSON_streaming">Line-delimited JSON</a> for background.</p>
+<p>In short the log will contain a complete JSON document in each line. The lines are separated by <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413PS_Initialize6string">
+<span id="_CPPv313PS_Initialize6string"></span><span id="_CPPv213PS_Initialize6string"></span><span id="PS_Initialize__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ae06d342cb72b42fe335659c4bcaaf5e4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_Initialize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413PS_Initialize6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">PackageFolder</span></code> symbolic path. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PS_GenerateSettingsDefaultsv">
+<span id="_CPPv327PS_GenerateSettingsDefaultsv"></span><span id="_CPPv227PS_GenerateSettingsDefaultsv"></span><span id="PS_GenerateSettingsDefaults"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1aae77f77cdd2f37af463781d8228c08dc"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GenerateSettingsDefaults</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PS_GenerateSettingsDefaultsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This functions should return a JSON ID with the default settings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PS_ReadSettings6string27PS_GenerateSettingsDefaults">
+<span id="_CPPv315PS_ReadSettings6string27PS_GenerateSettingsDefaults"></span><span id="_CPPv215PS_ReadSettings6string27PS_GenerateSettingsDefaults"></span><span id="PS_ReadSettings__string.PS_GenerateSettingsDefaults"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a5916d98b9d69bfadfe61f396baa773b7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_ReadSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <a class="reference internal" href="#_CPPv427PS_GenerateSettingsDefaultsv" title="PS_GenerateSettingsDefaults"><span class="n"><span class="pre">PS_GenerateSettingsDefaults</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">generateDefaults</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PS_ReadSettings6string27PS_GenerateSettingsDefaults" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a JSON ID with an opened JSON settings file. </p>
+<p>Caller is responsible for releasing the document. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PS_WriteSettings6string8variable">
+<span id="_CPPv316PS_WriteSettings6string8variable"></span><span id="_CPPv216PS_WriteSettings6string8variable"></span><span id="PS_WriteSettings__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ac3eef04e71139d72b98539394b162c05"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_WriteSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PS_WriteSettings6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Write the settings from <code class="docutils literal notranslate"><span class="pre">JSONid</span></code> for <code class="docutils literal notranslate"><span class="pre">package</span></code> to disc. </p>
+<p>Call this function in <code class="docutils literal notranslate"><span class="pre">BeforeExperimentSaveHook</span></code> to write the settings to disc </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PS_GetSettingsFolder_TS6string">
+<span id="_CPPv323PS_GetSettingsFolder_TS6string"></span><span id="_CPPv223PS_GetSettingsFolder_TS6string"></span><span id="PS_GetSettingsFolder_TS__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1ac5304191aa7828af37bdc9a5f3bbb6b0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFolder_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PS_GetSettingsFolder_TS6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the settings folder for <code class="docutils literal notranslate"><span class="pre">package</span></code> </p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   Threadsafe variant which requires the symbolic path `PackageFolder` created by
+   PS_Initialize() to exist.
+
+   The returned folder location includes a trailing colon (&quot;:&quot;)
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PS_GetSettingsFolder6string">
+<span id="_CPPv320PS_GetSettingsFolder6string"></span><span id="_CPPv220PS_GetSettingsFolder6string"></span><span id="PS_GetSettingsFolder__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a22b90fc672f1dd73cfcadc1a5ce4630c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PS_GetSettingsFolder6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the settings folder for <code class="docutils literal notranslate"><span class="pre">package</span></code> creating it when necessary. </p>
+<p>The returned folder location includes a trailing colon (“:”) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PS_GetSettingsFile6string">
+<span id="_CPPv318PS_GetSettingsFile6string"></span><span id="_CPPv218PS_GetSettingsFile6string"></span><span id="PS_GetSettingsFile__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a2f3489074158386b58d6a643060684a8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_GetSettingsFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PS_GetSettingsFile6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the absolute path to the JSON settings file for <code class="docutils literal notranslate"><span class="pre">package</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430PS_ApplyStoredWindowCoordinate8variable6string">
+<span id="_CPPv330PS_ApplyStoredWindowCoordinate8variable6string"></span><span id="_CPPv230PS_ApplyStoredWindowCoordinate8variable6string"></span><span id="PS_ApplyStoredWindowCoordinate__variable.string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a0f3ea989dcdb3dba4a1ecb5fe61b39f1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_ApplyStoredWindowCoordinate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430PS_ApplyStoredWindowCoordinate8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Move the window to the stored location. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430PS_RegisterForCoordinateSaving6string6string">
+<span id="_CPPv330PS_RegisterForCoordinateSaving6string6string"></span><span id="_CPPv230PS_RegisterForCoordinateSaving6string6string"></span><span id="PS_RegisterForCoordinateSaving__string.string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a3d2169f5b5cb7c904eaf87c72bed3a7b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_RegisterForCoordinateSaving</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430PS_RegisterForCoordinateSaving6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add user data to mark the window as using coordinate saving. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PS_StoreWindowCoordinates8variable">
+<span id="_CPPv325PS_StoreWindowCoordinates8variable"></span><span id="_CPPv225PS_StoreWindowCoordinates8variable"></span><span id="PS_StoreWindowCoordinates__variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1af0970db055744451d88b4348460c175b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_StoreWindowCoordinates</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PS_StoreWindowCoordinates8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the coordinates of all registered windows in the JSON settings file. </p>
+<p>The windows must have been registered beforehand with <a class="reference internal" href="#_m_i_e_s___package_settings_8ipf_1a78aed704e6ceaa334feb8861c3aab72d"><span class="std std-ref">PS_InitCoordinates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PS_StoreWindowCoordinate8variable6string">
+<span id="_CPPv324PS_StoreWindowCoordinate8variable6string"></span><span id="_CPPv224PS_StoreWindowCoordinate8variable6string"></span><span id="PS_StoreWindowCoordinate__variable.string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a3fb317ccd37c832917b2c54b8cb677f8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_StoreWindowCoordinate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PS_StoreWindowCoordinate8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the window coordinates of <code class="docutils literal notranslate"><span class="pre">win</span></code> in the JSON settings file. </p>
+<p>The window must have been registered beforehand with <a class="reference internal" href="#_m_i_e_s___package_settings_8ipf_1a78aed704e6ceaa334feb8861c3aab72d"><span class="std std-ref">PS_InitCoordinates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PS_InitCoordinates8variable6string6string8variable">
+<span id="_CPPv318PS_InitCoordinates8variable6string6string8variable"></span><span id="_CPPv218PS_InitCoordinates8variable6string6string8variable"></span><span id="PS_InitCoordinates__variable.string.string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a78aed704e6ceaa334feb8861c3aab72d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_InitCoordinates</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">addHook</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PS_InitCoordinates8variable6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add support for window coordinate storing and loading. </p>
+<p>Takes care of:<ul class="simple">
+<li><p>Marking the window as using it with the given name</p></li>
+<li><p>Adding a hook to store the coordinates on window killing</p></li>
+<li><p>Read the current coordinates from the JSON settings file and applying them</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>JSONid</strong> – JSON document with settings </p></li>
+<li><p><strong>win</strong> – window name </p></li>
+<li><p><strong>name</strong> – name to store the window under (especially useful for windows which are renamed to their locked device) </p></li>
+<li><p><strong>addHook</strong> – [optional, defaults to true] Add a window hook to store the coordinates on window killing. Users with their own kill event handling must pass <code class="docutils literal notranslate"><span class="pre">addHook=0</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PS_SerializeSettings6string8variable">
+<span id="_CPPv320PS_SerializeSettings6string8variable"></span><span id="_CPPv220PS_SerializeSettings6string8variable"></span><span id="PS_SerializeSettings__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a32ad82bdafa61863fc20a64fcbd7c534"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_SerializeSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PS_SerializeSettings6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Write the current JSON settings to disc. </p>
+<p>Caller <em>must</em> invalidate JSONid after return. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PS_OpenNotebook6string8variable">
+<span id="_CPPv315PS_OpenNotebook6string8variable"></span><span id="_CPPv215PS_OpenNotebook6string8variable"></span><span id="PS_OpenNotebook__string.variable"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a2150ff6da7f3eaa1cd0133612a69456a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_OpenNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">JSONid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PS_OpenNotebook6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Caller <em>must</em> invalidate JSONid after return. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PS_FixPackageLocation6string">
+<span id="_CPPv321PS_FixPackageLocation6string"></span><span id="_CPPv221PS_FixPackageLocation6string"></span><span id="PS_FixPackageLocation__string"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a422a5f69c7fa4d50b8eb17098549656d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_FixPackageLocation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">package</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PS_FixPackageLocation6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fixup the settings and log file location for Igor Pro prior to 0855279d (Fix package folder location on disk, 2021-04-01).</p>
+<p>Package JSON:<ul class="simple">
+<li><p>Incorrect is moved to the correct location</p></li>
+</ul>
+</p>
+<p>JSONL logfile:<ul class="simple">
+<li><p>Incorrect is moved to the correct location only if the correct does not exists</p></li>
+<li><p>If the correct does exist as well, the incorrect is read and appened to to the correct one </p></li>
+</ul>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420PS_STORE_COORDINATES">
+<span id="_CPPv320PS_STORE_COORDINATES"></span><span id="_CPPv220PS_STORE_COORDINATES"></span><span id="PS_STORE_COORDINATES__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1aca61846bb1975b5c82c56f3949fd4e23"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_STORE_COORDINATES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JSONSettings_StoreCoordinates&quot;</span></span><a class="headerlink" href="#_CPPv420PS_STORE_COORDINATES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414PS_WINDOW_NAME">
+<span id="_CPPv314PS_WINDOW_NAME"></span><span id="_CPPv214PS_WINDOW_NAME"></span><span id="PS_WINDOW_NAME__stringC"></span><span class="target" id="_m_i_e_s___package_settings_8ipf_1a22c964a593a3e2e11671374565d6db29"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PS_WINDOW_NAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JSONSettings_WindowName&quot;</span></span><a class="headerlink" href="#_CPPv414PS_WINDOW_NAME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___overlay_sweeps_8ipf.html"
+                          title="previous chapter">File MIES_OverlaySweeps.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___pictures_8ipf.html"
+                          title="next chapter">File MIES_Pictures.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___pictures_8ipf.html" title="File MIES_Pictures.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___overlay_sweeps_8ipf.html" title="File MIES_OverlaySweeps.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_PackageSettings.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

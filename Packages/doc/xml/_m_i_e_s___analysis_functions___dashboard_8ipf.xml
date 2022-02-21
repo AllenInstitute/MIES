@@ -1,0 +1,1174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_functions___dashboard_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctions_Dashboard.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a31329d00429cd9a90dade23507f4b005" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_UpdateAllDatabrowser</definition>
+        <argsstring>()</argsstring>
+        <name>AD_UpdateAllDatabrowser</name>
+        <briefdescription>
+<para>Update the dashboards of all databrowsers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="13" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="13" bodyend="28"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ab381e8bd0870088704312c76c09d45a3" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="421" endline="430">BSP_GetBrowserType</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a80518e598db11bc90b3e2ba563a94940" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AD_GetColorForResultMessage</definition>
+        <argsstring>(string result)</argsstring>
+        <name>AD_GetColorForResultMessage</name>
+        <param>
+          <type>string</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="30" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="30" bodyend="40"/>
+        <references refid="_m_i_e_s___constants_8ipf_1abfbc2a9057ac38024187cc2c86cb078c" compoundref="_m_i_e_s___constants_8ipf" startline="1505">DASHBOARD_PASSING_MESSAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4de7774ed12ce34c82c684a81aee6a4c" compoundref="_m_i_e_s___constants_8ipf" startline="1528">NOT_AVAILABLE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_Update</definition>
+        <argsstring>(string win)</argsstring>
+        <name>AD_Update</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Update the dashboards of the given sweepbrowser/databrowser. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="43" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="43" bodyend="76"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a80518e598db11bc90b3e2ba563a94940" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="30" endline="40">AD_GetColorForResultMessage</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a885685361d2e72e28aaf36df880e828e" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="906" endline="943">BSP_IsActive</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="231" endline="234">DEBUG_TIMER_START</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" compoundref="_i_p_n_w_b___debugging_8ipf" startline="238" endline="242">DEBUGPRINT_ELAPSED</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a25a6895dbf3cb622b4a05e9a039eac6b" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6658" endline="6681">GetAnaFuncDashboardColorWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2b9b300314bd87f34e33af0a51345c11" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6685" endline="6704">GetAnaFuncDashboardHelpWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af344ba3d002a8c8b752fa5313b1497fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6605" endline="6630">GetAnaFuncDashboardInfoWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9a60998a3949a664cc4191ac48a9cbff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6576" endline="6601">GetAnaFuncDashboardListWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3da9001cd121da034ae103104f3a5af4" compoundref="_m_i_e_s___constants_8ipf" startline="385">MIES_BSP_DS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acfb0db7b33d86deb61e12449d4af31af" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2561" endline="2586">AB_ButtonProc_LoadSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae973e3b090cadf5a9e8552158b49fcc0" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="1029" endline="1049">AD_CheckProc_Toggle</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a31329d00429cd9a90dade23507f4b005" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="13" endline="28">AD_UpdateAllDatabrowser</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2" compoundref="_m_i_e_s___data_browser_8ipf" startline="354" endline="379">DB_UpdateLastSweepControls</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetResultMessage</definition>
+        <argsstring>(variable anaFuncType, variable passed, wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage, variable ongoingDAQ)</argsstring>
+        <name>AD_GetResultMessage</name>
+        <param>
+          <type>variable</type>
+          <declname>anaFuncType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>passed</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ongoingDAQ</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="78" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="78" bodyend="158"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="524" endline="560">AD_GetChirpFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7302a27cd7e0bafe16ea7a2717bcc19c" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="490" endline="502">AD_GetFastRheoEstFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1afe9e0c55dd076e485e1b0d152737ff6f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="486" endline="488">AD_GetPipetteInBathFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1dceb98be723890db9a45dc6f6a5fa4b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="464" endline="466">AD_GetRampFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a127585e35a713a3ac1daf83501220c45" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="474" endline="484">AD_GetRheobaseFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a9605da75dc927b5f040d9b9d1aa05b67" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="504" endline="516">AD_GetSpikeControlFailMsg</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="365" endline="404">AD_GetSquarePulseFailMsg</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad4a3ed2807f1fe9760c6e3b328ae2217" compoundref="_m_i_e_s___constants_8ipf" startline="1056">INVALID_ANALYSIS_FUNCTION</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12e825674d33cb1085fd2123741dea7c" compoundref="_m_i_e_s___constants_8ipf" startline="1071">MSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4de7774ed12ce34c82c684a81aee6a4c" compoundref="_m_i_e_s___constants_8ipf" startline="1528">NOT_AVAILABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" compoundref="_m_i_e_s___constants_8ipf" startline="1060">PSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427" compoundref="_m_i_e_s___constants_8ipf" startline="1065">PSQ_PIPETTE_BATH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" compoundref="_m_i_e_s___constants_8ipf" startline="1063">PSQ_RAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" compoundref="_m_i_e_s___constants_8ipf" startline="1062">PSQ_RHEOBASE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12a19bf8650ece02087fe415a80ab3fc" compoundref="_m_i_e_s___constants_8ipf" startline="1061">PSQ_SQUARE_PULSE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AD_FillWaves</definition>
+        <argsstring>(string win, WaveText list, WaveText info)</argsstring>
+        <name>AD_FillWaves</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>info</declname>
+        </param>
+        <briefdescription>
+<para>Get result list of analysis function runs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="161" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="161" bodyend="342"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a6330da760aeaa19d92d91bb010eecca8" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="344" endline="347">AD_FormatListKey</references>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac45439ba5d21067d6d6197f775057811" compoundref="_m_i_e_s___constants_8ipf" startline="575">EVENT_NAME_LIST_LBN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35fd4c4f3c44373d8325c027d6e1d3b8" compoundref="_m_i_e_s___constants_8ipf" startline="558">GENERIC_EVENT</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="609" endline="611">GetAcquisitionState</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad4a3ed2807f1fe9760c6e3b328ae2217" compoundref="_m_i_e_s___constants_8ipf" startline="1056">INVALID_ANALYSIS_FUNCTION</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a06c7a57af84468b62e909b5b802b19c2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6989" endline="7014">MapAnaFuncToConstant</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12e825674d33cb1085fd2123741dea7c" compoundref="_m_i_e_s___constants_8ipf" startline="1071">MSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4de7774ed12ce34c82c684a81aee6a4c" compoundref="_m_i_e_s___constants_8ipf" startline="1528">NOT_AVAILABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" compoundref="_m_i_e_s___constants_8ipf" startline="1060">PSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af81994bf20db63da6d3341b29a380695" compoundref="_m_i_e_s___constants_8ipf" startline="1016">PSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0dd97e22390c0b0637172da4cbaea2f8" compoundref="_m_i_e_s___constants_8ipf" startline="1000">PSQ_FMT_LBN_SPIKE_DETECT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a50d8b74829bcf127258b6ce64c690939" compoundref="_m_i_e_s___constants_8ipf" startline="1015">PSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427" compoundref="_m_i_e_s___constants_8ipf" startline="1065">PSQ_PIPETTE_BATH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" compoundref="_m_i_e_s___constants_8ipf" startline="1063">PSQ_RAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" compoundref="_m_i_e_s___constants_8ipf" startline="1062">PSQ_RHEOBASE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12a19bf8650ece02087fe415a80ab3fc" compoundref="_m_i_e_s___constants_8ipf" startline="1061">PSQ_SQUARE_PULSE</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af53360d13dc4251fd2fa82a32dc88f6b" compoundref="_m_i_e_s___constants_8ipf" startline="921">STIMSET_ACQ_CYCLE_ID_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a6330da760aeaa19d92d91bb010eecca8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_FormatListKey</definition>
+        <argsstring>(variable stimsetCycleID, variable headstage)</argsstring>
+        <name>AD_FormatListKey</name>
+        <param>
+          <type>variable</type>
+          <declname>stimsetCycleID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="344" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="344" bodyend="347"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a65f53f5fc68e1f6c179d7fb182e13844" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AD_LabnotebookEntryExistsAndIsTrue</definition>
+        <argsstring>(WaveOrNull data)</argsstring>
+        <name>AD_LabnotebookEntryExistsAndIsTrue</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="349" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="349" bodyend="358"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7302a27cd7e0bafe16ea7a2717bcc19c" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="490" endline="502">AD_GetFastRheoEstFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a9605da75dc927b5f040d9b9d1aa05b67" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="504" endline="516">AD_GetSpikeControlFailMsg</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetSquarePulseFailMsg</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetSquarePulseFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message for why <ref refid="_m_i_e_s___constants_8ipf_1a12a19bf8650ece02087fe415a80ab3fc" kindref="member">PSQ_SQUARE_PULSE</ref> failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="365" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="365" bodyend="404"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0f436e4af69739386a9867f8d2301c49" compoundref="_m_i_e_s___constants_8ipf" startline="1019">PSQ_FMT_LBN_SPIKE_DASCALE_ZERO</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0dd97e22390c0b0637172da4cbaea2f8" compoundref="_m_i_e_s___constants_8ipf" startline="1000">PSQ_FMT_LBN_SPIKE_DETECT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a98414888ca0cd49c48d07458eb65165e" compoundref="_m_i_e_s___constants_8ipf" startline="998">PSQ_FMT_LBN_STEPSIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aafa36d37d0e60ba944486162f057eaf5" compoundref="_m_i_e_s___constants_8ipf" startline="958">PSQ_SP_INIT_AMP_p10</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12a19bf8650ece02087fe415a80ab3fc" compoundref="_m_i_e_s___constants_8ipf" startline="1061">PSQ_SQUARE_PULSE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetDAScaleFailMsg</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetDAScaleFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message for why <ref refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" kindref="member">PSQ_DA_SCALE</ref> failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="412" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="412" bodyend="456"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gad111b2ba70447e45e67656279a5d4d84" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1475" endline="1499">GetLastSettingTextSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" compoundref="_m_i_e_s___constants_8ipf" startline="1060">PSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad84fbc6a7cdfac7fdf91e87bf438ef56" compoundref="_m_i_e_s___constants_8ipf" startline="1021">PSQ_FMT_LBN_DA_fI_SLOPE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a40afc60d7b11b59428d4fb262dd36f05" compoundref="_m_i_e_s___constants_8ipf" startline="1022">PSQ_FMT_LBN_DA_fI_SLOPE_REACHED</references>
+        <references refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaf9ac438db2183bc5afe53ac82027101" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="809" endline="826">PSQ_NumPassesInSet</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1dceb98be723890db9a45dc6f6a5fa4b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetRampFailMsg</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetRampFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message for why <ref refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" kindref="member">PSQ_RAMP</ref> failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="464" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="464" bodyend="466"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a012aeee4ae439453cddeac0653d989cb" compoundref="_m_i_e_s___constants_8ipf" startline="1098">PSQ_RA_NUM_SWEEPS_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" compoundref="_m_i_e_s___constants_8ipf" startline="1063">PSQ_RAMP</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a127585e35a713a3ac1daf83501220c45" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetRheobaseFailMsg</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetRheobaseFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message for why <ref refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" kindref="member">PSQ_RHEOBASE</ref> failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="474" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="474" bodyend="484"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0dd97e22390c0b0637172da4cbaea2f8" compoundref="_m_i_e_s___constants_8ipf" startline="1000">PSQ_FMT_LBN_SPIKE_DETECT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" compoundref="_m_i_e_s___constants_8ipf" startline="1062">PSQ_RHEOBASE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1afe9e0c55dd076e485e1b0d152737ff6f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetPipetteInBathFailMsg</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetPipetteInBathFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="486" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="486" bodyend="488"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a412cacb18aaf35c5bab3cbb4a9885473" compoundref="_m_i_e_s___constants_8ipf" startline="1112">PSQ_PB_NUM_SWEEPS_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427" compoundref="_m_i_e_s___constants_8ipf" startline="1065">PSQ_PIPETTE_BATH</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7302a27cd7e0bafe16ea7a2717bcc19c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetFastRheoEstFailMsg</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetFastRheoEstFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="490" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="490" bodyend="502"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a65f53f5fc68e1f6c179d7fb182e13844" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="349" endline="358">AD_LabnotebookEntryExistsAndIsTrue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b02f6c88aeb366a485f2ad79ae9e828" compoundref="_m_i_e_s___constants_8ipf" startline="1162">MSQ_FMT_LBN_DASCALE_EXC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a9605da75dc927b5f040d9b9d1aa05b67" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetSpikeControlFailMsg</definition>
+        <argsstring>(wave numericalValues, wave textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetSpikeControlFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="504" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="504" bodyend="516"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a65f53f5fc68e1f6c179d7fb182e13844" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="349" endline="358">AD_LabnotebookEntryExistsAndIsTrue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8830e48e6d1a2b28e708d9d3e5cf7bde" compoundref="_m_i_e_s___constants_8ipf" startline="1184">MSQ_FMT_LBN_RERUN_TRIAL_EXC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetChirpFailMsg</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetChirpFailMsg</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message for why <ref refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" kindref="member">PSQ_CHIRP</ref> failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="524" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="524" bodyend="560"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a11a929458987b9bcb38d480e08e76300" compoundref="_m_i_e_s___constants_8ipf" startline="1103">PSQ_CR_NUM_SWEEPS_PASS</references>
+        <references refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aeb677bfa136ee4acd712b516c4c80b3f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3161" endline="3205">PSQ_CR_SetHasPassed</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a50d8b74829bcf127258b6ce64c690939" compoundref="_m_i_e_s___constants_8ipf" startline="1015">PSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adaeef1da64f41b086024acabf9847e59" compoundref="_m_i_e_s___constants_8ipf" startline="858">STIMSET_SCALE_FACTOR_KEY</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5ef0c8ed413fe09dde5835f6aa2b8683" compoundref="_m_i_e_s___utilities_8ipf" startline="4348" endline="4352">ToPassFail</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetBaselineFailMsg</definition>
+        <argsstring>(variable anaFuncType, wave numericalValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AD_GetBaselineFailMsg</name>
+        <param>
+          <type>variable</type>
+          <declname>anaFuncType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return an appropriate error message if the baseline QC failed for the given sweep, or an empty string otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>anaFuncType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1PatchSeqAnalysisFunctionTypes" kindref="member">PatchSeqAnalysisFunctionTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="568" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="568" bodyend="649"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aec47fc9a595b6bdd05011b6f80b87943" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="651" endline="675">AD_GetBaselineChunkFailMsg</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" compoundref="_m_i_e_s___constants_8ipf" startline="1060">PSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a317255e0db99ba955e869c5df4add161" compoundref="_m_i_e_s___constants_8ipf" startline="1014">PSQ_FMT_LBN_BL_QC_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a23676963226a1ec2a5a7c7eb078cae6d" compoundref="_m_i_e_s___constants_8ipf" startline="1013">PSQ_FMT_LBN_CHUNK_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1a8d1290592a452623c9d3dd5a55a7c8" compoundref="_m_i_e_s___constants_8ipf" startline="1012">PSQ_FMT_LBN_LEAKCUR_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae8cbd81d16449929b14350b4da6b9a44" compoundref="_m_i_e_s___constants_8ipf" startline="1007">PSQ_FMT_LBN_RMS_LONG_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae8bf556240103742a3f8e22153cdddb1" compoundref="_m_i_e_s___constants_8ipf" startline="1005">PSQ_FMT_LBN_RMS_SHORT_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4e8f9b9867bf7d86a04c2ca78a5298a2" compoundref="_m_i_e_s___constants_8ipf" startline="1010">PSQ_FMT_LBN_TARGETV_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427" compoundref="_m_i_e_s___constants_8ipf" startline="1065">PSQ_PIPETTE_BATH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" compoundref="_m_i_e_s___constants_8ipf" startline="1063">PSQ_RAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" compoundref="_m_i_e_s___constants_8ipf" startline="1062">PSQ_RHEOBASE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1aec47fc9a595b6bdd05011b6f80b87943" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetBaselineChunkFailMsg</definition>
+        <argsstring>(variable anaFuncType, wave numericalValues, variable sweepNo, variable headstage, variable chunk, string subkey, string testname)</argsstring>
+        <name>AD_GetBaselineChunkFailMsg</name>
+        <param>
+          <type>variable</type>
+          <declname>anaFuncType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>chunk</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>subkey</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>testname</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="651" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="651" bodyend="675"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5ef0c8ed413fe09dde5835f6aa2b8683" compoundref="_m_i_e_s___utilities_8ipf" startline="4348" endline="4352">ToPassFail</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="568" endline="649">AD_GetBaselineFailMsg</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AD_GetPerSweepFailMessage</definition>
+        <argsstring>(variable anaFuncType, wave numericalValues, WaveText textualValues, variable refSweepNo, variable headstage, variable numRequiredPasses=defaultValue)</argsstring>
+        <name>AD_GetPerSweepFailMessage</name>
+        <param>
+          <type>variable</type>
+          <declname>anaFuncType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>refSweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numRequiredPasses</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Gather per sweep failure information for some analysis function types. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>anaFuncType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>analysis function type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>refSweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reference sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numRequiredPasses</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to off] allows to determine the set failure state by not having reached enough passing sets</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" kindref="member">AD_GetResultMessage()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="687" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="687" bodyend="835"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="568" endline="649">AD_GetBaselineFailMsg</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1181ea1eaa49b1757cb178617ac4a236" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3239" endline="3253">PSQ_CR_BoundsActionToString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae340677ca662147a9e369d3bcf2a541b" compoundref="_m_i_e_s___constants_8ipf" startline="1118">PSQ_CR_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5" compoundref="_m_i_e_s___constants_8ipf" startline="1060">PSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a696c6a7fe3d841c1fd8af7fdb1e4f6e7" compoundref="_m_i_e_s___constants_8ipf" startline="1026">PSQ_FMT_LBN_CR_BOUNDS_ACTION</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aecf66d1af34ed243f0d299627bee2575" compoundref="_m_i_e_s___constants_8ipf" startline="1029">PSQ_FMT_LBN_CR_SPIKE_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9a4a3352197c80eb79a7b9be71049180" compoundref="_m_i_e_s___constants_8ipf" startline="1030">PSQ_FMT_LBN_CR_SPIKE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a67f246a8106f6570148345ce9a0cdcaa" compoundref="_m_i_e_s___constants_8ipf" startline="1032">PSQ_FMT_LBN_PB_RESISTANCE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afb278c9477ac83d1bd34a44e5a6c9b49" compoundref="_m_i_e_s___constants_8ipf" startline="997">PSQ_FMT_LBN_RB_DASCALE_EXC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7abeaa058f749f283cb9ee551fa17e94" compoundref="_m_i_e_s___constants_8ipf" startline="1020">PSQ_FMT_LBN_RB_LIMITED_RES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63ed5e7b001c3e084bec163bf3ada51b" compoundref="_m_i_e_s___constants_8ipf" startline="1017">PSQ_FMT_LBN_SAMPLING_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a50d8b74829bcf127258b6ce64c690939" compoundref="_m_i_e_s___constants_8ipf" startline="1015">PSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaf9ac438db2183bc5afe53ac82027101" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="809" endline="826">PSQ_NumPassesInSet</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427" compoundref="_m_i_e_s___constants_8ipf" startline="1065">PSQ_PIPETTE_BATH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875" compoundref="_m_i_e_s___constants_8ipf" startline="1063">PSQ_RAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68" compoundref="_m_i_e_s___constants_8ipf" startline="1062">PSQ_RHEOBASE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="524" endline="560">AD_GetChirpFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1afe9e0c55dd076e485e1b0d152737ff6f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="486" endline="488">AD_GetPipetteInBathFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1dceb98be723890db9a45dc6f6a5fa4b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="464" endline="466">AD_GetRampFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a127585e35a713a3ac1daf83501220c45" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="474" endline="484">AD_GetRheobaseFailMsg</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AD_SelectResult</definition>
+        <argsstring>(string win, variable index=defaultValue)</argsstring>
+        <name>AD_SelectResult</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Show the sweeps of the given <computeroutput>index</computeroutput> entry into the listbox. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="838" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="838" bodyend="921"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af344ba3d002a8c8b752fa5313b1497fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6605" endline="6630">GetAnaFuncDashboardInfoWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a6a6a10df03d8352c2499792220b6e2a0" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1559" endline="1566">GetListBoxSelRow</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2663ad9666238968795e147b4a2936ff" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5932" endline="5953">GetOverlaySweepsListWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae96078d18c5710629bd2d4b7920e4c9a" compoundref="_m_i_e_s___utilities_8ipf" startline="43" endline="48">IsNull</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5652ba3cc4946c88b4a4f6bcdb1c0151" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="1017" endline="1027">AD_CheckProc_FailedSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa5d7d5199de7427c8df29a44446eee6c" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="1005" endline="1015">AD_CheckProc_PassedSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7f5daa5b76b24650ca459ddeb38a44e5" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="992" endline="1003">AD_ListBoxProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa4d0023165e44117fe586ffcec856042" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_PlotBounds</definition>
+        <argsstring>(string browser, variable sweepNo)</argsstring>
+        <name>AD_PlotBounds</name>
+        <param>
+          <type>string</type>
+          <declname>browser</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Plot the inner/outer bounds for <computeroutput>PSQ_CHIRP</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires that the sweep is displayed. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="926" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="926" bodyend="990"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13" compoundref="_m_i_e_s___constants_8ipf" startline="1064">PSQ_CHIRP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a636747dd7b90bc9591bd21b18412b767" compoundref="_m_i_e_s___constants_8ipf" startline="1009">PSQ_FMT_LBN_TARGETV</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7f5daa5b76b24650ca459ddeb38a44e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_ListBoxProc</definition>
+        <argsstring>(WMListboxAction *lba)</argsstring>
+        <name>AD_ListBoxProc</name>
+        <param>
+          <type>WMListboxAction *</type>
+          <declname>lba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="992" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="992" bodyend="1003"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa5d7d5199de7427c8df29a44446eee6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_CheckProc_PassedSweeps</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>AD_CheckProc_PassedSweeps</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="1005" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="1005" bodyend="1015"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5652ba3cc4946c88b4a4f6bcdb1c0151" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_CheckProc_FailedSweeps</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>AD_CheckProc_FailedSweeps</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="1017" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="1017" bodyend="1027"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae973e3b090cadf5a9e8552158b49fcc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AD_CheckProc_Toggle</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>AD_CheckProc_Toggle</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" line="1029" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf" bodystart="1029" bodyend="1049"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a681079b41d468e38ebf82c73c5fd31d9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="84" endline="94">EnableControls</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AD</bold> Dashboard for pass/fail style analysis functions </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_Dashboard.ipf"/>
+  </compounddef>
+</doxygen>

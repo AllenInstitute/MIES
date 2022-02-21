@@ -1,0 +1,467 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___artefact_removal_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ArtefactRemoval.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___artefact_removal_8ipf_1aaa0217550e931560066708d88d2d4e52" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double AR_MIN_RANGE_FACTOR</definition>
+        <argsstring></argsstring>
+        <name>AR_MIN_RANGE_FACTOR</name>
+        <initializer>= 0.1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave AR_ComputeRanges</definition>
+        <argsstring>(dfref sweepDFR, variable sweepNo, wave numericalValues)</argsstring>
+        <name>AR_ComputeRanges</name>
+        <param>
+          <type>dfref</type>
+          <declname>sweepDFR</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <briefdescription>
+<para>Return a free 2D wave with artefact positions and the corresponding DA channel from which it originated. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns:<itemizedlist>
+<listitem><para>Artefact position [ms]</para>
+</listitem><listitem><para>DAC</para>
+</listitem><listitem><para>ADC</para>
+</listitem><listitem><para>Headstage </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="22" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="22" bodyend="99"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1aaa0217550e931560066708d88d2d4e52" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="12">AR_MIN_RANGE_FACTOR</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a54ec1862ee17609d964b9056258c2370" compoundref="_m_i_e_s___cache_8ipf" startline="151" endline="161">CA_ArtefactRemovalRangesKey</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae97f5c6c84932611068e5e3b9445b20e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2090" endline="2115">GetDAQDataSingleColumnWave</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aae463fa16b4760ffb09794fdba54e441" compoundref="_i_p_n_w_b___utils_8ipf" startline="240" endline="248">MakeWaveFree</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AR_UpdatePanel</definition>
+        <argsstring>(string device, wave ranges, dfref sweepDFR)</argsstring>
+        <name>AR_UpdatePanel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>ranges</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>sweepDFR</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="101" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="101" bodyend="116"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="288" endline="296">AR_GetFolder</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1ac68a6ba58bc17c2d95ccd981d9a29d4e" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="312" endline="317">AR_SetSweepFolder</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1aac252ba51ce1bb25c3452e5e9ae19e1c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="118" endline="134">AR_UpdateListBoxWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1aac252ba51ce1bb25c3452e5e9ae19e1c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AR_UpdateListBoxWave</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AR_UpdateListBoxWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="118" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="118" bodyend="134"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="288" endline="296">AR_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a6c8fdb52337d45e35143b8fd392c8670" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="335" endline="352">AR_SetVarProcCutoffLength</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="101" endline="116">AR_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a3d5f781622166aa348d60fb0523c4c5a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AR_RemoveTraces</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>AR_RemoveTraces</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Remove the traces used for highlightning the to-be-removed ranges. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="137" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="137" bodyend="151"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="154" endline="164">AR_GetHighlightTraces</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ab3d6d70193333841c8054f6aaeed6374" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="258" endline="262">TUD_RemoveUserData</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AR_GetHighlightTraces</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>AR_GetHighlightTraces</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Return a list of the traces used for highlightning the to-be-removed ranges. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="154" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="154" bodyend="164"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a3d5f781622166aa348d60fb0523c4c5a" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="137" endline="151">AR_RemoveTraces</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_HighlightArtefactsEntry</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>AR_HighlightArtefactsEntry</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="166" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="166" bodyend="202"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="288" endline="296">AR_GetFolder</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="154" endline="164">AR_GetHighlightTraces</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="407" endline="411">AR_IsActive</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a6a6a10df03d8352c2499792220b6e2a0" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1559" endline="1566">GetListBoxSelRow</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a600594e0b612fa9c11119b273323e944" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="319" endline="333">AR_MainListBoxProc</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AR_HandleRanges</definition>
+        <argsstring>(string graph, variable removeRange=defaultValue)</argsstring>
+        <name>AR_HandleRanges</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>removeRange</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="204" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="204" bodyend="283"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a86a8498dd801874d10236dc2c4994efc" compoundref="_m_i_e_s___utilities_8ipf" startline="1265" endline="1307">AddEntryIntoWaveNoteAsList</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="288" endline="296">AR_GetFolder</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1aec48a545360bac218e27d81bca9f803d" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="301" endline="309">AR_GetSweepFolder</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a3d5f781622166aa348d60fb0523c4c5a" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="137" endline="151">AR_RemoveTraces</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa008c00dd0d8971296b11c07350d286f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5905" endline="5928">GetArtefactRemovalDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a66a85776e8003c00787c37572b1a5eb8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5880" endline="5901">GetArtefactRemovalListWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a2423aeb7e32f7d9af36e780b89bed3c4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2070" endline="2079">GetDAQDataSingleColumnWaves</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac753f626779bda1d346b9e9e2381dd6e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3073" endline="3079">GetTraceNamePrefix</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1fe2dd0581c45eba2237c8fb0af1dc98" compoundref="_m_i_e_s___constants_8ipf" startline="816">NOTE_KEY_ARTEFACT_REMOVAL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aea93bf89e525dc49202692d5d48b3fc7" compoundref="_m_i_e_s___constants_8ipf" startline="19">NUM_AD_CHANNELS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1aed69ab0330c0fe954f1664971463a441" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="186" endline="206">TUD_SetUserData</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a6c8fdb52337d45e35143b8fd392c8670" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="335" endline="352">AR_SetVarProcCutoffLength</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref AR_GetFolder</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AR_GetFolder</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the datafolder reference to the folder storing the listbox wave and the artefact data wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires the user data <computeroutput>PANEL_FOLDER</computeroutput> of the external artefact removal panel. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="288" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="288" bodyend="296"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="407" endline="411">AR_IsActive</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1aac252ba51ce1bb25c3452e5e9ae19e1c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="118" endline="134">AR_UpdateListBoxWave</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="101" endline="116">AR_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1aec48a545360bac218e27d81bca9f803d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref AR_GetSweepFolder</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AR_GetSweepFolder</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the datafolder reference to the folder storing the single 1D sweep waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires the user data <computeroutput>AR_SWEEPFOLDER</computeroutput> of the external artefact removal panel. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="301" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="301" bodyend="309"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="407" endline="411">AR_IsActive</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa565957b0b1debc46ec636ff10a1d0a3" compoundref="_m_i_e_s___constants_8ipf" startline="393">MIES_BSP_AR_SWEEPFOLDER</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1ac68a6ba58bc17c2d95ccd981d9a29d4e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AR_SetSweepFolder</definition>
+        <argsstring>(string device, dfref sweepDFR)</argsstring>
+        <name>AR_SetSweepFolder</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>sweepDFR</declname>
+        </param>
+        <briefdescription>
+<para>Updates the <computeroutput>AR_SWEEPFOLDER</computeroutput> user data of the artefact removal panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="312" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="312" bodyend="317"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1abc09c491b6f446b8dd78ba5ff2fef0e7" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="365" endline="376">BSP_SetFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa565957b0b1debc46ec636ff10a1d0a3" compoundref="_m_i_e_s___constants_8ipf" startline="393">MIES_BSP_AR_SWEEPFOLDER</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="101" endline="116">AR_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a600594e0b612fa9c11119b273323e944" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_MainListBoxProc</definition>
+        <argsstring>(WMListboxAction *lba)</argsstring>
+        <name>AR_MainListBoxProc</name>
+        <param>
+          <type>WMListboxAction *</type>
+          <declname>lba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="319" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="319" bodyend="333"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a6c8fdb52337d45e35143b8fd392c8670" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_SetVarProcCutoffLength</definition>
+        <argsstring>(WMSetVariableAction *sva)</argsstring>
+        <name>AR_SetVarProcCutoffLength</name>
+        <param>
+          <type>WMSetVariableAction *</type>
+          <declname>sva</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="335" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="335" bodyend="352"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1aac252ba51ce1bb25c3452e5e9ae19e1c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="118" endline="134">AR_UpdateListBoxWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1ad9e73cb019625872cdb057d7f19e3aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_ButtonProc_RemoveRanges</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>AR_ButtonProc_RemoveRanges</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="354" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="354" bodyend="370"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae8a5d44752a376e8560f3634cbbaa072" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="372" endline="386">SetCheckBoxState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_UpdateTracesIfReq</definition>
+        <argsstring>(string graph, dfref sweepFolder, variable sweepNo)</argsstring>
+        <name>AR_UpdateTracesIfReq</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>sweepFolder</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="372" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="372" bodyend="392"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="204" endline="283">AR_HandleRanges</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="407" endline="411">AR_IsActive</references>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="101" endline="116">AR_UpdatePanel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a411a73dca443af9c93614cba8d4dfc86" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="702" endline="707">GetSingleSweepFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474" compoundref="_m_i_e_s___data_browser_8ipf" startline="586" endline="632">DB_AddSweepToGraph</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1aaf17f42ba86d81238118a5384fac8bc7" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="590" endline="624">SB_AddSweepToGraph</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1ab54f4674f253898b070c913bf7f8e43e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="267" endline="335">SB_UpdateSweepPlot</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a3bc29c81c63acc549cd0655554827683" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_CheckProc_Update</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>AR_CheckProc_Update</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="394" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="394" bodyend="404"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AR_IsActive</definition>
+        <argsstring>(string win)</argsstring>
+        <name>AR_IsActive</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>checks if AR is active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" line="407" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf" bodystart="407" bodyend="411"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a885685361d2e72e28aaf36df880e828e" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="906" endline="943">BSP_IsActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a82cfbc5ca2d5b0b6749605e1fc9c7950" compoundref="_m_i_e_s___constants_8ipf" startline="382">MIES_BSP_AR</references>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="288" endline="296">AR_GetFolder</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1aec48a545360bac218e27d81bca9f803d" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="301" endline="309">AR_GetSweepFolder</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="166" endline="202">AR_HighlightArtefactsEntry</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1ac7c96ffe6e5eec2a983052469e06e4a0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="527" endline="533">BSP_SetARControlStatus</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AR</bold> Functions related to artefact removal </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ArtefactRemoval.ipf"/>
+  </compounddef>
+</doxygen>

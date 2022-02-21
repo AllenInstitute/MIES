@@ -1,0 +1,4 @@
+Struct ToplevelInfo
+===================
+
+.. doxygenstruct:: ToplevelInfo

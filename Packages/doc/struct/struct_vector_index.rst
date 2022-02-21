@@ -1,0 +1,4 @@
+Struct VectorIndex
+==================
+
+.. doxygenstruct:: VectorIndex

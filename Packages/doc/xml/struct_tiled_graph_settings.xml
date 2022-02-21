@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_tiled_graph_settings" kind="struct" language="C++" prot="public">
+    <compoundname>TiledGraphSettings</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1a12fb9b0f037a88106e4daa409166cb52" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::displayDAC</definition>
+        <argsstring></argsstring>
+        <name>displayDAC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="157" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="156" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1a761071b987908bf1f6d1c4a40306e951" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::displayADC</definition>
+        <argsstring></argsstring>
+        <name>displayADC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="158" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="158" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1aadcf64487bfce0bf738b6aaa477278fd" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::displayTTL</definition>
+        <argsstring></argsstring>
+        <name>displayTTL</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="159" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="159" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1a4b5b6aa81bef9e9ef53cef3ab31168d7" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::splitTTLBits</definition>
+        <argsstring></argsstring>
+        <name>splitTTLBits</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="160" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="160" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af7678d54f05a4d6efb44e3f003539052" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2281" endline="2482">LayoutGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1ad86cd2e39ad0eece9b9db9931539f039" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::overlaySweep</definition>
+        <argsstring></argsstring>
+        <name>overlaySweep</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="161" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1ab97720ca06312d3b7fa67ff9a64586a2" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::overlayChannels</definition>
+        <argsstring></argsstring>
+        <name>overlayChannels</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="162" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="162" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1a7db9b2041082468f12913e170af74bc6" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::dDAQDisplayMode</definition>
+        <argsstring></argsstring>
+        <name>dDAQDisplayMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="163" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="163" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3f589dae6182c840615cc2e2ac2b21ca" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2484" endline="2517">TweakAxes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1afa092684414f64d6b038621fb41cd24e" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::dDAQHeadstageRegions</definition>
+        <argsstring></argsstring>
+        <name>dDAQHeadstageRegions</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="164" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="164" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_tiled_graph_settings_1a6564b348a1d2a8e30646df26bfc7df5a" prot="public" static="no" mutable="no">
+        <type>int16</type>
+        <definition>int16 TiledGraphSettings::hideSweep</definition>
+        <argsstring></argsstring>
+        <name>hideSweep</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="165" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="165" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Parameter to <ref refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" kindref="member">CreateTiledChannelGraph</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="156" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="156" bodyend="166"/>
+    <listofallmembers>
+      <member refid="struct_tiled_graph_settings_1a7db9b2041082468f12913e170af74bc6" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>dDAQDisplayMode</name></member>
+      <member refid="struct_tiled_graph_settings_1afa092684414f64d6b038621fb41cd24e" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>dDAQHeadstageRegions</name></member>
+      <member refid="struct_tiled_graph_settings_1a761071b987908bf1f6d1c4a40306e951" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>displayADC</name></member>
+      <member refid="struct_tiled_graph_settings_1a12fb9b0f037a88106e4daa409166cb52" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>displayDAC</name></member>
+      <member refid="struct_tiled_graph_settings_1aadcf64487bfce0bf738b6aaa477278fd" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>displayTTL</name></member>
+      <member refid="struct_tiled_graph_settings_1a6564b348a1d2a8e30646df26bfc7df5a" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>hideSweep</name></member>
+      <member refid="struct_tiled_graph_settings_1ab97720ca06312d3b7fa67ff9a64586a2" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>overlayChannels</name></member>
+      <member refid="struct_tiled_graph_settings_1ad86cd2e39ad0eece9b9db9931539f039" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>overlaySweep</name></member>
+      <member refid="struct_tiled_graph_settings_1a4b5b6aa81bef9e9ef53cef3ab31168d7" prot="public" virt="non-virtual"><scope>TiledGraphSettings</scope><name>splitTTLBits</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>DAQ details &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Important MIES concepts for developers" href="mies-concepts.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DAQ details</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="daq-details">
+<h1>DAQ details<a class="headerlink" href="#daq-details" title="Permalink to this headline">¶</a></h1>
+<figure class="align-center" id="id1">
+<span id="figure-repeated-acquisition-explained"></span><img alt="_images/acquisition-repeated-indexing-explained.svg" src="_images/acquisition-repeated-indexing-explained.svg" /><figcaption>
+<p><span class="caption-text">Data acquisition modes</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
+<span id="figure-normal-delays"></span><img alt="_images/normal-delays.svg" src="_images/normal-delays.svg" /><figcaption>
+<p><span class="caption-text">Normal delays</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="figure-ddaq-delays"></span><img alt="_images/ddaq-delay.svg" src="_images/ddaq-delay.svg" /><figcaption>
+<p><span class="caption-text">Ddaq delay</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4">
+<span id="figure-ooddaq-delays"></span><img alt="_images/oodDAQ-delays.svg" src="_images/oodDAQ-delays.svg" /><figcaption>
+<p><span class="caption-text">oodDAQ delays</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id5">
+<span id="figure-testpulse-visualization"></span><img alt="_images/testPulse-visualization.svg" src="_images/testPulse-visualization.svg" /><figcaption>
+<p><span class="caption-text">Testpulse visualization</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="indexing-definition">
+<h2>Indexing definition<a class="headerlink" href="#indexing-definition" title="Permalink to this headline">¶</a></h2>
+<p>MIES has different modes to automate the acquisition of multiple stimulus sets.</p>
+<p>Indexing mode allows the acquisition of a range of stimulus sets across multiple channels and channel types (DA and TTL).</p>
+<p>As stimulus sets can have a different number of sweeps, the natural question
+arises when to switch to the next stimulus set when acquiring data on multiple
+channels simultaneously. Locked indexing advances to the next stimulus set when
+the stimulus set with the most sweeps (currently acquiring, not globally) on
+all active channels is complete. Unlocked indexing advances to the next
+stimulus set on an individual channel when the active set on the same channel
+is complete. In both modes, the currently active set may automatically repeat
+while acquisition on the channel with the most combined sweeps proceeds to
+completion; locked indexing repeats and then indexes, while unlocked indexing
+indexes and then repeats.</p>
+<p>Inner-Set randomization is currently broken with indexing.</p>
+<p>Set randomization with indexing is not implemented.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DAQ details</a><ul>
+<li><a class="reference internal" href="#indexing-definition">Indexing definition</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="mies-concepts.html"
+                          title="previous chapter">Important MIES concepts for developers</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mies-concepts.html" title="Important MIES concepts for developers"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DAQ details</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

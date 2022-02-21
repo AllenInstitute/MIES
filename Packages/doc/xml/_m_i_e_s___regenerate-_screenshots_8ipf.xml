@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___regenerate-_screenshots_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Regenerate-Screenshots.ipf</compoundname>
+    <includes local="yes">MIES_Include</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>MIES_Regenerate-Screenshots.ipf</label>
+        <link refid="_m_i_e_s___regenerate-_screenshots_8ipf"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MIES_Include</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetSavePath</definition>
+        <argsstring>()</argsstring>
+        <name>GetSavePath</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="7" column="15" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="7" bodyend="17"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac5fe706b4bf6afd4e77df63b12dd437e" compoundref="_m_i_e_s___utilities_8ipf" startline="1817" endline="1842">CreateFolderOnDisk</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" compoundref="_i_p_n_w_b___utils_8ipf" startline="353" endline="361">GetFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abe7eae12945773c6be75d7a39b731c51" compoundref="_m_i_e_s___utilities_8ipf" startline="2850" endline="2861">GetUniqueSymbolicPath</references>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a0985bbc8db1f6fc02a0f1f3ddb8fd1fa" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="46" endline="56">ScreenShotsForAnalysisBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1acd4bc7bd49fda1e5bd28f3cd24880396" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="86" endline="109">ScreenShotsForDAEphys</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a10ac24f72dded6756a9e85592a8da641" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="111" endline="186">ScreenShotsForDataBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a62b3c05a9a509d2c4e68ef3adb262382" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="58" endline="84">ScreenShotsForWaveBuilder</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a61b6853046cfde1a95b60025d50c3cfc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable run</definition>
+        <argsstring>()</argsstring>
+        <name>run</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="19" column="10" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="19" bodyend="32"/>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a10ac24f72dded6756a9e85592a8da641" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="111" endline="186">ScreenShotsForDataBrowser</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a23e410ba06cfaae106be0449e4c25f08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable RestrictScreenshotToControl</definition>
+        <argsstring>(string path, string filename, string panel, string control)</argsstring>
+        <name>RestrictScreenshotToControl</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>filename</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>panel</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="34" column="10" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="34" bodyend="44"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a62b3c05a9a509d2c4e68ef3adb262382" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="58" endline="84">ScreenShotsForWaveBuilder</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a0985bbc8db1f6fc02a0f1f3ddb8fd1fa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ScreenShotsForAnalysisBrowser</definition>
+        <argsstring>()</argsstring>
+        <name>ScreenShotsForAnalysisBrowser</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="46" column="17" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="46" bodyend="56"/>
+        <references refid="_m_i_e_s___analysis_browser_8ipf_1aa57bf494513fec75fd3bb98efd42845d" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2372" endline="2404">AB_OpenAnalysisBrowser</references>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="7" endline="17">GetSavePath</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a62b3c05a9a509d2c4e68ef3adb262382" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ScreenShotsForWaveBuilder</definition>
+        <argsstring>()</argsstring>
+        <name>ScreenShotsForWaveBuilder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="58" column="17" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="58" bodyend="84"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a073879005c56a1ac764a6b9f1bf39963" compoundref="_m_i_e_s___constants_8ipf" startline="788">EPOCH_TYPES_TOTAL_NUMBER</references>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="7" endline="17">GetSavePath</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a23e410ba06cfaae106be0449e4c25f08" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="34" endline="44">RestrictScreenshotToControl</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acdfc98d0e1255b8fb8292e4315f00e80" compoundref="_m_i_e_s___utilities_8ipf" startline="5868" endline="5891">SanitizeFilename</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a7f898bedfbf2518531d7e8496a2c1564" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1372" endline="1398">WB_ToEpochTypeString</references>
+        <references refid="_m_i_e_s___wave_builder_panel_8ipf_1a31135063570ff98618dc1c045244b74c" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="100" endline="127">WBP_CreateWaveBuilderPanel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1acd4bc7bd49fda1e5bd28f3cd24880396" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Function</type>
+        <definition>static Function ScreenShotsForDAEphys</definition>
+        <argsstring>()</argsstring>
+        <name>ScreenShotsForDAEphys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="86" column="16" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="86" bodyend="109"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aa41a427ad050ba65c71d195bcc21bcce" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4525" endline="4549">DAP_CreateDAEphysPanel</references>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="7" endline="17">GetSavePath</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acdfc98d0e1255b8fb8292e4315f00e80" compoundref="_m_i_e_s___utilities_8ipf" startline="5868" endline="5891">SanitizeFilename</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a91e63e3274c608b5e7ba14fffd38b56b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="24" endline="28">SCOPE_GetPanel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a10ac24f72dded6756a9e85592a8da641" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ScreenShotsForDataBrowser</definition>
+        <argsstring>()</argsstring>
+        <name>ScreenShotsForDataBrowser</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="111" column="17" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="111" bodyend="186"/>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a9f6e2bc44cee1d0f6271bb20e3bdd087" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="188" endline="235">AssembleOneDataBrowserImage</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a2f8aa613c2a8ef1e7bd1f171960c2b0d" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="7" endline="17">GetSavePath</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acdfc98d0e1255b8fb8292e4315f00e80" compoundref="_m_i_e_s___utilities_8ipf" startline="5868" endline="5891">SanitizeFilename</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a61b6853046cfde1a95b60025d50c3cfc" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="19" endline="32">run</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a9f6e2bc44cee1d0f6271bb20e3bdd087" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AssembleOneDataBrowserImage</definition>
+        <argsstring>(string path)</argsstring>
+        <name>AssembleOneDataBrowserImage</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="188" column="10" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="188" bodyend="235"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a10ac24f72dded6756a9e85592a8da641" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="111" endline="186">ScreenShotsForDataBrowser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___regenerate-_screenshots_8ipf_1a0bda1cecd2c532282495b94f9e6acb48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CreateRelevantColorsGraph</definition>
+        <argsstring>()</argsstring>
+        <name>CreateRelevantColorsGraph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="MIES_Regenerate-Screenshots.ipf" line="237" column="10" bodyfile="MIES_Regenerate-Screenshots.ipf" bodystart="237" bodyend="272"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af2cd422bb3566dfda8623fa58286e6b1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3244" endline="3261">GetHeadstageColor</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="MIES_Regenerate-Screenshots.ipf"/>
+  </compounddef>
+</doxygen>

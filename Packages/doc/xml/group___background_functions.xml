@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="group___background_functions" kind="group">
+    <compoundname>BackgroundFunctions</compoundname>
+    <title>All background functions</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group___background_functions_1gae2bff2c8661d41db57bea97887406598" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_BackgroundWatchdog</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>BW_BackgroundWatchdog</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Helper background task for debugging. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="193" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="193" bodyend="204"/>
+        <references refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BkgWatcher::BW_PanelUpdate</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_FIFOMonitor</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQM_FIFOMonitor</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Fifo monitor for DAQ Multi Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="19" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="19" bodyend="124"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a269a3df6c5dd5dcceee108e70e4a3a37" compoundref="_m_i_e_s___constants_8ipf" startline="587">ANALYSIS_FUNC_RET_EARLY_STOP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02ec7a478feb7ddacfa5e2a0ede89b5d" compoundref="_m_i_e_s___constants_8ipf" startline="586">ANALYSIS_FUNC_RET_REPURP_TIME</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6def02b85e78c8469c6958f9893c2909" compoundref="_m_i_e_s___constants_8ipf" startline="1538">DQ_STOP_REASON_HW_ERROR</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="404" endline="414">DQM_RemoveDevice</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="357" endline="369">DQM_StopDataAcq</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad0ad23d804fe6d2c4de44fb74d8aba1d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6129" endline="6133">GetNIFIFOName</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a79398a1df6cf09e38737f9a143e5fd12" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="420" endline="427">GotTPChannelsOnADCs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8f7f7f86d07bc83ff9fd349c3d1c4e0a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5862" endline="5878">UpdateLeftOverSweepTime</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1gad4c7bb1b11846190bd5407eeeef33ef5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_Timer</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQM_Timer</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background function for tracking ITI. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="318" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="318" bodyend="351"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="453" endline="497">DQM_MakeOrUpdateTimerParamWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1b1effca33001624bd9189f9c1bba794" compoundref="_m_i_e_s___utilities_8ipf" startline="4109" endline="4125">ExecuteListOfFunctions</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7d0ddf7b740e95b0fdc81f298774a593" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="585" endline="588">GetActiveDAQDevicesTimerFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga216a30befc7388a82cb20819096a2077" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQS_BkrdDataAcq</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DQS_BkrdDataAcq</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Fifo monitor for DAQ Single Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" line="93" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" bodystart="93" bodyend="107"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1a2b78bf758a40efab7cf6a850f248bd78" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="132" endline="154">DQ_StartDAQDeviceTimer</references>
+        <references refid="_m_i_e_s___data_acquisition___single_8ipf_1adeee1e81813e88ae2442d0d5a0848edf" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="128" endline="130">DQS_StartBackgroundFifoMonitor</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a5be335d0759af2844df1eead0156a482" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="96" endline="111">HW_PrepareAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1ac943ce95b47035d99ac1425ab74867c4" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="19" endline="49">DQS_StartDAQSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga180063aa9185bc1412cda48d5aee95ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQS_FIFOMonitor</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQS_FIFOMonitor</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Fifo monitor for DAQ Single Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" line="135" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" bodystart="135" bodyend="170"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a269a3df6c5dd5dcceee108e70e4a3a37" compoundref="_m_i_e_s___constants_8ipf" startline="587">ANALYSIS_FUNC_RET_EARLY_STOP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02ec7a478feb7ddacfa5e2a0ede89b5d" compoundref="_m_i_e_s___constants_8ipf" startline="586">ANALYSIS_FUNC_RET_REPURP_TIME</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae003b77aeb8748fc4bdef70b68c9b8dd" compoundref="_m_i_e_s___constants_8ipf" startline="1536">DQ_STOP_REASON_FINISHED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___data_acquisition___single_8ipf_1a1104d58ee90aca88e6e13fc7f7ae863b" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="110" endline="126">DQS_StopDataAcq</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9bfdaafa444865d941a42acbf2b0e609" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1776" endline="1785">HW_ITC_MoreData</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8f7f7f86d07bc83ff9fd349c3d1c4e0a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5862" endline="5878">UpdateLeftOverSweepTime</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1gafb23af241ade6aecd4a7ac6b1c49f633" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQS_Timer</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQS_Timer</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Keep track of time during ITI. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" line="207" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Single.ipf" bodystart="207" bodyend="228"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1b1effca33001624bd9189f9c1bba794" compoundref="_m_i_e_s___utilities_8ipf" startline="4109" endline="4125">ExecuteListOfFunctions</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_finishInitAccessQCCheck</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>IVS_finishInitAccessQCCheck</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Complete the Baseline QC check in the background. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="240" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="240" bodyend="285"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d1b8cc7660209f458d044c319192191" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4595" endline="4610">GetIVSCCTemporaryWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="338" endline="348">IVS_PublishQCState</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1454" endline="1465">TP_TestPulseHasCycled</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IVS_finishGigOhmSealQCCheck</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>IVS_finishGigOhmSealQCCheck</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>finish the Gig Ohm Seal QC in the background </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" line="353" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IVSCC.ipf" bodystart="353" bodyend="408"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1a3f19daa0908ddd75cd6dfaf31d7e8548" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="24">IVS_DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aae1d4b2656252a6ff4d43a00de1b8c92" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="23">IVS_DEFAULT_HEADSTAGE</references>
+        <references refid="_m_i_e_s___i_v_s_c_c_8ipf_1aad5d90a4d1d85af21c8bfd93b2f3f649" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="338" endline="348">IVS_PublishQCState</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1454" endline="1465">TP_TestPulseHasCycled</references>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1gaef25abd808176204ed8ce1563bcd78d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable P_ITC_FIFOMonitorProc</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>P_ITC_FIFOMonitorProc</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Monitor the device FIFO and terminates acquisition when sufficient data has been collected. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="1191" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="1191" bodyend="1217"/>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0ed14840ee822d95c9ecdfab34f9752d" compoundref="_m_i_e_s___constants_8ipf" startline="700">HARDWARE_ITC_MIN_SAMPINT</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9bfdaafa444865d941a42acbf2b0e609" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1776" endline="1785">HW_ITC_MoreData</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1ab2ba6976132322218e4cbdc166ea1220" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1237" endline="1255">P_FindDeviceExecutingPP</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</references>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPM_BkrdTPFuncMD</definition>
+        <argsstring>(BackgroundStruct *s)</argsstring>
+        <name>TPM_BkrdTPFuncMD</name>
+        <param>
+          <type><ref refid="struct_background_struct" kindref="compound">BackgroundStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background TP Multi Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="181" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="181" bodyend="329"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="struct_background_struct_1a9581db220a0af538314cdd15a046804b" compoundref="_m_i_e_s___structures_8ipf" startline="16">BackgroundStruct::count</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="231" endline="234">DEBUG_TIMER_START</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" compoundref="_i_p_n_w_b___debugging_8ipf" startline="238" endline="242">DEBUGPRINT_ELAPSED</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6def02b85e78c8469c6958f9893c2909" compoundref="_m_i_e_s___constants_8ipf" startline="1538">DQ_STOP_REASON_HW_ERROR</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad0ad23d804fe6d2c4de44fb74d8aba1d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6129" endline="6133">GetNIFIFOName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a155ea80dc1c3c5e705b2305362c38492" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2861" endline="2869">HW_NI_PrepareAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a18adf025079d26b19b6f53986114346d" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2856" endline="2859">HW_NI_StartAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a08a48b068a2d4c406c131b6195f32c5c" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2919" endline="2923">HW_NI_StopAcq</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="struct_background_struct_1aeedeee092103e0a955fb37fb37e1299f" compoundref="_m_i_e_s___structures_8ipf" startline="17">BackgroundStruct::threadDeadCount</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5c7025bfc4a5bd76b3f55090202b9013" compoundref="_m_i_e_s___constants_8ipf" startline="1187">TP_MD_THREAD_DEAD_MAX_RETRIES</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a24e62ba784f3285567cebd48ae34533d" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="15">TPM_NI_FIFO_THRESHOLD_SIZE</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1aff4edd2665648c8bf917561b2ba2405b" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="14">TPM_NI_TASKTIMEOUT</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" compoundref="_m_i_e_s___blowout_8ipf" startline="145" endline="162">BWO_InitParaPipetteClear</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_TestPulseFunc</definition>
+        <argsstring>(BackgroundStruct *s)</argsstring>
+        <name>TPS_TestPulseFunc</name>
+        <param>
+          <type><ref refid="struct_background_struct" kindref="compound">BackgroundStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background TP Single Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="35" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="35" bodyend="71"/>
+        <references refid="struct_background_struct_1a9581db220a0af538314cdd15a046804b" compoundref="_m_i_e_s___structures_8ipf" startline="16">BackgroundStruct::count</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9bfdaafa444865d941a42acbf2b0e609" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1776" endline="1785">HW_ITC_MoreData</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a3a1abd152f148ce4bbefe05139720c34" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1688" endline="1695">HW_ITC_ResetFifo</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

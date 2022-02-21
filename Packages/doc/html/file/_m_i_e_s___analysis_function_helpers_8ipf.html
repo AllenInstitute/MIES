@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_AnalysisFunctionHelpers.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AnalysisFunctionManagement.ipf" href="_m_i_e_s___analysis_function_management_8ipf.html" />
+    <link rel="prev" title="File MIES_AnalysisBrowser_SweepBrowser_Export.ipf" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_function_management_8ipf.html" title="File MIES_AnalysisFunctionManagement.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html" title="File MIES_AnalysisBrowser_SweepBrowser_Export.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctionHelpers.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-analysisfunctionhelpers-ipf">
+<span id="id1"></span><h1>File MIES_AnalysisFunctionHelpers.ipf<a class="headerlink" href="#file-mies-analysisfunctionhelpers-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>AFH</strong> Helper functions for analysis function writers </p>
+<p>Additionally the following functions might be useful</p>
+<p><table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function   </p></th>
+<th class="head"><p>Return value    </p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5"><span class="std std-ref">GetADCListFromConfig()</span></a></p></td>
+<td><p>Free wave with all active AD channels as entries    </p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6"><span class="std std-ref">GetDACListFromConfig()</span></a></p></td>
+<td><p>Free wave with all active DA channels as entries    </p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a"><span class="std std-ref">GetLBNumericalValues()</span></a></p></td>
+<td><p>Wave reference to the labnotebook (numerical version)    </p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d"><span class="std std-ref">GetLBTextualValues()</span></a></p></td>
+<td><p>Wave reference to the labnotebook (textual version)    </p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../group/group___labnotebook_query_functions.html#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a></p></td>
+<td><p>Last documented value for headstages of a specific setting in the labnotebook for a given sweep number.    </p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../group/group___labnotebook_query_functions.html#group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662"><span class="std std-ref">GetLastSweepWithSetting()</span></a></p></td>
+<td><p>Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.    </p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../group/group___labnotebook_query_functions.html#group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c"><span class="std std-ref">GetLastSweepWithSettingText()</span></a></p></td>
+<td><p>Last documented textual value for headstages of a specific setting in the labnotebook and the sweep number it was set last.    </p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html#_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7"><span class="std std-ref">ED_AddEntryToLabnotebook()</span></a></p></td>
+<td><p>Add a user entry to the numerical/textual labnotebook   </p></td>
+</tr>
+</tbody>
+</table>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AFH_GetHeadstageFromADC6string8variable">
+<span id="_CPPv323AFH_GetHeadstageFromADC6string8variable"></span><span id="_CPPv223AFH_GetHeadstageFromADC6string8variable"></span><span id="AFH_GetHeadstageFromADC__string.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetHeadstageFromADC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">AD</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AFH_GetHeadstageFromADC6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the headstage the AD channel is assigned to. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>AD</strong> – AD channel in the range [0,8[ or [0,16[ depending on the hardware</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>headstage or NaN (for non-associated channels) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AFH_GetHeadstageFromDAC6string8variable">
+<span id="_CPPv323AFH_GetHeadstageFromDAC6string8variable"></span><span id="_CPPv223AFH_GetHeadstageFromDAC6string8variable"></span><span id="AFH_GetHeadstageFromDAC__string.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetHeadstageFromDAC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DA</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AFH_GetHeadstageFromDAC6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the headstage the DA channel is assigned to. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>DA</strong> – DA channel in the range [0,4[ or [0,8[ depending on the hardware</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>headstage or NaN (for non-associated channels) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AFH_GetADCFromHeadstage6string8variable">
+<span id="_CPPv323AFH_GetADCFromHeadstage6string8variable"></span><span id="_CPPv223AFH_GetADCFromHeadstage6string8variable"></span><span id="AFH_GetADCFromHeadstage__string.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab0f38ebefe9ce38e68099af8a0ffd443"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetADCFromHeadstage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AFH_GetADCFromHeadstage6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the AD channel assigned to the headstage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>headstage</strong> – headstage in the range [0,8[</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>AD channel or NaN (for non-associated channels) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AFH_GetDACFromHeadstage6string8variable">
+<span id="_CPPv323AFH_GetDACFromHeadstage6string8variable"></span><span id="_CPPv223AFH_GetDACFromHeadstage6string8variable"></span><span id="AFH_GetDACFromHeadstage__string.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetDACFromHeadstage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AFH_GetDACFromHeadstage6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the DA channel assigned to the headstage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>headstage</strong> – headstage in the range [0,8[</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DA channel or NaN (for non-associated channels) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AFH_GetDAQDataColumn4wave8variable8variable">
+<span id="_CPPv320AFH_GetDAQDataColumn4wave8variable8variable"></span><span id="_CPPv220AFH_GetDAQDataColumn4wave8variable8variable"></span><span id="AFH_GetDAQDataColumn__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetDAQDataColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQConfigWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AFH_GetDAQDataColumn4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the column index into <code class="docutils literal notranslate"><span class="pre">DAQDataWave</span></code> for the given channel/type combination. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DAQConfigWave</strong> – DAQ configuration wave, most users need to call <code class="docutils literal notranslate"><span class="pre">GetDAQConfigWave(device)</span></code> to get that wave. </p></li>
+<li><p><strong>channelNumber</strong> – channel number (0-based) </p></li>
+<li><p><strong>channelType</strong> – channel type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AFH_GetChannelUnits4wave">
+<span id="_CPPv319AFH_GetChannelUnits4wave"></span><span id="_CPPv219AFH_GetChannelUnits4wave"></span><span id="AFH_GetChannelUnits__wave"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a8e55ee76c22efa74fc858f4337c11c89"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetChannelUnits</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQConfigWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AFH_GetChannelUnits4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return all channel units as free text wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>DAQConfigWave</strong> – DAQ configuration wave, most users need to call <code class="docutils literal notranslate"><span class="pre">GetDAQConfigWave(device)</span></code> to get that wave. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AFH_GetChannelUnit4wave8variable8variable">
+<span id="_CPPv318AFH_GetChannelUnit4wave8variable8variable"></span><span id="_CPPv218AFH_GetChannelUnit4wave8variable8variable"></span><span id="AFH_GetChannelUnit__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a99929d493e5a521d045d67adf77851b6"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetChannelUnit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">DAQConfigWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AFH_GetChannelUnit4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the channel unit. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DAQConfigWave</strong> – DAQ configuration wave, most users need to call <code class="docutils literal notranslate"><span class="pre">GetDAQConfigWave(device)</span></code> to get that wave. </p></li>
+<li><p><strong>channelNumber</strong> – channel number (0-based) </p></li>
+<li><p><strong>channelType</strong> – channel type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetLastSweepAcquired6string">
+<span id="_CPPv324AFH_GetLastSweepAcquired6string"></span><span id="_CPPv224AFH_GetLastSweepAcquired6string"></span><span id="AFH_GetLastSweepAcquired__string"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetLastSweepAcquired</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetLastSweepAcquired6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sweep number of the last acquired sweep. </p>
+<p>Handles sweep number rollback properly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a non-negative integer sweep number or NaN if there is no data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AFH_GetLastSweepWaveAcquired6string">
+<span id="_CPPv328AFH_GetLastSweepWaveAcquired6string"></span><span id="_CPPv228AFH_GetLastSweepWaveAcquired6string"></span><span id="AFH_GetLastSweepWaveAcquired__string"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a72b806ad560d940a643efe10064a846d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetLastSweepWaveAcquired</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AFH_GetLastSweepWaveAcquired6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sweep wave of the last acquired sweep. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an existing sweep wave or an invalid wave reference if there is no data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AFH_GetStimSetName6string8variable8variable">
+<span id="_CPPv318AFH_GetStimSetName6string8variable8variable"></span><span id="_CPPv218AFH_GetStimSetName6string8variable8variable"></span><span id="AFH_GetStimSetName__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetStimSetName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chanNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AFH_GetStimSetName6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the stimset for the given channel. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>chanNo</strong> – channel number (0-based) </p></li>
+<li><p><strong>channelType</strong> – one of the type constants from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants"><span class="std std-ref">ChannelTypeAndControlConstants</span></a> </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an existing stimulus set name for a DA channel </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430AFH_GetSweepsFromSameRACycleNC4wave8variable">
+<span id="_CPPv330AFH_GetSweepsFromSameRACycleNC4wave8variable"></span><span id="_CPPv230AFH_GetSweepsFromSameRACycleNC4wave8variable"></span><span id="AFH_GetSweepsFromSameRACycleNC__wave.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a0d9ba5617fc8d23c50213e3a98bf3b91"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetSweepsFromSameRACycleNC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AFH_GetSweepsFromSameRACycleNC4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free wave with all sweep numbers (in ascending order) which belong to the same RA cycle. Uncached version, general users should prefer <a class="reference internal" href="#_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82"><span class="std std-ref">AFH_GetSweepsFromSameRACycle()</span></a>. </p>
+<p>Return an invalid wave reference if not all required labnotebook entries are available </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AFH_GetSweepsFromSameRACycle4wave8variable">
+<span id="_CPPv328AFH_GetSweepsFromSameRACycle4wave8variable"></span><span id="_CPPv228AFH_GetSweepsFromSameRACycle4wave8variable"></span><span id="AFH_GetSweepsFromSameRACycle__wave.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetSweepsFromSameRACycle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AFH_GetSweepsFromSameRACycle4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free wave with all sweep numbers (in ascending order) which belong to the same RA cycle. </p>
+<p>Return an invalid wave reference if not all required labnotebook entries are available </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetSweepsFromSameSCI4wave8variable8variable">
+<span id="_CPPv324AFH_GetSweepsFromSameSCI4wave8variable8variable"></span><span id="_CPPv224AFH_GetSweepsFromSameSCI4wave8variable8variable"></span><span id="AFH_GetSweepsFromSameSCI__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetSweepsFromSameSCI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetSweepsFromSameSCI4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free wave with all sweep numbers (in ascending order) which belong to the same stimset cycle. </p>
+<p>Return an invalid wave reference if not all required labnotebook entries are available </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AFH_GetSweepsFromSameSCINC4wave8variable8variable">
+<span id="_CPPv326AFH_GetSweepsFromSameSCINC4wave8variable8variable"></span><span id="_CPPv226AFH_GetSweepsFromSameSCINC4wave8variable8variable"></span><span id="AFH_GetSweepsFromSameSCINC__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1ad03b3295acb97de96f481fe078969b3c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetSweepsFromSameSCINC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AFH_GetSweepsFromSameSCINC4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free wave with all sweep numbers (in ascending order) which belong to the same stimset cycle id. Uncached version, general users should prefer <a class="reference internal" href="#_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c"><span class="std std-ref">AFH_GetSweepsFromSameSCI()</span></a>. </p>
+<p>Return an invalid wave reference if not all required labnotebook entries are available </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430AFH_ExtractOneDimDataFromSweep6string4wave8variable8variable4wave">
+<span id="_CPPv330AFH_ExtractOneDimDataFromSweep6string4wave8variable8variable4wave"></span><span id="_CPPv230AFH_ExtractOneDimDataFromSweep6string4wave8variable8variable4wave"></span><span id="AFH_ExtractOneDimDataFromSweep__string.wave.variable.variable.wave"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_ExtractOneDimDataFromSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstageOrChannelNum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AFH_ExtractOneDimDataFromSweep6string4wave8variable8variable4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free 1D wave from the given sweep. </p>
+<p>Extract the AD channel data from headstage 1:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">variable</span> sweepNo = 5
+<span class="kt">WAVE</span> sweep = GetSweepWave(device, sweepNo)
+<span class="kt">variable</span> headstage = 1
+<span class="kt">WAVE</span> data = AFH_ExtractOneDimDataFromSweep(device, sweep, headstage, XOP_CHANNEL_TYPE_ADC)
+</pre></div>
+</div>
+</p>
+<p>Extract the TTL channel 1:</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">variable</span> sweepNo = 6
+<span class="kt">WAVE</span> sweep = GetSweepWave(device, sweepNo)
+<span class="kt">variable</span> ttlChannel = 1
+<span class="kt">WAVE</span> data = AFH_ExtractOneDimDataFromSweep(device, sweep, ttlChannel, XOP_CHANNEL_TYPE_TTL)
+</pre></div>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>sweep</strong> – sweep wave </p></li>
+<li><p><strong>headstageOrChannelNum</strong> – headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS] </p></li>
+<li><p><strong>channelType</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1XopChannelConstants"><span class="std std-ref">XopChannelConstants</span></a> </p></li>
+<li><p><strong>config</strong> – [optional, defaults to config wave of the sweep returned by <a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248"><span class="std std-ref">GetConfigWave()</span></a>] config wave </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetAnalysisFunctions8variable">
+<span id="_CPPv324AFH_GetAnalysisFunctions8variable"></span><span id="_CPPv224AFH_GetAnalysisFunctions8variable"></span><span id="AFH_GetAnalysisFunctions__variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1aff8c9bf1e0d9ec122dc131bc876e131d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisFunctions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">versionBitMask</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetAnalysisFunctions8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get list of possible analysis functions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>versionBitMask</strong> – bitmask of different analysis function versions which should be returned, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisFunctionVersions"><span class="std std-ref">AnalysisFunctionVersions</span></a> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AFH_GetListOfAnalysisParams6string8variable">
+<span id="_CPPv327AFH_GetListOfAnalysisParams6string8variable"></span><span id="_CPPv227AFH_GetListOfAnalysisParams6string8variable"></span><span id="AFH_GetListOfAnalysisParams__string.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1af817353585cc6f1a862d661e4200ee9e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetListOfAnalysisParams</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AFH_GetListOfAnalysisParams6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the list of required/optional analysis function parameters, possibly including the type, as specified by the function <code class="docutils literal notranslate"><span class="pre">$func_GetParams</span></code> </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – Analysis function <code class="docutils literal notranslate"><span class="pre">V3</span></code> which must be valid and existing </p></li>
+<li><p><strong>mode</strong> – Bit mask values from <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1GetListOfParamsModeFlags"><span class="std std-ref">GetListOfParamsModeFlags</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431AFH_GetHelpForAnalysisParameter6string6string">
+<span id="_CPPv331AFH_GetHelpForAnalysisParameter6string6string"></span><span id="_CPPv231AFH_GetHelpForAnalysisParameter6string6string"></span><span id="AFH_GetHelpForAnalysisParameter__string.string"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a0cd12b699c35b03799af6ce6041ad429"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetHelpForAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431AFH_GetHelpForAnalysisParameter6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get help string from optional <code class="docutils literal notranslate"><span class="pre">$func_GetHelp</span></code> </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – Analysis function <code class="docutils literal notranslate"><span class="pre">V3</span></code> </p></li>
+<li><p><strong>name</strong> – Parameter name </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431AFH_GetListOfAnalysisParamNames6string">
+<span id="_CPPv331AFH_GetListOfAnalysisParamNames6string"></span><span id="_CPPv231AFH_GetListOfAnalysisParamNames6string"></span><span id="AFH_GetListOfAnalysisParamNames__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetListOfAnalysisParamNames</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431AFH_GetListOfAnalysisParamNames6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a semicolon separated list of user parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetAnalysisParamType6string6string8variable6string">
+<span id="_CPPv324AFH_GetAnalysisParamType6string6string8variable6string"></span><span id="_CPPv224AFH_GetAnalysisParamType6string6string8variable6string"></span><span id="AFH_GetAnalysisParamType__string.string.variable.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParamType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">typeCheck</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expectedType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetAnalysisParamType6string6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the type of the user parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>typeCheck</strong> – [optional, defaults to true] Check with an assertion that the readout type is one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a> </p></li>
+<li><p><strong>expectedType</strong> – [optional, defaults to nothing] Expected type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a>, aborts if the type does not match. Implies <code class="docutils literal notranslate"><span class="pre">typeCheck</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisFunctionParameterTypes"><span class="std std-ref">AnalysisFunctionParameterTypes</span></a> or an empty string </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AFH_GetAnalysisParamNumerical6string6string8variable">
+<span id="_CPPv329AFH_GetAnalysisParamNumerical6string6string8variable"></span><span id="_CPPv229AFH_GetAnalysisParamNumerical6string6string8variable"></span><span id="AFH_GetAnalysisParamNumerical__string.string.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParamNumerical</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AFH_GetAnalysisParamNumerical6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a numerical user parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>defValue</strong> – [optional, defaults to <code class="docutils literal notranslate"><span class="pre">NaN</span></code>] return this value if the parameter could not be found </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AFH_GetAnalysisParamTextual6string6string6string8variable">
+<span id="_CPPv327AFH_GetAnalysisParamTextual6string6string6string8variable"></span><span id="_CPPv227AFH_GetAnalysisParamTextual6string6string6string8variable"></span><span id="AFH_GetAnalysisParamTextual__string.string.string.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParamTextual</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">percentDecoded</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AFH_GetAnalysisParamTextual6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a textual user parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>defValue</strong> – [optional, defaults to an empty string] return this value if the parameter could not be found </p></li>
+<li><p><strong>percentDecoded</strong> – [optional, defaults to true] if the return value should be percent decoded or not. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetAnalysisParamWave6string6string4wave">
+<span id="_CPPv324AFH_GetAnalysisParamWave6string6string4wave"></span><span id="_CPPv224AFH_GetAnalysisParamWave6string6string4wave"></span><span id="AFH_GetAnalysisParamWave__string.string.wave"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParamWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetAnalysisParamWave6string6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a numerical wave user parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>defValue</strong> – [optional, defaults to an invalid wave ref] return this value if the parameter could not be found</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wave reference to free numeric wave, or invalid wave ref in case the parameter could not be found. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AFH_GetAnalysisParamTextWave6string6string8WaveText8variable">
+<span id="_CPPv328AFH_GetAnalysisParamTextWave6string6string8WaveText8variable"></span><span id="_CPPv228AFH_GetAnalysisParamTextWave6string6string8WaveText8variable"></span><span id="AFH_GetAnalysisParamTextWave__string.string.WaveText.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParamTextWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">percentDecoded</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AFH_GetAnalysisParamTextWave6string6string8WaveText8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a textual wave user parameter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>defValue</strong> – [optional, defaults to an invalid wave ref] return this value if the parameter could not be found </p></li>
+<li><p><strong>percentDecoded</strong> – [optional, defaults to true] if the return value should be percent decoded or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wave reference to free text wave, or invalid wave ref in case the parameter could not be found. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AFH_IsValidAnalysisParameter6string">
+<span id="_CPPv328AFH_IsValidAnalysisParameter6string"></span><span id="_CPPv228AFH_IsValidAnalysisParameter6string"></span><span id="AFH_IsValidAnalysisParameter__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_IsValidAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AFH_IsValidAnalysisParameter6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the given name is a valid user parameter name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AFH_IsValidAnalysisParamType6string">
+<span id="_CPPv328AFH_IsValidAnalysisParamType6string"></span><span id="_CPPv228AFH_IsValidAnalysisParamType6string"></span><span id="AFH_IsValidAnalysisParamType__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1gabf106e2fc04288afbd02155c75706e22"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_IsValidAnalysisParamType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AFH_IsValidAnalysisParamType6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the given type is a valid user parameter type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_GetAnalysisParameter6string6string6string">
+<span id="_CPPv324AFH_GetAnalysisParameter6string6string6string"></span><span id="_CPPv224AFH_GetAnalysisParameter6string6string6string"></span><span id="AFH_GetAnalysisParameter__string.string.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expectedType</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_GetAnalysisParameter6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return an user parameter’s value as string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><strong>expectedType</strong> – [optional, defaults to nothing] Expected type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a>, aborts if the type does not match. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AFH_RemoveAnalysisParameter6string6string">
+<span id="_CPPv327AFH_RemoveAnalysisParameter6string6string"></span><span id="_CPPv227AFH_RemoveAnalysisParameter6string6string"></span><span id="AFH_RemoveAnalysisParameter__string.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga97364b5855c3e95be4bd98a383ab7f72"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_RemoveAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AFH_RemoveAnalysisParameter6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Delete the given user parameter name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – parameter name </p></li>
+<li><p><strong>params</strong> – serialized parameters, usually just <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>serialized parameters with <code class="docutils literal notranslate"><span class="pre">name</span></code> removed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AFH_CheckAnalysisParameter6stringP21CheckParametersStruct">
+<span id="_CPPv326AFH_CheckAnalysisParameter6stringP21CheckParametersStruct"></span><span id="_CPPv226AFH_CheckAnalysisParameter6stringP21CheckParametersStruct"></span><span id="AFH_CheckAnalysisParameter__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_CheckAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">genericFunc</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AFH_CheckAnalysisParameter6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check the analysis parameters according to the optionally present check function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genericFunc</strong> – Name of an analysis V3 function </p></li>
+<li><p><strong>s</strong> – struct <a class="reference internal" href="../struct/struct_check_parameters_struct.html#struct_check_parameters_struct"><span class="std std-ref">CheckParametersStruct</span></a> with additional info</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>multiline error messages, an empty string on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AFH_AddAnalysisParameter6string6string8variable6string4wave">
+<span id="_CPPv324AFH_AddAnalysisParameter6string6string8variable6string4wave"></span><span id="_CPPv224AFH_AddAnalysisParameter6string6string8variable6string4wave"></span><span id="AFH_AddAnalysisParameter__string.string.variable.string.wave"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_AddAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">setName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AFH_AddAnalysisParameter6string6string8variable6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add an analysis function parameter to the given stimset. </p>
+<p>This function adds the parameter to the <code class="docutils literal notranslate"><span class="pre">WPT</span></code> wave and checks that it is valid.</p>
+<p>Exactly one of <code class="docutils literal notranslate"><span class="pre">var</span></code>/<code class="docutils literal notranslate"><span class="pre">str</span></code>/<code class="docutils literal notranslate"><span class="pre">wv</span></code> must be given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setName</strong> – stimset name </p></li>
+<li><p><strong>name</strong> – name of the parameter </p></li>
+<li><p><strong>var</strong> – [optional] numeric parameter </p></li>
+<li><p><strong>str</strong> – [optional] string parameter </p></li>
+<li><p><strong>wv</strong> – [optional] wave parameter can be numeric or text </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AFH_GetHeadstageFromActiveADC10WaveOrNull8variable">
+<span id="_CPPv329AFH_GetHeadstageFromActiveADC10WaveOrNull8variable"></span><span id="_CPPv229AFH_GetHeadstageFromActiveADC10WaveOrNull8variable"></span><span id="AFH_GetHeadstageFromActiveADC__WaveOrNull.variable"></span><span class="target" id="_m_i_e_s___analysis_function_helpers_8ipf_1a5b22a6d115805ba2f7b31c4243d27a32"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AFH_GetHeadstageFromActiveADC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">statusADC</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">activeADCount</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AFH_GetHeadstageFromActiveADC10WaveOrNull8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the headstage from the given active AD count. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statusADC</strong> – channel status as returned by <a class="reference internal" href="../group/group___labnotebook_query_functions.html#group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346"><span class="std std-ref">GetLastSetting()</span></a> </p></li>
+<li><p><strong>activeADCount</strong> – running number of active ADC’s, starting at zero</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>headstage in the range [0, NUM_HEADSTAGES], or NaN if nothing could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html"
+                          title="previous chapter">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_function_management_8ipf.html"
+                          title="next chapter">File MIES_AnalysisFunctionManagement.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_function_management_8ipf.html" title="File MIES_AnalysisFunctionManagement.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html" title="File MIES_AnalysisBrowser_SweepBrowser_Export.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctionHelpers.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

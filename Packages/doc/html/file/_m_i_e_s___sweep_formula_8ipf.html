@@ -1,0 +1,987 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_SweepFormula.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_SweepSaving.ipf" href="_m_i_e_s___sweep_saving_8ipf.html" />
+    <link rel="prev" title="File MIES_Structures.ipf" href="_m_i_e_s___structures_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-sweepformula-ipf">
+<span id="id1"></span><h1>File MIES_SweepFormula.ipf<a class="headerlink" href="#file-mies-sweepformula-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>SF</strong> Sweep formula allows to do analysis on sweeps with a dedicated formula language </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_StringifyState8variable">
+<span id="_CPPv317SF_StringifyState8variable"></span><span id="_CPPv217SF_StringifyState8variable"></span><span id="SF_StringifyState__variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_StringifyState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_StringifyState8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_StringifyAction8variable">
+<span id="_CPPv318SF_StringifyAction8variable"></span><span id="_CPPv218SF_StringifyAction8variable"></span><span id="SF_StringifyAction__variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_StringifyAction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_StringifyAction8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49SF_Assert8variable6string8variable">
+<span id="_CPPv39SF_Assert8variable6string8variable"></span><span id="_CPPv29SF_Assert8variable6string8variable"></span><span id="SF_Assert__variable.string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a986f520c3ec77088f302d9beb152ebd0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_Assert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">condition</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49SF_Assert8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assertion for sweep formula. </p>
+<p>This assertion does <em>not</em> indicate a genearl programmer error but a sweep formula user error.</p>
+<p>All programmer error checks must still use <a class="reference internal" href="_m_i_e_s___utilities_8ipf.html#_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69"><span class="std std-ref">ASSERT()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SF_FormulaPreParser6string">
+<span id="_CPPv319SF_FormulaPreParser6string"></span><span id="_CPPv219SF_FormulaPreParser6string"></span><span id="SF_FormulaPreParser__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee4b84e0016542764850fa0acdc70788"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FormulaPreParser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SF_FormulaPreParser6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>preparse user input to correct formula patterns </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>parsed formula </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_FormulaParser6stringP8variable8variable">
+<span id="_CPPv316SF_FormulaParser6stringP8variable8variable"></span><span id="_CPPv216SF_FormulaParser6stringP8variable8variable"></span><span id="SF_FormulaParser__string.variableP.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FormulaParser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">createdArray</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indentLevel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_FormulaParser6stringP8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>serialize a string formula into JSON </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>formula</strong> – string formula </p></li>
+<li><p><strong>createdArray</strong> – [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array </p></li>
+<li><p><strong>indentLevel</strong> – [internal use only] recursive call level, used for debug output </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a JSONid representation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_FPPutInArrayAtPath8variable6string">
+<span id="_CPPv321SF_FPPutInArrayAtPath8variable6string"></span><span id="_CPPv221SF_FPPutInArrayAtPath8variable6string"></span><span id="SF_FPPutInArrayAtPath__variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a56a05aa5694ae4a017be674aeb7a58be"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FPPutInArrayAtPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_FPPutInArrayAtPath8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a new empty array object, add mainId into it at path and return created json, release subId. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413SF_FPAddArray8variable6string8variable8variable">
+<span id="_CPPv313SF_FPAddArray8variable6string8variable8variable"></span><span id="_CPPv213SF_FPAddArray8variable6string8variable8variable"></span><span id="SF_FPAddArray__variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1acb11bc8c943a94663fc13483c7ed414c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FPAddArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mainId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subId</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arrayWasCreated</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413SF_FPAddArray8variable6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adds subId to mainId, if necessary puts subId into an array, release subId. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_EscapeJsonPath6string">
+<span id="_CPPv317SF_EscapeJsonPath6string"></span><span id="_CPPv217SF_EscapeJsonPath6string"></span><span id="SF_EscapeJsonPath__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2657a15c56ad804fbb68c2c55cd1c26d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_EscapeJsonPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_EscapeJsonPath6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add escape characters to a path element </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_FormulaPlotter6string6string5dfref8variable">
+<span id="_CPPv317SF_FormulaPlotter6string6string5dfref8variable"></span><span id="_CPPv217SF_FormulaPlotter6string6string5dfref8variable"></span><span id="SF_FormulaPlotter__string.string.dfref.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1c441d1f39d63686b72052467facbd6d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FormulaPlotter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dmMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_FormulaPlotter6string6string5dfref8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Plot the formula using the data from graph. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – graph to pass to SF_FormulaExecutor </p></li>
+<li><p><strong>formula</strong> – formula to plot </p></li>
+<li><p><strong>dfr</strong> – [optional, default current] working dataFolder </p></li>
+<li><p><strong>dmMode</strong> – [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_SplitPlotting4wave8variable8variable8variable">
+<span id="_CPPv316SF_SplitPlotting4wave8variable8variable8variable"></span><span id="_CPPv216SF_SplitPlotting4wave8variable8variable8variable"></span><span id="SF_SplitPlotting__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac54da8871f54e7fcbe5d06ef0ef884a4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_SplitPlotting</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">split</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_SplitPlotting4wave8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>utility function for <code class="docutils literal notranslate"><span class="pre">SF_FormulaPlotter</span></code> </p>
+<p>split dimension <code class="docutils literal notranslate"><span class="pre">dim</span></code> of wave <code class="docutils literal notranslate"><span class="pre">wv</span></code> into slices of size <code class="docutils literal notranslate"><span class="pre">split</span></code> and get the starting index <code class="docutils literal notranslate"><span class="pre">i</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SF_GetRangeFromEpoch6string6string8variable8variable">
+<span id="_CPPv320SF_GetRangeFromEpoch6string6string8variable8variable"></span><span id="_CPPv220SF_GetRangeFromEpoch6string6string8variable8variable"></span><span id="SF_GetRangeFromEpoch__string.string.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ae292b136a946c4a7a4a25a1330c8cf95"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetRangeFromEpoch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SF_GetRangeFromEpoch6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a range from a epochName. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – name of databrowser graph </p></li>
+<li><p><strong>epochName</strong> – name epoch </p></li>
+<li><p><strong>sweep</strong> – number of sweep </p></li>
+<li><p><strong>channel</strong> – number of DA channel </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_GetDAChannel6string8variable8variable8variable">
+<span id="_CPPv315SF_GetDAChannel6string8variable8variable8variable"></span><span id="_CPPv215SF_GetDAChannel6string8variable8variable8variable"></span><span id="SF_GetDAChannel__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6b4bedbf12c296ba11f1b4461bfaad4b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetDAChannel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_GetDAChannel6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_GetSweepForFormula6string4wave4wave4wave">
+<span id="_CPPv321SF_GetSweepForFormula6string4wave4wave4wave"></span><span id="_CPPv221SF_GetSweepForFormula6string4wave4wave4wave"></span><span id="SF_GetSweepForFormula__string.wave.wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a0a4fe660fdefd52f82c298a7f965f3d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetSweepForFormula</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">range</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channels</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweeps</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_GetSweepForFormula6string4wave4wave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SF_FormulaWaveScaleTransfer4wave4wave8variable8variable">
+<span id="_CPPv327SF_FormulaWaveScaleTransfer4wave4wave8variable8variable"></span><span id="_CPPv227SF_FormulaWaveScaleTransfer4wave4wave8variable8variable"></span><span id="SF_FormulaWaveScaleTransfer__wave.wave.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af532d409dbdc4e5fbd1538e933e87bf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FormulaWaveScaleTransfer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dest</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimSource</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimDest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SF_FormulaWaveScaleTransfer4wave4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>transfer the wave scaling from one wave to another </p>
+<p>Note: wave scale transfer requires wave units for the first wave in the array that</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – Wave whos scaling should get transferred </p></li>
+<li><p><strong>dest</strong> – Wave that accepts the new scaling </p></li>
+<li><p><strong>dimSource</strong> – dimension of the source wave </p></li>
+<li><p><strong>dimDest</strong> – dimension of the destination wave</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>0 if wave scaling was transferred, 1 if not </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426SF_GetActiveChannelNumbers6string4wave4wave8variable">
+<span id="_CPPv326SF_GetActiveChannelNumbers6string4wave4wave8variable"></span><span id="_CPPv226SF_GetActiveChannelNumbers6string4wave4wave8variable"></span><span id="SF_GetActiveChannelNumbers__string.wave.wave.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af6b47dc19f6bbd0536a30e7f2e9487d0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetActiveChannelNumbers</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channels</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweeps</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entrySourceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SF_GetActiveChannelNumbers6string4wave4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use the labnotebook information to return the active channel numbers for a given set of sweeps. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – DataBrowser or SweepBrowser reference graph </p></li>
+<li><p><strong>channels</strong> – <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">channels()</span></code> wave </p></li>
+<li><p><strong>sweeps</strong> – <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">sweeps()</span></code> wave </p></li>
+<li><p><strong>entrySourceType</strong> – type of the labnotebook entry, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>. If you don’t care about the entry source type pass <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6"><span class="std std-ref">UNKNOWN_MODE</span></a>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">channels()</span></code> wave with two columns containing channelType and channelNumber </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_PreprocessInput6string">
+<span id="_CPPv318SF_PreprocessInput6string"></span><span id="_CPPv218SF_PreprocessInput6string"></span><span id="SF_PreprocessInput__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abaa5c489c64a5cb9bb707702991876e9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PreprocessInput</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formula</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_PreprocessInput6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pre process code entered into the notebook. </p>
+<p><ul class="simple">
+<li><p>unify line endings to CR</p></li>
+<li><p>remove comments at line ending</p></li>
+<li><p>cut off last CR from back conversion with TextWaveToList </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SF_button_sweepFormula_checkP14WMButtonAction">
+<span id="_CPPv328SF_button_sweepFormula_checkP14WMButtonAction"></span><span id="_CPPv228SF_button_sweepFormula_checkP14WMButtonAction"></span><span id="SF_button_sweepFormula_check__WMButtonActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af1cb65280b52aa8f3633e309c4f0c941"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_button_sweepFormula_check</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SF_button_sweepFormula_checkP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_CheckInputCode6string5dfref">
+<span id="_CPPv317SF_CheckInputCode6string5dfref"></span><span id="_CPPv217SF_CheckInputCode6string5dfref"></span><span id="SF_CheckInputCode__string.dfref"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8cd62e2de7ac4e46a469b33aa0e1f9be"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_CheckInputCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_CheckInputCode6string5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks input code, sets globals for jsonId and error string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49SF_Update6string">
+<span id="_CPPv39SF_Update6string"></span><span id="_CPPv29SF_Update6string"></span><span id="SF_Update__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a9a4c9a7ea5169136d7250f20f1cb7e3a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_Update</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49SF_Update6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411SF_IsActive6string">
+<span id="_CPPv311SF_IsActive6string"></span><span id="_CPPv211SF_IsActive6string"></span><span id="SF_IsActive__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a99eff8c9ec531a21be1bfbb714418dfe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_IsActive</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411SF_IsActive6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>checks if SweepFormula (SF) is active. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410SF_GetCode6string">
+<span id="_CPPv310SF_GetCode6string"></span><span id="_CPPv210SF_GetCode6string"></span><span id="SF_GetCode__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1133808bd74875e4e1708f3024656637"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410SF_GetCode6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sweep formula code in raw and with all necessary preprocesssing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SF_button_sweepFormula_displayP14WMButtonAction">
+<span id="_CPPv330SF_button_sweepFormula_displayP14WMButtonAction"></span><span id="_CPPv230SF_button_sweepFormula_displayP14WMButtonAction"></span><span id="SF_button_sweepFormula_display__WMButtonActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a65f3f85f963522f7e9e2be5fb0611c81"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_button_sweepFormula_display</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SF_button_sweepFormula_displayP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SF_PrepareDataForResultsWave4wave">
+<span id="_CPPv328SF_PrepareDataForResultsWave4wave"></span><span id="_CPPv228SF_PrepareDataForResultsWave4wave"></span><span id="SF_PrepareDataForResultsWave__wave"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3bde9d7ee1259389b95ae12ca6a43c2e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PrepareDataForResultsWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SF_PrepareDataForResultsWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SF_CreateResultsWaveWithCode6string6string4wave6string">
+<span id="_CPPv328SF_CreateResultsWaveWithCode6string6string4wave6string"></span><span id="_CPPv228SF_CreateResultsWaveWithCode6string6string4wave6string"></span><span id="SF_CreateResultsWaveWithCode__string.string.wave.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1acb4435255505fe390f526380f8eb31b4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">WaveText</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">WaveText</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_CreateResultsWaveWithCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SF_CreateResultsWaveWithCode6string6string4wave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_TabProc_FormulaP18WMTabControlAction">
+<span id="_CPPv318SF_TabProc_FormulaP18WMTabControlAction"></span><span id="_CPPv218SF_TabProc_FormulaP18WMTabControlAction"></span><span id="SF_TabProc_Formula__WMTabControlActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab3325942396d30f70f56c8e791e444ad"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_TabProc_Formula</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMTabControlAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_TabProc_FormulaP18WMTabControlAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_FilterEpochs10WaveOrNull10WaveOrNull">
+<span id="_CPPv315SF_FilterEpochs10WaveOrNull10WaveOrNull"></span><span id="_CPPv215SF_FilterEpochs10WaveOrNull10WaveOrNull"></span><span id="SF_FilterEpochs__WaveOrNull.WaveOrNull"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1118477013e60f3c43875c0906424a5a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_FilterEpochs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochs</span></span>, <span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreTPs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_FilterEpochs10WaveOrNull10WaveOrNull" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SF_OperationTP8variable6string6string">
+<span id="_CPPv314SF_OperationTP8variable6string6string"></span><span id="_CPPv214SF_OperationTP8variable6string6string"></span><span id="SF_OperationTP__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abd6e151246199b9e1396d83ce02d603b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationTP</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SF_OperationTP8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_OperationEpochs8variable6string6string">
+<span id="_CPPv318SF_OperationEpochs8variable6string6string"></span><span id="_CPPv218SF_OperationEpochs8variable6string6string"></span><span id="SF_OperationEpochs__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a543c1d6d7624bc82c860577312a3681c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationEpochs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_OperationEpochs8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_EpochsSetOutValues8variable4wave8variable6string6string6string6string">
+<span id="_CPPv321SF_EpochsSetOutValues8variable4wave8variable6string6string6string6string"></span><span id="_CPPv221SF_EpochsSetOutValues8variable4wave8variable6string6string6string6string"></span><span id="SF_EpochsSetOutValues__variable.wave.variable.string.string.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad5931918dfaa976a64592fab01563016"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_EpochsSetOutValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outCnt</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">treeLevel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startTime</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">endtime</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_EpochsSetOutValues8variable4wave8variable6string6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationMinus8variable6string6string">
+<span id="_CPPv317SF_OperationMinus8variable6string6string"></span><span id="_CPPv217SF_OperationMinus8variable6string6string"></span><span id="SF_OperationMinus__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2fd0cd4a768b6aec6621ad59ee973718"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationMinus</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationMinus8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationPlus8variable6string6string">
+<span id="_CPPv316SF_OperationPlus8variable6string6string"></span><span id="_CPPv216SF_OperationPlus8variable6string6string"></span><span id="SF_OperationPlus__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6c4fb3a749721f4308bdf88caa5c7704"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationPlus</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationPlus8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationDiv8variable6string6string">
+<span id="_CPPv315SF_OperationDiv8variable6string6string"></span><span id="_CPPv215SF_OperationDiv8variable6string6string"></span><span id="SF_OperationDiv__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a60cae6814b269abc72a746e3ce8d87fe"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationDiv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationDiv8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationMult8variable6string6string">
+<span id="_CPPv316SF_OperationMult8variable6string6string"></span><span id="_CPPv216SF_OperationMult8variable6string6string"></span><span id="SF_OperationMult__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a4a6ca39b2551ad5fb4fc9270479b3102"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationMult</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationMult8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationRange8variable6string6string">
+<span id="_CPPv317SF_OperationRange8variable6string6string"></span><span id="_CPPv217SF_OperationRange8variable6string6string"></span><span id="SF_OperationRange__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a54d6c226ac8056585040ecfd11c20ca0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationRange8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>range (start[, stop[, step]]) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationMin8variable6string6string">
+<span id="_CPPv315SF_OperationMin8variable6string6string"></span><span id="_CPPv215SF_OperationMin8variable6string6string"></span><span id="SF_OperationMin__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aac648c390c12cf08d46ec502cbb7fe49"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationMin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationMin8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationMax8variable6string6string">
+<span id="_CPPv315SF_OperationMax8variable6string6string"></span><span id="_CPPv215SF_OperationMax8variable6string6string"></span><span id="SF_OperationMax__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a0e87ab404af065e47718c5903de00392"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationMax</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationMax8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationAvg8variable6string6string">
+<span id="_CPPv315SF_OperationAvg8variable6string6string"></span><span id="_CPPv215SF_OperationAvg8variable6string6string"></span><span id="SF_OperationAvg__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a0bb3ca640557a3e7d8c0b347751ed327"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationAvg</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationAvg8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationRMS8variable6string6string">
+<span id="_CPPv315SF_OperationRMS8variable6string6string"></span><span id="_CPPv215SF_OperationRMS8variable6string6string"></span><span id="SF_OperationRMS__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac1dcbfd998112cc8a847e67f92c23a9d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationRMS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationRMS8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SF_OperationVariance8variable6string6string">
+<span id="_CPPv320SF_OperationVariance8variable6string6string"></span><span id="_CPPv220SF_OperationVariance8variable6string6string"></span><span id="SF_OperationVariance__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ae17cf4f1ce07b8e9fcef5c703335502d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationVariance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SF_OperationVariance8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationStdev8variable6string6string">
+<span id="_CPPv317SF_OperationStdev8variable6string6string"></span><span id="_CPPv217SF_OperationStdev8variable6string6string"></span><span id="SF_OperationStdev__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a4d82538ce0e479325b107aa2edea2907"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationStdev</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationStdev8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SF_OperationDerivative8variable6string6string">
+<span id="_CPPv322SF_OperationDerivative8variable6string6string"></span><span id="_CPPv222SF_OperationDerivative8variable6string6string"></span><span id="SF_OperationDerivative__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a111ace3eabb55ac01de06ab06a4d275d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationDerivative</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SF_OperationDerivative8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_OperationIntegrate8variable6string6string">
+<span id="_CPPv321SF_OperationIntegrate8variable6string6string"></span><span id="_CPPv221SF_OperationIntegrate8variable6string6string"></span><span id="SF_OperationIntegrate__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad204937ec0ac978071ccbf92a797cc4b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationIntegrate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_OperationIntegrate8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationArea8variable6string6string">
+<span id="_CPPv316SF_OperationArea8variable6string6string"></span><span id="_CPPv216SF_OperationArea8variable6string6string"></span><span id="SF_OperationArea__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a26bdce7db999c5c0f3443e7ddba2fd10"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationArea</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationArea8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SF_OperationButterworth8variable6string6string">
+<span id="_CPPv323SF_OperationButterworth8variable6string6string"></span><span id="_CPPv223SF_OperationButterworth8variable6string6string"></span><span id="SF_OperationButterworth__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a110d1d96ef3198001474d6847d22832a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationButterworth</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SF_OperationButterworth8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SF_OperationXValues8variable6string6string">
+<span id="_CPPv319SF_OperationXValues8variable6string6string"></span><span id="_CPPv219SF_OperationXValues8variable6string6string"></span><span id="SF_OperationXValues__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a68251c968b924959905f91986e423706"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationXValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SF_OperationXValues8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationText8variable6string6string">
+<span id="_CPPv316SF_OperationText8variable6string6string"></span><span id="_CPPv216SF_OperationText8variable6string6string"></span><span id="SF_OperationText__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a5e31c86640b7b2f294432d21c3affcec"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationText</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationText8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SF_OperationSetScale8variable6string6string">
+<span id="_CPPv320SF_OperationSetScale8variable6string6string"></span><span id="_CPPv220SF_OperationSetScale8variable6string6string"></span><span id="SF_OperationSetScale__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8d3b7e1e4545fe778adaa5f80db91e32"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationSetScale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SF_OperationSetScale8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationWave8variable6string6string">
+<span id="_CPPv316SF_OperationWave8variable6string6string"></span><span id="_CPPv216SF_OperationWave8variable6string6string"></span><span id="SF_OperationWave__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa390041fe955cb224534d55732400177"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationWave8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationMerge8variable6string6string">
+<span id="_CPPv317SF_OperationMerge8variable6string6string"></span><span id="_CPPv217SF_OperationMerge8variable6string6string"></span><span id="SF_OperationMerge__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a5684ab4a4a178c50869515c6f77292d7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationMerge</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationMerge8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SF_OperationChannels8variable6string6string">
+<span id="_CPPv320SF_OperationChannels8variable6string6string"></span><span id="_CPPv220SF_OperationChannels8variable6string6string"></span><span id="SF_OperationChannels__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7f0cf6d69f6f33f648b04a1f41deba31"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationChannels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SF_OperationChannels8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">channels([str</span> <span class="pre">name]+)</span></code> converts a named channel from string to numbers.</p>
+<p>returns [[channelName, channelNumber]+] </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_OperationSweeps8variable6string6string">
+<span id="_CPPv318SF_OperationSweeps8variable6string6string"></span><span id="_CPPv218SF_OperationSweeps8variable6string6string"></span><span id="SF_OperationSweeps__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a916e4b1593d85aee29056fbbc4e1af0c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationSweeps</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_OperationSweeps8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">sweeps([str</span> <span class="pre">type])</span></code> <code class="docutils literal notranslate"><span class="pre">type:</span></code> <code class="docutils literal notranslate"><span class="pre">|displayed|all</span></code> displayed (default): get (selected) sweeps all: get all possible sweeps </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OperationData8variable6string6string">
+<span id="_CPPv316SF_OperationData8variable6string6string"></span><span id="_CPPv216SF_OperationData8variable6string6string"></span><span id="SF_OperationData__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad5d51cc9ac55182f378909d2fbc1f492"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_OperationData8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">data(array</span> <span class="pre">range,array</span> <span class="pre">channels,array</span> <span class="pre">sweeps)</span></code></p>
+<p>returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SF_OperationLabnotebook8variable6string6string">
+<span id="_CPPv323SF_OperationLabnotebook8variable6string6string"></span><span id="_CPPv223SF_OperationLabnotebook8variable6string6string"></span><span id="SF_OperationLabnotebook__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7f4689cc017147889de42f6500eabee9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationLabnotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SF_OperationLabnotebook8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">labnotebook(string</span> <span class="pre">key,</span> <span class="pre">array</span> <span class="pre">channels,</span> <span class="pre">array</span> <span class="pre">sweeps</span> <span class="pre">[,</span> <span class="pre">string</span> <span class="pre">entrySourceType])</span></code></p>
+<p>return lab notebook <code class="docutils literal notranslate"><span class="pre">key</span></code> for all <code class="docutils literal notranslate"><span class="pre">sweeps</span></code> that belong to the channels <code class="docutils literal notranslate"><span class="pre">channels</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OperationLog8variable6string6string">
+<span id="_CPPv315SF_OperationLog8variable6string6string"></span><span id="_CPPv215SF_OperationLog8variable6string6string"></span><span id="SF_OperationLog__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a903b8adbaf22b2dc0fbb349fa2d5e18c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationLog</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SF_OperationLog8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationLog108variable6string6string">
+<span id="_CPPv317SF_OperationLog108variable6string6string"></span><span id="_CPPv217SF_OperationLog108variable6string6string"></span><span id="SF_OperationLog10__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a11f3e3afafb9db703add481895c6394a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationLog10</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationLog108variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SF_OperationCursors8variable6string6string">
+<span id="_CPPv319SF_OperationCursors8variable6string6string"></span><span id="_CPPv219SF_OperationCursors8variable6string6string"></span><span id="SF_OperationCursors__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1afb2054aef8af4bfb6cfc68b60091d632"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationCursors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SF_OperationCursors8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_OperationFindLevel8variable6string6string">
+<span id="_CPPv321SF_OperationFindLevel8variable6string6string"></span><span id="_CPPv221SF_OperationFindLevel8variable6string6string"></span><span id="SF_OperationFindLevel__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa1f327ddaac3b1861e3c4c96603a3a5e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationFindLevel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_OperationFindLevel8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423SF_OperationApFrequency8variable6string6string">
+<span id="_CPPv323SF_OperationApFrequency8variable6string6string"></span><span id="_CPPv223SF_OperationApFrequency8variable6string6string"></span><span id="SF_OperationApFrequency__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa87237b20e0f02471cf88fad61a8f6b4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationApFrequency</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423SF_OperationApFrequency8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OperationStore8variable6string6string">
+<span id="_CPPv317SF_OperationStore8variable6string6string"></span><span id="_CPPv217SF_OperationStore8variable6string6string"></span><span id="SF_OperationStore__variable.string.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abd67a85819ca22423b66f53bcac7cc44"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OperationStore</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonId</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_OperationStore8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SF_SplitCodeToGraphs6string">
+<span id="_CPPv320SF_SplitCodeToGraphs6string"></span><span id="_CPPv220SF_SplitCodeToGraphs6string"></span><span id="SF_SplitCodeToGraphs__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a454954ebaa173e83bb2df1ccba184a90"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_SplitCodeToGraphs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SF_SplitCodeToGraphs6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SF_SplitGraphsToFormulas8WaveText">
+<span id="_CPPv324SF_SplitGraphsToFormulas8WaveText"></span><span id="_CPPv224SF_SplitGraphsToFormulas8WaveText"></span><span id="SF_SplitGraphsToFormulas__WaveText"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a741a100883226305d560206f0549e805"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_SplitGraphsToFormulas</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graphCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SF_SplitGraphsToFormulas8WaveText" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428SF_GetFormulaWinNameTemplate6string">
+<span id="_CPPv328SF_GetFormulaWinNameTemplate6string"></span><span id="_CPPv228SF_GetFormulaWinNameTemplate6string"></span><span id="SF_GetFormulaWinNameTemplate__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a60c678d079341a8efefee664d37eb27e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetFormulaWinNameTemplate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mainWindow</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SF_GetFormulaWinNameTemplate6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SF_button_sweepFormula_tofrontP14WMButtonAction">
+<span id="_CPPv330SF_button_sweepFormula_tofrontP14WMButtonAction"></span><span id="_CPPv230SF_button_sweepFormula_tofrontP14WMButtonAction"></span><span id="SF_button_sweepFormula_tofront__WMButtonActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a191318b14c02cd4601f1d56700f15d0c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_button_sweepFormula_tofront</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SF_button_sweepFormula_tofrontP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418SF_NewChannelsWave8variable">
+<span id="_CPPv318SF_NewChannelsWave8variable"></span><span id="_CPPv218SF_NewChannelsWave8variable"></span><span id="SF_NewChannelsWave__variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7e7ad34df8e43462a171948b76b00d94"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_NewChannelsWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_NewChannelsWave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SF_GetDefaultEmptyWavev">
+<span id="_CPPv322SF_GetDefaultEmptyWavev"></span><span id="_CPPv222SF_GetDefaultEmptyWavev"></span><span id="SF_GetDefaultEmptyWave"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a305d323a808361c0e57a217bd2232152"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetDefaultEmptyWave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SF_GetDefaultEmptyWavev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421SF_AverageTPFromSweep8WaveText4wave">
+<span id="_CPPv321SF_AverageTPFromSweep8WaveText4wave"></span><span id="_CPPv221SF_AverageTPFromSweep8WaveText4wave"></span><span id="SF_AverageTPFromSweep__WaveText.wave"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af58cb252bc0a9be397610de21f994366"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_AverageTPFromSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">epochMatches</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_AverageTPFromSweep8WaveText4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SF_AverageTPFromSweepImpl4wave4wave4wave8variable">
+<span id="_CPPv325SF_AverageTPFromSweepImpl4wave4wave4wave8variable"></span><span id="_CPPv225SF_AverageTPFromSweepImpl4wave4wave4wave8variable"></span><span id="SF_AverageTPFromSweepImpl__wave.wave.wave.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8309c1656d71b2d92139e0225973bfdb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_AverageTPFromSweepImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpData</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tpStart</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SF_AverageTPFromSweepImpl4wave4wave4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SF_GetAllOldCodeForGUI6string">
+<span id="_CPPv322SF_GetAllOldCodeForGUI6string"></span><span id="_CPPv222SF_GetAllOldCodeForGUI6string"></span><span id="SF_GetAllOldCodeForGUI__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6d0f9e8b0e136db40fb111bbafba243c"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetAllOldCodeForGUI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SF_GetAllOldCodeForGUI6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SF_GetAllOldCodev">
+<span id="_CPPv316SF_GetAllOldCodev"></span><span id="_CPPv216SF_GetAllOldCodev"></span><span id="SF_GetAllOldCode"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2a58d2f974f6ad8a2dc1482916468ffc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_GetAllOldCode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_GetAllOldCodev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422SF_PopMenuProc_OldCodeP13WMPopupAction">
+<span id="_CPPv322SF_PopMenuProc_OldCodeP13WMPopupAction"></span><span id="_CPPv222SF_PopMenuProc_OldCodeP13WMPopupAction"></span><span id="SF_PopMenuProc_OldCode__WMPopupActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a80d5d943f2759a79061e1f4cc8ae0324"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_PopMenuProc_OldCode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422SF_PopMenuProc_OldCodeP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_STATE_UNINITIALIZED">
+<span id="_CPPv322SF_STATE_UNINITIALIZED"></span><span id="_CPPv222SF_STATE_UNINITIALIZED"></span><span id="SF_STATE_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee34425a9ddc2654a52103839a6fc964"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_UNINITIALIZED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv422SF_STATE_UNINITIALIZED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_STATE_DEFAULT">
+<span id="_CPPv316SF_STATE_DEFAULT"></span><span id="_CPPv216SF_STATE_DEFAULT"></span><span id="SF_STATE_DEFAULT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a54de07d3361000508e51d1c10ac0d495"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_DEFAULT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv416SF_STATE_DEFAULT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_STATE_COLLECT">
+<span id="_CPPv316SF_STATE_COLLECT"></span><span id="_CPPv216SF_STATE_COLLECT"></span><span id="SF_STATE_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3974b3d01675964948d18f374f71ab65"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_COLLECT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv416SF_STATE_COLLECT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_ADDITION">
+<span id="_CPPv317SF_STATE_ADDITION"></span><span id="_CPPv217SF_STATE_ADDITION"></span><span id="SF_STATE_ADDITION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aca836bde9a6feafa4bec06707705cb80"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ADDITION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv417SF_STATE_ADDITION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_STATE_SUBTRACTION">
+<span id="_CPPv320SF_STATE_SUBTRACTION"></span><span id="_CPPv220SF_STATE_SUBTRACTION"></span><span id="SF_STATE_SUBTRACTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_SUBTRACTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv420SF_STATE_SUBTRACTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SF_STATE_MULTIPLICATION">
+<span id="_CPPv323SF_STATE_MULTIPLICATION"></span><span id="_CPPv223SF_STATE_MULTIPLICATION"></span><span id="SF_STATE_MULTIPLICATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_MULTIPLICATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv423SF_STATE_MULTIPLICATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_DIVISION">
+<span id="_CPPv317SF_STATE_DIVISION"></span><span id="_CPPv217SF_STATE_DIVISION"></span><span id="SF_STATE_DIVISION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_DIVISION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv417SF_STATE_DIVISION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_STATE_PARENTHESIS">
+<span id="_CPPv320SF_STATE_PARENTHESIS"></span><span id="_CPPv220SF_STATE_PARENTHESIS"></span><span id="SF_STATE_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6560bc7a41e15cb06b40852832fde08e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_PARENTHESIS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv420SF_STATE_PARENTHESIS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_STATE_FUNCTION">
+<span id="_CPPv317SF_STATE_FUNCTION"></span><span id="_CPPv217SF_STATE_FUNCTION"></span><span id="SF_STATE_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv417SF_STATE_FUNCTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_STATE_ARRAY">
+<span id="_CPPv314SF_STATE_ARRAY"></span><span id="_CPPv214SF_STATE_ARRAY"></span><span id="SF_STATE_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a77553b0b997dac77d79fd638e914e1de"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ARRAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv414SF_STATE_ARRAY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_STATE_ARRAYELEMENT">
+<span id="_CPPv321SF_STATE_ARRAYELEMENT"></span><span id="_CPPv221SF_STATE_ARRAYELEMENT"></span><span id="SF_STATE_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_ARRAYELEMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">9</span></span><a class="headerlink" href="#_CPPv421SF_STATE_ARRAYELEMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SF_STATE_WHITESPACE">
+<span id="_CPPv319SF_STATE_WHITESPACE"></span><span id="_CPPv219SF_STATE_WHITESPACE"></span><span id="SF_STATE_WHITESPACE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af8c671b59d1a17bf844868a4748e03d3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_WHITESPACE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10</span></span><a class="headerlink" href="#_CPPv419SF_STATE_WHITESPACE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_STATE_NEWLINE">
+<span id="_CPPv316SF_STATE_NEWLINE"></span><span id="_CPPv216SF_STATE_NEWLINE"></span><span id="SF_STATE_NEWLINE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_NEWLINE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">12</span></span><a class="headerlink" href="#_CPPv416SF_STATE_NEWLINE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418SF_STATE_OPERATION">
+<span id="_CPPv318SF_STATE_OPERATION"></span><span id="_CPPv218SF_STATE_OPERATION"></span><span id="SF_STATE_OPERATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6358c1bebaf96e8944c6637e1035f3b8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_OPERATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">13</span></span><a class="headerlink" href="#_CPPv418SF_STATE_OPERATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_STATE_STRING">
+<span id="_CPPv315SF_STATE_STRING"></span><span id="_CPPv215SF_STATE_STRING"></span><span id="SF_STATE_STRING__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_STRING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">14</span></span><a class="headerlink" href="#_CPPv415SF_STATE_STRING" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_STATE_STRINGTERMINATOR">
+<span id="_CPPv325SF_STATE_STRINGTERMINATOR"></span><span id="_CPPv225SF_STATE_STRINGTERMINATOR"></span><span id="SF_STATE_STRINGTERMINATOR__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abd7e066c51af3564fe2112b920610eb1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_STATE_STRINGTERMINATOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">15</span></span><a class="headerlink" href="#_CPPv425SF_STATE_STRINGTERMINATOR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SF_ACTION_UNINITIALIZED">
+<span id="_CPPv323SF_ACTION_UNINITIALIZED"></span><span id="_CPPv223SF_ACTION_UNINITIALIZED"></span><span id="SF_ACTION_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1afe2f21d8104ac6bfc8470c560322e75f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_UNINITIALIZED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv423SF_ACTION_UNINITIALIZED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_ACTION_SKIP">
+<span id="_CPPv314SF_ACTION_SKIP"></span><span id="_CPPv214SF_ACTION_SKIP"></span><span id="SF_ACTION_SKIP__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a31c825bc269fc6ef8b24f7efe997111a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_SKIP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv414SF_ACTION_SKIP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_ACTION_COLLECT">
+<span id="_CPPv317SF_ACTION_COLLECT"></span><span id="_CPPv217SF_ACTION_COLLECT"></span><span id="SF_ACTION_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1f378f9145947bd611817b682e712ec4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_COLLECT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv417SF_ACTION_COLLECT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ACTION_CALCULATION">
+<span id="_CPPv321SF_ACTION_CALCULATION"></span><span id="_CPPv221SF_ACTION_CALCULATION"></span><span id="SF_ACTION_CALCULATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abc699ce6dd13374a65d6ebbf5f7965dc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_CALCULATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv421SF_ACTION_CALCULATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_ACTION_SAMECALCULATION">
+<span id="_CPPv325SF_ACTION_SAMECALCULATION"></span><span id="_CPPv225SF_ACTION_SAMECALCULATION"></span><span id="SF_ACTION_SAMECALCULATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2bdae39b1e2688603f8891d62dfb6de5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_SAMECALCULATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv425SF_ACTION_SAMECALCULATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ACTION_HIGHERORDER">
+<span id="_CPPv321SF_ACTION_HIGHERORDER"></span><span id="_CPPv221SF_ACTION_HIGHERORDER"></span><span id="SF_ACTION_HIGHERORDER__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a50fc25a29d346da7edba3ed5e26b3349"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_HIGHERORDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv421SF_ACTION_HIGHERORDER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_ACTION_ARRAYELEMENT">
+<span id="_CPPv322SF_ACTION_ARRAYELEMENT"></span><span id="_CPPv222SF_ACTION_ARRAYELEMENT"></span><span id="SF_ACTION_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac11bd7180808edbe8807a5c678fced7a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_ARRAYELEMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv422SF_ACTION_ARRAYELEMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_ACTION_PARENTHESIS">
+<span id="_CPPv321SF_ACTION_PARENTHESIS"></span><span id="_CPPv221SF_ACTION_PARENTHESIS"></span><span id="SF_ACTION_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_PARENTHESIS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv421SF_ACTION_PARENTHESIS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418SF_ACTION_FUNCTION">
+<span id="_CPPv318SF_ACTION_FUNCTION"></span><span id="_CPPv218SF_ACTION_FUNCTION"></span><span id="SF_ACTION_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aadae63818c171849977a1d4ae0173bb8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_FUNCTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv418SF_ACTION_FUNCTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_ACTION_ARRAY">
+<span id="_CPPv315SF_ACTION_ARRAY"></span><span id="_CPPv215SF_ACTION_ARRAY"></span><span id="SF_ACTION_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad591b58999b6e5f532cabe9e2205c47d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_ACTION_ARRAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv415SF_ACTION_ARRAY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_SWEEPFORMULA_REGEXP">
+<span id="_CPPv322SF_SWEEPFORMULA_REGEXP"></span><span id="_CPPv222SF_SWEEPFORMULA_REGEXP"></span><span id="SF_SWEEPFORMULA_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a738a25392a9525a13ef3a588bd647411"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_SWEEPFORMULA_REGEXP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(.+?)(?:\\bvs\\b(.+))?$&quot;</span></span><a class="headerlink" href="#_CPPv422SF_SWEEPFORMULA_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Regular expression which extracts both formulas from <code class="docutils literal notranslate"><span class="pre">$a</span> <span class="pre">vs</span> <span class="pre">$b</span></code> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429SF_SWEEPFORMULA_GRAPHS_REGEXP">
+<span id="_CPPv329SF_SWEEPFORMULA_GRAPHS_REGEXP"></span><span id="_CPPv229SF_SWEEPFORMULA_GRAPHS_REGEXP"></span><span id="SF_SWEEPFORMULA_GRAPHS_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a58298a610f1ed310ececd7282600cea2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_SWEEPFORMULA_GRAPHS_REGEXP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;^(.+?)(?:\\r[</span> <span class="pre">\t]*and[</span> <span class="pre">\t]*\\r(.*))?$&quot;</span></span><a class="headerlink" href="#_CPPv429SF_SWEEPFORMULA_GRAPHS_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Regular expression which extracts formulas pairs from <code class="docutils literal notranslate"><span class="pre">$a</span> <span class="pre">vs</span> <span class="pre">$b\rand\r$c</span> <span class="pre">vs</span> <span class="pre">$d\rand\r...</span></code> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428SF_MAX_NUMPOINTS_FOR_MARKERS">
+<span id="_CPPv328SF_MAX_NUMPOINTS_FOR_MARKERS"></span><span id="_CPPv228SF_MAX_NUMPOINTS_FOR_MARKERS"></span><span id="SF_MAX_NUMPOINTS_FOR_MARKERS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a80a18ef49b411f0cbd0072d4539ee93b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_MAX_NUMPOINTS_FOR_MARKERS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1000</span></span><a class="headerlink" href="#_CPPv428SF_MAX_NUMPOINTS_FOR_MARKERS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419SF_APFREQUENCY_FULL">
+<span id="_CPPv319SF_APFREQUENCY_FULL"></span><span id="_CPPv219SF_APFREQUENCY_FULL"></span><span id="SF_APFREQUENCY_FULL__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a67976a1fdcf6aff9a1b35daa13ac26f6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_APFREQUENCY_FULL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x0</span></span><a class="headerlink" href="#_CPPv419SF_APFREQUENCY_FULL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428SF_APFREQUENCY_INSTANTANEOUS">
+<span id="_CPPv328SF_APFREQUENCY_INSTANTANEOUS"></span><span id="_CPPv228SF_APFREQUENCY_INSTANTANEOUS"></span><span id="SF_APFREQUENCY_INSTANTANEOUS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3a7f8d933707056b66e1779f2f2289db"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_APFREQUENCY_INSTANTANEOUS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv428SF_APFREQUENCY_INSTANTANEOUS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_APFREQUENCY_APCOUNT">
+<span id="_CPPv322SF_APFREQUENCY_APCOUNT"></span><span id="_CPPv222SF_APFREQUENCY_APCOUNT"></span><span id="SF_APFREQUENCY_APCOUNT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a23c1adbcde43aa5597298336396ca95a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_APFREQUENCY_APCOUNT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x2</span></span><a class="headerlink" href="#_CPPv422SF_APFREQUENCY_APCOUNT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_MINUS">
+<span id="_CPPv311SF_OP_MINUS"></span><span id="_CPPv211SF_OP_MINUS"></span><span id="SF_OP_MINUS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abcd3902d94593fd56f70bfbd2da2662a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MINUS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;-&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_MINUS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_PLUS">
+<span id="_CPPv310SF_OP_PLUS"></span><span id="_CPPv210SF_OP_PLUS"></span><span id="SF_OP_PLUS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad092fe5d3350bdc422d373483a22a21a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_PLUS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;+&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_PLUS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_MULT">
+<span id="_CPPv310SF_OP_MULT"></span><span id="_CPPv210SF_OP_MULT"></span><span id="SF_OP_MULT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af02a6363b0837f6b82537bfa69392bd3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MULT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;*&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_MULT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_DIV">
+<span id="_CPPv39SF_OP_DIV"></span><span id="_CPPv29SF_OP_DIV"></span><span id="SF_OP_DIV__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a444d5737b312712df1230f31ae6b2ec5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_DIV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;~1&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_DIV" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_RANGE">
+<span id="_CPPv311SF_OP_RANGE"></span><span id="_CPPv211SF_OP_RANGE"></span><span id="SF_OP_RANGE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a9291cf8fc1eafb80238e5060c3451a61"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_RANGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;range&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_RANGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OP_RANGESHORT">
+<span id="_CPPv316SF_OP_RANGESHORT"></span><span id="_CPPv216SF_OP_RANGESHORT"></span><span id="SF_OP_RANGESHORT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a77f9df4c77a0dcc3dc8cb39c2af05610"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_RANGESHORT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;…&quot;</span></span><a class="headerlink" href="#_CPPv416SF_OP_RANGESHORT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_MIN">
+<span id="_CPPv39SF_OP_MIN"></span><span id="_CPPv29SF_OP_MIN"></span><span id="SF_OP_MIN__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a486663a3051ae19a843cd07067afe146"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MIN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;min&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_MIN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_MAX">
+<span id="_CPPv39SF_OP_MAX"></span><span id="_CPPv29SF_OP_MAX"></span><span id="SF_OP_MAX__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab0c9865be00e935d601a4fda39989be2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MAX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;max&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_MAX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_AVG">
+<span id="_CPPv39SF_OP_AVG"></span><span id="_CPPv29SF_OP_AVG"></span><span id="SF_OP_AVG__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab5c556b333703f457e8fb004aa952bee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_AVG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;avg&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_AVG" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_MEAN">
+<span id="_CPPv310SF_OP_MEAN"></span><span id="_CPPv210SF_OP_MEAN"></span><span id="SF_OP_MEAN__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1accf48166eaa6dce1438f6c244a600dbf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MEAN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;mean&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_MEAN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_RMS">
+<span id="_CPPv39SF_OP_RMS"></span><span id="_CPPv29SF_OP_RMS"></span><span id="SF_OP_RMS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1adc46e07239a17471b3561d54be325b44"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_RMS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;rms&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_RMS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_OP_VARIANCE">
+<span id="_CPPv314SF_OP_VARIANCE"></span><span id="_CPPv214SF_OP_VARIANCE"></span><span id="SF_OP_VARIANCE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a5ac86c297286655ca602a85e578b3034"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_VARIANCE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;variance&quot;</span></span><a class="headerlink" href="#_CPPv414SF_OP_VARIANCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_STDEV">
+<span id="_CPPv311SF_OP_STDEV"></span><span id="_CPPv211SF_OP_STDEV"></span><span id="SF_OP_STDEV__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1acc986618da39f5351dd2b7d779e78a2b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_STDEV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;stdev&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_STDEV" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416SF_OP_DERIVATIVE">
+<span id="_CPPv316SF_OP_DERIVATIVE"></span><span id="_CPPv216SF_OP_DERIVATIVE"></span><span id="SF_OP_DERIVATIVE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a82a94104d30ed3411b81e2c4b8755615"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_DERIVATIVE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;derivative&quot;</span></span><a class="headerlink" href="#_CPPv416SF_OP_DERIVATIVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OP_INTEGRATE">
+<span id="_CPPv315SF_OP_INTEGRATE"></span><span id="_CPPv215SF_OP_INTEGRATE"></span><span id="SF_OP_INTEGRATE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a58bac79a10a464b928da6c553ede9514"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_INTEGRATE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;integrate&quot;</span></span><a class="headerlink" href="#_CPPv415SF_OP_INTEGRATE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_TIME">
+<span id="_CPPv310SF_OP_TIME"></span><span id="_CPPv210SF_OP_TIME"></span><span id="SF_OP_TIME__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a729b8c35395756f4ae155b36967ddd62"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TIME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;time&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_TIME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413SF_OP_XVALUES">
+<span id="_CPPv313SF_OP_XVALUES"></span><span id="_CPPv213SF_OP_XVALUES"></span><span id="SF_OP_XVALUES__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a4bde238aa4db80387f93aad93cb3a1bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_XVALUES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;xvalues&quot;</span></span><a class="headerlink" href="#_CPPv413SF_OP_XVALUES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_MERGE">
+<span id="_CPPv311SF_OP_MERGE"></span><span id="_CPPv211SF_OP_MERGE"></span><span id="SF_OP_MERGE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af12ec92359d4378f128b93ee110bd09f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_MERGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;merge&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_MERGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_TEXT">
+<span id="_CPPv310SF_OP_TEXT"></span><span id="_CPPv210SF_OP_TEXT"></span><span id="SF_OP_TEXT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a218251b2926afc755b31f3cf29b1ffa0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TEXT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;text&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_TEXT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49SF_OP_LOG">
+<span id="_CPPv39SF_OP_LOG"></span><span id="_CPPv29SF_OP_LOG"></span><span id="SF_OP_LOG__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af287f3eec09d492edff5160fb6605933"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_LOG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;log&quot;</span></span><a class="headerlink" href="#_CPPv49SF_OP_LOG" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_LOG10">
+<span id="_CPPv311SF_OP_LOG10"></span><span id="_CPPv211SF_OP_LOG10"></span><span id="SF_OP_LOG10__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a35cdfe1f10c09fbc5020b9cdc663ee73"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_LOG10</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;log10&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_LOG10" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OP_APFREQUENCY">
+<span id="_CPPv317SF_OP_APFREQUENCY"></span><span id="_CPPv217SF_OP_APFREQUENCY"></span><span id="SF_OP_APFREQUENCY__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1a8396f98610e6c6d137f4f0b2301e47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_APFREQUENCY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;apfrequency&quot;</span></span><a class="headerlink" href="#_CPPv417SF_OP_APFREQUENCY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413SF_OP_CURSORS">
+<span id="_CPPv313SF_OP_CURSORS"></span><span id="_CPPv213SF_OP_CURSORS"></span><span id="SF_OP_CURSORS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1afff4e9dbe5cee84a40a423d52a380b45"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_CURSORS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;cursors&quot;</span></span><a class="headerlink" href="#_CPPv413SF_OP_CURSORS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412SF_OP_SWEEPS">
+<span id="_CPPv312SF_OP_SWEEPS"></span><span id="_CPPv212SF_OP_SWEEPS"></span><span id="SF_OP_SWEEPS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8ff659b0a60a556dbae81ab0fdde9eb3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SWEEPS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;sweeps&quot;</span></span><a class="headerlink" href="#_CPPv412SF_OP_SWEEPS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_AREA">
+<span id="_CPPv310SF_OP_AREA"></span><span id="_CPPv210SF_OP_AREA"></span><span id="SF_OP_AREA__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2969b6816335d9b235d8284bd3cd84a3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_AREA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;area&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_AREA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_OP_SETSCALE">
+<span id="_CPPv314SF_OP_SETSCALE"></span><span id="_CPPv214SF_OP_SETSCALE"></span><span id="SF_OP_SETSCALE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a00e32bc4e647b306873ed661b68228ad"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_SETSCALE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;setscale&quot;</span></span><a class="headerlink" href="#_CPPv414SF_OP_SETSCALE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OP_BUTTERWORTH">
+<span id="_CPPv317SF_OP_BUTTERWORTH"></span><span id="_CPPv217SF_OP_BUTTERWORTH"></span><span id="SF_OP_BUTTERWORTH__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af1e0a82f7573d592ec027aa4af5088b9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_BUTTERWORTH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;butterworth&quot;</span></span><a class="headerlink" href="#_CPPv417SF_OP_BUTTERWORTH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414SF_OP_CHANNELS">
+<span id="_CPPv314SF_OP_CHANNELS"></span><span id="_CPPv214SF_OP_CHANNELS"></span><span id="SF_OP_CHANNELS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a227ace7609c0febb62d213f75b44debd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_CHANNELS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;channels&quot;</span></span><a class="headerlink" href="#_CPPv414SF_OP_CHANNELS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_DATA">
+<span id="_CPPv310SF_OP_DATA"></span><span id="_CPPv210SF_OP_DATA"></span><span id="SF_OP_DATA__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af91891611e94a3d0eb4f14f0fe1638b7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_DATA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;data&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_DATA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417SF_OP_LABNOTEBOOK">
+<span id="_CPPv317SF_OP_LABNOTEBOOK"></span><span id="_CPPv217SF_OP_LABNOTEBOOK"></span><span id="SF_OP_LABNOTEBOOK__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8dd2d23152164fc8dd19ed07aa345aa7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_LABNOTEBOOK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;labnotebook&quot;</span></span><a class="headerlink" href="#_CPPv417SF_OP_LABNOTEBOOK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_OP_WAVE">
+<span id="_CPPv310SF_OP_WAVE"></span><span id="_CPPv210SF_OP_WAVE"></span><span id="SF_OP_WAVE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a112ac43cc9da353fba5121aaba0bd09b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_WAVE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;wave&quot;</span></span><a class="headerlink" href="#_CPPv410SF_OP_WAVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_OP_FINDLEVEL">
+<span id="_CPPv315SF_OP_FINDLEVEL"></span><span id="_CPPv215SF_OP_FINDLEVEL"></span><span id="SF_OP_FINDLEVEL__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab494ed3bd394363d55b0e5fba891bd8c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_FINDLEVEL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;findlevel&quot;</span></span><a class="headerlink" href="#_CPPv415SF_OP_FINDLEVEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412SF_OP_EPOCHS">
+<span id="_CPPv312SF_OP_EPOCHS"></span><span id="_CPPv212SF_OP_EPOCHS"></span><span id="SF_OP_EPOCHS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7e4627b511ec3a663e642f17af0420dc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_EPOCHS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;epochs&quot;</span></span><a class="headerlink" href="#_CPPv412SF_OP_EPOCHS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48SF_OP_TP">
+<span id="_CPPv38SF_OP_TP"></span><span id="_CPPv28SF_OP_TP"></span><span id="SF_OP_TP__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab5cf7c788611efffdcc3b3d2bcdffb9c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;tp&quot;</span></span><a class="headerlink" href="#_CPPv48SF_OP_TP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411SF_OP_STORE">
+<span id="_CPPv311SF_OP_STORE"></span><span id="_CPPv211SF_OP_STORE"></span><span id="SF_OP_STORE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1acefd4b682d51319c761a59fd2e18f096"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_STORE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;store&quot;</span></span><a class="headerlink" href="#_CPPv411SF_OP_STORE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423SF_OP_EPOCHS_TYPE_RANGE">
+<span id="_CPPv323SF_OP_EPOCHS_TYPE_RANGE"></span><span id="_CPPv223SF_OP_EPOCHS_TYPE_RANGE"></span><span id="SF_OP_EPOCHS_TYPE_RANGE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a8d82c1dec11fa69fb5069f104dcf6a5e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_EPOCHS_TYPE_RANGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;range&quot;</span></span><a class="headerlink" href="#_CPPv423SF_OP_EPOCHS_TYPE_RANGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_OP_EPOCHS_TYPE_NAME">
+<span id="_CPPv322SF_OP_EPOCHS_TYPE_NAME"></span><span id="_CPPv222SF_OP_EPOCHS_TYPE_NAME"></span><span id="SF_OP_EPOCHS_TYPE_NAME__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad939f80b90debad6ece482948e73298f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_EPOCHS_TYPE_NAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;name&quot;</span></span><a class="headerlink" href="#_CPPv422SF_OP_EPOCHS_TYPE_NAME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427SF_OP_EPOCHS_TYPE_TREELEVEL">
+<span id="_CPPv327SF_OP_EPOCHS_TYPE_TREELEVEL"></span><span id="_CPPv227SF_OP_EPOCHS_TYPE_TREELEVEL"></span><span id="SF_OP_EPOCHS_TYPE_TREELEVEL__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a9a022881a72b276ef3ecf99e2ec0e4b2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_EPOCHS_TYPE_TREELEVEL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;treelevel&quot;</span></span><a class="headerlink" href="#_CPPv427SF_OP_EPOCHS_TYPE_TREELEVEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422SF_OP_TP_TYPE_BASELINE">
+<span id="_CPPv322SF_OP_TP_TYPE_BASELINE"></span><span id="_CPPv222SF_OP_TP_TYPE_BASELINE"></span><span id="SF_OP_TP_TYPE_BASELINE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1adc46029e91d10e9f73928b6e98ed9b81"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_BASELINE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;base&quot;</span></span><a class="headerlink" href="#_CPPv422SF_OP_TP_TYPE_BASELINE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421SF_OP_TP_TYPE_INSTANT">
+<span id="_CPPv321SF_OP_TP_TYPE_INSTANT"></span><span id="_CPPv221SF_OP_TP_TYPE_INSTANT"></span><span id="SF_OP_TP_TYPE_INSTANT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab9e1cf68ca972ae17c08d78def974308"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_INSTANT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;inst&quot;</span></span><a class="headerlink" href="#_CPPv421SF_OP_TP_TYPE_INSTANT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420SF_OP_TP_TYPE_STATIC">
+<span id="_CPPv320SF_OP_TP_TYPE_STATIC"></span><span id="_CPPv220SF_OP_TP_TYPE_STATIC"></span><span id="SF_OP_TP_TYPE_STATIC__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3af0f123e378397b6e8082da841283fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_STATIC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ss&quot;</span></span><a class="headerlink" href="#_CPPv420SF_OP_TP_TYPE_STATIC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426SF_OP_TP_TYPE_BASELINE_NUM">
+<span id="_CPPv326SF_OP_TP_TYPE_BASELINE_NUM"></span><span id="_CPPv226SF_OP_TP_TYPE_BASELINE_NUM"></span><span id="SF_OP_TP_TYPE_BASELINE_NUM__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a71c8be8ea46b6d4cfa091f166191bf3f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_BASELINE_NUM</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv426SF_OP_TP_TYPE_BASELINE_NUM" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425SF_OP_TP_TYPE_INSTANT_NUM">
+<span id="_CPPv325SF_OP_TP_TYPE_INSTANT_NUM"></span><span id="_CPPv225SF_OP_TP_TYPE_INSTANT_NUM"></span><span id="SF_OP_TP_TYPE_INSTANT_NUM__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ae20321f6293a87fff522140dd6aaf251"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_INSTANT_NUM</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv425SF_OP_TP_TYPE_INSTANT_NUM" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424SF_OP_TP_TYPE_STATIC_NUM">
+<span id="_CPPv324SF_OP_TP_TYPE_STATIC_NUM"></span><span id="_CPPv224SF_OP_TP_TYPE_STATIC_NUM"></span><span id="SF_OP_TP_TYPE_STATIC_NUM__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a25c1ca26e9cd6710c05f92ada0ae3f42"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_OP_TP_TYPE_STATIC_NUM</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv424SF_OP_TP_TYPE_STATIC_NUM" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419EPOCHS_TYPE_INVALID">
+<span id="_CPPv319EPOCHS_TYPE_INVALID"></span><span id="_CPPv219EPOCHS_TYPE_INVALID"></span><span id="EPOCHS_TYPE_INVALID__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abef847a9a2958e43e32720446dec1aef"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPOCHS_TYPE_INVALID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv419EPOCHS_TYPE_INVALID" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417EPOCHS_TYPE_RANGE">
+<span id="_CPPv317EPOCHS_TYPE_RANGE"></span><span id="_CPPv217EPOCHS_TYPE_RANGE"></span><span id="EPOCHS_TYPE_RANGE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa5a3e3249d25729261046e8243046010"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPOCHS_TYPE_RANGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv417EPOCHS_TYPE_RANGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416EPOCHS_TYPE_NAME">
+<span id="_CPPv316EPOCHS_TYPE_NAME"></span><span id="_CPPv216EPOCHS_TYPE_NAME"></span><span id="EPOCHS_TYPE_NAME__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6625ebc7b0f6ce8acc4fda0a7f14adb0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPOCHS_TYPE_NAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv416EPOCHS_TYPE_NAME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421EPOCHS_TYPE_TREELEVEL">
+<span id="_CPPv321EPOCHS_TYPE_TREELEVEL"></span><span id="_CPPv221EPOCHS_TYPE_TREELEVEL"></span><span id="EPOCHS_TYPE_TREELEVEL__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a660bf5301308feea7cbb12605ec7f250"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPOCHS_TYPE_TREELEVEL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv421EPOCHS_TYPE_TREELEVEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_CHAR_COMMENT">
+<span id="_CPPv315SF_CHAR_COMMENT"></span><span id="_CPPv215SF_CHAR_COMMENT"></span><span id="SF_CHAR_COMMENT__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab610749569b3373010b1343764fd5568"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_CHAR_COMMENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;#&quot;</span></span><a class="headerlink" href="#_CPPv415SF_CHAR_COMMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410SF_CHAR_CR">
+<span id="_CPPv310SF_CHAR_CR"></span><span id="_CPPv210SF_CHAR_CR"></span><span id="SF_CHAR_CR__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a5e2517fba3023b79cf8d5f8ff74e781d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_CHAR_CR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;\r&quot;</span></span><a class="headerlink" href="#_CPPv410SF_CHAR_CR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415SF_CHAR_NEWLINE">
+<span id="_CPPv315SF_CHAR_NEWLINE"></span><span id="_CPPv215SF_CHAR_NEWLINE"></span><span id="SF_CHAR_NEWLINE__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a27b71ff95dbab9df741bbe0aa029b09a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SF_CHAR_NEWLINE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;\n&quot;</span></span><a class="headerlink" href="#_CPPv415SF_CHAR_NEWLINE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411MIXED_UNITS">
+<span id="_CPPv311MIXED_UNITS"></span><span id="_CPPv211MIXED_UNITS"></span><span id="MIXED_UNITS__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7c387b816d580b060d3ca6ab5808b5ee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MIXED_UNITS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;**</span> <span class="pre">undefined</span> <span class="pre">**&quot;</span></span><a class="headerlink" href="#_CPPv411MIXED_UNITS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___structures_8ipf.html"
+                          title="previous chapter">File MIES_Structures.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___sweep_saving_8ipf.html"
+                          title="next chapter">File MIES_SweepSaving.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

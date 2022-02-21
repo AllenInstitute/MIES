@@ -1,0 +1,380 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_axon_telegraph___data_struct" kind="struct" language="C++" prot="public">
+    <compoundname>AxonTelegraph_DataStruct</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a2a5d59c1f0b906cc4d8ac48f15dfd822" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::Version</definition>
+        <argsstring></argsstring>
+        <name>Version</name>
+        <briefdescription>
+<para>Structure version. Value should always be 13. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="30" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a863287cc4cccb472f325d40c8965bddc" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::SerialNum</definition>
+        <argsstring></argsstring>
+        <name>SerialNum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="31" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a134500a62cc2d68a12cb73bf966ef521" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::ChannelID</definition>
+        <argsstring></argsstring>
+        <name>ChannelID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="32" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a3cc0a2ed353a2c17f3071c51d3ef705f" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::ComPortID</definition>
+        <argsstring></argsstring>
+        <name>ComPortID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="33" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1ab02009c76a49abb1c39fa911ed972fce" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::AxoBusID</definition>
+        <argsstring></argsstring>
+        <name>AxoBusID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="34" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a62c46b42d3e469507c02536ec0fd78eb" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::OperatingMode</definition>
+        <argsstring></argsstring>
+        <name>OperatingMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="35" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a0d8dfb20da50655a8af40fa424ca37f9" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::OperatingModeString</definition>
+        <argsstring></argsstring>
+        <name>OperatingModeString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="36" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a964d993ce7bacebe83e6e47f0cde2c3c" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::ScaledOutSignal</definition>
+        <argsstring></argsstring>
+        <name>ScaledOutSignal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="37" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a405171192191f6726d67b7c3d7cbfb90" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::ScaledOutSignalString</definition>
+        <argsstring></argsstring>
+        <name>ScaledOutSignalString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="38" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a92f7c0436320db4c53eb174faa19f07c" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::Alpha</definition>
+        <argsstring></argsstring>
+        <name>Alpha</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="39" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1aa6b664da6f5456395114bee273128139" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::ScaleFactor</definition>
+        <argsstring></argsstring>
+        <name>ScaleFactor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="40" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a6f40e265bb5b53c9c2377f33d52ec06e" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::ScaleFactorUnits</definition>
+        <argsstring></argsstring>
+        <name>ScaleFactorUnits</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="41" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1ab2d6025dbd0cba21dc97b59e288d2dc8" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::ScaleFactorUnitsString</definition>
+        <argsstring></argsstring>
+        <name>ScaleFactorUnitsString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="42" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a05661a1d69d16bb569e614579ab89f95" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::LPFCutoff</definition>
+        <argsstring></argsstring>
+        <name>LPFCutoff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="43" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1ad7653b7544bcdba1719afb000bc5aa89" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::MembraneCap</definition>
+        <argsstring></argsstring>
+        <name>MembraneCap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="44" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a7dd2caa048ee912f630a66d0200a8c2d" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::ExtCmdSens</definition>
+        <argsstring></argsstring>
+        <name>ExtCmdSens</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="45" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1ad31d8147275582065e7b11094911a64c" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::RawOutSignal</definition>
+        <argsstring></argsstring>
+        <name>RawOutSignal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="46" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1aa2465acb5a5a24cd6f31b0498dd0663f" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::RawOutSignalString</definition>
+        <argsstring></argsstring>
+        <name>RawOutSignalString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="47" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a8d973440c847251da0b5cf8b06db5bc4" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::RawScaleFactor</definition>
+        <argsstring></argsstring>
+        <name>RawScaleFactor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="48" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1ae1c2c5e962c3e1c396b26d28574b73cc" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::RawScaleFactorUnits</definition>
+        <argsstring></argsstring>
+        <name>RawScaleFactorUnits</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="49" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a59a21bc42f99f41254d13ffd79538d93" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::RawScaleFactorUnitsString</definition>
+        <argsstring></argsstring>
+        <name>RawScaleFactorUnitsString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="50" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a563f16bd44e3027894313f29fd2cbc4c" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 AxonTelegraph_DataStruct::HardwareType</definition>
+        <argsstring></argsstring>
+        <name>HardwareType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="51" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a1aac315e42fbb3e21dfd4b09b58d7648" prot="public" static="no" mutable="no">
+        <type>String</type>
+        <definition>String AxonTelegraph_DataStruct::HardwareTypeString</definition>
+        <argsstring></argsstring>
+        <name>HardwareTypeString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="52" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a8ebbb25515fb03ead4aecf6fefdbc2da" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::SecondaryAlpha</definition>
+        <argsstring></argsstring>
+        <name>SecondaryAlpha</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="53" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a8adb250a3582323498fa6eef1994c73f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::SecondaryLPFCutoff</definition>
+        <argsstring></argsstring>
+        <name>SecondaryLPFCutoff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="54" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_axon_telegraph___data_struct_1a3f2f24d137c707bdfde960c9d96a0e71" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double AxonTelegraph_DataStruct::SeriesResistance</definition>
+        <argsstring></argsstring>
+        <name>SeriesResistance</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="55" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="29" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="29" bodyend="56"/>
+    <listofallmembers>
+      <member refid="struct_axon_telegraph___data_struct_1a92f7c0436320db4c53eb174faa19f07c" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>Alpha</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1ab02009c76a49abb1c39fa911ed972fce" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>AxoBusID</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a134500a62cc2d68a12cb73bf966ef521" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ChannelID</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a3cc0a2ed353a2c17f3071c51d3ef705f" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ComPortID</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a7dd2caa048ee912f630a66d0200a8c2d" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ExtCmdSens</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a563f16bd44e3027894313f29fd2cbc4c" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>HardwareType</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a1aac315e42fbb3e21dfd4b09b58d7648" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>HardwareTypeString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a05661a1d69d16bb569e614579ab89f95" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>LPFCutoff</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1ad7653b7544bcdba1719afb000bc5aa89" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>MembraneCap</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a62c46b42d3e469507c02536ec0fd78eb" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>OperatingMode</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a0d8dfb20da50655a8af40fa424ca37f9" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>OperatingModeString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1ad31d8147275582065e7b11094911a64c" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>RawOutSignal</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1aa2465acb5a5a24cd6f31b0498dd0663f" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>RawOutSignalString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a8d973440c847251da0b5cf8b06db5bc4" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>RawScaleFactor</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1ae1c2c5e962c3e1c396b26d28574b73cc" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>RawScaleFactorUnits</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a59a21bc42f99f41254d13ffd79538d93" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>RawScaleFactorUnitsString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a964d993ce7bacebe83e6e47f0cde2c3c" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ScaledOutSignal</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a405171192191f6726d67b7c3d7cbfb90" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ScaledOutSignalString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1aa6b664da6f5456395114bee273128139" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ScaleFactor</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a6f40e265bb5b53c9c2377f33d52ec06e" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ScaleFactorUnits</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1ab2d6025dbd0cba21dc97b59e288d2dc8" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>ScaleFactorUnitsString</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a8ebbb25515fb03ead4aecf6fefdbc2da" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>SecondaryAlpha</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a8adb250a3582323498fa6eef1994c73f" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>SecondaryLPFCutoff</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a863287cc4cccb472f325d40c8965bddc" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>SerialNum</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a3f2f24d137c707bdfde960c9d96a0e71" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>SeriesResistance</name></member>
+      <member refid="struct_axon_telegraph___data_struct_1a2a5d59c1f0b906cc4d8ac48f15dfd822" prot="public" virt="non-virtual"><scope>AxonTelegraph_DataStruct</scope><name>Version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,460 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___sampling_interval_8ipf" kind="file" language="C++">
+    <compoundname>MIES_SamplingInterval.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___sampling_interval_8ipf_1ab24bcd5a617af012a88b835c06ddc7ba" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MIN_CONSECUTIVE_SAMPINT</definition>
+        <argsstring></argsstring>
+        <name>MIN_CONSECUTIVE_SAMPINT</name>
+        <initializer>= 6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The consecutive check in <ref refid="_m_i_e_s___sampling_interval_8ipf_1ae4204ccd2c8c7a910ad578be6680349e" kindref="member">SI_TestSampInt</ref> enforces not only one sucessfull sampling interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT Set to 0 to deactivate </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="20" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a6a445519d657c159b2988c0d7015f8da" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_FillITCConfig</definition>
+        <argsstring>(wave wv, wave results, variable idx, variable totalNumDA, variable totalNumAD, variable totalNumTTL)</argsstring>
+        <name>SI_FillITCConfig</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>results</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalNumDA</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalNumAD</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalNumTTL</declname>
+        </param>
+        <briefdescription>
+<para>Fill the passed wave to be used as DAQConfigWave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="23" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="23" bodyend="84"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4933ebaafde644c8cf8d1d2b30eab861" compoundref="_m_i_e_s___constants_8ipf" startline="90">XOP_CHANNEL_TYPE_TTL</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1acad3a5bf675cd9a0f52a357526064c22" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_FillITCConfigWithPerms</definition>
+        <argsstring>(wave wv, variable start, variable value, variable channelType)</argsstring>
+        <name>SI_FillITCConfigWithPerms</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>start</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Fill the passed wave to be used as DAQConfigWave for the exhaustive search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="87" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="87" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a3909150a27e49f9bc396306eb28ce0bd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_CompressWave</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>SI_CompressWave</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Removes invalid and duplicated entries from the generated table from <ref refid="_m_i_e_s___sampling_interval_8ipf_1ad07feadb6f27cbdca0d3474ef6ccbadb" kindref="member">SI_CreateLookupWave</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="113" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="113" bodyend="139"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a337e0af2ce2030a56cebe15264caba34" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5308" endline="5334">CreateBackupWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1a79e2d2b48409328779adfef4a2c83751" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="142" endline="164">SI_SortWave</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a79e2d2b48409328779adfef4a2c83751" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_SortWave</definition>
+        <argsstring>(wave wv)</argsstring>
+        <name>SI_SortWave</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <briefdescription>
+<para>Sort the lookup wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="142" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="142" bodyend="164"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a3909150a27e49f9bc396306eb28ce0bd" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="113" endline="139">SI_CompressWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_FindMatchingTableEntry</definition>
+        <argsstring>(wave wv, ActiveChannels *ac)</argsstring>
+        <name>SI_FindMatchingTableEntry</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_active_channels" kindref="compound">ActiveChannels</ref> *</type>
+          <declname>ac</declname>
+        </param>
+        <briefdescription>
+<para>Search the given active channel combination in the lookup wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="167" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="167" bodyend="202"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="struct_active_channels_1a7a6b6d8f42ca78304055a8dba7807359" compoundref="_m_i_e_s___structures_8ipf" startline="570">ActiveChannels::numADRack1</references>
+        <references refid="struct_active_channels_1afe711bddbcab83bbbe0de02cb9bf7170" compoundref="_m_i_e_s___structures_8ipf" startline="573">ActiveChannels::numADRack2</references>
+        <references refid="struct_active_channels_1ac494681c600fc06fe0d3c049f59501aa" compoundref="_m_i_e_s___structures_8ipf" startline="568">ActiveChannels::numDARack1</references>
+        <references refid="struct_active_channels_1a8afba645feeba9de90a211d8f3b30cbe" compoundref="_m_i_e_s___structures_8ipf" startline="572">ActiveChannels::numDARack2</references>
+        <references refid="struct_active_channels_1aee6d831c3d9f897b2c2b4356cc42b01e" compoundref="_m_i_e_s___structures_8ipf" startline="571">ActiveChannels::numTTLRack1</references>
+        <references refid="struct_active_channels_1a54ff98cfe49bdec1b42f9eb55f88cec1" compoundref="_m_i_e_s___structures_8ipf" startline="574">ActiveChannels::numTTLRack2</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a20ef166523c71405f3e253b29f087a62" compoundref="_m_i_e_s___constants_8ipf" startline="405">SAMPLING_INTERVAL_FALLBACK</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="543" endline="582">SI_ITC_CalculateMinSampInterval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a2fbe61947de02cee97d3714292a68148" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SI_LoadMinSampIntFromDisk</definition>
+        <argsstring>(string deviceType)</argsstring>
+        <name>SI_LoadMinSampIntFromDisk</name>
+        <param>
+          <type>string</type>
+          <declname>deviceType</declname>
+        </param>
+        <briefdescription>
+<para>Try to load the lookup wave for the minimum sampling interval from disk for the given deviceType. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>a lookup wave or an invalid wave ref if it could not be loaded from disk </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="209" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="209" bodyend="212"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1aadeabee7aef283599e141c8d2e9cb638" compoundref="_m_i_e_s___utilities_8ipf" startline="6107" endline="6125">LoadWaveFromDisk</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1ab6078e898b445d2087990c321bf505f4" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="588" endline="634">SI_GetMinSampIntWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a6ed8e8dba1034c546186ef07317cc3fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave SI_StoreMinSampIntOnDisk</definition>
+        <argsstring>(wave wv, string deviceType)</argsstring>
+        <name>SI_StoreMinSampIntOnDisk</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>deviceType</declname>
+        </param>
+        <briefdescription>
+<para>Store the lookup wave on disc. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="215" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="215" bodyend="224"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" compoundref="_i_p_n_w_b___utils_8ipf" startline="353" endline="361">GetFolder</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_FillActiveChannelsStruct</definition>
+        <argsstring>(string device, ActiveChannels *ac)</argsstring>
+        <name>SI_FillActiveChannelsStruct</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_active_channels" kindref="compound">ActiveChannels</ref> *</type>
+          <declname>ac</declname>
+        </param>
+        <briefdescription>
+<para>Query the DA_EPhys panel for the active channels and fill it in the passed structure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>number of active channels </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="230" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="230" bodyend="251"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae29f9fecbf8218b153c2ab8b97c01149" compoundref="_m_i_e_s___utilities_8ipf" startline="752" endline="755">IsEven</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aea93bf89e525dc49202692d5d48b3fc7" compoundref="_m_i_e_s___constants_8ipf" startline="19">NUM_AD_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="struct_active_channels_1a7a6b6d8f42ca78304055a8dba7807359" compoundref="_m_i_e_s___structures_8ipf" startline="570">ActiveChannels::numADRack1</references>
+        <references refid="struct_active_channels_1afe711bddbcab83bbbe0de02cb9bf7170" compoundref="_m_i_e_s___structures_8ipf" startline="573">ActiveChannels::numADRack2</references>
+        <references refid="struct_active_channels_1ac494681c600fc06fe0d3c049f59501aa" compoundref="_m_i_e_s___structures_8ipf" startline="568">ActiveChannels::numDARack1</references>
+        <references refid="struct_active_channels_1a8afba645feeba9de90a211d8f3b30cbe" compoundref="_m_i_e_s___structures_8ipf" startline="572">ActiveChannels::numDARack2</references>
+        <references refid="struct_active_channels_1aee6d831c3d9f897b2c2b4356cc42b01e" compoundref="_m_i_e_s___structures_8ipf" startline="571">ActiveChannels::numTTLRack1</references>
+        <references refid="struct_active_channels_1a54ff98cfe49bdec1b42f9eb55f88cec1" compoundref="_m_i_e_s___structures_8ipf" startline="574">ActiveChannels::numTTLRack2</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="543" endline="582">SI_ITC_CalculateMinSampInterval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1ad07feadb6f27cbdca0d3474ef6ccbadb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SI_CreateLookupWave</definition>
+        <argsstring>(string device, variable ignoreChannelOrder=defaultValue)</argsstring>
+        <name>SI_CreateLookupWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ignoreChannelOrder</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="487" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="487" bodyend="492"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1ae4204ccd2c8c7a910ad578be6680349e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_TestSampInt</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SI_TestSampInt</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="494" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="494" bodyend="498"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SI_CalculateMinSampInterval</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>SI_CalculateMinSampInterval</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the minimum sampling interval. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref>, ignores TTL channels for <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>sampling interval in microseconds (1e-6) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="508" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="508" bodyend="521"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="543" endline="582">SI_ITC_CalculateMinSampInterval</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1a9ee20480d92202d8b615b6f9a8e546e4" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="528" endline="533">SI_NI_CalculateMinSampInterval</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1a9ee20480d92202d8b615b6f9a8e546e4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_NI_CalculateMinSampInterval</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SI_NI_CalculateMinSampInterval</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the minimum sampling interval for NI hardware. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6" kindref="member">SI_CalculateMinSampInterval</ref></para>
+</simplesect>
+<simplesect kind="return"><para>sampling interval in microseconds (1e-6) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="528" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="528" bodyend="533"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7a3eee2627d0d5c9f9d23d4e7cdd1f0f" compoundref="_m_i_e_s___constants_8ipf" startline="698">HARDWARE_NI_DAC_MIN_SAMPINT</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="508" endline="521">SI_CalculateMinSampInterval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SI_ITC_CalculateMinSampInterval</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>SI_ITC_CalculateMinSampInterval</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref>, ignores TTL channels for <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6" kindref="member">SI_CalculateMinSampInterval</ref></para>
+</simplesect>
+<simplesect kind="return"><para>sampling interval in microseconds (1e-6) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="543" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="543" bodyend="582"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0ed14840ee822d95c9ecdfab34f9752d" compoundref="_m_i_e_s___constants_8ipf" startline="700">HARDWARE_ITC_MIN_SAMPINT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a20ef166523c71405f3e253b29f087a62" compoundref="_m_i_e_s___constants_8ipf" startline="405">SAMPLING_INTERVAL_FALLBACK</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1ab6078e898b445d2087990c321bf505f4" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="588" endline="634">SI_GetMinSampIntWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="508" endline="521">SI_CalculateMinSampInterval</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sampling_interval_8ipf_1ab6078e898b445d2087990c321bf505f4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SI_GetMinSampIntWave</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SI_GetMinSampIntWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave ref with the lookup wave for the sampling interval. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This functions tries to load the wave from disk on the first call so this function might take a while to execute. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" line="588" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf" bodystart="588" bodyend="634"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a726649401f0daede3baecef5aa6078fa" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5179" endline="5181">GetStaticDataFolder</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+        <references refid="_m_i_e_s___sampling_interval_8ipf_1a2fbe61947de02cee97d3714292a68148" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="209" endline="212">SI_LoadMinSampIntFromDisk</references>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="543" endline="582">SI_ITC_CalculateMinSampInterval</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SI</bold> Routines for calculating and handling the minimum sampling interval </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_SamplingInterval.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,693 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Developer &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bug reporting" href="reportingbugs.html" />
+    <link rel="prev" title="Installation instructions" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="developer">
+<h1>Developer<a class="headerlink" href="#developer" title="Permalink to this headline">¶</a></h1>
+<section id="getting-mies">
+<h2>Getting MIES<a class="headerlink" href="#getting-mies" title="Permalink to this headline">¶</a></h2>
+<section id="latest-development-version-from-main-branch">
+<h3>Latest development version from main branch<a class="headerlink" href="#latest-development-version-from-main-branch" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/AllenInstitute/MIES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./tools/initial-repo-config.sh</span></code> (Requires a Git Bash shell, named
+Git terminal in SourceTree)</p></li>
+</ul>
+</section>
+</section>
+<section id="arduino">
+<h2>Arduino<a class="headerlink" href="#arduino" title="Permalink to this headline">¶</a></h2>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>Advanced measurement modes like Yoking require an Arduino for triggering
+the DAC hardware. The following steps have to be performed in order to
+get a working setup:</p>
+<ul class="simple">
+<li><p>Get an <a class="reference external" href="https://www.arduino.cc/en/Main/ArduinoBoardUno">Arduino
+UNO</a>, for easier
+PIN access a <a class="reference external" href="http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html">screw
+shield</a>
+comes in handy too</p></li>
+<li><p>Connect the device to the PC via USB</p></li>
+<li><p>Install the Arduino studio from
+“Packages\Arduino\arduino-1.6.8-windows.exe”</p></li>
+<li><p>Extract “Packages\Arduino\Arduino-libraries-and-sequencer.zip” into
+“C:\Users\$username\Documents\Arduino”</p></li>
+<li><p>Start Arduino studio and try connecting to the device</p></li>
+<li><p>Load and compile the installed sequence “Igor_Sequencer3.ino”</p></li>
+<li><p>Connect Pin 12 and GND to the trigger input of the DAC hardware</p></li>
+</ul>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Connect Arduino</p></li>
+<li><p>Start Arduino studio and upload “Igor_Sequencer3.ino”</p></li>
+<li><p>Start Igor Pro</p></li>
+<li><p>Open the panel from the Arduino menu</p></li>
+<li><p>Connect</p></li>
+<li><p>Upload Sequence</p></li>
+<li><p>The start of DAQ is done by MIES itself</p></li>
+</ul>
+</section>
+<section id="building-the-documentation">
+<h3>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h3>
+<p>(Currently only tested on Linux.)</p>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://docker.io">Docker</a></p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools/docker/build-documentation.sh</span></code></p></li>
+</ul>
+</section>
+<section id="updating-documentation">
+<h3>Updating documentation<a class="headerlink" href="#updating-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Due to our excessive use of the breathe sphinx extension which feeds from
+doxygen, a full documentation build takes around 10 minutes. It is also not
+possible to use the sphinx autobuild feature, as it rebuilds all everything from
+scratch due to breathe.</p>
+<p>For fast read-write-view cycles while writing the user documentation do the following:</p>
+<ul class="simple">
+<li><p>Start with a clean <code class="docutils literal notranslate"><span class="pre">Packages/doc</span></code> folder</p></li>
+<li><p>Apply the <a class="reference download internal" download="" href="_downloads/8c6122504a04310fbb88df1eacbb7084/0001-WIP-fast-sphinx-rst-update-cyle.patch"><code class="xref download docutils literal notranslate"><span class="pre">patch</span></code></a>
+which temporarily removes breathe via <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">am</span> <span class="pre">...</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">autobuild</span></code> which opens a local webbrowser and rebuilds after
+every change. This time incremental updates work.</p></li>
+</ul>
+</section>
+</section>
+<section id="release-handling">
+<h2>Release Handling<a class="headerlink" href="#release-handling" title="Permalink to this headline">¶</a></h2>
+<p>If guidelines are not followed, the MIES version will be unknown, and
+data acquisition is blocked.</p>
+<section id="cutting-a-new-release">
+<h3>Cutting a new release<a class="headerlink" href="#cutting-a-new-release" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Checkout the main branch</p></li>
+<li><p>Paste the contents of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes_template.rst</span></code> to
+the top of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes.rst</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">tools\create-changelog.sh</span></code> which generate a raw changelog and
+fill <code class="docutils literal notranslate"><span class="pre">releasenotes.rst</span></code> with a cleaned up version of it.</p></li>
+<li><p>Tag the current state with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">Release_X.Y_*</span></code>, see <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span></code>
+for how the asterisk should look like</p></li>
+<li><p>Push the tag: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">$tag</span></code>. You can pass <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> for
+testing out what is getting pushed without pushing anything.</p></li>
+<li><p>Create the release branches:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/X.Y</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--no-verify</span> <span class="pre">-u</span> <span class="pre">origin</span> <span class="pre">release/X.Y</span></code></p></li>
+</ul>
+</li>
+<li><p>Change the bamboo plans using release branches to use the branch
+release/X.Y</p></li>
+<li><p>Create a new release on github and check that the bamboo job correctly
+uploads the artifacts</p></li>
+</ul>
+</section>
+<section id="creating-a-release-package-manually">
+<h3>Creating a release package manually<a class="headerlink" href="#creating-a-release-package-manually" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Open a git bash terminal by choosing Actions-&gt;”Open in terminal” in
+SourceTree</p></li>
+<li><p>Checkout the release branch <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>If none exists create one with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>Change to the <code class="docutils literal notranslate"><span class="pre">tools</span></code> directory in the worktree root folder</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">./create-release.sh</span></code></p></li>
+<li><p>The release package including the version information is then
+available as zip file</p></li>
+</ul>
+</section>
+</section>
+<section id="continuous-integration-server">
+<h2>Continuous integration server<a class="headerlink" href="#continuous-integration-server" title="Permalink to this headline">¶</a></h2>
+<p>Our <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES">CI server</a>,
+called bamboo, provides the following services for MIES:</p>
+<section id="automatic-release-package-building">
+<h3>Automatic release package building<a class="headerlink" href="#automatic-release-package-building" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The release branch, <code class="docutils literal notranslate"><span class="pre">release/$number</span></code> with the highest <code class="docutils literal notranslate"><span class="pre">$number</span></code>,
+is polled every 3 minutes for changes</p></li>
+<li><p>If changes are detected, a clone is fetched, and inside a checked out
+git working tree, the release script <code class="docutils literal notranslate"><span class="pre">tools/create-release.sh</span></code> is
+executed.</p></li>
+<li><p>The result of the release script, called an artifact in CI-speech, is
+then available as zip package from the <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful">Package
+section</a>.</p></li>
+<li><p>The release packaging job can be run on a windows box with git for windows installed.
+This is ensured by a platform requirement for the job.</p></li>
+</ul>
+</section>
+<section id="compilation-testing">
+<h3>Compilation testing<a class="headerlink" href="#compilation-testing" title="Permalink to this headline">¶</a></h3>
+<p>The full MIES installation and the partial installations are IGOR Pro
+compiled using a bamboo job. This allows to catch compile time errors
+early on. For testing compilation manually perform the following steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> and <code class="docutils literal notranslate"><span class="pre">Packages\unit-testing</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Close all Igor Pro instances</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools\unit-testing\check_mies_compilation.sh</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+</section>
+<section id="unit-testing">
+<h3>Unit testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h3>
+<p>One of the bamboo jobs is responsible for executing our unit tests. All
+tests must be written using the <a class="reference external" href="https://docs.byte-physics.de/igor-unit-testing-framework">Igor Unit Testing
+Framework</a> and
+referenced in the main test experiment located in
+<code class="docutils literal notranslate"><span class="pre">tools\unit-testing\RunAllTests.pxp</span></code> For executing the tests manually
+perform the followings steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code>, <code class="docutils literal notranslate"><span class="pre">Packages\unit-testing</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Packages\Testing-MIES</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Close all Igor Pro instances</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools\unit-testing\autorun-test.bat</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+</section>
+<section id="documentation-building">
+<h3>Documentation building<a class="headerlink" href="#documentation-building" title="Permalink to this headline">¶</a></h3>
+<p>The documentation for the main branch is automatically built and
+uploaded by <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES-CM">this</a> bamboo job.</p>
+</section>
+<section id="setting-up-a-continous-integration-server-linux">
+<h3>Setting up a continous integration server (Linux)<a class="headerlink" href="#setting-up-a-continous-integration-server-linux" title="Permalink to this headline">¶</a></h3>
+<section id="preliminaries">
+<h4>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Linux box with fixed IP</p></li>
+<li><p>Choose a user, here named <code class="docutils literal notranslate"><span class="pre">ci</span></code>, for running the tests.</p></li>
+<li><p>Make sure that the user is <strong>not</strong> a member of the <code class="docutils literal notranslate"><span class="pre">wheel</span></code> group so that
+it can not gain root access.</p></li>
+<li><p>Install the bare-minimum packages and use the latest debian stable</p></li>
+</ul>
+</section>
+<section id="enable-ssh-access">
+<h4>Enable SSH access<a class="headerlink" href="#enable-ssh-access" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Setup remote SSH access with public keys. On the client (your PC!)
+try logging into using SSH.</p></li>
+<li><p>Disable password authentication in <code class="docutils literal notranslate"><span class="pre">/etc/ssh/sshd_config</span></code></p></li>
+</ul>
+</section>
+<section id="install-required-software">
+<h4>Install required software<a class="headerlink" href="#install-required-software" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>Install <a class="reference external" href="https://docker.io">Docker</a></p></li>
+<li><p>Misc required software: <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">git</span> <span class="pre">cron-apt</span></code></p></li>
+<li><p>Enable automatic updates: <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">&quot;dist-upgrade</span> <span class="pre">-y</span> <span class="pre">-o</span> <span class="pre">APT::Get::Show-Upgraded=true&quot;</span> <span class="pre">&gt;</span> <span class="pre">/etc/cron-apt/action.d/4-upgrade</span></code></p></li>
+<li><p>Install OpenJDK 8 by adding a file with the following
+sources in <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list.d/</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">update</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">adoptopenjdk-8-hotspot-jre</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update-alternatives</span> <span class="pre">--config</span> <span class="pre">java</span></code> and select version 8</p></li>
+</ul>
+</section>
+<section id="setup-bamboo-agent">
+<h4>Setup bamboo agent<a class="headerlink" href="#setup-bamboo-agent" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>Install the bamboo agent according to the
+<a class="reference external" href="http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action">instructions</a>
+and run it once to create the <code class="docutils literal notranslate"><span class="pre">bamboo-agent-home</span></code> directory</p></li>
+<li><p>Create a file <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/bamboo.service</span></code> with the following contents</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[Unit]
+Description=Atlassian Bamboo
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=ci
+ExecStart=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh start
+ExecStop=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh stop
+SuccessExitStatus=143
+Environment=&quot;PATH=/home/ci/.local/bin:/usr/local/bin:/usr/bin:/bin&quot;
+
+[Install]
+WantedBy=multi-user.target
+</pre></div>
+</div>
+</li>
+<li><p>Enable it with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">bamboo.service</span></code></p></li>
+<li><p>Reboot the system and check that the agent runs</p></li>
+<li><p>Add a fitting <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Pro</span> <span class="pre">(new)</span></code> capability to the agent in bamboo.</p></li>
+<li><p>Make the agent dedicated to the <code class="docutils literal notranslate"><span class="pre">MIES-Igor</span></code> project.</p></li>
+<li><p>Be sure that the “git” capability and the “bash” executable capability are
+present as well</p></li>
+</ul>
+</section>
+</section>
+<section id="setting-up-a-continous-integration-server-windows">
+<h3>Setting up a continous integration server (Windows)<a class="headerlink" href="#setting-up-a-continous-integration-server-windows" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Windows 10 with “Remote Desktop” enabled user</p></li>
+<li><p>Install the folllowing programs:</p>
+<ul>
+<li><p>Java 8</p></li>
+<li><p>Git (choose the installer option which will make the Unix tools
+available in cmd as well)</p></li>
+<li><p>Multiclamp Commander</p></li>
+<li><p>NIDAQ-mx driver package 19.0 or later</p></li>
+<li><p>NIDAQ-mx XOP from WaveMetrics</p></li>
+<li><p>HEKA Harware Drivers 2014-03 Windows.zip</p></li>
+<li><p>Igor Pro 8 (and a possible nightly version on top of it)</p></li>
+<li><p>Install bamboo remote agent according to
+<a class="reference external" href="http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action">http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action</a>.</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro and open a DA_Ephys panel, lock the device. This will
+not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).</p></li>
+<li><p>Add a fitting <code class="docutils literal notranslate"><span class="pre">MIES_AgentType</span></code> capability to the agent in bamboo.</p></li>
+<li><p>Make the agent dedicated to the <code class="docutils literal notranslate"><span class="pre">MIES-Igor</span></code> project.</p></li>
+<li><p>Be sure that the “git” capability and the “bash” executable capability are
+present as well</p></li>
+<li><p>Create the folder <code class="docutils literal notranslate"><span class="pre">$HOME/.credentials</span></code> and place the file <code class="docutils literal notranslate"><span class="pre">github_api_token</span></code> from an existing CI machine there</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.bat</span></code> to <code class="docutils literal notranslate"><span class="pre">$HOME</span></code></p></li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.bat</span></code> so that it points to the existing Git location</p></li>
+<li><p>Add shortcuts to <code class="docutils literal notranslate"><span class="pre">$HOME/start-bamboo-agent-windows.bat</span></code> and <code class="docutils literal notranslate"><span class="pre">MC700B.exe</span></code> into <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Microsoft\Windows\Start</span> <span class="pre">Menu\Programs\StartUp</span></code></p></li>
+<li><p>(Only for Code signing machine): Also add a shortcut to <code class="docutils literal notranslate"><span class="pre">$HOME/start-bamboo-agent-windows.bat</span></code> in the <code class="docutils literal notranslate"><span class="pre">Startup</span></code> folder</p></li>
+</ul>
+</section>
+<section id="available-ci-servers">
+<h3>Available CI servers<a class="headerlink" href="#available-ci-servers" title="Permalink to this headline">¶</a></h3>
+<p>Distributing jobs to agents in bamboo is done via our <code class="docutils literal notranslate"><span class="pre">MIES_AgentType</span></code> capability.</p>
+<p>The following capabilities are in use:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code>: Two agents run on Linux with</p>
+<ul>
+<li><p>Debian 10 (buster)</p></li>
+<li><p>No Hardware</p></li>
+<li><p>No Igor Pro</p></li>
+<li><p>Docker</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CodeSigning</span></code>: Agent can sign installer packages</p>
+<ul>
+<li><p>Windows 10</p></li>
+<li><p>EV certificate on USB stick</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ITC</span></code>: Agent can execute hardware tests with ITC18USB hardware</p>
+<ul>
+<li><p>ITC18-USB hardware, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+<li><p>Igor Pro (latest required versions)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NI</span></code>: Agent can execute hardware tests with NI/ITC1600 hardware</p>
+<ul>
+<li><p>ITC-1600 hardware with one rack, 2 AD/DA channels are looped</p></li>
+<li><p>NI PCIe-6343, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+<li><p>Igor Pro (latest required versions)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="branch-naming-scheme">
+<h3>Branch naming scheme<a class="headerlink" href="#branch-naming-scheme" title="Permalink to this headline">¶</a></h3>
+<p>For making code review easier we try to follow a naming scheme for branches behind PRs.</p>
+<p>Scheme: <code class="docutils literal notranslate"><span class="pre">$prefix/$pr-$text(-backport)?</span></code></p>
+<p>Where <code class="docutils literal notranslate"><span class="pre">$prefix</span></code> is one of <code class="docutils literal notranslate"><span class="pre">feature</span></code>/<code class="docutils literal notranslate"><span class="pre">bugfix</span></code>, <code class="docutils literal notranslate"><span class="pre">$pr</span></code> is the number of the soon-to-be-created pull request and
+<code class="docutils literal notranslate"><span class="pre">$text</span></code> a user defined descriptive text. <code class="docutils literal notranslate"><span class="pre">-backport</span></code> must be present for PRs against release branches only.</p>
+<p>Contributers are encouraged to install the <code class="docutils literal notranslate"><span class="pre">pre-push</span></code> git hook from the tools directory. The script
+<code class="docutils literal notranslate"><span class="pre">tools/nextFreePRNumber.sh</span></code> can get the soon-to-be-created PR number on the commandline (requires curl and jq) as well.</p>
+</section>
+<section id="continuous-integration-hints">
+<h3>Continuous Integration Hints<a class="headerlink" href="#continuous-integration-hints" title="Permalink to this headline">¶</a></h3>
+<p>As part of the continuous integration pipeline tests are run. A full test run including the hardware tests
+tales several hours. Thus, if a lot of pull requests are updated pending test runs could queue up and
+it might take rather long until results are available.</p>
+<p>Thus, for changes where the commits are in a state where no full test run by the CI makes sense it is
+possible to inhibit the automatic tests. Typically this is the case if the developer commits changes
+in progress and pushes these for the purpose of a secondary backup or further commit organization.
+Inhibiting tests for these cases frees testing resources for other pull requests.</p>
+<p>To inhibit test runs the key <code class="docutils literal notranslate"><span class="pre">[SKIP</span> <span class="pre">CI]</span></code> has to be added to the commit message.</p>
+<p>The key can be removed later easily through a rebase with rewording the commit message.
+After pushing to the repository the CI queues the tests again for this pull request.</p>
+</section>
+<section id="debugging-threadsafe-functions">
+<h3>Debugging threadsafe functions<a class="headerlink" href="#debugging-threadsafe-functions" title="Permalink to this headline">¶</a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">DisableThreadsafeSupport()</span></code> allows to turn off threadsafe support globally. This allows to use the
+debugger in threadsafe functions. Every MIES features which does not complain via <code class="docutils literal notranslate"><span class="pre">ASSERT()</span></code> or <code class="docutils literal notranslate"><span class="pre">BUG()</span></code> is supposed
+to work without threadsafe support as well.</p>
+</section>
+<section id="preventing-debugger-popup">
+<h3>Preventing Debugger Popup<a class="headerlink" href="#preventing-debugger-popup" title="Permalink to this headline">¶</a></h3>
+<p>There exist critical function calls that raise a runtime error. In well-defined circumstances the error condition is evaluated properly afterwards.
+When debugger is enabled and options are set to “Debug On Error”, then the Debugger will popup on the line where such functions calls take place.
+This is inconvenient for debugging because the error is intended and properly handled. To prevent the debugger to open the coding convention is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>AssertOnAndClearRTError()
+CriticalFunction(); err = <span class="nf">getRTError</span>(1)
+</pre></div>
+</div>
+<p>Notable the second part that clears the RTE must be in the same line and can not be moved to an own function.
+This coding convention is only valid, if the critical function is expected to raise an runtime error.</p>
+</section>
+<section id="runtime-error-abort-handling-conventions">
+<h3>Runtime Error / Abort Handling Conventions<a class="headerlink" href="#runtime-error-abort-handling-conventions" title="Permalink to this headline">¶</a></h3>
+<p>Here a coding convention for try / catch / endtry constructs is introduced to
+prevent common issues like silently clearing unexpected runtime error conditions
+by using these.</p>
+<p>A try / catch / endtry construct catches by specification either</p>
+<ul class="simple">
+<li><p>Runtime errors when AbortOnRTE is encountered between try / catch</p></li>
+<li><p>Aborts when encountered between try / catch</p></li>
+</ul>
+<p>The code must take into account the possibility of runtime errors generated
+by bad code. These unexpected RTEs must not be silently cleared.</p>
+<p>For the case, where an RTE is expected from CriticalFunction, the common approach is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>AssertOnAndClearRTError()
+<span class="k">try</span>
+    CriticalFunction(); <span class="k">AbortOnRTE</span>
+<span class="k">catch</span>
+    err = ClearRTError()
+    ...
+<span class="k">endtry</span>
+</pre></div>
+</div>
+<p>Here pending RTEs are handled before the try. By convention the AbortOnRTE must be
+placed in the same function as the try / catch / endtry construct.
+The code between try / catch should only include critical function calls and be
+kept minimal. The expected RTE condition should be cleared directly after catch.</p>
+<p>For the case, where an Abort is expected from CriticalFunction, the common approach is:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="k">try</span>
+    CriticalFunction()
+<span class="k">catch</span>
+    ...
+<span class="k">endtry</span>
+</pre></div>
+</div>
+<p>As Abort does not generate an RTE condition the try / catch / endtry construct
+leaves any possible unexpected RTE condition pending and no RTE condition is cleared.
+The programmer might consider evaluating <code class="docutils literal notranslate"><span class="pre">V_AbortCode</span></code> after catch.</p>
+<p>It is recommended to comment in the code before the try what the construct is
+intended to handle (RTE, Abort or both).</p>
+</section>
+<section id="retrieving-headstage-channel-information-from-the-lbn">
+<h3>Retrieving Headstage / Channel Information from the LBN<a class="headerlink" href="#retrieving-headstage-channel-information-from-the-lbn" title="Permalink to this headline">¶</a></h3>
+<p>If you would like to retrieve the settings from the last acquisition then look up function like <code class="docutils literal notranslate"><span class="pre">AFH_GetHeadstageFromDAC</span></code>.
+It retrieves the correct information under the following conditions:</p>
+<ul class="simple">
+<li><p>Data Acquisition is ongoing or</p></li>
+<li><p>Data Acquisition has finished and DAEphys panel was not changed.</p></li>
+</ul>
+<p>This function returns NaN if the active DAC had no associated headstage.
+The same applies for <code class="docutils literal notranslate"><span class="pre">AFH_GetHeadstageFromADC</span></code>.</p>
+<p>In contrast the functions AFH_GetDACFromHeadstage and AFH_GetADCFromHeadstage return DAC/ADC numbers only for active headstages.</p>
+<p>One of the most used functions to retrieve specific information from the LBN is
+<code class="docutils literal notranslate"><span class="pre">GetLastSettingChannel</span></code>. The returned wave has NUM_HEADSTAGES + 1 entries.
+The first NUM_HEADSTAGES entries refer to the headstages whereas the last entry contains
+all headstage independent data.
+This is related to the general layout of the LBN, where the headstage is an index of the wave.
+In the numerical LBN (<code class="docutils literal notranslate"><span class="pre">GetLBNumericalValues</span></code>) there are columns with DAC/ADC channel information identified by their respective dimension label.
+For associated DAC &lt;-&gt; ADC channels the number of the DAC and ADC is present in the layers. The first NUM_HEADSTAGES layers refer to the headstages.</p>
+<p>Thus, if headstage 3 uses DAC channel 5 and ADC channel 1 for a sweep then in the LBN
+at index 3 in the DAC column a 3 is present and in the ADC column a 1.
+Details of the internal data format of the LBN are not required for correct retrieval
+of that information as MIES provides functions for that:</p>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span>/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+<span class="k">if</span>(!<span class="nf">WaveExists</span>(numericalValues))
+   <span class="c1">// fitting handling code</span>
+<span class="k">endif</span>
+<span class="kt">WAVE</span>/Z settings
+[settings, index] = GetLastSettingChannel(numericalValues, $<span class="s">&quot;&quot;</span>, sweep, <span class="s">&quot;Indexing&quot;</span>, channelNumber, channelType, entrySourceType)
+</pre></div>
+</div>
+<p>This call specifies a sweep number, a channel type and a channel number and asks for information from the “Indexing” field.
+It returns a 1D wave settings and an index, where settings[index] is a Boolean entry telling if indexing was off or on.
+The value index itself is the headstage number. The index value can also equal NUM_HEADSTAGES when it refers to a headstage independent value.</p>
+<p>To find the <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel from a <code class="docutils literal notranslate"><span class="pre">DAC</span></code> channel, the example above can also be setup with channelType = XOP_CHANNEL_TYPE_DAC and LBN entry name “ADC”.
+This works the same for finding the <code class="docutils literal notranslate"><span class="pre">DAC</span></code> channel from a <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel.</p>
+<p>If one just wants the headstage number there is an utility function <code class="docutils literal notranslate"><span class="pre">GetHeadstageForChannel</span></code> that returns the active headstage for a channel.</p>
+<p>The LBN entry <code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Active</span></code> is a Boolean entry and marks which headstage was active in a sweep.
+The <code class="docutils literal notranslate"><span class="pre">Headstage</span> <span class="pre">Active</span></code> can only be set (1) for a headstage that has an associated <code class="docutils literal notranslate"><span class="pre">DAC</span></code> and <code class="docutils literal notranslate"><span class="pre">ADC</span></code> channel.</p>
+</section>
+<section id="creating-lbn-entries-for-tests">
+<h3>Creating LBN entries for tests<a class="headerlink" href="#creating-lbn-entries-for-tests" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">Make</span>/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesHSA, valuesDAC, valuesADC
+<span class="nc">Make</span>/T/FREE/N=(1, 1, 1) keys
+
+sweepNo = 0
+
+<span class="c1">// HS 0: DAC 2 and ADC 6</span>
+<span class="c1">// HS 1: DAC 3 and ADC 7</span>
+<span class="c1">// HS 2+: No DAC/ADC set</span>
+valuesDAC[]  = <span class="nf">NaN</span>
+valuesDAC[0][0][0] = 2 <span class="c1">// The layer refers to the headstage number</span>
+valuesDAC[0][0][1] = 3
+keys[] = <span class="s">&quot;DAC&quot;</span>
+ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+valuesADC[]  = <span class="nf">NaN</span>
+valuesADC[0][0][0] = 6
+valuesADC[0][0][1] = 7
+keys[] = <span class="s">&quot;ADC&quot;</span>
+ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+valuesHSA[]  = 0
+valuesHSA[0][0][0] = 1 <span class="c1">// the only valid option here is to set HS 0 and 1 active</span>
+valuesHSA[0][0][1] = 1 <span class="c1">// because we did not set ADC/DAC channels for the other HS.</span>
+keys[] = <span class="s">&quot;Headstage Active&quot;</span>
+ED_AddEntriesToLabnotebook(valuesHSA, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+</pre></div>
+</div>
+<p>The key function here is <code class="docutils literal notranslate"><span class="pre">ED_AddEntriesToLabnotebook</span></code>. There are no checks applied for this
+way of creating LBN entries for tests that guarantee a consistent LBN. e.g. setting headstage 2 to active
+in the upper code would violate LBN format schema.
+Note that in contrast <code class="docutils literal notranslate"><span class="pre">ED_AddEntryToLabnotebook</span></code> is used to add specific user entries to the LBN
+and <strong>is not suited</strong> for setting up generic test LBN entries.
+More example code can be found in <code class="docutils literal notranslate"><span class="pre">PrepareLBN_IGNORE</span></code> in UTF_Labnotebook.ipf.</p>
+</section>
+<section id="original-developer-docu-on-sweepformula">
+<h3>Original Developer Docu on SweepFormula<a class="headerlink" href="#original-developer-docu-on-sweepformula" title="Permalink to this headline">¶</a></h3>
+<p>Notebook scans from Matthias (<a class="reference external" href="https://github.com/ukos-git">ukos-git</a>):</p>
+<figure class="align-center">
+<img alt="_images/SweepFormula_data_1.png" src="_images/SweepFormula_data_1.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormula_data_2.png" src="_images/SweepFormula_data_2.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormula_data_3.png" src="_images/SweepFormula_data_3.png" />
+</figure>
+<p>The following information is taken from annotated excerpts from the above:</p>
+<ul class="simple">
+<li><p>getter functions</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes1.png" src="_images/SweepFormulaDataModelNotes1.png" />
+</figure>
+<ul class="simple">
+<li><p>Return data array with sweep and channel information</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes2.png" src="_images/SweepFormulaDataModelNotes2.png" />
+</figure>
+<ul class="simple">
+<li><p>Data slicing with 2d location functions</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes3.png" src="_images/SweepFormulaDataModelNotes3.png" />
+</figure>
+<ul class="simple">
+<li><p>no comment given</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes4.png" src="_images/SweepFormulaDataModelNotes4.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes5.png" src="_images/SweepFormulaDataModelNotes5.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes6.png" src="_images/SweepFormulaDataModelNotes6.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes7.png" src="_images/SweepFormulaDataModelNotes7.png" />
+</figure>
+<ul class="simple">
+<li><p>Plot</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes8.png" src="_images/SweepFormulaDataModelNotes8.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes9.png" src="_images/SweepFormulaDataModelNotes9.png" />
+</figure>
+<ul class="simple">
+<li><p>Functions reducing a dimension of data</p></li>
+</ul>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes10.png" src="_images/SweepFormulaDataModelNotes10.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes11.png" src="_images/SweepFormulaDataModelNotes11.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes12.png" src="_images/SweepFormulaDataModelNotes12.png" />
+</figure>
+<figure class="align-center">
+<img alt="_images/SweepFormulaDataModelNotes13.png" src="_images/SweepFormulaDataModelNotes13.png" />
+</figure>
+<ul class="simple">
+<li><p>Note on time aka xvalue concatenation logics</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Developer</a><ul>
+<li><a class="reference internal" href="#getting-mies">Getting MIES</a><ul>
+<li><a class="reference internal" href="#latest-development-version-from-main-branch">Latest development version from main branch</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arduino">Arduino</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
+<li><a class="reference internal" href="#updating-documentation">Updating documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-handling">Release Handling</a><ul>
+<li><a class="reference internal" href="#cutting-a-new-release">Cutting a new release</a></li>
+<li><a class="reference internal" href="#creating-a-release-package-manually">Creating a release package manually</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#continuous-integration-server">Continuous integration server</a><ul>
+<li><a class="reference internal" href="#automatic-release-package-building">Automatic release package building</a></li>
+<li><a class="reference internal" href="#compilation-testing">Compilation testing</a></li>
+<li><a class="reference internal" href="#unit-testing">Unit testing</a></li>
+<li><a class="reference internal" href="#documentation-building">Documentation building</a></li>
+<li><a class="reference internal" href="#setting-up-a-continous-integration-server-linux">Setting up a continous integration server (Linux)</a><ul>
+<li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li><a class="reference internal" href="#enable-ssh-access">Enable SSH access</a></li>
+<li><a class="reference internal" href="#install-required-software">Install required software</a></li>
+<li><a class="reference internal" href="#setup-bamboo-agent">Setup bamboo agent</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#setting-up-a-continous-integration-server-windows">Setting up a continous integration server (Windows)</a></li>
+<li><a class="reference internal" href="#available-ci-servers">Available CI servers</a></li>
+<li><a class="reference internal" href="#branch-naming-scheme">Branch naming scheme</a></li>
+<li><a class="reference internal" href="#continuous-integration-hints">Continuous Integration Hints</a></li>
+<li><a class="reference internal" href="#debugging-threadsafe-functions">Debugging threadsafe functions</a></li>
+<li><a class="reference internal" href="#preventing-debugger-popup">Preventing Debugger Popup</a></li>
+<li><a class="reference internal" href="#runtime-error-abort-handling-conventions">Runtime Error / Abort Handling Conventions</a></li>
+<li><a class="reference internal" href="#retrieving-headstage-channel-information-from-the-lbn">Retrieving Headstage / Channel Information from the LBN</a></li>
+<li><a class="reference internal" href="#creating-lbn-entries-for-tests">Creating LBN entries for tests</a></li>
+<li><a class="reference internal" href="#original-developer-docu-on-sweepformula">Original Developer Docu on SweepFormula</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="previous chapter">Installation instructions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="reportingbugs.html"
+                          title="next chapter">Bug reporting</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

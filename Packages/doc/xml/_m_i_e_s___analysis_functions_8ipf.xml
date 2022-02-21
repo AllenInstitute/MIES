@@ -1,0 +1,1520 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_functions_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctions.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Initial parameters for stimulation</header>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string DEFAULT_DEVICE</definition>
+        <argsstring></argsstring>
+        <name>DEFAULT_DEVICE</name>
+        <initializer>= &quot;ITC18USB_Dev_0&quot;</initializer>
+        <briefdescription>
+<para>device device </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="161" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="161" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a73e99f9018a58e937b43bc84bbebf68e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="536" endline="552">InitoodDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="555" endline="588">LastStimSetRun</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0d771c01655b70f322149078b487ee1e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="446" endline="459">setHolding</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ace2f408ab3904804d16c6c97f09d069d" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="478" endline="492">setIClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="426" endline="441">SetStimParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a2ee8a10c2d3b8f588f74ecff4871abcc" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="462" endline="475">setVClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="498" endline="533">switchHolding</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1adb1297a79d8cb10bd30e82f228caed7e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string STIM_SET_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>STIM_SET_LOCAL</name>
+        <initializer>= &quot;PulseTrain_150Hz_DA_0&quot;</initializer>
+        <briefdescription>
+<para>Initial stimulus set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="162" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="162" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1ab3c0534a24300466edbc18860df8dba0" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double VM1_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>VM1_LOCAL</name>
+        <initializer>= -55</initializer>
+        <briefdescription>
+<para>Initial holding potential. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="163" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="163" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1a2fcdfbc7bf83abcc26e8b6d8a60b1468" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double VM2_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>VM2_LOCAL</name>
+        <initializer>= -85</initializer>
+        <briefdescription>
+<para>Second holding potential to switch to. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="164" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="164" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4758de2d3f91616bec692b9651b9a591" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="368" endline="377">ChangeHoldingPotential</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1a40e571e8b87648c985af2aff4228b573" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SCALE_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>SCALE_LOCAL</name>
+        <initializer>= 70</initializer>
+        <briefdescription>
+<para>Stimulus amplitude. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="165" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="165" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1ac183df39126cfd799d5a82030f3f4955" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double NUM_SWEEPS_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>NUM_SWEEPS_LOCAL</name>
+        <initializer>= 6</initializer>
+        <briefdescription>
+<para>Number of sweeps to acquire. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="166" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="166" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1a6abaf3311fdc2b461f03ed1f32ff85dd" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ITI_LOCAL</definition>
+        <argsstring></argsstring>
+        <name>ITI_LOCAL</name>
+        <initializer>= 15</initializer>
+        <briefdescription>
+<para>Inter-trial-interval. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="167" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="167" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Initial settings for oodDAQ stimulation</header>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions_8ipf_1a5ce58134ce74b1d4335eadcc188c6367" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double POST_DELAY</definition>
+        <argsstring></argsstring>
+        <name>POST_DELAY</name>
+        <initializer>= 150</initializer>
+        <briefdescription>
+<para>Delay after stimulation event in which no other event can occur in ms. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="172" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="172" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a73e99f9018a58e937b43bc84bbebf68e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="536" endline="552">InitoodDAQ</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a42208c8e04b86af6dfc0605cf929e3cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TestAnalysisFunction_V1</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>TestAnalysisFunction_V1</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="175" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="175" bodyend="183"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" compoundref="_m_i_e_s___constants_8ipf" startline="572">EVENT_NAME_LIST</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a17eaccc02ea797f2f13e7813d68ba874" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TestAnalysisFunction_V2</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>TestAnalysisFunction_V2</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="185" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="185" bodyend="194"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" compoundref="_m_i_e_s___constants_8ipf" startline="572">EVENT_NAME_LIST</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TestAnalysisFunction_V3</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>TestAnalysisFunction_V3</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Query parameters</para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="196" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="196" bodyend="266"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="720" endline="753">AFH_GetAnalysisParamTextWave</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="568" endline="608">AFH_GetAnalysisParamType</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" compoundref="_m_i_e_s___constants_8ipf" startline="572">EVENT_NAME_LIST</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="struct_analysis_function___v3_1a2ce664d720581516eb52c0310d93c466" compoundref="_m_i_e_s___structures_8ipf" startline="252">AnalysisFunction_V3::headStage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d" compoundref="_m_i_e_s___constants_8ipf" startline="554">PRE_SWEEP_CONFIG_EVENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a62f74151ff49f293eaac148f6fb4599e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MeasureMidSweepTiming_V3</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>MeasureMidSweepTiming_V3</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Measure the time between mid sweep calls. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Used mainly for debugging. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="271" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="271" bodyend="294"/>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a767944d945f52965f7fdf230aa6d840f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6739" endline="6762">GetElapsedTimeWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8d549b12877ebd540461f205d1aeface" compoundref="_m_i_e_s___utilities_8ipf" startline="4706" endline="4708">GetReferenceTime</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aa1cb68ccd97ec011c4351aef963902c8" compoundref="_m_i_e_s___utilities_8ipf" startline="4718" endline="4735">StoreElapsedTime</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a1f9eb5cf83246d34c10fbb4731dc49f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable Enforce_VC</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>Enforce_VC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="296" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="296" bodyend="315"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a531d7094ed6c42f450f3e6c2c569ef24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable Enforce_IC</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>Enforce_IC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="317" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="317" bodyend="335"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a335914c4eeb08576208d4db23e546313" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetStimConfig_Vclamp</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>SetStimConfig_Vclamp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Force active headstages into voltage clamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="342" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="342" bodyend="352"/>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a2ee8a10c2d3b8f588f74ecff4871abcc" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="462" endline="475">setVClampMode</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1abeff275aed0fa86fa5fc35152871ad52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetStimConfig_Iclamp</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>SetStimConfig_Iclamp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Force active headstages into current clamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="355" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="355" bodyend="365"/>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ace2f408ab3904804d16c6c97f09d069d" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="478" endline="492">setIClampMode</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a4758de2d3f91616bec692b9651b9a591" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ChangeHoldingPotential</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>ChangeHoldingPotential</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Change holding potential midway through stim set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="368" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="368" bodyend="377"/>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="498" endline="533">switchHolding</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a2fcdfbc7bf83abcc26e8b6d8a60b1468" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="164">VM2_LOCAL</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1ab8a9f90c8617189747c745aefbd1e29a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LastStimSet</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>LastStimSet</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Print last Stim Set run and headstage mode and holding potential. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="380" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="380" bodyend="390"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="555" endline="588">LastStimSetRun</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable StimParamGUI</definition>
+        <argsstring>()</argsstring>
+        <name>StimParamGUI</name>
+        <briefdescription>
+<para>GUI to set initial stimulus parameters using <ref refid="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" kindref="member">SetStimParam()</ref> and begin data acquisition. NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="393" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="393" bodyend="417"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a6abaf3311fdc2b461f03ed1f32ff85dd" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="167">ITI_LOCAL</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ac183df39126cfd799d5a82030f3f4955" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="166">NUM_SWEEPS_LOCAL</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a40e571e8b87648c985af2aff4228b573" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="165">SCALE_LOCAL</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="426" endline="441">SetStimParam</references>
+        <references refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1adb1297a79d8cb10bd30e82f228caed7e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="162">STIM_SET_LOCAL</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab3c0534a24300466edbc18860df8dba0" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="163">VM1_LOCAL</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetStimParam</definition>
+        <argsstring>(string stimSet, variable Vm1, variable Scale, variable Sweeps, variable ITI)</argsstring>
+        <name>SetStimParam</name>
+        <param>
+          <type>string</type>
+          <declname>stimSet</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>Vm1</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>Scale</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>Sweeps</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ITI</declname>
+        </param>
+        <briefdescription>
+<para>Called by StimParamGUI to set initial stimulus parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stimSet</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Stimulus set to run </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Vm1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Holding potential </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Stimulus amplitude in mV </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Sweeps</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of sweeps </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ITI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Inter-trial-interval </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="426" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="426" bodyend="441"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a73e99f9018a58e937b43bc84bbebf68e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="536" endline="552">InitoodDAQ</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a0d771c01655b70f322149078b487ee1e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="446" endline="459">setHolding</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a0d771c01655b70f322149078b487ee1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable setHolding</definition>
+        <argsstring>(variable Vm1)</argsstring>
+        <name>setHolding</name>
+        <param>
+          <type>variable</type>
+          <declname>Vm1</declname>
+        </param>
+        <briefdescription>
+<para>Set holding potential for active headstages. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Vm1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Holding potential </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="446" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="446" bodyend="459"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="426" endline="441">SetStimParam</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a2ee8a10c2d3b8f588f74ecff4871abcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable setVClampMode</definition>
+        <argsstring>()</argsstring>
+        <name>setVClampMode</name>
+        <briefdescription>
+<para>Set active headstages into V-clamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="462" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="462" bodyend="475"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a6b16972a6dbc44c10f72f57b796fcfb0" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3218" endline="3248">DAP_GetClampModeControl</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a335914c4eeb08576208d4db23e546313" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="342" endline="352">SetStimConfig_Vclamp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1ace2f408ab3904804d16c6c97f09d069d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable setIClampMode</definition>
+        <argsstring>()</argsstring>
+        <name>setIClampMode</name>
+        <briefdescription>
+<para>Set active headstages into I-clamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="478" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="478" bodyend="492"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a6b16972a6dbc44c10f72f57b796fcfb0" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3218" endline="3248">DAP_GetClampModeControl</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1abeff275aed0fa86fa5fc35152871ad52" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="355" endline="365">SetStimConfig_Iclamp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a38c23bdb8dba898658d8257a220d37e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable switchHolding</definition>
+        <argsstring>(variable Vm2)</argsstring>
+        <name>switchHolding</name>
+        <param>
+          <type>variable</type>
+          <declname>Vm2</declname>
+        </param>
+        <briefdescription>
+<para>Change holding potential on active headstages to Vm2. Switch occurs after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Vm2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Holding potential to switch to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="498" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="498" bodyend="533"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4758de2d3f91616bec692b9651b9a591" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="368" endline="377">ChangeHoldingPotential</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a73e99f9018a58e937b43bc84bbebf68e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitoodDAQ</definition>
+        <argsstring>()</argsstring>
+        <name>InitoodDAQ</name>
+        <briefdescription>
+<para>Initialize oodDAQ settings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="536" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="536" bodyend="552"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a5ce58134ce74b1d4335eadcc188c6367" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="172">POST_DELAY</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a99ae73836d2ef8a55667aaa67707d5ea" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="426" endline="441">SetStimParam</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LastStimSetRun</definition>
+        <argsstring>()</argsstring>
+        <name>LastStimSetRun</name>
+        <briefdescription>
+<para>Print last full stim set aqcuired. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="555" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="555" bodyend="588"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8dd1cf2cd45eca5c2152b02b60df1422" compoundref="_m_i_e_s___constants_8ipf" startline="861">CLAMPMODE_ENTRY_KEY</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1ab4a06a4b0c81f46bc6e327d7de4a0a8e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="161">DEFAULT_DEVICE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ab8a9f90c8617189747c745aefbd1e29a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="380" endline="390">LastStimSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1afe3629c932ee5ccb5ad76f7b736e1675" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TestPrematureSweepStop</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>TestPrematureSweepStop</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+<para>Mid sweep analysis function which stops the sweeps and repurposes the left over time at the 20th call. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="594" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="594" bodyend="618"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a269a3df6c5dd5dcceee108e70e4a3a37" compoundref="_m_i_e_s___constants_8ipf" startline="587">ANALYSIS_FUNC_RET_EARLY_STOP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2af68f9516aa38313fb30e39e6906d54" compoundref="_m_i_e_s___utilities_8ipf" startline="3953" endline="3961">str2numSafe</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1ace0073279e7acb6d7798a3f2e7848d54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable preDAQ_MP_mainConfig</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>preDAQ_MP_mainConfig</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="620" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="620" bodyend="633"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1ad38895547f4736c7207d43c2fed239ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable preDAQ_MP_IfMixed</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>preDAQ_MP_IfMixed</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="635" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="635" bodyend="648"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a920385fd3aa39b7c18e99c5226c216ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable preDAQ_MP_ChirpBlowout</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>preDAQ_MP_ChirpBlowout</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="650" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="650" bodyend="663"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AdjustDAScale</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>AdjustDAScale</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to set different &quot;DA Scale&quot; values for a sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Prerequisites:<itemizedlist>
+<listitem><para>Stimset with multiple but identical sweeps and testpulse-like shape. The number of sweeps must be larger than the number of rows in the DAScales wave below.</para>
+</listitem><listitem><para>This stimset must have this analysis function set for the &quot;Pre DAQ&quot; and the &quot;Post Sweep&quot; Event</para>
+</listitem><listitem><para>Does currently nothing for &quot;Mid Sweep&quot; Event</para>
+</listitem><listitem><para>Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)</para>
+</listitem><listitem><para>All active headstages must be in &quot;Current Clamp&quot; </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="674" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="674" bodyend="758"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab0f38ebefe9ce38e68099af8a0ffd443" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="63" endline="77">AFH_GetADCFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a72b806ad560d940a643efe10064a846d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="207" endline="211">AFH_GetLastSweepWaveAcquired</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae0f79975754bf6d7dc4a61a21583cae4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5886" endline="5981">CalculateTPLikePropsFromSweep</references>
+        <references refid="_m_i_e_s___constants_8ipf_1addc24577cddf76afdcbce0479aa7478f" compoundref="_m_i_e_s___constants_8ipf" startline="214">CHANNEL_CONTROL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acb1296913252a84e42e910cf86d09947" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6240" endline="6260">GetAnalysisFuncDAScaleDeltaI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a78061211244f7907476a889a006fe1e2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6272" endline="6294">GetAnalysisFuncDAScaleRes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae11df98795575034741f5ce2a7bd2fa4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6178" endline="6194">GetAnalysisFuncIndexingHelper</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable FitResistance</definition>
+        <argsstring>(string device, variable showPlot=defaultValue)</argsstring>
+        <name>FitResistance</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>showPlot</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Plot the resistance of the sweeps of the same RA cycle</para>
+<para>Usually called by PSQ_AdjustDAScale(). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="763" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="763" bodyend="898"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acb1296913252a84e42e910cf86d09947" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6240" endline="6260">GetAnalysisFuncDAScaleDeltaI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a78061211244f7907476a889a006fe1e2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6272" endline="6294">GetAnalysisFuncDAScaleRes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab70e1a0a7c9098626e64355a0d2785e8" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6299" endline="6324">GetAnalysisFuncDAScaleResFit</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a8a95d7d8c4ecae7fb3c38b7756dbf658" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="687" endline="779">GetTraceColor</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae109604f12f6ba2dbfca5eb41a263a71" compoundref="_m_i_e_s___constants_8ipf" startline="918">LABNOTEBOOK_USER_PREFIX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5e7e902ceb2bf9debef053fea1f03b89" compoundref="_m_i_e_s___constants_8ipf" startline="1196">RESISTANCE_GRAPH</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a6c40d0849cb625af8d16816a492c6756" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetDAScaleModOp</definition>
+        <argsstring>(string device, variable headstage, variable modifier, string operator, variable invert=defaultValue, variable roundTopA=defaultValue)</argsstring>
+        <name>SetDAScaleModOp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>modifier</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>operator</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>invert</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>roundTopA</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Helper for setting the DAScale. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="901" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="901" bodyend="926"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetDAScale</definition>
+        <argsstring>(string device, variable headstage, variable absolute=defaultValue, variable relative=defaultValue, variable offset=defaultValue, variable roundTopA=defaultValue)</argsstring>
+        <name>SetDAScale</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>absolute</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>relative</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>offset</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>roundTopA</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Set the DAScale value of the given headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>MIES headstage </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>absolute</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) DAScale value in <computeroutput>A</computeroutput> (Amperes) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>relative</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) relative DAScale modifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>offset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional) offset DAScale value </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>roundTopA</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(optional, defaults to false) round the set DAScale to integer pA values </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="936" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="936" bodyend="974"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1addc24577cddf76afdcbce0479aa7478f" compoundref="_m_i_e_s___constants_8ipf" startline="214">CHANNEL_CONTROL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4d762a7112dbc3f0a31addfe65d073a0" compoundref="_m_i_e_s___constants_8ipf" startline="212">CHANNEL_CONTROL_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a6c40d0849cb625af8d16816a492c6756" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="901" endline="926">SetDAScaleModOp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1add0716c2e0ddc65bbe9173db93157d94" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReachTargetVoltage_GetParams</definition>
+        <argsstring>()</argsstring>
+        <name>ReachTargetVoltage_GetParams</name>
+        <briefdescription>
+<para>Return a list of required parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="977" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="977" bodyend="979"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a6a241f9cc4e211e2a6608bf3872ee05b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReachTargetVoltage_GetHelp</definition>
+        <argsstring>(string name)</argsstring>
+        <name>ReachTargetVoltage_GetHelp</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="981" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="981" bodyend="993"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1a42a359d53411eab3114bc93ed771f00a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReachTargetVoltage_CheckParam</definition>
+        <argsstring>(string name, CheckParametersStruct *s)</argsstring>
+        <name>ReachTargetVoltage_CheckParam</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="995" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="995" bodyend="1020"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" compoundref="_m_i_e_s___structures_8ipf" startline="584">CheckParametersStruct::params</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReachTargetVoltage</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>ReachTargetVoltage</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to experimentally determine the cell resistance by sweeping through a wave of target voltages. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Prerequisites:<itemizedlist>
+<listitem><para>Stimset with multiple but identical sweeps and testpulse-like shape. The number of sweeps must be larger than the number of rows in the targetVoltages wave below.</para>
+</listitem><listitem><para>Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)</para>
+</listitem><listitem><para>All active headstages must be in &quot;Current Clamp&quot;</para>
+</listitem><listitem><para>An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MΩ </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="1032" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="1032" bodyend="1242"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a72b806ad560d940a643efe10064a846d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="207" endline="211">AFH_GetLastSweepWaveAcquired</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae0f79975754bf6d7dc4a61a21583cae4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5886" endline="5981">CalculateTPLikePropsFromSweep</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1ab4781b044c3e7fa28aeca191f5630b" compoundref="_m_i_e_s___constants_8ipf" startline="231">CHANNEL_INDEX_ALL_I_CLAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2fba114640a1e2276ebfb4c2e9607a4" compoundref="_m_i_e_s___utilities_8ipf" startline="3353" endline="3373">CheckIfClose</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acb1296913252a84e42e910cf86d09947" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6240" endline="6260">GetAnalysisFuncDAScaleDeltaI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a73bc4bd559b05b1cad939619d3da0ada" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6206" endline="6228">GetAnalysisFuncDAScaleDeltaV</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a78061211244f7907476a889a006fe1e2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6272" endline="6294">GetAnalysisFuncDAScaleRes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae11df98795575034741f5ce2a7bd2fa4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6178" endline="6194">GetAnalysisFuncIndexingHelper</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a6b352cafe35c8af19a48ee99c23714d8" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="520" endline="527">GetSliderPositionIndex</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa3bb3e8917af7d6267c46c8cf6d7151e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5173" endline="5176">GetUniqueTempPath</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae13dcf8acf7e3811fd3294f51360a344" compoundref="_m_i_e_s___constants_8ipf" startline="1552">ID_HEADSTAGE_SETTINGS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae109604f12f6ba2dbfca5eb41a263a71" compoundref="_m_i_e_s___constants_8ipf" startline="918">LABNOTEBOOK_USER_PREFIX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</references>
+        <references refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" compoundref="_m_i_e_s___structures_8ipf" startline="268">AnalysisFunction_V3::sweepNo</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SetControlInEvent</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>SetControlInEvent</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to set GUI controls or notebooks in the events. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Usage:<itemizedlist>
+<listitem><para>Add analysis parameters named like the control/notebook</para>
+</listitem><listitem><para>Their value must be a textwave with at least one tuple of event type and data.</para>
+</listitem><listitem><para>Valid number of rows are therefore 2, 4, 6, ...</para>
+</listitem><listitem><para>The first tuple element is the event type, one of <ref refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" kindref="member">EVENT_NAME_LIST</ref> without &quot;Mid Sweep&quot; and &quot;Generic&quot;, and the second element the value to set</para>
+</listitem><listitem><para>For PopupMenus the passed value is the menu item and <emphasis>not</emphasis> its index</para>
+</listitem><listitem><para>The controls are searched in all open panels and graphs. The notebook can be a toplevel or subwindow notebook. For multiple matching panels or graphs we prefer the corresponding DAEphys panel and Databrowser.</para>
+</listitem></itemizedlist>
+</para>
+<para>Examples:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: none
+* 
+*   setvar_DataAcq_OnsetDelayUser -&gt; Pre DAQ|20|
+*   Popup_Settings_FixedFreq -&gt; Pre Sweep|100|Post Sweep|Maximum|
+*   sweepFormula_formula -&gt; Pre Set|data(cursors(A,B), channels(AD), sweeps())
+* 
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" line="1268" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf" bodystart="1268" bodyend="1420"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="720" endline="753">AFH_GetAnalysisParamTextWave</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="568" endline="608">AFH_GetAnalysisParamType</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac35ec8f15a955427c650feb7afc24fb2" compoundref="_m_i_e_s___constants_8ipf" startline="176">CONTROL_TYPE_CHART</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3a0e59ebad06379bbe65af3a8f24d80c" compoundref="_m_i_e_s___constants_8ipf" startline="179">CONTROL_TYPE_GROUPBOX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a71627d1809bd691d5c5a8f84919f4f88" compoundref="_m_i_e_s___constants_8ipf" startline="173">CONTROL_TYPE_POPUPMENU</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8155ff613536716122f1ae9cbb46a91e" compoundref="_m_i_e_s___constants_8ipf" startline="175">CONTROL_TYPE_SETVARIABLE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aca79d4f955ba6be23061205407f68ded" compoundref="_m_i_e_s___constants_8ipf" startline="180">CONTROL_TYPE_TITLEBOX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f346a9f3259d3675764571482a62396" compoundref="_m_i_e_s___constants_8ipf" startline="174">CONTROL_TYPE_VALDISPLAY</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1afd68ab9b0b3ba76e9df6bd8ad7a3af8b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="584" endline="589">ControlExists</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7da3d99301d253f99ef516725b03c09b" compoundref="_m_i_e_s___constants_8ipf" startline="866">CONTROLS_DISABLE_DURING_DAQ</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" compoundref="_m_i_e_s___data_browser_8ipf" startline="685" endline="708">DB_FindDataBrowser</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" compoundref="_m_i_e_s___constants_8ipf" startline="572">EVENT_NAME_LIST</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ea8d86674fd57665a611441f6b9da10" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="592" endline="619">FindControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ab402b19c17cd381821e7482005fc9878" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="622" endline="651">FindNotebook</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1accabf42de20054bbb431767b112b81d0" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1526" endline="1532">GetControlType</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae0359eb2d1e95f02263d9002a5214f72" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1117" endline="1124">IsControlDisabled</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae29f9fecbf8218b153c2ab8b97c01149" compoundref="_m_i_e_s___utilities_8ipf" startline="752" endline="755">IsEven</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d" compoundref="_m_i_e_s___constants_8ipf" startline="554">PRE_SWEEP_CONFIG_EVENT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae25a2a2e24980410bee5fa0dbadd2d82" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1609" endline="1618">ReplaceNotebookText</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2af68f9516aa38313fb30e39e6906d54" compoundref="_m_i_e_s___utilities_8ipf" startline="3953" endline="3961">str2numSafe</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac46c4c4f5091587d62bc10575c85c2c1" compoundref="_m_i_e_s___constants_8ipf" startline="1329">WINTYPE_GRAPH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab780aef45d20223ca029901da521c8a0" compoundref="_m_i_e_s___constants_8ipf" startline="1332">WINTYPE_NOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af371469b8a8af45526c88a39fb5a4243" compoundref="_m_i_e_s___constants_8ipf" startline="1333">WINTYPE_PANEL</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AF</bold> Analysis functions to be called during data acquisition </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___analysis_function_prototypes_8ipf" kindref="compound">MIES_AnalysisFunctionPrototypes.ipf</ref></para>
+</simplesect>
+Users can implement functions which are called at certain events for each data acquisition cycle. See <ref refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" kindref="member">TestAnalysisFunction_V3()</ref> for an example.</para>
+<para><anchor id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunction_V3DescriptionTable"/> <verbatim>embed:rst:leading-asterisk
+* 
+*  .. image:: /svg/analysis-functions-calls-during-RA-stages.svg
+*     :width: 300 px
+*     :align: center
+* 
+*  =================== ============================================== ================================================================= =============
+*  Event                Description                                    Specialities                                                      User epochs
+*  =================== ============================================== ================================================================= =============
+*  Pre DAQ              Before any DAQ occurs                          Called before the settings are validated completely, only the     No
+*                                                                      analysis parameters are validated if present. With Indexing ON,
+*                                                                      only the analysis function of the first stimset will receive
+*                                                                      that event.
+*  Pre Sweep Config     Before the sweep is configured                 None                                                              Yes
+*  Pre Set              Before a new set starts                        None                                                              Yes
+*  Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Yes
+*                                                                      Will always be called at least once and
+*                                                                      also with the full stimset acquired.
+*  Post Sweep           After each sweep (before possible ITI pause)   None
+*  Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    No
+*                                                                      all steps of a set. With indexing, locked and unlocked, only
+*                                                                      the post set events for fully acquired stimsets are reached.
+*  Post DAQ             After DAQ has finished and before potential    None                                                              No
+*                       &quot;TP after DAQ&quot;
+*  =================== ============================================== ================================================================= =============
+* 
+*  User epochs will only be recorded in events which support them, see :ref:`user_epochs_doc` for more information about user epochs.
+* 
+*  </verbatim></para>
+<para>Useful helper functions are defined in <ref refid="_m_i_e_s___analysis_function_helpers_8ipf" kindref="compound">MIES_AnalysisFunctionHelpers.ipf</ref>.</para>
+<para>The Post/Pre Sweep/Set/DAQ functions are <emphasis>not</emphasis> executed if a currently running sweep is aborted. Changing the stimset in the Post DAQ event is only possible without indexing active.</para>
+<para><anchor id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunctionReturnTypes"/>Analysis function return types</para>
+<para>Some event types support a range of different return types which let the user decide what should happen next. See also <ref refid="_m_i_e_s___constants_8ipf_1AnalysisFuncReturnTypesConstants" kindref="member">AnalysisFuncReturnTypesConstants</ref>. The first analysis function returning with a special value requesting a DAQ stop or preventing it from starting will immediately do so, thus subsequent analysis functions for other active headstage will not run.</para>
+<para><verbatim>embed:rst:leading-asterisk
+* 
+*  ======================================== ================= ============================================================================================
+*  Value                                    Event Types       Action
+*  ======================================== ================= ============================================================================================
+*  NaN                                      All               Nothing
+*  0                                        All               Nothing
+*  1                                        Pre DAQ           DAQ is prevented to start
+*  1                                        Pre Set           DAQ is stopped
+*  1                                        Pre Sweep Config  DAQ is stopped
+*  :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep         Current sweep is immediately stopped. Left over time is repurposed for ITI.
+*  :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep         Current sweep is immediately stopped without honouring the left over time in a special way.
+*  ======================================== ================= ============================================================================================
+* 
+*  </verbatim></para>
+<para><anchor id="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunctionParameters"/>Analysis function user parameters (V3 only)</para>
+<para>For some analysis functions it is beneficial to send in additional data depending on the stimset. This is supported by adding parameters and their values via <ref refid="_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec" kindref="member">AFH_AddAnalysisParameter()</ref> to the stimset, or using the Wavebuilder GUI, and then querying them with the help of <ref refid="group___analysis_function_parameter_helpers" kindref="compound">Analysis Helper functions for dealing with user parameters</ref>. The parameters are stored serialized in the <computeroutput>WPT</computeroutput> wave, see <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aafefa3e98bab8e2cc26cc1606a70bd8a" kindref="member">GetWaveBuilderWaveTextParam()</ref> for the exact format. See <ref refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" kindref="member">TestAnalysisFunction_V3()</ref> for an example implementation.</para>
+<para>If you want to propose a list of parameters which should/must be present, define an additional function named like your analysis function but suffixed with <computeroutput>_GetParams</computeroutput> and return a comma separated list of names. Adding the type is also possible via <computeroutput>$name:$type</computeroutput> syntax. The list of parameter names and types is then checked before DAQ. The supplied names are taken to be required by default, optional parameters, and their types, must be enclosed with <computeroutput>[]</computeroutput>. The list at <ref refid="_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693" kindref="member">ANALYSIS_FUNCTION_PARAMS_TYPES</ref> holds all valid types.</para>
+<para>The optional function <computeroutput>_CheckParam</computeroutput> allows you to validate passed parameters. In case of a valid parameter it must return an emtpy string and an error message in case of failure. Parameters which don&apos;t pass can neither be added to stimsets nor can they be used for data acquisition. Optional parameters are only checked if they are present in the stimulus set so you don&apos;t need to handle that case special.</para>
+<para>The optional function <computeroutput>_GetHelp</computeroutput> allows you to create per parameter help text which is shown in the Wavebuilder.</para>
+<para>Example:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*     Function MyAnalysisFunction(string device, struct AnalysisFunction_V3&amp; s)
+*         // ...
+*     End
+* 
+*     Function/S MyAnalysisFunction_GetParams()
+*         return &quot;param1:variable,[optParam1:wave]&quot;
+*     End
+* 
+*     Function/S MyAnalysisFunction_CheckParam(string name, struct CheckParametersStruct&amp; s)
+*         variable value
+* 
+*         strswitch(name)
+*             case &quot;param1&quot;:
+*                 value = AFH_GetAnalysisParamNumerical(name, s.params)
+*                 if(!IsFinite(value) || !(value &gt;= 0 &amp;&amp; value &lt;= 100))
+*                     return &quot;Needs to be between 0 and 100.&quot;
+*                 endif
+*                 break
+*             case &quot;optParam1&quot;:
+*                 WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
+*                 if(!WaveExists(wv) || !IsFloatingPointWave(wv))
+*                     return &quot;Needs to be an existing floating point wave.&quot;
+*                 endif
+*                 break
+*         endswitch
+* 
+*         // default to passing for other parameters
+*         return &quot;&quot;
+*     End
+* 
+*     Function/S MyAnalysisFunction_GetHelp(string name)
+* 
+*         strswitch(name)
+*             case &quot;param1&quot;:
+*                  return &quot;This parameter helps in finding pink unicorns&quot;
+*                  break
+*             case &quot;optParam1&quot;:
+*                  return &quot;This parameter delivers food right to your door&quot;
+*                  break
+*             default:
+*                  ASSERT(0, &quot;Unimplemented for parameter &quot; + name)
+*                  break
+*         endswitch
+*     End
+* 
+*  </verbatim> </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions.ipf"/>
+  </compounddef>
+</doxygen>

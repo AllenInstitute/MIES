@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_chirp_bounds_info" kind="struct" language="C++" prot="public">
+    <compoundname>ChirpBoundsInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_chirp_bounds_info_1affd42a99ee5a322a2c14cf4db601cf5b" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ChirpBoundsInfo::minimumFac</definition>
+        <argsstring></argsstring>
+        <name>minimumFac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="360" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="359" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_chirp_bounds_info_1aee010546924e5e443fb5f14a3469aa50" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ChirpBoundsInfo::centerFac</definition>
+        <argsstring></argsstring>
+        <name>centerFac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="360" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="360" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1b8c91b918dce9233264727fbafe9ff4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3298" endline="3310">PSQ_CR_DetermineScalingFactor</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_chirp_bounds_info_1ac44718de0a548b39b26f8b08e8556d05" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable ChirpBoundsInfo::maximumFac</definition>
+        <argsstring></argsstring>
+        <name>maximumFac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="360" column="31" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="360" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_chirp_bounds_info_1ad6f0dff6d46c0324e6c8a3de87331d8d" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ChirpBoundsInfo::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="361" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="361" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper strucuture for <ref refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab8fd5c3cddff384b5e1598a667e80dcd" kindref="member">PSQ_CR_DetermineBoundsState()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="359" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="359" bodyend="362"/>
+    <listofallmembers>
+      <member refid="struct_chirp_bounds_info_1aee010546924e5e443fb5f14a3469aa50" prot="public" virt="non-virtual"><scope>ChirpBoundsInfo</scope><name>centerFac</name></member>
+      <member refid="struct_chirp_bounds_info_1ac44718de0a548b39b26f8b08e8556d05" prot="public" virt="non-virtual"><scope>ChirpBoundsInfo</scope><name>maximumFac</name></member>
+      <member refid="struct_chirp_bounds_info_1affd42a99ee5a322a2c14cf4db601cf5b" prot="public" virt="non-virtual"><scope>ChirpBoundsInfo</scope><name>minimumFac</name></member>
+      <member refid="struct_chirp_bounds_info_1ad6f0dff6d46c0324e6c8a3de87331d8d" prot="public" virt="non-virtual"><scope>ChirpBoundsInfo</scope><name>state</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

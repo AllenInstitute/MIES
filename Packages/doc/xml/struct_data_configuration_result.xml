@@ -1,0 +1,738 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_data_configuration_result" kind="struct" language="C++" prot="public">
+    <compoundname>DataConfigurationResult</compoundname>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="struct_data_configuration_result_1a01f96fc46be36cb803d3fd788a34c3e4" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::globalTPInsert</definition>
+        <argsstring></argsstring>
+        <name>globalTPInsert</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Various GUI settings </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="460" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="457" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a32042dfcd4e7b6391a088528eb548740" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::scalingZero</definition>
+        <argsstring></argsstring>
+        <name>scalingZero</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="461" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="461" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ae8e94eec0dee9eccc1ca58fd8af17001" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::indexingLocked</definition>
+        <argsstring></argsstring>
+        <name>indexingLocked</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="462" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="462" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ae594509cf0184e9118b37221b2fc5850" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::indexing</definition>
+        <argsstring></argsstring>
+        <name>indexing</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="463" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="463" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a0c53d5c7db359178c0a970393ddcfb2d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::distributedDAQ</definition>
+        <argsstring></argsstring>
+        <name>distributedDAQ</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="464" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="464" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a4c19323b062129ecfb40939b0582834f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::distributedDAQOptOv</definition>
+        <argsstring></argsstring>
+        <name>distributedDAQOptOv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="465" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="465" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a3e3dde1a5afa5566b39d330004cfc7ef" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::distributedDAQOptPre</definition>
+        <argsstring></argsstring>
+        <name>distributedDAQOptPre</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="466" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="466" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a864230e22498a6f356b2c70c840933ea" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::distributedDAQOptPost</definition>
+        <argsstring></argsstring>
+        <name>distributedDAQOptPost</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="467" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="467" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a4abc650f19993130f65b226b7ce96cb7" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::multiDevice</definition>
+        <argsstring></argsstring>
+        <name>multiDevice</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="468" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="468" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1afdeac09d49c38bf5d05c1eae271faeb8" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::powerSpectrum</definition>
+        <argsstring></argsstring>
+        <name>powerSpectrum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="469" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="469" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a0fc7701351170ac9c31cafdcfaf041d8" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::statusHS</definition>
+        <argsstring></argsstring>
+        <name>statusHS</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="470" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="470" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Various delays</header>
+      <description><para>Either from the GUI or derived from <ref refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" kindref="member">DC_ReturnTotalLengthIncrease()</ref> </para>
+</description>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a69eb57743919b13a89f56967078f2469" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::onsetDelayUser</definition>
+        <argsstring></argsstring>
+        <name>onsetDelayUser</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="505" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="505" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a5d0b3eb9afc2acac26ab1f298ced2fc1" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::onsetDelayAuto</definition>
+        <argsstring></argsstring>
+        <name>onsetDelayAuto</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="506" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="506" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1aab9f921931bbfc21dfc6c5fe8e578dd8" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::onsetDelay</definition>
+        <argsstring></argsstring>
+        <name>onsetDelay</name>
+        <briefdescription>
+<para>Sum of onsetDelayUser and onsetDelayAuto. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="507" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="507" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a944f30f10a8504734eb51b88c51c7b45" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::distributedDAQDelay</definition>
+        <argsstring></argsstring>
+        <name>distributedDAQDelay</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="508" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="508" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a9a4793010784e70104eece185bb60dfc" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::terminationDelay</definition>
+        <argsstring></argsstring>
+        <name>terminationDelay</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="509" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="509" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="struct_data_configuration_result_1adf89c655dd287c35dbf5c98edd794ee6" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::offsets</definition>
+        <argsstring></argsstring>
+        <name>offsets</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>oodDAQ optimization results, see <ref refid="struct_o_od_d_a_q_params_1OOdDAQParams_Output" kindref="member">OOdDAQParams_Output</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="520" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="520" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a95201b77a12aad3e9fb1cece8ffd3b6c" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText DataConfigurationResult::regions</definition>
+        <argsstring></argsstring>
+        <name>regions</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="521" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="521" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::DACList</definition>
+        <argsstring></argsstring>
+        <name>DACList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>List of active channels per type </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="529" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="529" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a4c0797e671a996ba71be609f4fcb3b36" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::ADCList</definition>
+        <argsstring></argsstring>
+        <name>ADCList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="530" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="530" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a325f4ab620f74b7d48dbc37fa0eb54b0" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::TTLList</definition>
+        <argsstring></argsstring>
+        <name>TTLList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="531" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="531" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::DACAmp</definition>
+        <argsstring></argsstring>
+        <name>DACAmp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>All waves here use active channel indexing like <ref refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" kindref="member">DataConfigurationResult::DACList</ref> and can thus be all indexed together.</para>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab30412d2462bf58093e939a6e7ac28c7" kindref="member">GetDACAmplitudes()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="538" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="538" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a7688f619919cd315766b0b830a432518" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText DataConfigurationResult::setName</definition>
+        <argsstring></argsstring>
+        <name>setName</name>
+        <briefdescription>
+<para>Stimulus set name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="541" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="541" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ac0b82ee485e079b5fdb3edcbd02d4b72" prot="public" static="no" mutable="no">
+        <type>WaveRefWave</type>
+        <definition>WaveRefWave DataConfigurationResult::stimSet</definition>
+        <argsstring></argsstring>
+        <name>stimSet</name>
+        <briefdescription>
+<para>Stimulus set wave (2D) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="544" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="544" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a1f887229150d9f3f3fee23bf65a36d2e" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::setLength</definition>
+        <argsstring></argsstring>
+        <name>setLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___data_configurator_8ipf_1a9fdfa23aa8994da3bba963a2d84fa39a" kindref="member">DC_CalculateStimsetLength()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="547" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="547" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ae4a27142e528cf8391a12169750feaa2" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::headstageDAC</definition>
+        <argsstring></argsstring>
+        <name>headstageDAC</name>
+        <briefdescription>
+<para>Headstage of DAC if associated, <computeroutput>NaN</computeroutput> iff unassociated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="550" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="550" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::setColumn</definition>
+        <argsstring></argsstring>
+        <name>setColumn</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" kindref="member">DC_CalculateChannelColumnNo()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="554" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="554" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a057ccbe8edeac3468b9c16e3a359933f" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::setCycleCount</definition>
+        <argsstring></argsstring>
+        <name>setCycleCount</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="555" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="555" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_data_configuration_result_1ac39cc10b0ef54a1802507f82616836f9" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::dataAcqOrTP</definition>
+        <argsstring></argsstring>
+        <name>dataAcqOrTP</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>What type of operation is done. Either DAQ(<computeroutput>DATA_ACQUISITION_MODE</computeroutput>) or TP(<computeroutput>TEST_PULSE_MODE</computeroutput>) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="475" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="475" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a093b069cbbf09c1709aa4bd9c9e03491" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::baselineFrac</definition>
+        <argsstring></argsstring>
+        <name>baselineFrac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para>GetTestpulseBaselineFraction() TODO remove </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="479" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="479" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1aed7d8be1f97186cda1c117ab17d4c8cd" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::decimationFactor</definition>
+        <argsstring></argsstring>
+        <name>decimationFactor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___data_configurator_8ipf_1aa138c088925a9c62e68b90b6e53b6154" kindref="member">DC_GetDecimationFactor()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="482" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="482" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::numDACEntries</definition>
+        <argsstring></argsstring>
+        <name>numDACEntries</name>
+        <briefdescription>
+<para>Number of DAC&apos;s, always larger than 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="485" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="485" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ae02f680f3808e6c775e99b5c03f5728f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::numADCEntries</definition>
+        <argsstring></argsstring>
+        <name>numADCEntries</name>
+        <briefdescription>
+<para>Number of ADC&apos;s, always larger than 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="488" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="488" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a4685f99541532b3e1aba545ef4accb3d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::numTTLEntries</definition>
+        <argsstring></argsstring>
+        <name>numTTLEntries</name>
+        <briefdescription>
+<para>Number of TTLs, can be zero. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="491" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="491" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a1d73072716d68aafe167aa8bff43fef0" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::numActiveChannels</definition>
+        <argsstring></argsstring>
+        <name>numActiveChannels</name>
+        <briefdescription>
+<para>Sum of numDACEntries/numADCEntries/numTTLEntries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="494" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="494" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::hardwareType</definition>
+        <argsstring></argsstring>
+        <name>hardwareType</name>
+        <briefdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1HardwareDACTypeConstants" kindref="member">HardwareDACTypeConstants</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="497" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="497" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::samplingInterval</definition>
+        <argsstring></argsstring>
+        <name>samplingInterval</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" kindref="member">DAP_GetSampInt()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="500" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="500" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1af031293d0bfc0b5ea1d58ce02939fe15" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::testPulse</definition>
+        <argsstring></argsstring>
+        <name>testPulse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e76889e4e27568b2c7b01193b935c33" kindref="member">GetTestPulse()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="513" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="513" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a164e98355dcd58ebfed2db25c7f72b91" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable DataConfigurationResult::testPulseLength</definition>
+        <argsstring></argsstring>
+        <name>testPulseLength</name>
+        <briefdescription>
+<para>Length of the <ref refid="struct_data_configuration_result_1af031293d0bfc0b5ea1d58ce02939fe15" kindref="member">DataConfigurationResult::testPulse</ref> wave in points. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="516" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="516" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1adf95a6c6917eaeca51fcd0d8d4bf20e1" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE DataConfigurationResult::DAGain</definition>
+        <argsstring></argsstring>
+        <name>DAGain</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___sweep_saving_8ipf_1a4dad46a54274e70a3f0590d43d98d727" kindref="member">SWS_GetChannelGains()</ref> with <computeroutput><ref refid="_m_i_e_s___constants_8ipf_1a93abd208f9548ec67bbeca50db8a1379" kindref="member">GAIN_BEFORE_DAQ</ref></computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="525" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="525" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1a06a3f1639bb2656f7bdaa5970ae0656a" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::insertStart</definition>
+        <argsstring></argsstring>
+        <name>insertStart</name>
+        <briefdescription>
+<para>Offset in points where the stimulus set starts in the DAQ data wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="559" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="559" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_data_configuration_result_1ad40fa9b1e359e903ba29078603cddf3e" prot="public" static="no" mutable="no">
+        <type>WaveDouble</type>
+        <definition>WaveDouble DataConfigurationResult::headstageADC</definition>
+        <argsstring></argsstring>
+        <name>headstageADC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Headstage of ADC if associated, <computeroutput>NaN</computeroutput> iff unassociated Uses active channel indexing like <ref refid="struct_data_configuration_result_1a4c0797e671a996ba71be609f4fcb3b36" kindref="member">DataConfigurationResult::ADCList</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="564" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="564" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Structure to hold the result of data configuration from <ref refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" kindref="member">DC_GetConfiguration()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="457" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="457" bodyend="565"/>
+    <listofallmembers>
+      <member refid="struct_data_configuration_result_1a4c0797e671a996ba71be609f4fcb3b36" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>ADCList</name></member>
+      <member refid="struct_data_configuration_result_1a093b069cbbf09c1709aa4bd9c9e03491" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>baselineFrac</name></member>
+      <member refid="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>DACAmp</name></member>
+      <member refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>DACList</name></member>
+      <member refid="struct_data_configuration_result_1adf95a6c6917eaeca51fcd0d8d4bf20e1" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>DAGain</name></member>
+      <member refid="struct_data_configuration_result_1ac39cc10b0ef54a1802507f82616836f9" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>dataAcqOrTP</name></member>
+      <member refid="struct_data_configuration_result_1aed7d8be1f97186cda1c117ab17d4c8cd" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>decimationFactor</name></member>
+      <member refid="struct_data_configuration_result_1a0c53d5c7db359178c0a970393ddcfb2d" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>distributedDAQ</name></member>
+      <member refid="struct_data_configuration_result_1a944f30f10a8504734eb51b88c51c7b45" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>distributedDAQDelay</name></member>
+      <member refid="struct_data_configuration_result_1a4c19323b062129ecfb40939b0582834f" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>distributedDAQOptOv</name></member>
+      <member refid="struct_data_configuration_result_1a864230e22498a6f356b2c70c840933ea" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>distributedDAQOptPost</name></member>
+      <member refid="struct_data_configuration_result_1a3e3dde1a5afa5566b39d330004cfc7ef" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>distributedDAQOptPre</name></member>
+      <member refid="struct_data_configuration_result_1a01f96fc46be36cb803d3fd788a34c3e4" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>globalTPInsert</name></member>
+      <member refid="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>hardwareType</name></member>
+      <member refid="struct_data_configuration_result_1ad40fa9b1e359e903ba29078603cddf3e" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>headstageADC</name></member>
+      <member refid="struct_data_configuration_result_1ae4a27142e528cf8391a12169750feaa2" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>headstageDAC</name></member>
+      <member refid="struct_data_configuration_result_1ae594509cf0184e9118b37221b2fc5850" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>indexing</name></member>
+      <member refid="struct_data_configuration_result_1ae8e94eec0dee9eccc1ca58fd8af17001" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>indexingLocked</name></member>
+      <member refid="struct_data_configuration_result_1a06a3f1639bb2656f7bdaa5970ae0656a" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>insertStart</name></member>
+      <member refid="struct_data_configuration_result_1a4abc650f19993130f65b226b7ce96cb7" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>multiDevice</name></member>
+      <member refid="struct_data_configuration_result_1a1d73072716d68aafe167aa8bff43fef0" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>numActiveChannels</name></member>
+      <member refid="struct_data_configuration_result_1ae02f680f3808e6c775e99b5c03f5728f" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>numADCEntries</name></member>
+      <member refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>numDACEntries</name></member>
+      <member refid="struct_data_configuration_result_1a4685f99541532b3e1aba545ef4accb3d" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>numTTLEntries</name></member>
+      <member refid="struct_data_configuration_result_1adf89c655dd287c35dbf5c98edd794ee6" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>offsets</name></member>
+      <member refid="struct_data_configuration_result_1aab9f921931bbfc21dfc6c5fe8e578dd8" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>onsetDelay</name></member>
+      <member refid="struct_data_configuration_result_1a5d0b3eb9afc2acac26ab1f298ced2fc1" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>onsetDelayAuto</name></member>
+      <member refid="struct_data_configuration_result_1a69eb57743919b13a89f56967078f2469" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>onsetDelayUser</name></member>
+      <member refid="struct_data_configuration_result_1afdeac09d49c38bf5d05c1eae271faeb8" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>powerSpectrum</name></member>
+      <member refid="struct_data_configuration_result_1a95201b77a12aad3e9fb1cece8ffd3b6c" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>regions</name></member>
+      <member refid="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>samplingInterval</name></member>
+      <member refid="struct_data_configuration_result_1a32042dfcd4e7b6391a088528eb548740" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>scalingZero</name></member>
+      <member refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>setColumn</name></member>
+      <member refid="struct_data_configuration_result_1a057ccbe8edeac3468b9c16e3a359933f" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>setCycleCount</name></member>
+      <member refid="struct_data_configuration_result_1a1f887229150d9f3f3fee23bf65a36d2e" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>setLength</name></member>
+      <member refid="struct_data_configuration_result_1a7688f619919cd315766b0b830a432518" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>setName</name></member>
+      <member refid="struct_data_configuration_result_1a0fc7701351170ac9c31cafdcfaf041d8" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>statusHS</name></member>
+      <member refid="struct_data_configuration_result_1ac0b82ee485e079b5fdb3edcbd02d4b72" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>stimSet</name></member>
+      <member refid="struct_data_configuration_result_1a9a4793010784e70104eece185bb60dfc" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>terminationDelay</name></member>
+      <member refid="struct_data_configuration_result_1af031293d0bfc0b5ea1d58ce02939fe15" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>testPulse</name></member>
+      <member refid="struct_data_configuration_result_1a164e98355dcd58ebfed2db25c7f72b91" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>testPulseLength</name></member>
+      <member refid="struct_data_configuration_result_1a325f4ab620f74b7d48dbc37fa0eb54b0" prot="public" virt="non-virtual"><scope>DataConfigurationResult</scope><name>TTLList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

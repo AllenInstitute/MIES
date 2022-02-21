@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_TestPulse_Multi.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_TestPulse_Single.ipf" href="_m_i_e_s___test_pulse___single_8ipf.html" />
+    <link rel="prev" title="File MIES_TestPulse.ipf" href="_m_i_e_s___test_pulse_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse___single_8ipf.html" title="File MIES_TestPulse_Single.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse_8ipf.html" title="File MIES_TestPulse.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_TestPulse_Multi.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-testpulse-multi-ipf">
+<span id="id1"></span><h1>File MIES_TestPulse_Multi.ipf<a class="headerlink" href="#file-mies-testpulse-multi-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>TPM</strong> Multi device background test pulse functionality </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425TPM_StartTPMultiDeviceLow6string8variable8variable">
+<span id="_CPPv325TPM_StartTPMultiDeviceLow6string8variable8variable"></span><span id="_CPPv225TPM_StartTPMultiDeviceLow6string8variable8variable"></span><span id="TPM_StartTPMultiDeviceLow__string.variable.variable"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StartTPMultiDeviceLow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runModifier</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425TPM_StartTPMultiDeviceLow6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start the test pulse when MD support is activated. </p>
+<p>Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger. The external trigger is assumed to be a arduino device using the arduino squencer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429TPM_StartTestPulseMultiDevice6string8variable">
+<span id="_CPPv329TPM_StartTestPulseMultiDevice6string8variable"></span><span id="_CPPv229TPM_StartTestPulseMultiDevice6string8variable"></span><span id="TPM_StartTestPulseMultiDevice__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a1749e191720dbe121f4bacdfde450ff8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StartTestPulseMultiDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429TPM_StartTestPulseMultiDevice6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start a multi device test pulse, always done in background mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428TPM_StopTestPulseMultiDevice6string8variable">
+<span id="_CPPv328TPM_StopTestPulseMultiDevice6string8variable"></span><span id="_CPPv228TPM_StopTestPulseMultiDevice6string8variable"></span><span id="TPM_StopTestPulseMultiDevice__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StopTestPulseMultiDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428TPM_StopTestPulseMultiDevice6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stop the TP on yoked devices simultaneously. </p>
+<p>Handles also non-yoked devices in multi device mode correctly. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412TPM_BkrdTPMD6string8variable">
+<span id="_CPPv312TPM_BkrdTPMD6string8variable"></span><span id="_CPPv212TPM_BkrdTPMD6string8variable"></span><span id="TPM_BkrdTPMD__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a3a0451327c2b2e01b846ba7405d2985f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_BkrdTPMD</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">triggerMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TPM_BkrdTPMD6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TPM_BkrdTPFuncMDP16BackgroundStruct">
+<span id="_CPPv316TPM_BkrdTPFuncMDP16BackgroundStruct"></span><span id="_CPPv216TPM_BkrdTPFuncMDP16BackgroundStruct"></span><span id="TPM_BkrdTPFuncMD__BackgroundStructP"></span><span class="target" id="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_BkrdTPFuncMD</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../struct/struct_background_struct.html#_CPPv416BackgroundStruct" title="BackgroundStruct"><span class="n"><span class="pre">BackgroundStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TPM_BkrdTPFuncMDP16BackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Background TP Multi Device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412TPM_StopTPMD6string">
+<span id="_CPPv312TPM_StopTPMD6string"></span><span id="_CPPv212TPM_StopTPMD6string"></span><span id="TPM_StopTPMD__string"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1aca57a53f70c13b73a7cd44569682905e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StopTPMD</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TPM_StopTPMD6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wrapper for <a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html#_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13"><span class="std std-ref">DQM_CallFuncForDevicesYoked()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TPM_StopTPMDFast6string">
+<span id="_CPPv316TPM_StopTPMDFast6string"></span><span id="_CPPv216TPM_StopTPMDFast6string"></span><span id="TPM_StopTPMDFast__string"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1ad047d8b08eb7c324a9f642e66a134126"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StopTPMDFast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TPM_StopTPMDFast6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wrapper for <a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html#_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13"><span class="std std-ref">DQM_CallFuncForDevicesYoked()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419TPM_StopTPMDWrapper6string8variable">
+<span id="_CPPv319TPM_StopTPMDWrapper6string8variable"></span><span id="_CPPv219TPM_StopTPMDWrapper6string8variable"></span><span id="TPM_StopTPMDWrapper__string.variable"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_StopTPMDWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fast</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419TPM_StopTPMDWrapper6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420TPM_HasActiveDevicesv">
+<span id="_CPPv320TPM_HasActiveDevicesv"></span><span id="_CPPv220TPM_HasActiveDevicesv"></span><span id="TPM_HasActiveDevices"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a7b25551aedb085d46b44c1c7ffb86bcf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_HasActiveDevices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420TPM_HasActiveDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TPM_RemoveDevice6string">
+<span id="_CPPv316TPM_RemoveDevice6string"></span><span id="_CPPv216TPM_RemoveDevice6string"></span><span id="TPM_RemoveDevice__string"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1ae90573ff0296f168899e003048746db7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_RemoveDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TPM_RemoveDevice6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413TPM_AddDevice6string">
+<span id="_CPPv313TPM_AddDevice6string"></span><span id="_CPPv213TPM_AddDevice6string"></span><span id="TPM_AddDevice__string"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a88443c3f326150e25470ce2014fe5e4d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_AddDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413TPM_AddDevice6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418TPM_NI_TASKTIMEOUT">
+<span id="_CPPv318TPM_NI_TASKTIMEOUT"></span><span id="_CPPv218TPM_NI_TASKTIMEOUT"></span><span id="TPM_NI_TASKTIMEOUT__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1aff4edd2665648c8bf917561b2ba2405b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_NI_TASKTIMEOUT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.5</span></span><a class="headerlink" href="#_CPPv418TPM_NI_TASKTIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>After this time in s the background task reading data from the ADC device. </p>
+<p>will not read multiple TP data sets subsequently to keep up if late</p>
+<p>it will however still update once per device</p>
+<p>so the gui thread can update at least every ~0.5 seconds (default value here)</p>
+<p>however the fifo may run full if the timeout is hit too often </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426TPM_NI_FIFO_THRESHOLD_SIZE">
+<span id="_CPPv326TPM_NI_FIFO_THRESHOLD_SIZE"></span><span id="_CPPv226TPM_NI_FIFO_THRESHOLD_SIZE"></span><span id="TPM_NI_FIFO_THRESHOLD_SIZE__doubleC"></span><span class="target" id="_m_i_e_s___test_pulse___multi_8ipf_1a24e62ba784f3285567cebd48ae34533d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TPM_NI_FIFO_THRESHOLD_SIZE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1073741824</span></span><a class="headerlink" href="#_CPPv426TPM_NI_FIFO_THRESHOLD_SIZE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___test_pulse_8ipf.html"
+                          title="previous chapter">File MIES_TestPulse.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___test_pulse___single_8ipf.html"
+                          title="next chapter">File MIES_TestPulse_Single.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse___single_8ipf.html" title="File MIES_TestPulse_Single.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___test_pulse_8ipf.html" title="File MIES_TestPulse.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_TestPulse_Multi.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

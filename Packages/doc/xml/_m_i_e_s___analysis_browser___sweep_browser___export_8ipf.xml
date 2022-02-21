@@ -1,0 +1,408 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisBrowser_SweepBrowser_Export.ipf</compoundname>
+    <innerclass refid="struct_s_b_e___export_settings" prot="public">SBE_ExportSettings</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5a492104d2167c579705cd8332ff770d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SBE_EXPORT_PANEL</definition>
+        <argsstring></argsstring>
+        <name>SBE_EXPORT_PANEL</name>
+        <initializer>= &quot;SBE_ExportSettingsPanel&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="9" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="9" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1ce531d26d12fde76387efd3c13c8614" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="183" endline="227">SBE_GetPulseStartTimesForSel</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a281cf803dd7c84267d6bdbfe9e7eed1d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="92" endline="108">SBE_GetSelectedAxis</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1af5e7f9c96c08a1b8e166e31b5c619fed" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="258" endline="275">SBE_GetSourceGraphADTraces</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a7351feb3dfc3186225301f9dbd83cba7" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="230" endline="243">SBE_ShowExportPanel</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SBE_FillExportSettings</definition>
+        <argsstring>(string win, SBE_ExportSettings *sett)</argsstring>
+        <name>SBE_FillExportSettings</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_s_b_e___export_settings" kindref="compound">SBE_ExportSettings</ref> *</type>
+          <declname>sett</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="24" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="24" bodyend="89"/>
+        <references refid="struct_s_b_e___export_settings_1a43b24eedfe0599cdd47f4c851bee4f05" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abc90b08b2aac9b525cfbec1856737f6e" compoundref="_m_i_e_s___constants_8ipf" startline="457">AXIS_ORIENTATION_HORIZ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a87f611f9d6c51fa9da2becedeb6f352e" compoundref="_m_i_e_s___constants_8ipf" startline="460">AXIS_ORIENTATION_VERT</references>
+        <references refid="struct_s_b_e___export_settings_1af635c93d1f25ca4541db81d7a6f39eeb" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="20">SBE_ExportSettings::axisEqualizing</references>
+        <references refid="struct_s_b_e___export_settings_1adfb5c9a04ec6f63914a55921b60b64db" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="18">SBE_ExportSettings::bottomAxis</references>
+        <references refid="struct_s_b_e___export_settings_1a3a253957dc66eb19e06c4d2ec63064d7" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="14">SBE_ExportSettings::dataFolder</references>
+        <references refid="struct_s_b_e___export_settings_1adad35666094526debfe7a1b8b67c13fa" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="20">SBE_ExportSettings::equalYRange</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a1288418e36a8b9d74966a8070f6d5d74" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="411" endline="418">GetSetVariableString</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a39a6ecf50e744030f93182e5c4a48da6" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1009" endline="1027">GetUniqueAxisName</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae0359eb2d1e95f02263d9002a5214f72" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1117" endline="1124">IsControlDisabled</references>
+        <references refid="struct_s_b_e___export_settings_1a51acea7a9b9fee123582e09c28982cc4" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="18">SBE_ExportSettings::leftAxis</references>
+        <references refid="struct_s_b_e___export_settings_1aef022e203a47155230fc67a92d8eecd4" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="17">SBE_ExportSettings::manualRangeBegin</references>
+        <references refid="struct_s_b_e___export_settings_1a958694457eaedeabf8419c753fa65748" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="17">SBE_ExportSettings::manualRangeEnd</references>
+        <references refid="struct_s_b_e___export_settings_1a051b395e7ec92b833f314350a12504b6" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::numPulses</references>
+        <references refid="struct_s_b_e___export_settings_1a6cd87f7bc1afa5f483fd2a3e9ce4605d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::postLastPulse</references>
+        <references refid="struct_s_b_e___export_settings_1a4adfadb60f7b9f5006b53dbfa34f4e68" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::preFirstPulse</references>
+        <references refid="struct_s_b_e___export_settings_1a464262e75f06009d8d957351ebb54498" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="16">SBE_ExportSettings::resetWaveZero</references>
+        <references refid="struct_s_b_e___export_settings_1a5187d947a8c6ea560b1b9cc1aaa2c823" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="19">SBE_ExportSettings::sourceGraph</references>
+        <references refid="struct_s_b_e___export_settings_1a559b4b82f469da4a166db35dd1133ed5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="19">SBE_ExportSettings::targetGraph</references>
+        <references refid="struct_s_b_e___export_settings_1a0026f5d847b52468dcc466ced68c7245" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="16">SBE_ExportSettings::useCursorRange</references>
+        <references refid="struct_s_b_e___export_settings_1a469b458164ae91affdec99e1ccdf8dde" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::usePulses</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ac10d86fa5f0e27a52f36cf23beeb1c23" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="667" endline="683">SBE_ButtonProc_PerformExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a281cf803dd7c84267d6bdbfe9e7eed1d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SBE_GetSelectedAxis</definition>
+        <argsstring>(string graphPopup, variable axisOrientation)</argsstring>
+        <name>SBE_GetSelectedAxis</name>
+        <param>
+          <type>string</type>
+          <declname>graphPopup</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>axisOrientation</declname>
+        </param>
+        <briefdescription>
+<para>Return a list of possible axes for the export panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="92" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="92" bodyend="108"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abc90b08b2aac9b525cfbec1856737f6e" compoundref="_m_i_e_s___constants_8ipf" startline="457">AXIS_ORIENTATION_HORIZ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a87f611f9d6c51fa9da2becedeb6f352e" compoundref="_m_i_e_s___constants_8ipf" startline="460">AXIS_ORIENTATION_VERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aea61a5764b6537a2acd966a31c70946f" compoundref="_m_i_e_s___utilities_8ipf" startline="3993" endline="4013">GetAllAxesWithOrientation</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5a492104d2167c579705cd8332ff770d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="9">SBE_EXPORT_PANEL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a866485920681fcc331ea04586dd5f57c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SBE_AddMissingADTraceInfo</definition>
+        <argsstring>(WaveText traceData)</argsstring>
+        <name>SBE_AddMissingADTraceInfo</name>
+        <param>
+          <type>WaveText</type>
+          <declname>traceData</declname>
+        </param>
+        <briefdescription>
+<para>Add all available sweep data to traceData. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function can fill in the available data for traces which are <emphasis>not</emphasis> shown. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="114" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="114" bodyend="181"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a2423aeb7e32f7d9af36e780b89bed3c4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2070" endline="2079">GetDAQDataSingleColumnWaves</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a44414c1bd47592754c5cfaf9ff3ce97c" compoundref="_m_i_e_s___constants_8ipf" startline="81">XOP_CHANNEL_NAMES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1ce531d26d12fde76387efd3c13c8614" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="183" endline="227">SBE_GetPulseStartTimesForSel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1ce531d26d12fde76387efd3c13c8614" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SBE_GetPulseStartTimesForSel</definition>
+        <argsstring>()</argsstring>
+        <name>SBE_GetPulseStartTimesForSel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="183" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="183" bodyend="227"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a08199dd68e1a90b8ffeb649fe2897dbd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6842" endline="6863">GetGraphUserData</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_m_i_e_s___pulse_averaging_8ipf_1aaea06d31c5d819cb5b33fc115773da86" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="343" endline="393">PA_GetPulseInfos</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a866485920681fcc331ea04586dd5f57c" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="114" endline="181">SBE_AddMissingADTraceInfo</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5a492104d2167c579705cd8332ff770d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="9">SBE_EXPORT_PANEL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a033f1e7637204e83bdf8969add711bc2" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="711" endline="731">SBE_PopMenuProc_PulsesADTrace</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a7351feb3dfc3186225301f9dbd83cba7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_ShowExportPanel</definition>
+        <argsstring>(string sourceWindow)</argsstring>
+        <name>SBE_ShowExportPanel</name>
+        <param>
+          <type>string</type>
+          <declname>sourceWindow</declname>
+        </param>
+        <briefdescription>
+<para>Display the export panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="230" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="230" bodyend="243"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5a492104d2167c579705cd8332ff770d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="9">SBE_EXPORT_PANEL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a1dfc78e078c4eedcf604c08975234172" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="575" endline="588">SB_ButtonProc_ExportTraces</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a60349059ff268bdac3ca5e357814055d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SBE_ListOfGraphsAndNew</definition>
+        <argsstring>()</argsstring>
+        <name>SBE_ListOfGraphsAndNew</name>
+        <briefdescription>
+<para>Return a list of possible target graphs for the export panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="246" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="246" bodyend="249"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1aa4a9a48810e4102924d926ca35a14436" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SBE_ListOfSweepGraphs</definition>
+        <argsstring>()</argsstring>
+        <name>SBE_ListOfSweepGraphs</name>
+        <briefdescription>
+<para>Return a list of possible source graphs for the export panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="252" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="252" bodyend="255"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1af5e7f9c96c08a1b8e166e31b5c619fed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SBE_GetSourceGraphADTraces</definition>
+        <argsstring>()</argsstring>
+        <name>SBE_GetSourceGraphADTraces</name>
+        <briefdescription>
+<para>Return a list of all AD traces from the selected target graph. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="258" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="258" bodyend="275"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1bea922c4436b88317c2a6b31df41916" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3904" endline="3952">GetAllSweepTraces</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5a492104d2167c579705cd8332ff770d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="9">SBE_EXPORT_PANEL</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SBE_ExportSweepBrowser</definition>
+        <argsstring>(SBE_ExportSettings *sett)</argsstring>
+        <name>SBE_ExportSweepBrowser</name>
+        <param>
+          <type><ref refid="struct_s_b_e___export_settings" kindref="compound">SBE_ExportSettings</ref> *</type>
+          <declname>sett</declname>
+        </param>
+        <briefdescription>
+<para>Export the sweep browser traces to a user given folder. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates a new graph from it or appends to an existing one. Only duplicates the main graph without external subwindows </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="281" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="281" bodyend="565"/>
+        <references refid="struct_s_b_e___export_settings_1a43b24eedfe0599cdd47f4c851bee4f05" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::ADC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a86a8498dd801874d10236dc2c4994efc" compoundref="_m_i_e_s___utilities_8ipf" startline="1265" endline="1307">AddEntryIntoWaveNoteAsList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abc90b08b2aac9b525cfbec1856737f6e" compoundref="_m_i_e_s___constants_8ipf" startline="457">AXIS_ORIENTATION_HORIZ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a87f611f9d6c51fa9da2becedeb6f352e" compoundref="_m_i_e_s___constants_8ipf" startline="460">AXIS_ORIENTATION_VERT</references>
+        <references refid="struct_s_b_e___export_settings_1af635c93d1f25ca4541db81d7a6f39eeb" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="20">SBE_ExportSettings::axisEqualizing</references>
+        <references refid="struct_s_b_e___export_settings_1adfb5c9a04ec6f63914a55921b60b64db" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="18">SBE_ExportSettings::bottomAxis</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1eb71cae989ce4dfcfee3dbaeefd3b71" compoundref="_m_i_e_s___utilities_8ipf" startline="715" endline="741">createDFWithAllParents</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="struct_s_b_e___export_settings_1a3a253957dc66eb19e06c4d2ec63064d7" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="14">SBE_ExportSettings::dataFolder</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ab2f836520b97d454022dc8d052e35513" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4392" endline="4542">EqualizeVerticalAxesRanges</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5a010ce2abfb157f1fa7b3805a431c73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3273" endline="3351">EquallySpaceAxis</references>
+        <references refid="struct_s_b_e___export_settings_1adad35666094526debfe7a1b8b67c13fa" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="20">SBE_ExportSettings::equalYRange</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aea61a5764b6537a2acd966a31c70946f" compoundref="_m_i_e_s___utilities_8ipf" startline="3993" endline="4013">GetAllAxesWithOrientation</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a19f341c525c3562283bde8938d2a4d03" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4647" endline="4649">GetAnalysisFolderAS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_s_b_e___export_settings_1a51acea7a9b9fee123582e09c28982cc4" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="18">SBE_ExportSettings::leftAxis</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a365ac27e2c6991738cab01651ddced01" compoundref="_m_i_e_s___utilities_8ipf" startline="3393" endline="3421">ListHasOnlyOneUniqueEntry</references>
+        <references refid="struct_s_b_e___export_settings_1aef022e203a47155230fc67a92d8eecd4" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="17">SBE_ExportSettings::manualRangeBegin</references>
+        <references refid="struct_s_b_e___export_settings_1a958694457eaedeabf8419c753fa65748" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="17">SBE_ExportSettings::manualRangeEnd</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad210dd8583db24ef1c4877d3208f847d" compoundref="_m_i_e_s___utilities_8ipf" startline="1938" endline="1942">MinMax</references>
+        <references refid="struct_s_b_e___export_settings_1a051b395e7ec92b833f314350a12504b6" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::numPulses</references>
+        <references refid="struct_s_b_e___export_settings_1a6cd87f7bc1afa5f483fd2a3e9ce4605d" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::postLastPulse</references>
+        <references refid="struct_s_b_e___export_settings_1a4adfadb60f7b9f5006b53dbfa34f4e68" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::preFirstPulse</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a917432b29be2c52c30113efdaf85694e" compoundref="_m_i_e_s___utilities_8ipf" startline="1609" endline="1649">RemovePrefix</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8b83743800bbb559e422f3e7488c2592" compoundref="_m_i_e_s___utilities_8ipf" startline="4079" endline="4104">ReplaceWordInString</references>
+        <references refid="struct_s_b_e___export_settings_1a464262e75f06009d8d957351ebb54498" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="16">SBE_ExportSettings::resetWaveZero</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a7a40b8f9889d6e20927582a446d508a5" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="18" endline="22">SB_GetSweepBrowserFolder</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1ce531d26d12fde76387efd3c13c8614" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="183" endline="227">SBE_GetPulseStartTimesForSel</references>
+        <references refid="struct_s_b_e___export_settings_1a5187d947a8c6ea560b1b9cc1aaa2c823" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="19">SBE_ExportSettings::sourceGraph</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <references refid="struct_s_b_e___export_settings_1a559b4b82f469da4a166db35dd1133ed5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="19">SBE_ExportSettings::targetGraph</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a880635d68b536768486818064c4efa2c" compoundref="_m_i_e_s___utilities_8ipf" startline="1508" endline="1524">UniqueDataFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7a92f59a3edcc0563b56464bd12476c0" compoundref="_m_i_e_s___utilities_8ipf" startline="2319" endline="2345">UniqueTraceName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aecf3cff75b4fd770e7e921e6d5b0b117" compoundref="_i_p_n_w_b___utils_8ipf" startline="256" endline="286">UniqueWaveName</references>
+        <references refid="struct_s_b_e___export_settings_1a0026f5d847b52468dcc466ced68c7245" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="16">SBE_ExportSettings::useCursorRange</references>
+        <references refid="struct_s_b_e___export_settings_1a469b458164ae91affdec99e1ccdf8dde" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="21">SBE_ExportSettings::usePulses</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ac10d86fa5f0e27a52f36cf23beeb1c23" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="667" endline="683">SBE_ButtonProc_PerformExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1aa4815a26ec3b054b03427cec27eb81b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void SBE_ExportSettingsPanel</definition>
+        <argsstring>()</argsstring>
+        <name>SBE_ExportSettingsPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="567" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="567" bodyend="612"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1b4efef894488ecbd7f2f2ceaba5cf50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_PopMenu_ExportTargetAxis</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>SBE_PopMenu_ExportTargetAxis</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="614" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="614" bodyend="643"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a681079b41d468e38ebf82c73c5fd31d9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="84" endline="94">EnableControls</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a762dfb721c2f555d3679acefdbfced8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_PopMenu_ExportTargetGraph</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>SBE_PopMenu_ExportTargetGraph</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="645" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="645" bodyend="665"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa8588b6b7329369c25fbd768f02f7c32" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="97" endline="108">DisableControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4b8f5d3b64fd8d1ea8d475f420bb3aad" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="70" endline="81">EnableControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ac10d86fa5f0e27a52f36cf23beeb1c23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_ButtonProc_PerformExport</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>SBE_ButtonProc_PerformExport</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="667" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="667" bodyend="683"/>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a97a51de9fcaf6d3190006849ce4e998c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_CheckProc_UsePulseForXRange</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>SBE_CheckProc_UsePulseForXRange</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="685" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="685" bodyend="709"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a681079b41d468e38ebf82c73c5fd31d9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="84" endline="94">EnableControls</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0f7767bbb512666184715e50564b8b7c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="431" endline="439">GetPopupMenuIndex</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a033f1e7637204e83bdf8969add711bc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SBE_PopMenuProc_PulsesADTrace</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>SBE_PopMenuProc_PulsesADTrace</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="711" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="711" bodyend="731"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a1ce531d26d12fde76387efd3c13c8614" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="183" endline="227">SBE_GetPulseStartTimesForSel</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SBE</bold> Panel for exporting sweepbrowser traces to new graphs or existing graphs </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf"/>
+  </compounddef>
+</doxygen>

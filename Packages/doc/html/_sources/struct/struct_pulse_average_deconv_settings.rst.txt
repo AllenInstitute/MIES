@@ -1,0 +1,4 @@
+Struct PulseAverageDeconvSettings
+=================================
+
+.. doxygenstruct:: PulseAverageDeconvSettings

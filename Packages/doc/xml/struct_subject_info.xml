@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_subject_info" kind="struct" language="C++" prot="public">
+    <compoundname>SubjectInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_subject_info_1abae4b140b0ab09c14a869fb674b33ce9" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::age</definition>
+        <argsstring></argsstring>
+        <name>age</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="115" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="114" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a480d92e80f286ed4ffbd0e31ea09438e" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::date_of_birth</definition>
+        <argsstring></argsstring>
+        <name>date_of_birth</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="116" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="116" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a156b6c289104a1674cd5d37b97597a94" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="117" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="117" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a2f286610675f846e7fa140ffb96fed4d" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::genotype</definition>
+        <argsstring></argsstring>
+        <name>genotype</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="118" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="118" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1abcb26a10b4e18d653c7c33ecd3ba7f0a" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::sex</definition>
+        <argsstring></argsstring>
+        <name>sex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="119" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="119" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a05e66316a055f8a0d80570184db5eb38" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::species</definition>
+        <argsstring></argsstring>
+        <name>species</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="120" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="120" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a3da983efccd26d99b1bb2172847c0282" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::subject_id</definition>
+        <argsstring></argsstring>
+        <name>subject_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="121" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="121" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_subject_info_1a78547157ececda86ce1a0db5482fd52e" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SubjectInfo::weight</definition>
+        <argsstring></argsstring>
+        <name>weight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="122" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="122" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" compoundref="_i_p_n_w_b___reader_8ipf" startline="404" endline="422">ReadSubjectInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Structure to hold all properties of the NWB file directly below <computeroutput>/general/subject</computeroutput> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="114" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="114" bodyend="123"/>
+    <listofallmembers>
+      <member refid="struct_subject_info_1abae4b140b0ab09c14a869fb674b33ce9" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>age</name></member>
+      <member refid="struct_subject_info_1a480d92e80f286ed4ffbd0e31ea09438e" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>date_of_birth</name></member>
+      <member refid="struct_subject_info_1a156b6c289104a1674cd5d37b97597a94" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>description</name></member>
+      <member refid="struct_subject_info_1a2f286610675f846e7fa140ffb96fed4d" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>genotype</name></member>
+      <member refid="struct_subject_info_1abcb26a10b4e18d653c7c33ecd3ba7f0a" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>sex</name></member>
+      <member refid="struct_subject_info_1a05e66316a055f8a0d80570184db5eb38" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>species</name></member>
+      <member refid="struct_subject_info_1a3da983efccd26d99b1bb2172847c0282" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>subject_id</name></member>
+      <member refid="struct_subject_info_1a78547157ececda86ce1a0db5482fd52e" prot="public" virt="non-virtual"><scope>SubjectInfo</scope><name>weight</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

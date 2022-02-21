@@ -1,0 +1,1536 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_AnalysisFunctions_PatchSeq.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_ArtefactRemoval.ipf" href="_m_i_e_s___artefact_removal_8ipf.html" />
+    <link rel="prev" title="File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html" title="File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-analysisfunctions-patchseq-ipf">
+<span id="id1"></span><h1>File MIES_AnalysisFunctions_PatchSeq.ipf<a class="headerlink" href="#file-mies-analysisfunctions-patchseq-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>PSQ</strong> Analysis functions for patch sequence </p>
+<p>The stimsets with the analysis functions attached are executed in the following order:<ul class="simple">
+<li><p>PSQ_PipetteInBath</p></li>
+<li><p>PSQ_DaScale (sub threshold)</p></li>
+<li><p>PSQ_SquarePulse (long pulse)</p></li>
+<li><p>PSQ_Rheobase (long pulse)</p></li>
+<li><p>PSQ_DaScale (supra threshold)</p></li>
+<li><p>PSQ_SquarePulse (short pulse)</p></li>
+<li><p>PSQ_Rheobase (short pulse)</p></li>
+<li><p>PSQ_Ramp</p></li>
+<li><p>PSQ_Chirp</p></li>
+</ul>
+</p>
+<p>The Patch Seq analysis functions store various results in the labnotebook.</p>
+<p>For orientation the following table shows their relation. All labnotebook keys can and should be created via <a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d"><span class="std std-ref">CreateAnaFuncLBNKey()</span></a>.</p>
+<p><table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 32%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Naming constant</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Labnotebook</p></th>
+<th class="head"><p>Analysis function</p></th>
+<th class="head"><p>Per Chunk?</p></th>
+<th class="head"><p>Headstage dependent?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_SPIKE_DETECT</p></td>
+<td><p>The required number of spikes were detected on the sweep</p></td>
+<td><p>Numerical</p></td>
+<td><p>SP, RB, RA, DA (Supra)</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_SPIKE_POSITIONS</p></td>
+<td><p>Spike positions in ms</p></td>
+<td><p>Numerical</p></td>
+<td><p>RA</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_SPIKE_COUNT</p></td>
+<td><p>Spike count</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA (Supra)</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_STEPSIZE</p></td>
+<td><p>Current DAScale step size</p></td>
+<td><p>Numerical</p></td>
+<td><p>SP, RB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_STEPSIZE_FUTURE</p></td>
+<td><p>Future DAScale step size</p></td>
+<td><p>Numerical</p></td>
+<td><p>RB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_RB_DASCALE_EXC</p></td>
+<td><p>Range for valid DAScale values is exceeded</p></td>
+<td><p>Numerical</p></td>
+<td><p>RB</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_RB_LIMITED_RES</p></td>
+<td><p>Failed due to limited DAScale resolution</p></td>
+<td><p>Numerical</p></td>
+<td><p>RB</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_FINAL_SCALE</p></td>
+<td><p>Final DAScale of the given headstage, only set on success</p></td>
+<td><p>Numerical</p></td>
+<td><p>SP, RB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_SPIKE_DASCALE_ZERO</p></td>
+<td><p>Sweep spiked with DAScale of 0</p></td>
+<td><p>Numerical</p></td>
+<td><p>SP</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_INITIAL_SCALE</p></td>
+<td><p>Initial DAScale</p></td>
+<td><p>Numerical</p></td>
+<td><p>RB, CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_RMS_SHORT_PASS</p></td>
+<td><p>Short RMS baseline QC result</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_RMS_SHORT_THRESHOLD</p></td>
+<td><p>Short RMS baseline threshold [V]</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_RMS_LONG_PASS</p></td>
+<td><p>Long RMS baseline QC result</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_RMS_LONG_THRESHOLD</p></td>
+<td><p>Long RMS baseline threshold [V]</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_TARGETV</p></td>
+<td><p>Target voltage baseline</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_TARGETV_PASS</p></td>
+<td><p>Target voltage baseline QC result</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_LEAKCUR</p></td>
+<td><p>Leak current</p></td>
+<td><p>Numerical</p></td>
+<td><p>PB</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_LEAKCUR_PASS</p></td>
+<td><p>Leak current QC result</p></td>
+<td><p>Numerical</p></td>
+<td><p>PB</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_CHUNK_PASS</p></td>
+<td><p>Which chunk passed/failed baseline QC</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR, PB</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_BL_QC_PASS</p></td>
+<td><p>Pass/fail state of the complete baseline</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, CR, PB</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_SWEEP_PASS</p></td>
+<td><p>Pass/fail state of the complete sweep</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, SP, RA, CR, PB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_SET_PASS</p></td>
+<td><p>Pass/fail state of the complete set</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, SP, CR, PB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_SAMPLING_PASS</p></td>
+<td><p>Pass/fail state of the sampling interval check</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA, RB, RA, SP, CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_PULSE_DUR</p></td>
+<td><p>Pulse duration as determined experimentally</p></td>
+<td><p>Numerical</p></td>
+<td><p>RB, DA (Supra), CR</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_DA_fI_SLOPE</p></td>
+<td><p>Fitted slope in the f-I plot</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA (Supra)</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_DA_fI_SLOPE_REACHED</p></td>
+<td><p>Fitted slope in the f-I plot exceeds target value</p></td>
+<td><p>Numerical</p></td>
+<td><p>DA (Supra)</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_DA_OPMODE</p></td>
+<td><p>Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA</p></td>
+<td><p>Textual</p></td>
+<td><p>DA</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_CR_INSIDE_BOUNDS</p></td>
+<td><p>AD response is inside the given bands</p></td>
+<td><p>Numerical</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_CR_RESISTANCE</p></td>
+<td><p>Calculated resistance in Ohm from DAScale sub threshold</p></td>
+<td><p>Numerical</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_CR_BOUNDS_ACTION</p></td>
+<td><p>Action according to min/max positions</p></td>
+<td><p>Numerical</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_CR_BOUNDS_STATE</p></td>
+<td><p>Upper and Lower bounds state according to min/max pos.</p></td>
+<td><p>Textual</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_CR_SPIKE_CHECK</p></td>
+<td><p>Spike check was enabled/disabled</p></td>
+<td><p>Numerical</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_CR_SPIKE_PASS</p></td>
+<td><p>Pass/fail state of the spike search (No spikes → Pass)</p></td>
+<td><p>Numerical</p></td>
+<td><p>CR</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>FMT_LBN_ANA_FUNC_VERSION</p></td>
+<td><p>Integer version of the analysis function</p></td>
+<td><p>Numerical</p></td>
+<td><p>All</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>PSQ_FMT_LBN_PB_RESISTANCE</p></td>
+<td><p>Pipette Resistance</p></td>
+<td><p>Numerical</p></td>
+<td><p>PB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>PSQ_FMT_LBN_PB_RESISTANCE_PASS</p></td>
+<td><p>Pipette Resistance QC</p></td>
+<td><p>Numerical</p></td>
+<td><p>PB</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<p>Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.</p>
+</p>
+<p>The following table lists the user epochs which are added during data acquisition:</p>
+<p><p><table class="docutils align-default">
+<colgroup>
+<col style="width: 45%" />
+<col style="width: 8%" />
+<col style="width: 14%" />
+<col style="width: 30%" />
+<col style="width: 4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tags</p></th>
+<th class="head"><p>Short Name</p></th>
+<th class="head"><p>Analysis function</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Level</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name=Baseline Chunk;Index=x</p></td>
+<td><p>U_BLCx</p></td>
+<td><p>DA, RB, RA, CR</p></td>
+<td><p>Baseline QC evaluation chunks</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Name=DA Suppression</p></td>
+<td><p>U_RA_DA</p></td>
+<td><p>RA</p></td>
+<td><p>DA was suppressed in this time interval</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-even"><td><p>Name=Unacquired DA data</p></td>
+<td><p>U_RA_UD</p></td>
+<td><p>RA</p></td>
+<td><p>Interval of unacquired data</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Type=Testpulse Like;Index=x</p></td>
+<td><p>U_TPx</p></td>
+<td><p>PB</p></td>
+<td><p>Testpulse like region in stimset</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-even"><td><p>Type=Testpulse Like;SubType=Baseline;Index=x</p></td>
+<td><p>U_TPx_B0</p></td>
+<td><p>PB</p></td>
+<td><p>pre pulse baseline of testpulse</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x</p></td>
+<td><p>U_TPx_B1</p></td>
+<td><p>PB</p></td>
+<td><p>post pulse baseline of testpulse</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-even"><td><p>Type=Testpulse Like;SubType=Baseline;Index=x</p></td>
+<td><p>U_TPx_P</p></td>
+<td><p>PB</p></td>
+<td><p>pulse of testpulse</p></td>
+<td><p>-1</p></td>
+</tr>
+</tbody>
+</table>
+<p>See also <a class="reference internal" href="../epoch_information.html#epoch-time-specialities"><span class="std std-ref">Time specialities</span></a>.</p>
+</p>
+ </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PSQ_GetPulseSettingsForType8variableP17PSQ_PulseSettings">
+<span id="_CPPv327PSQ_GetPulseSettingsForType8variableP17PSQ_PulseSettings"></span><span id="_CPPv227PSQ_GetPulseSettingsForType8variableP17PSQ_PulseSettings"></span><span id="PSQ_GetPulseSettingsForType__variable.PSQ_PulseSettingsP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a963398369495ff1a060a2d60d89b6b8d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetPulseSettingsForType</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv417PSQ_PulseSettings" title="PSQ_PulseSettings"><span class="n"><span class="pre">PSQ_PulseSettings</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PSQ_GetPulseSettingsForType8variableP17PSQ_PulseSettings" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fills <code class="docutils literal notranslate"><span class="pre">s</span></code> according to the analysis function type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PSQ_GetPulseDurations6string8variable8variable8variable8variable">
+<span id="_CPPv321PSQ_GetPulseDurations6string8variable8variable8variable8variable"></span><span id="_CPPv221PSQ_GetPulseDurations6string8variable8variable8variable8variable"></span><span id="PSQ_GetPulseDurations__string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a94f0f23a8c8f67aecf32cb606874bb57"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetPulseDurations</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalOnsetDelay</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">forceRecalculation</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PSQ_GetPulseDurations6string8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the pulse durations from the labnotebook or calculate them before if required in ms. For convenience unused headstages will have 0 instead of NaN in the returned wave.</p>
+<p>We recalculate the durations on every sweep again as we can not assume that it is constant for the whole stimulus set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PSQ_DeterminePulseDuration6string8variable8variable8variable">
+<span id="_CPPv326PSQ_DeterminePulseDuration6string8variable8variable8variable"></span><span id="_CPPv226PSQ_DeterminePulseDuration6string8variable8variable8variable"></span><span id="PSQ_DeterminePulseDuration__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad51a46ca2e3642920a3150f01dc31627"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DeterminePulseDuration</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalOnsetDelay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PSQ_DeterminePulseDuration6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Determine the pulse duration on each headstage. </p>
+<p>Returns the labnotebook wave as well. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428PSQ_GetBaselineRMSThresholds6string">
+<span id="_CPPv328PSQ_GetBaselineRMSThresholds6string"></span><span id="_CPPv228PSQ_GetBaselineRMSThresholds6string"></span><span id="PSQ_GetBaselineRMSThresholds__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1233deb73a578b926721eebbd9c1ab61"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetBaselineRMSThresholds</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428PSQ_GetBaselineRMSThresholds6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the baseline RMS short/long thresholds in mV. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435PSQ_StoreRMSThresholdsInLabnotebook6string8variable8variable8variable8variable8variable">
+<span id="_CPPv335PSQ_StoreRMSThresholdsInLabnotebook6string8variable8variable8variable8variable8variable"></span><span id="_CPPv235PSQ_StoreRMSThresholdsInLabnotebook6string8variable8variable8variable8variable8variable"></span><span id="PSQ_StoreRMSThresholdsInLabnotebook__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ac9f91cea627980be611a7b3afecd4f7d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_StoreRMSThresholdsInLabnotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rmsShortThreshold</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rmsLongThreshold</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435PSQ_StoreRMSThresholdsInLabnotebook6string8variable8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PSQ_EvaluateBaselinePassed6string8variable8variable8variable8variable8variable">
+<span id="_CPPv326PSQ_EvaluateBaselinePassed6string8variable8variable8variable8variable8variable"></span><span id="_CPPv226PSQ_EvaluateBaselinePassed6string8variable8variable8variable8variable8variable"></span><span id="PSQ_EvaluateBaselinePassed__string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a51506279a5a234f5353406315d984ac8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_EvaluateBaselinePassed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunk</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ret</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PSQ_EvaluateBaselinePassed6string8variable8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PSQ_EvaluateBaselineChunks6string8variableP19AnalysisFunction_V3">
+<span id="_CPPv326PSQ_EvaluateBaselineChunks6string8variableP19AnalysisFunction_V3"></span><span id="_CPPv226PSQ_EvaluateBaselineChunks6string8variableP19AnalysisFunction_V3"></span><span id="PSQ_EvaluateBaselineChunks__string.variable.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a0d8ccfd8f2ecdf8b31f115f7be61a39e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_EvaluateBaselineChunks</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PSQ_EvaluateBaselineChunks6string8variableP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430PSQ_EvaluateBaselineProperties6stringP19AnalysisFunction_V38variable8variable8variable8variable">
+<span id="_CPPv330PSQ_EvaluateBaselineProperties6stringP19AnalysisFunction_V38variable8variable8variable8variable"></span><span id="_CPPv230PSQ_EvaluateBaselineProperties6stringP19AnalysisFunction_V38variable8variable8variable8variable"></span><span id="PSQ_EvaluateBaselineProperties__string.AnalysisFunction_V3P.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_EvaluateBaselineProperties</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunk</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fifoInStimsetTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalOnsetDelay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430PSQ_EvaluateBaselineProperties6stringP19AnalysisFunction_V38variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate one chunk of the baseline. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>s</strong> – <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#struct_analysis_function___v3"><span class="std std-ref">AnalysisFunction_V3</span></a> struct </p></li>
+<li><p><strong>type</strong> – analysis function type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PatchSeqAnalysisFunctionTypes"><span class="std std-ref">PatchSeqAnalysisFunctionTypes</span></a> </p></li>
+<li><p><strong>chunk</strong> – chunk number, <code class="docutils literal notranslate"><span class="pre">chunk</span> <span class="pre">==</span> <span class="pre">0</span></code> -&gt; Pre pulse baseline chunk, <code class="docutils literal notranslate"><span class="pre">chunk</span> <span class="pre">&gt;=</span> <span class="pre">1</span></code> -&gt; Post pulse baseline </p></li>
+<li><p><strong>fifoInStimsetTime</strong> – Fifo position in ms <em>relative</em> to the start of the stimset (therefore ignoring the totalOnsetDelay) </p></li>
+<li><p><strong>totalOnsetDelay</strong> – total onset delay in ms</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pre pulse baseline: 0 if the chunk passes, one of the possible <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisFuncReturnTypesConstants"><span class="std std-ref">AnalysisFuncReturnTypesConstants</span></a> values otherwise post pulse baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PSQ_GetNumberOfChunks6string8variable8variable8variable">
+<span id="_CPPv321PSQ_GetNumberOfChunks6string8variable8variable8variable"></span><span id="_CPPv221PSQ_GetNumberOfChunks6string8variable8variable8variable"></span><span id="PSQ_GetNumberOfChunks__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acab15c994a1c0e63c17d2417c337dae7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetNumberOfChunks</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PSQ_GetNumberOfChunks6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the number of chunks. </p>
+<p>A chunk is <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a> [ms] of baseline.</p>
+<p>For calculating the number of chunks we ignore the one chunk after the pulse which we don’t evaluate! </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413PSQ_Calculate4wave8variable8variable8variable8variable">
+<span id="_CPPv313PSQ_Calculate4wave8variable8variable8variable8variable"></span><span id="_CPPv213PSQ_Calculate4wave8variable8variable8variable8variable"></span><span id="PSQ_Calculate__wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1afc3e9ffd815fb5f0a16ad2197be78e61"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Calculate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">column</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rangeTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413PSQ_Calculate4wave8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PSQ_NumAcquiredSweepsInSet6string8variable8variable">
+<span id="_CPPv326PSQ_NumAcquiredSweepsInSet6string8variable8variable"></span><span id="_CPPv226PSQ_NumAcquiredSweepsInSet6string8variable8variable"></span><span id="PSQ_NumAcquiredSweepsInSet__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59f3b02b11a7c02b64b28efe11237f6b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_NumAcquiredSweepsInSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PSQ_NumAcquiredSweepsInSet6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the number of already acquired sweeps from the given stimset cycle. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PSQ_NumPassesInSet4wave8variable8variable8variable">
+<span id="_CPPv318PSQ_NumPassesInSet4wave8variable8variable8variable"></span><span id="_CPPv218PSQ_NumPassesInSet4wave8variable8variable8variable"></span><span id="PSQ_NumPassesInSet__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaf9ac438db2183bc5afe53ac82027101"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_NumPassesInSet</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PSQ_NumPassesInSet4wave8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the number of passed sweeps in all sweeps from the given stimset cycle. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PSQ_GetDAStimsetLength6string8variable">
+<span id="_CPPv322PSQ_GetDAStimsetLength6string8variable"></span><span id="_CPPv222PSQ_GetDAStimsetLength6string8variable"></span><span id="PSQ_GetDAStimsetLength__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af21d4f0ca894c6d9ee0672176dcf12b5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetDAStimsetLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PSQ_GetDAStimsetLength6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the DA stimset length in ms of the given headstage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>stimset length or -1 on error </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PSQ_CreateOverrideResults6string8variable8variable">
+<span id="_CPPv325PSQ_CreateOverrideResults6string8variable8variable"></span><span id="_CPPv225PSQ_CreateOverrideResults6string8variable8variable"></span><span id="PSQ_CreateOverrideResults__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CreateOverrideResults</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PSQ_CreateOverrideResults6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create the overrides results wave for CI testing. </p>
+<p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a12a19bf8650ece02087fe415a80ab3fc"><span class="std std-ref">PSQ_SQUARE_PULSE</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>x position in ms where the spike is in each sweep/step For convenience the values <code class="docutils literal notranslate"><span class="pre">0</span></code> always means no spike and <code class="docutils literal notranslate"><span class="pre">1</span></code> spike detected (at the appropriate position).</p></li>
+</ul>
+</p>
+<p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1acaa4e10d725b15a3658b64aaabe53c68"><span class="std std-ref">PSQ_RHEOBASE</span></a>/<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a0086fa72006d9f5fb58a3c7dbbb53875"><span class="std std-ref">PSQ_RAMP</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>chunk indizes</p></li>
+</ul>
+</p>
+<p>Cols:<ul class="simple">
+<li><p>sweeps/steps</p></li>
+</ul>
+</p>
+<p>Layers:<ul class="simple">
+<li><p>0: 1 if the chunk has passing baseline QC or not</p></li>
+<li><p>1: x position in ms where the spike is in each sweep/step For convenience the values <code class="docutils literal notranslate"><span class="pre">0</span></code> always means no spike and <code class="docutils literal notranslate"><span class="pre">1</span></code> spike detected (at the appropriate position).</p></li>
+</ul>
+</p>
+<p>Chunks (only for layer 0):<ul class="simple">
+<li><p>0: RMS short baseline QC</p></li>
+<li><p>1: RMS long baseline QC</p></li>
+<li><p>2: target voltage baseline QC</p></li>
+<li><p>3: leak current baseline QC</p></li>
+</ul>
+</p>
+<p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a014f1f0dd3cc878659f020cf61ddbbb5"><span class="std std-ref">PSQ_DA_SCALE</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>chunk indizes</p></li>
+</ul>
+</p>
+<p>Cols:<ul class="simple">
+<li><p>sweeps/steps</p></li>
+</ul>
+</p>
+<p>Layers:<ul class="simple">
+<li><p>0: 1 if the chunk has passing baseline QC or not</p></li>
+<li><p>1: x position in ms where the spike is in each sweep/step For convenience the values <code class="docutils literal notranslate"><span class="pre">0</span></code> always means no spike and <code class="docutils literal notranslate"><span class="pre">1</span></code> spike detected (at the appropriate position).</p></li>
+<li><p>2: Number of spikes</p></li>
+</ul>
+</p>
+<p>Chunks (only for layer 0):<ul class="simple">
+<li><p>0: RMS short baseline QC</p></li>
+<li><p>1: RMS long baseline QC</p></li>
+<li><p>2: target voltage baseline QC</p></li>
+<li><p>3: leak current baseline QC</p></li>
+</ul>
+</p>
+<p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1aa8425a13a5ee06b74daf14be15d39e13"><span class="std std-ref">PSQ_CHIRP</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>chunk indizes</p></li>
+</ul>
+</p>
+<p>Cols:<ul class="simple">
+<li><p>sweeps/steps</p></li>
+</ul>
+</p>
+<p>Layers:<ul class="simple">
+<li><p>0: 1 if the chunk has passing baseline QC or not</p></li>
+<li><p>1: maximum of AD data in chirp region [first row only, others are ignored], use NaN to use the real values</p></li>
+<li><p>2: minimum of AD data in chirp region [first row only, others are ignored], use NaN to use the real values</p></li>
+<li><p>3: passing spike check in chirp region or not [first row only, others are ignored]</p></li>
+</ul>
+</p>
+<p>Chunks (only for layer 0):<ul class="simple">
+<li><p>0: RMS short baseline QC</p></li>
+<li><p>1: RMS long baseline QC</p></li>
+<li><p>2: target voltage baseline QC</p></li>
+<li><p>3: leak current baseline QC</p></li>
+</ul>
+</p>
+<p><a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a469e192816d22588689eeb1960dd1427"><span class="std std-ref">PSQ_PIPETTE_BATH</span></a>:</p>
+<p>Rows:<ul class="simple">
+<li><p>chunk indizes</p></li>
+</ul>
+</p>
+<p>Cols:<ul class="simple">
+<li><p>sweeps/steps</p></li>
+</ul>
+</p>
+<p>Layers:<ul class="simple">
+<li><p>0: 1 if the chunk has passing baseline QC or not</p></li>
+<li><p>1: averaged steady state resistance [MOhm]</p></li>
+</ul>
+</p>
+<p>Chunks (only for layer 0):<ul class="simple">
+<li><p>0: RMS short baseline QC</p></li>
+<li><p>1: RMS long baseline QC</p></li>
+<li><p>2: target voltage baseline QC</p></li>
+<li><p>3: leak current baseline QC </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PSQ_StoreStepSizeInLBN6string8variable8variable8variable8variable">
+<span id="_CPPv322PSQ_StoreStepSizeInLBN6string8variable8variable8variable8variable"></span><span id="_CPPv222PSQ_StoreStepSizeInLBN6string8variable8variable8variable8variable"></span><span id="PSQ_StoreStepSizeInLBN__string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a450d9e998feaba3d2e19cc8b11f173c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_StoreStepSizeInLBN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stepsize</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">future</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PSQ_StoreStepSizeInLBN6string8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the step size in the labnotebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PSQ_SearchForSpikes6string8variable4wave8variable8variable8variable8variable8variable4waveP8variable">
+<span id="_CPPv319PSQ_SearchForSpikes6string8variable4wave8variable8variable8variable8variable8variable4waveP8variable"></span><span id="_CPPv219PSQ_SearchForSpikes6string8variable4wave8variable8variable8variable8variable8variable4waveP8variable"></span><span id="PSQ_SearchForSpikes__string.variable.wave.variable.variable.variable.variable.variable.wave.variableP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a26d80e8dbcc50a676e7cbfa5cbf4a493"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SearchForSpikes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">searchEnd</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numberOfSpikesReq</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spikePositions</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">numberOfSpikesFound</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PSQ_SearchForSpikes6string8variable4wave8variable8variable8variable8variable8variable4waveP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Search the AD channel of the given headstage for spikes from the pulse onset until the end of the sweep or <code class="docutils literal notranslate"><span class="pre">searchEnd</span></code> if given. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> device </p></li>
+<li><p><strong>type</strong> – <strong>[in]</strong> One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PatchSeqAnalysisFunctionTypes"><span class="std std-ref">PatchSeqAnalysisFunctionTypes</span></a> </p></li>
+<li><p><strong>sweepWave</strong> – <strong>[in]</strong> sweep wave with acquired data </p></li>
+<li><p><strong>headstage</strong> – <strong>[in]</strong> headstage in the range [0, NUM_HEADSTAGES[ </p></li>
+<li><p><strong>offset</strong> – <strong>[in]</strong> offset in ms where the spike search should start, commonly the totalOnsetDelay </p></li>
+<li><p><strong>level</strong> – <strong>[in]</strong> set the level for the spike search </p></li>
+<li><p><strong>searchEnd</strong> – <strong>[in]</strong> [optional, defaults to inf] total length in ms of the spike search, relative to sweepWave start </p></li>
+<li><p><strong>numberOfSpikesReq</strong> – <strong>[in]</strong> [optional, defaults to one] number of spikes to look for Positive finite value: Return value is 1 iff at least <code class="docutils literal notranslate"><span class="pre">numberOfSpikes</span></code> were found Inf: Return value is 1 if at least 1 spike was found </p></li>
+<li><p><strong>spikePositions</strong> – <strong>[out]</strong> [optional] returns the position of the first <code class="docutils literal notranslate"><span class="pre">numberOfSpikes</span></code> found on success in ms </p></li>
+<li><p><strong>numberOfSpikesFound</strong> – <strong>[out]</strong> [optional] returns the number of spikes found</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>labnotebook value wave suitable for <a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html#_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7"><span class="std std-ref">ED_AddEntryToLabnotebook()</span></a> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429PSQ_GetLastPassingLongRHSweep6string8variable8variable">
+<span id="_CPPv329PSQ_GetLastPassingLongRHSweep6string8variable8variable"></span><span id="_CPPv229PSQ_GetLastPassingLongRHSweep6string8variable8variable"></span><span id="PSQ_GetLastPassingLongRHSweep__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetLastPassingLongRHSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">duration</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429PSQ_GetLastPassingLongRHSweep6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a sweep number of an existing sweep matching the following conditions. </p>
+<p><ul class="simple">
+<li><p>Acquired with Rheobase analysis function</p></li>
+<li><p>Set QC passed for this SCI</p></li>
+<li><p>Pulse duration was longer than <code class="docutils literal notranslate"><span class="pre">duration</span></code></p></li>
+<li><p>Spiked</p></li>
+</ul>
+</p>
+<p>And as usual we want the <em>last</em> matching sweep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>existing sweep number or -1 in case no such sweep could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428PSQ_GetLastPassingDAScaleSub6string8variable">
+<span id="_CPPv328PSQ_GetLastPassingDAScaleSub6string8variable"></span><span id="_CPPv228PSQ_GetLastPassingDAScaleSub6string8variable"></span><span id="PSQ_GetLastPassingDAScaleSub__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a55e451f103efce93c22debd0f76983e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetLastPassingDAScaleSub</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428PSQ_GetLastPassingDAScaleSub6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sweep number of the last sweep using the PSQ_DaScale() analysis function, where the set passes and was in subthreshold mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PSQ_DS_GetDAScaleOffset6string8variable6string">
+<span id="_CPPv323PSQ_DS_GetDAScaleOffset6string8variable6string"></span><span id="_CPPv223PSQ_DS_GetDAScaleOffset6string8variable6string"></span><span id="PSQ_DS_GetDAScaleOffset__string.variable.string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7b707e76b16fa585c4f23dedf09aac13"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DS_GetDAScaleOffset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">opMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PSQ_DS_GetDAScaleOffset6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the DAScale offset for PSQ_DaScale() </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>DAScale value in pA or NaN on error </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PSQ_FoundAtLeastOneSpike6string8variable">
+<span id="_CPPv324PSQ_FoundAtLeastOneSpike6string8variable"></span><span id="_CPPv224PSQ_FoundAtLeastOneSpike6string8variable"></span><span id="PSQ_FoundAtLeastOneSpike__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acc6d1c769b30543e8bc74944078d822f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_FoundAtLeastOneSpike</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PSQ_FoundAtLeastOneSpike6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the given sweep has at least one “spike detected” entry in the labnotebook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 if found at least one, zero if none and <code class="docutils literal notranslate"><span class="pre">NaN</span></code> if no such entry could be found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431PSQ_GetDefaultSamplingFrequency8variable">
+<span id="_CPPv331PSQ_GetDefaultSamplingFrequency8variable"></span><span id="_CPPv231PSQ_GetDefaultSamplingFrequency8variable"></span><span id="PSQ_GetDefaultSamplingFrequency__variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab4df3cf6b64895f24945a9762dd60f21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetDefaultSamplingFrequency</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431PSQ_GetDefaultSamplingFrequency8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv449PSQ_GetDefaultSamplingFrequencyForSingleHeadstage6string">
+<span id="_CPPv349PSQ_GetDefaultSamplingFrequencyForSingleHeadstage6string"></span><span id="_CPPv249PSQ_GetDefaultSamplingFrequencyForSingleHeadstage6string"></span><span id="PSQ_GetDefaultSamplingFrequencyForSingleHeadstage__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaa6d7abae14f84adce656f044c8f7e32"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetDefaultSamplingFrequencyForSingleHeadstage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv449PSQ_GetDefaultSamplingFrequencyForSingleHeadstage6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the sampling frequency in kHz of our supported NI and ITC hardware for one active headstage and no TTL channels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv447PSQ_CheckSamplingFrequencyAndStoreInLabnotebook6string8variableP19AnalysisFunction_V3">
+<span id="_CPPv347PSQ_CheckSamplingFrequencyAndStoreInLabnotebook6string8variableP19AnalysisFunction_V3"></span><span id="_CPPv247PSQ_CheckSamplingFrequencyAndStoreInLabnotebook6string8variableP19AnalysisFunction_V3"></span><span id="PSQ_CheckSamplingFrequencyAndStoreInLabnotebook__string.variable.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv447PSQ_CheckSamplingFrequencyAndStoreInLabnotebook6string8variableP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the QC state of the sampling interval/frequency check and store it also in the labnotebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_GetHelpCommon8variable6string">
+<span id="_CPPv317PSQ_GetHelpCommon8variable6string"></span><span id="_CPPv217PSQ_GetHelpCommon8variable6string"></span><span id="PSQ_GetHelpCommon__variable.string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab6b98d31b4d81f82a031d1b2f24cd92c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetHelpCommon</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PSQ_GetHelpCommon8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PSQ_CheckParamCommon6string6string">
+<span id="_CPPv320PSQ_CheckParamCommon6string6string"></span><span id="_CPPv220PSQ_CheckParamCommon6string6string"></span><span id="PSQ_CheckParamCommon__string.string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af237766ed17503d9d0d6ea483f3f932b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CheckParamCommon</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PSQ_CheckParamCommon6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421PSQ_DAScale_GetParamsv">
+<span id="_CPPv321PSQ_DAScale_GetParamsv"></span><span id="_CPPv221PSQ_DAScale_GetParamsv"></span><span id="PSQ_DAScale_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab90a03d7c41dbba90e2867c21f5442eb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DAScale_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421PSQ_DAScale_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Require parameters from stimset. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PSQ_DAScale_GetHelp6string">
+<span id="_CPPv319PSQ_DAScale_GetHelp6string"></span><span id="_CPPv219PSQ_DAScale_GetHelp6string"></span><span id="PSQ_DAScale_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab3ec52699e67a2a5114d5cff11ba1daf"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DAScale_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PSQ_DAScale_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PSQ_DAScale_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv322PSQ_DAScale_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv222PSQ_DAScale_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_DAScale_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb69c65d8bfa27945b975b853b45dd64"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DAScale_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PSQ_DAScale_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411PSQ_DAScale6stringP19AnalysisFunction_V3">
+<span id="_CPPv311PSQ_DAScale6stringP19AnalysisFunction_V3"></span><span id="_CPPv211PSQ_DAScale6stringP19AnalysisFunction_V3"></span><span id="PSQ_DAScale__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DAScale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411PSQ_DAScale6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Patch Seq Analysis function to find a suitable DAScale. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ab2c3c6b34a08dac6dd33a4940101ff78"><span class="std std-ref">PSQ_DS_PULSE_DUR</span></a>) pulse and at least 1000ms post pulse baseline.</p></li>
+<li><p>Each 500ms (<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a>) of the baseline is a chunk</p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the spike detection logic, the results can be defined in the override wave,</p>
+<p>Reading the results from the labnotebook:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a>.</p>
+</div>
+</p>
+<p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="kt">WAVE</span> numericalValues = GetLBNumericalValues(device)
+
+<span class="c1">// set properties</span>
+
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASSED, query = 1)
+setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+<span class="k">if</span>(setPassed)
+  <span class="c1">// set passed</span>
+<span class="k">else</span>
+  <span class="c1">// set did not pass</span>
+<span class="k">endif</span>
+
+<span class="c1">// single sweep properties</span>
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+<span class="c1">// chunk (500ms portions of the baseline) properties</span>
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
+chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+<span class="c1">// single test properties</span>
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk, query = 1)
+rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk, query = 1)
+rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk, query = 1)
+targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+<span class="c1">// get fitted resistance from last passing sweep</span>
+<span class="c1">// resistance for the first headstage can be found in resistanceFitted[0]</span>
+<span class="kt">WAVE</span>/Z resistanceFitted = GetLastSettingSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + <span class="s">&quot;ResistanceFromFit&quot;</span>, headstage, UNKNOWN_MODE)
+</pre></div>
+</div>
+</p>
+<p>Decision logic flowchart:</p>
+<p><a class=""
+               data-lightbox="group-617d5805-b48e-497f-a3eb-32b93b7e0b65"
+               href="../_images/patch-seq-dascale.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-dascale.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with inserted TP, pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///  |-|                 ***********************************
+///  | |                 |                                 |
+///  | |                 |                      \WWW/      |
+///  | |                 |                      /   \      |
+///  | |                 |                     /wwwww\     |
+///  | |                 |                   _|  o_o  |_   |
+///  | |                 |      \WWWWWWW/   (_   / \   _)  |
+///  | |                 |    _/`  o_o  `\_   |  \_/  |    |
+///  | |                 |   (_    (_)    _)  : ~~~~~ :    |
+///  | |                 |     \ &#39;-...-&#39; /     \_____/     |
+///  | |                 |     (`&#39;-----&#39;`)     [     ]     |
+///  | |                 |      `&quot;&quot;&quot;&quot;&quot;&quot;&quot;`      `&quot;&quot;&quot;&quot;&quot;`     |
+///  | |                 |                                 |
+/// -| |-----------------|                                 |--------------------------------------------
+///
+/// ascii art image from: http://ascii.co.uk/art/erniebert
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PSQ_SquarePulse_GetParamsv">
+<span id="_CPPv325PSQ_SquarePulse_GetParamsv"></span><span id="_CPPv225PSQ_SquarePulse_GetParamsv"></span><span id="PSQ_SquarePulse_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a48bd12aca381c8d4038157ee0eb37666"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SquarePulse_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PSQ_SquarePulse_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of required parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PSQ_SquarePulse_GetHelp6string">
+<span id="_CPPv323PSQ_SquarePulse_GetHelp6string"></span><span id="_CPPv223PSQ_SquarePulse_GetHelp6string"></span><span id="PSQ_SquarePulse_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad6e2e711ddef3d62198348f8f4ff1f0c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SquarePulse_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PSQ_SquarePulse_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426PSQ_SquarePulse_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv326PSQ_SquarePulse_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv226PSQ_SquarePulse_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_SquarePulse_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7c476cf2cec2164c1567ce20ffa3b6b0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SquarePulse_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426PSQ_SquarePulse_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415PSQ_SquarePulse6stringP19AnalysisFunction_V3">
+<span id="_CPPv315PSQ_SquarePulse6stringP19AnalysisFunction_V3"></span><span id="_CPPv215PSQ_SquarePulse6stringP19AnalysisFunction_V3"></span><span id="PSQ_SquarePulse__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SquarePulse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415PSQ_SquarePulse6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analysis function to find the smallest DAScale where the cell spikes. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>Assumes that the stimset has a pulse</p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the spike detection logic, the results can be defined in the override wave,</p>
+<p>Decision logic flowchart:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a>.</p>
+</div>
+</p>
+<p><a class=""
+               data-lightbox="group-a555d9c6-e017-4ac0-af16-3f3ca152a578"
+               href="../_images/patch-seq-squarepulse.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-squarepulse.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PSQ_Rheobase_GetParamsv">
+<span id="_CPPv322PSQ_Rheobase_GetParamsv"></span><span id="_CPPv222PSQ_Rheobase_GetParamsv"></span><span id="PSQ_Rheobase_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aebddfef9d50f941fa3fe2426c4f7eba4"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Rheobase_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PSQ_Rheobase_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of required parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PSQ_Rheobase_GetHelp6string">
+<span id="_CPPv320PSQ_Rheobase_GetHelp6string"></span><span id="_CPPv220PSQ_Rheobase_GetHelp6string"></span><span id="PSQ_Rheobase_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a40540bc3266bc1e7fbdc30ff1c6a7b2c"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Rheobase_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PSQ_Rheobase_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PSQ_Rheobase_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv323PSQ_Rheobase_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv223PSQ_Rheobase_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_Rheobase_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad6ad996f936630d138cf31f39513925f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Rheobase_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PSQ_Rheobase_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412PSQ_Rheobase6stringP19AnalysisFunction_V3">
+<span id="_CPPv312PSQ_Rheobase6stringP19AnalysisFunction_V3"></span><span id="_CPPv212PSQ_Rheobase6stringP19AnalysisFunction_V3"></span><span id="PSQ_Rheobase__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Rheobase</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412PSQ_Rheobase6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analysis function for finding the exact DAScale value between spiking and non-spiking. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>Assumes that the stimset has a pulse of non-zero and arbitrary length</p></li>
+<li><p>Pre pulse baseline length is <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+<li><p>Post pulse baseline length a multiple of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the spike detection logic, the results can be defined in the override wave,</p>
+<p>Decision logic flowchart:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a>.</p>
+</div>
+</p>
+<p><a class=""
+               data-lightbox="group-eb82602e-5d05-44cd-8e7d-817650303351"
+               href="../_images/patch-seq-rheobase.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-rheobase.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423PSQ_GetFinalDAScaleFakev">
+<span id="_CPPv323PSQ_GetFinalDAScaleFakev"></span><span id="_CPPv223PSQ_GetFinalDAScaleFakev"></span><span id="PSQ_GetFinalDAScaleFake"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2d453fd7481a889bc759c2f5eb59565f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_GetFinalDAScaleFake</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423PSQ_GetFinalDAScaleFakev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418PSQ_Ramp_GetParamsv">
+<span id="_CPPv318PSQ_Ramp_GetParamsv"></span><span id="_CPPv218PSQ_Ramp_GetParamsv"></span><span id="PSQ_Ramp_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1adc163ec2f579bfb0ac2d767fc57d7d57"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Ramp_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418PSQ_Ramp_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of required parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PSQ_Ramp_GetHelp6string">
+<span id="_CPPv316PSQ_Ramp_GetHelp6string"></span><span id="_CPPv216PSQ_Ramp_GetHelp6string"></span><span id="PSQ_Ramp_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a015b7ab2a00313808fd91afec643d1f7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Ramp_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PSQ_Ramp_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PSQ_Ramp_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv319PSQ_Ramp_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv219PSQ_Ramp_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_Ramp_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb3600c2335841ed276f1fc2412922e1"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Ramp_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PSQ_Ramp_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48PSQ_Ramp6stringP19AnalysisFunction_V3">
+<span id="_CPPv38PSQ_Ramp6stringP19AnalysisFunction_V3"></span><span id="_CPPv28PSQ_Ramp6stringP19AnalysisFunction_V3"></span><span id="PSQ_Ramp__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Ramp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48PSQ_Ramp6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analysis function for applying a ramp stim set and finding the position were it spikes. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>Assumes that the stimset has a ramp of non-zero and arbitrary length</p></li>
+<li><p>Pre pulse baseline length is <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+<li><p>Post pulse baseline length is at least two times <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the spike detection logic, the results can be defined in the override wave,</p>
+<p>Decision logic flowchart:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a>.</p>
+</div>
+</p>
+<p><a class=""
+               data-lightbox="group-2b6f8087-8ce7-4793-9498-b015c3b12196"
+               href="../_images/patch-seq-ramp.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-ramp.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with pre pulse baseline (-), ramp (/|), and post pulse baseline (-).
+///
+///                 /|
+///                / |
+///               /  |
+///              /   |
+///             /    |
+///            /     |
+///           /      |
+///          /       |
+///         /        |
+///        /         |
+///       /          |
+///      /           |
+///     /            |
+/// ---/             |--------------------------------------------
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_Ramp_AddEpoch6string8variable4wave6string6string8variable8variable">
+<span id="_CPPv317PSQ_Ramp_AddEpoch6string8variable4wave6string6string8variable8variable"></span><span id="_CPPv217PSQ_Ramp_AddEpoch6string8variable4wave6string6string8variable8variable"></span><span id="PSQ_Ramp_AddEpoch__string.variable.wave.string.string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1abc9e4fbc6f6056cad7fea876eeab14b1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Ramp_AddEpoch</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tags</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shortName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PSQ_Ramp_AddEpoch6string8variable4wave6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PSQ_CR_SetHasPassed4wave8variable8variable">
+<span id="_CPPv319PSQ_CR_SetHasPassed4wave8variable8variable"></span><span id="_CPPv219PSQ_CR_SetHasPassed4wave8variable8variable"></span><span id="PSQ_CR_SetHasPassed__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aeb677bfa136ee4acd712b516c4c80b3f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_SetHasPassed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PSQ_CR_SetHasPassed4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Determine if we have three passing sweeps with the same DAScale value. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>result set passing state (0/1) </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>maxOccurences maximum number of passing sets with the same DASCale value </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PSQ_CR_DetermineBoundsState8variable8variable8variable8variable">
+<span id="_CPPv327PSQ_CR_DetermineBoundsState8variable8variable8variable8variable"></span><span id="_CPPv227PSQ_CR_DetermineBoundsState8variable8variable8variable8variable"></span><span id="PSQ_CR_DetermineBoundsState__variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab8fd5c3cddff384b5e1598a667e80dcd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv415ChirpBoundsInfo" title="ChirpBoundsInfo"><span class="n"><span class="pre">ChirpBoundsInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineBoundsState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseline</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">minimum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maximum</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PSQ_CR_DetermineBoundsState8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the two letter states “AA”, “BB” and “BA” for the value and the scaling factors to reach min/center/max. </p>
+<p>We need the real baseline value (measured), whereas the center between minimum/maximum would be targetV, which the user entered together with an allowed ± range. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PSQ_CR_BoundsActionToString8variable">
+<span id="_CPPv327PSQ_CR_BoundsActionToString8variable"></span><span id="_CPPv227PSQ_CR_BoundsActionToString8variable"></span><span id="PSQ_CR_BoundsActionToString__variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1181ea1eaa49b1757cb178617ac4a236"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_BoundsActionToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">boundsAction</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PSQ_CR_BoundsActionToString8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434PSQ_CR_DetermineBoundsActionHelper4wave6string8variable">
+<span id="_CPPv334PSQ_CR_DetermineBoundsActionHelper4wave6string8variable"></span><span id="_CPPv234PSQ_CR_DetermineBoundsActionHelper4wave6string8variable"></span><span id="PSQ_CR_DetermineBoundsActionHelper__wave.string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a73fad4f4d92a2e2908fa3aba3d344aea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineBoundsActionHelper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434PSQ_CR_DetermineBoundsActionHelper4wave6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv437PSQ_CR_DetermineBoundsActionFromState6string6string">
+<span id="_CPPv337PSQ_CR_DetermineBoundsActionFromState6string6string"></span><span id="_CPPv237PSQ_CR_DetermineBoundsActionFromState6string6string"></span><span id="PSQ_CR_DetermineBoundsActionFromState__string.string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76729e99a9e56826bf062de4efa220b3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineBoundsActionFromState</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">upperState</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lowerState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv437PSQ_CR_DetermineBoundsActionFromState6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns an action depending on the upper and lower states, see <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChirpBoundsAction"><span class="std std-ref">ChirpBoundsAction</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429PSQ_CR_DetermineScalingFactorP15ChirpBoundsInfoP15ChirpBoundsInfo8variable">
+<span id="_CPPv329PSQ_CR_DetermineScalingFactorP15ChirpBoundsInfoP15ChirpBoundsInfo8variable"></span><span id="_CPPv229PSQ_CR_DetermineScalingFactorP15ChirpBoundsInfoP15ChirpBoundsInfo8variable"></span><span id="PSQ_CR_DetermineScalingFactor__ChirpBoundsInfoP.ChirpBoundsInfoP.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1b8c91b918dce9233264727fbafe9ff4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineScalingFactor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv415ChirpBoundsInfo" title="ChirpBoundsInfo"><span class="n"><span class="pre">ChirpBoundsInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lowerInfo</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv415ChirpBoundsInfo" title="ChirpBoundsInfo"><span class="n"><span class="pre">ChirpBoundsInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">upperInfo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">boundsEvaluationMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429PSQ_CR_DetermineScalingFactorP15ChirpBoundsInfoP15ChirpBoundsInfo8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Determine the scaling factor for DAScale which is required for being inside the bounds. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428PSQ_CR_DetermineBoundsAction6string4wave8variable8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv328PSQ_CR_DetermineBoundsAction6string4wave8variable8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv228PSQ_CR_DetermineBoundsAction6string4wave8variable8variable8variable8variable8variable8variable8variable"></span><span id="PSQ_CR_DetermineBoundsAction__string.wave.variable.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineBoundsAction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scaledDACWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chirpStart</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycleEnd</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">innerRelativeBound</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outerRelativeBound</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">boundsEvaluationMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428PSQ_CR_DetermineBoundsAction6string4wave8variable8variable8variable8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Determine the bounds action given the requested chirp slice. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>scaledDACWave</strong> – DAQ data wave with correct units and scaling </p></li>
+<li><p><strong>headstage</strong> – headstage </p></li>
+<li><p><strong>sweepNo</strong> – sweep number </p></li>
+<li><p><strong>chirpStart</strong> – x-position relative to stimset start where the chirp starts </p></li>
+<li><p><strong>cycleEnd</strong> – x-position relative to stimset start where the requested number of cycles finish </p></li>
+<li><p><strong>innerRelativeBound</strong> – analysis parameter </p></li>
+<li><p><strong>outerRelativeBound</strong> – analysis parameter </p></li>
+<li><p><strong>boundsEvaluationMode</strong> – bounds evaluation mode, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1PSQChirpBoundsEvaluationMode"><span class="std std-ref">PSQChirpBoundsEvaluationMode</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boundsAction, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ChirpBoundsAction"><span class="std std-ref">ChirpBoundsAction</span></a> </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>scalingFactorDAScale, scaling factor to be inside the bounds for actions PSQ_CR_INCREASE/PSQ_CR_DECREASE </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PSQ_CR_GetXPosFromCycles8variable4wave8variable">
+<span id="_CPPv324PSQ_CR_GetXPosFromCycles8variable4wave8variable"></span><span id="_CPPv224PSQ_CR_GetXPosFromCycles8variable4wave8variable"></span><span id="PSQ_CR_GetXPosFromCycles__variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a4a0eaa5ceb1d0b03bf77d6a9d2432f46"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_GetXPosFromCycles</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycle</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cycleXValues</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalOnsetDelay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PSQ_CR_GetXPosFromCycles8variable4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the x position of the end of the given cycle relative to the stimset start. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PSQ_CR_GetCycles6string8variable4wave8variable">
+<span id="_CPPv316PSQ_CR_GetCycles6string8variable4wave8variable"></span><span id="_CPPv216PSQ_CR_GetCycles6string8variable4wave8variable"></span><span id="PSQ_CR_GetCycles__string.variable.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae27d7213770e56525e674d14dd1145c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_GetCycles</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rawDACWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">xstart</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PSQ_CR_GetCycles6string8variable4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PSQ_CR_DetermineCycles6string4wave8variable">
+<span id="_CPPv322PSQ_CR_DetermineCycles6string4wave8variable"></span><span id="_CPPv222PSQ_CR_DetermineCycles6string4wave8variable"></span><span id="PSQ_CR_DetermineCycles__string.wave.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a95c6b1d082bf5c57a758e28c3a9685df"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_DetermineCycles</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rawDACWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">xstart</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PSQ_CR_DetermineCycles6string4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find all x values where DA channels have the same value as rawDACWave[xstart]. </p>
+<p>We search starting from xstart, where <code class="docutils literal notranslate"><span class="pre">matches</span></code> have a minimum of 1ms between them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>rawDACWave</strong> – unscaled DAQDataWave (aka GetHardwareDataWave(device)) </p></li>
+<li><p><strong>xstart</strong> – position of reference value and starting point for the search</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Labnotebook entry wave </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435PSQ_CR_BoundsEvaluationModeToString8variable">
+<span id="_CPPv335PSQ_CR_BoundsEvaluationModeToString8variable"></span><span id="_CPPv235PSQ_CR_BoundsEvaluationModeToString8variable"></span><span id="PSQ_CR_BoundsEvaluationModeToString__variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af219119a3239ce538df788407da106c3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_BoundsEvaluationModeToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435PSQ_CR_BoundsEvaluationModeToString8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv438PSQ_CR_ParseBoundsEvaluationModeString6string">
+<span id="_CPPv338PSQ_CR_ParseBoundsEvaluationModeString6string"></span><span id="_CPPv238PSQ_CR_ParseBoundsEvaluationModeString6string"></span><span id="PSQ_CR_ParseBoundsEvaluationModeString__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2180f17b3ec3f178b5922f08341e2470"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_ParseBoundsEvaluationModeString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv438PSQ_CR_ParseBoundsEvaluationModeString6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_Chirp_GetHelp6string">
+<span id="_CPPv317PSQ_Chirp_GetHelp6string"></span><span id="_CPPv217PSQ_Chirp_GetHelp6string"></span><span id="PSQ_Chirp_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9c10ed9466ba83f8b592f56924ae786f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Chirp_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PSQ_Chirp_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420PSQ_Chirp_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv320PSQ_Chirp_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv220PSQ_Chirp_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_Chirp_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Chirp_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420PSQ_Chirp_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PSQ_Chirp_GetParamsv">
+<span id="_CPPv319PSQ_Chirp_GetParamsv"></span><span id="_CPPv219PSQ_Chirp_GetParamsv"></span><span id="PSQ_Chirp_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1dbcdc63c526472289017fc0b3c21e74"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Chirp_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PSQ_Chirp_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of required analysis functions for <a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1"><span class="std std-ref">PSQ_Chirp()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49PSQ_Chirp6stringP19AnalysisFunction_V3">
+<span id="_CPPv39PSQ_Chirp6stringP19AnalysisFunction_V3"></span><span id="_CPPv29PSQ_Chirp6stringP19AnalysisFunction_V3"></span><span id="PSQ_Chirp__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_Chirp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49PSQ_Chirp6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analysis function for determining the impedance of the cell using a sine chirp stim set. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>Assumes that the stimset has a chirp of non-zero and arbitrary length</p></li>
+<li><p>Pre pulse baseline length is <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+<li><p>Post pulse baseline length is at least two times <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the range detection logic, the results can be defined in the wave root:overrideResults.</p>
+<p>Decision logic flowchart:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a></p>
+</div>
+</p>
+<p><a class=""
+               data-lightbox="group-ebfc5eef-d121-4e01-a92a-e9f602e55f63"
+               href="../_images/patch-seq-chirp.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-chirp.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p>The bounds action for Symmetric (Upper and Lower) is derived from the state according to the following sketch:</p>
+<p><a class=""
+               data-lightbox="group-4db9fdf4-29a6-42f3-8a8f-aa5e6c7af871"
+               href="../_images/patch-seq-chirp-bounds-state-action.png"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-chirp-bounds-state-action.png"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a><p>Depolarized (Upper only):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BA</p></td>
+<td><p>Pass</p></td>
+</tr>
+<tr class="row-odd"><td><p>AA</p></td>
+<td><p>Decrease</p></td>
+</tr>
+<tr class="row-even"><td><p>BB</p></td>
+<td><p>Increase</p></td>
+</tr>
+</tbody>
+</table>
+<p>Hyperpolarized (Lower only):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BA</p></td>
+<td><p>Pass</p></td>
+</tr>
+<tr class="row-odd"><td><p>AA</p></td>
+<td><p>Increase</p></td>
+</tr>
+<tr class="row-even"><td><p>BB</p></td>
+<td><p>Decrease</p></td>
+</tr>
+</tbody>
+</table>
+</p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with pre pulse baseline (-), sine chirp (~), and post pulse baseline (-).
+///
+///
+///
+///                     ~               ~
+///                   ~  ~             ~ ~
+///                  ~    ~           ~   ~
+///                 ~      ~         ~     ~
+/// ---------------~        ~       ~       ~--------------------------------
+///                          ~     ~
+///                           ~   ~
+///                             ~
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv437PSQ_CR_FindDependentAnalysisParameter6string6string6string">
+<span id="_CPPv337PSQ_CR_FindDependentAnalysisParameter6string6string6string"></span><span id="_CPPv237PSQ_CR_FindDependentAnalysisParameter6string6string6string"></span><span id="PSQ_CR_FindDependentAnalysisParameter__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a4fd75c0b0deb89cdeed24d55140c3717"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_CR_FindDependentAnalysisParameter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv437PSQ_CR_FindDependentAnalysisParameter6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_ForceSetEvent6string8variable">
+<span id="_CPPv317PSQ_ForceSetEvent6string8variable"></span><span id="_CPPv217PSQ_ForceSetEvent6string8variable"></span><span id="PSQ_ForceSetEvent__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a8c10f74765d6e5d24d4732b45c1a0950"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_ForceSetEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PSQ_ForceSetEvent6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Manually force the pre/post set events. </p>
+<p>Required to do before skipping sweeps. <dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>this hack must go away. </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433PSQ_SetSamplingIntervalMultiplier6string8variable">
+<span id="_CPPv333PSQ_SetSamplingIntervalMultiplier6string8variable"></span><span id="_CPPv233PSQ_SetSamplingIntervalMultiplier6string8variable"></span><span id="PSQ_SetSamplingIntervalMultiplier__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2a89cab089b5b9328faedb73b2cd576b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_SetSamplingIntervalMultiplier</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">multiplier</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433PSQ_SetSamplingIntervalMultiplier6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428PSQ_PipetteInBath_CheckParam6stringP21CheckParametersStruct">
+<span id="_CPPv328PSQ_PipetteInBath_CheckParam6stringP21CheckParametersStruct"></span><span id="_CPPv228PSQ_PipetteInBath_CheckParam6stringP21CheckParametersStruct"></span><span id="PSQ_PipetteInBath_CheckParam__string.CheckParametersStructP"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PipetteInBath_CheckParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv421CheckParametersStruct" title="CheckParametersStruct"><span class="n"><span class="pre">CheckParametersStruct</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428PSQ_PipetteInBath_CheckParam6stringP21CheckParametersStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PSQ_PipetteInBath_GetHelp6string">
+<span id="_CPPv325PSQ_PipetteInBath_GetHelp6string"></span><span id="_CPPv225PSQ_PipetteInBath_GetHelp6string"></span><span id="PSQ_PipetteInBath_GetHelp__string"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a5b178e6c14b6fc91331c4c0b3e9194a7"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PipetteInBath_GetHelp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PSQ_PipetteInBath_GetHelp6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427PSQ_PipetteInBath_GetParamsv">
+<span id="_CPPv327PSQ_PipetteInBath_GetParamsv"></span><span id="_CPPv227PSQ_PipetteInBath_GetParamsv"></span><span id="PSQ_PipetteInBath_GetParams"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a96714b66f3b75deb5e7e07dfea8aab27"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PipetteInBath_GetParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427PSQ_PipetteInBath_GetParamsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_PipetteInBath6stringP19AnalysisFunction_V3">
+<span id="_CPPv317PSQ_PipetteInBath6stringP19AnalysisFunction_V3"></span><span id="_CPPv217PSQ_PipetteInBath6stringP19AnalysisFunction_V3"></span><span id="PSQ_PipetteInBath__string.AnalysisFunction_V3P"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PipetteInBath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_analysis_function___v3.html#_CPPv419AnalysisFunction_V3" title="AnalysisFunction_V3"><span class="n"><span class="pre">AnalysisFunction_V3</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417PSQ_PipetteInBath6stringP19AnalysisFunction_V3" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analysis function for determining the pipette resistance while that is located in the bath. </p>
+<p>Prerequisites:<ul class="simple">
+<li><p>Does only work for one headstage</p></li>
+<li><p>We expect three epochs per test pulse in the stimset, plus one epoch before all TPs, and at the very end</p></li>
+<li><p>Assumes that the stimset has <code class="docutils literal notranslate"><span class="pre">NumberOfTestpulses</span></code> test pulses</p></li>
+<li><p>Pre pulse baseline length is <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a68f94c5f245ae55746e501e05869a7be"><span class="std std-ref">PSQ_BL_EVAL_RANGE</span></a></p></li>
+<li><p>Post pulse baseline is not evaluated</p></li>
+</ul>
+</p>
+<p><p>Testing: For testing the range detection logic, the results can be defined in the wave root:overrideResults.</p>
+<p>Decision logic flowchart:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4"><span class="std std-ref">PSQ_CreateOverrideResults()</span></a></p>
+</div>
+</p>
+<p><a class=""
+               data-lightbox="group-78cca841-dae3-43a4-9c09-3795960167cc"
+               href="../_images/patch-seq-pipette-bath.svg"
+               title=""
+               data-title=""
+               
+               ><img src="../_images/patch-seq-pipette-bath.svg"
+                     class=""
+                     width="100%"
+                     height="auto"
+                     alt=""/>
+                </a></p>
+<p><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>///
+/// Sketch of a stimset with three test pulse like epochs
+///
+///                    +-----+       +-----+       +-----+
+///                    |     |       |     |       |     |
+///                    |     |       |     |       |     |
+///                    |     |       |     |       |     |
+/// -------------------+     +-------+     +-------+     +------------------------
+///
+/// Epoch borders
+/// -------------
+///
+///                |   |     |   |   |     |   |   |     |   |
+///
+/// So for this stimset we have two epochs at the very beginning and end, plus
+/// three epochs per test pulse and three test pulses, which gives eleven in
+/// total.
+///
+///
+</pre></div>
+</div>
+ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434PSQ_PB_GetPrePulseBaselineDuration6string8variable">
+<span id="_CPPv334PSQ_PB_GetPrePulseBaselineDuration6string8variable"></span><span id="_CPPv234PSQ_PB_GetPrePulseBaselineDuration6string8variable"></span><span id="PSQ_PB_GetPrePulseBaselineDuration__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae2415cec650043d3217816015b8f7104"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PB_GetPrePulseBaselineDuration</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434PSQ_PB_GetPrePulseBaselineDuration6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428PSQ_PB_CreateTestpulseEpochs6string8variable">
+<span id="_CPPv328PSQ_PB_CreateTestpulseEpochs6string8variable"></span><span id="_CPPv228PSQ_PB_CreateTestpulseEpochs6string8variable"></span><span id="PSQ_PB_CreateTestpulseEpochs__string.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PB_CreateTestpulseEpochs</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428PSQ_PB_CreateTestpulseEpochs6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create user epochs for the testpulse like shapes in the stimset. </p>
+<p>Assumes that all sweeps in the stimset are the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>number of found testpulses </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431PSQ_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable">
+<span id="_CPPv331PSQ_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable"></span><span id="_CPPv231PSQ_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable"></span><span id="PSQ_AddLabnotebookEntriesToJSON__variable.wave.wave.variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_AddLabnotebookEntriesToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">labnotebookLayer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431PSQ_AddLabnotebookEntriesToJSON8variable4wave4wave8variable6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414PSQ_PB_Publish6string8variable8variable">
+<span id="_CPPv314PSQ_PB_Publish6string8variable8variable"></span><span id="_CPPv214PSQ_PB_Publish6string8variable8variable"></span><span id="PSQ_PB_Publish__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ade27cea3b3b42329a537e740a0b3d7f4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_PB_Publish</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headstage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414PSQ_PB_Publish6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Published message in POST_SET_EVENT for the analysis function <a class="reference internal" href="#_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca"><span class="std std-ref">PSQ_PipetteInBath()</span></a> </p>
+<p>Keys under <code class="docutils literal notranslate"><span class="pre">/results</span></code> are labnotebook keys. The arrays under <code class="docutils literal notranslate"><span class="pre">/results/XXX/values</span></code> are the values for each sweep in the stimset cycle. This array has currently always one entry as <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a412cacb18aaf35c5bab3cbb4a9885473"><span class="std std-ref">PSQ_PB_NUM_SWEEPS_PASS</span></a> is one. The encoding is UTF-8.</p>
+<p>Example:</p>
+<p><p><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;device&quot;</span><span class="p">:</span> <span class="s2">&quot;my_device&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;headstage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;USER_Pipette in Bath Chk0 Leak Current BL&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;Amperes&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="mf">123.0</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;USER_Pipette in Bath Chk0 Leak Current BL QC&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="mf">0.0</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;USER_Pipette in Bath Set QC&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="mf">1.0</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;USER_Pipette in Bath pipette resistance&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;Ω&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="mf">456.0</span>
+     <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;USER_Pipette in Bath pipette resistance QC&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;On/Off&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+       <span class="mf">1.0</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+ <span class="p">},</span>
+ <span class="nt">&quot;sweep number&quot;</span><span class="p">:</span> <span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2022-02-10T20:48:22Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+ </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416PSQ_BL_PRE_PULSE">
+<span id="_CPPv316PSQ_BL_PRE_PULSE"></span><span id="_CPPv216PSQ_BL_PRE_PULSE"></span><span id="PSQ_BL_PRE_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a5e859884b60070f8a6250a82fc9ec45f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_BL_PRE_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x0</span></span><a class="headerlink" href="#_CPPv416PSQ_BL_PRE_PULSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_BL_POST_PULSE">
+<span id="_CPPv317PSQ_BL_POST_PULSE"></span><span id="_CPPv217PSQ_BL_POST_PULSE"></span><span id="PSQ_BL_POST_PULSE__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a383702a3a194f77683e37df959d6e637"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_BL_POST_PULSE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv417PSQ_BL_POST_PULSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418PSQ_RMS_SHORT_TEST">
+<span id="_CPPv318PSQ_RMS_SHORT_TEST"></span><span id="_CPPv218PSQ_RMS_SHORT_TEST"></span><span id="PSQ_RMS_SHORT_TEST__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a5c7ae2d415fe94b1c3c1de35a6ba0da8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_RMS_SHORT_TEST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x0</span></span><a class="headerlink" href="#_CPPv418PSQ_RMS_SHORT_TEST" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417PSQ_RMS_LONG_TEST">
+<span id="_CPPv317PSQ_RMS_LONG_TEST"></span><span id="_CPPv217PSQ_RMS_LONG_TEST"></span><span id="PSQ_RMS_LONG_TEST__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a463aa52e8e74986a711c790e0fccb88f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_RMS_LONG_TEST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv417PSQ_RMS_LONG_TEST" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416PSQ_TARGETV_TEST">
+<span id="_CPPv316PSQ_TARGETV_TEST"></span><span id="_CPPv216PSQ_TARGETV_TEST"></span><span id="PSQ_TARGETV_TEST__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a02163c8cfc174278c88f68f85b91bc35"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_TARGETV_TEST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x2</span></span><a class="headerlink" href="#_CPPv416PSQ_TARGETV_TEST" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416PSQ_LEAKCUR_TEST">
+<span id="_CPPv316PSQ_LEAKCUR_TEST"></span><span id="_CPPv216PSQ_LEAKCUR_TEST"></span><span id="PSQ_LEAKCUR_TEST__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a54b12758226f26088d9f6ecdaaf2ada0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_LEAKCUR_TEST</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x3</span></span><a class="headerlink" href="#_CPPv416PSQ_LEAKCUR_TEST" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431PSQ_DEFAULT_SAMPLING_MULTIPLIER">
+<span id="_CPPv331PSQ_DEFAULT_SAMPLING_MULTIPLIER"></span><span id="_CPPv231PSQ_DEFAULT_SAMPLING_MULTIPLIER"></span><span id="PSQ_DEFAULT_SAMPLING_MULTIPLIER__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59cfe6da43eb4952366a5a4247a93df0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_DEFAULT_SAMPLING_MULTIPLIER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv431PSQ_DEFAULT_SAMPLING_MULTIPLIER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421PSQ_RHEOBASE_DURATION">
+<span id="_CPPv321PSQ_RHEOBASE_DURATION"></span><span id="_CPPv221PSQ_RHEOBASE_DURATION"></span><span id="PSQ_RHEOBASE_DURATION__doubleC"></span><span class="target" id="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a73ff1c86b4df45ce11caa8894b776659"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PSQ_RHEOBASE_DURATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">500</span></span><a class="headerlink" href="#_CPPv421PSQ_RHEOBASE_DURATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html"
+                          title="previous chapter">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___artefact_removal_8ipf.html"
+                          title="next chapter">File MIES_ArtefactRemoval.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html" title="File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

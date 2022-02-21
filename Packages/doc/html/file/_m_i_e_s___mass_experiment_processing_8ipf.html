@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_MassExperimentProcessing.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Menu.ipf" href="_m_i_e_s___menu_8ipf.html" />
+    <link rel="prev" title="File MIES_Logging.ipf" href="_m_i_e_s___logging_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___menu_8ipf.html" title="File MIES_Menu.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___logging_8ipf.html" title="File MIES_Logging.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MassExperimentProcessing.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-massexperimentprocessing-ipf">
+<span id="id1"></span><h1>File MIES_MassExperimentProcessing.ipf<a class="headerlink" href="#file-mies-massexperimentprocessing-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>MEP</strong> Process multiple MIES pxps to convert data into NWBv2 </p>
+<p>Installation:<ul class="simple">
+<li><p>Stop Igor Pro</p></li>
+<li><p>Install MIES from the installer</p></li>
+<li><p>Create a shortcut to this file and place it in the <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> folder</p></li>
+<li><p>Ensure that only MIES is installed and no other Igor Pro packages</p></li>
+<li><p>In the MIES installation folder (All Users: <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\MIES</span></code>, User: <code class="docutils literal notranslate"><span class="pre">C:\Users\$User\Documents\MIES</span></code>) create an empty file named <code class="docutils literal notranslate"><span class="pre">UserConfig.txt</span></code>.</p></li>
+</ul>
+</p>
+<p>Running:<ul class="simple">
+<li><p>Start Igor Pro</p></li>
+<li><p>Select “Macros” -&gt; “Mass convert PXPs to NWBv2”</p></li>
+<li><p>Enter an input and output folder for the conversion</p></li>
+<li><p>Wait until it’s done</p></li>
+</ul>
+</p>
+<p>In the output folder there will be a <code class="docutils literal notranslate"><span class="pre">conversion.json</span></code> file with results of the conversion process. Search for the <code class="docutils literal notranslate"><span class="pre">error</span></code> key for failed conversions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416LoadPackagePrefsP27MultiExperimentProcessPrefs">
+<span id="_CPPv316LoadPackagePrefsP27MultiExperimentProcessPrefs"></span><span id="_CPPv216LoadPackagePrefsP27MultiExperimentProcessPrefs"></span><span id="LoadPackagePrefs__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadPackagePrefs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416LoadPackagePrefsP27MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SavePackagePrefsP27MultiExperimentProcessPrefs">
+<span id="_CPPv316SavePackagePrefsP27MultiExperimentProcessPrefs"></span><span id="_CPPv216SavePackagePrefsP27MultiExperimentProcessPrefs"></span><span id="SavePackagePrefs__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SavePackagePrefs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SavePackagePrefsP27MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ProcessCurrentExperimentP27MultiExperimentProcessPrefs">
+<span id="_CPPv324ProcessCurrentExperimentP27MultiExperimentProcessPrefs"></span><span id="_CPPv224ProcessCurrentExperimentP27MultiExperimentProcessPrefs"></span><span id="ProcessCurrentExperiment__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessCurrentExperiment</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ProcessCurrentExperimentP27MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416PerformMiesTasks6string">
+<span id="_CPPv316PerformMiesTasks6string"></span><span id="_CPPv216PerformMiesTasks6string"></span><span id="PerformMiesTasks__string"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PerformMiesTasks</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outputFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416PerformMiesTasks6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423IsAppropriateExperimentv">
+<span id="_CPPv323IsAppropriateExperimentv"></span><span id="_CPPv223IsAppropriateExperimentv"></span><span id="IsAppropriateExperiment"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a83e077e416b4cd4c9eb6f12a0d679b7d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAppropriateExperiment</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423IsAppropriateExperimentv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418FindNextExperimentP27MultiExperimentProcessPrefs">
+<span id="_CPPv318FindNextExperimentP27MultiExperimentProcessPrefs"></span><span id="_CPPv218FindNextExperimentP27MultiExperimentProcessPrefs"></span><span id="FindNextExperiment__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindNextExperiment</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418FindNextExperimentP27MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47GetJSONP27MultiExperimentProcessPrefs">
+<span id="_CPPv37GetJSONP27MultiExperimentProcessPrefs"></span><span id="_CPPv27GetJSONP27MultiExperimentProcessPrefs"></span><span id="GetJSON__MultiExperimentProcessPrefsP"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47GetJSONP27MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49StoreJSONP27MultiExperimentProcessPrefs8variable">
+<span id="_CPPv39StoreJSONP27MultiExperimentProcessPrefs8variable"></span><span id="_CPPv29StoreJSONP27MultiExperimentProcessPrefs8variable"></span><span id="StoreJSON__MultiExperimentProcessPrefsP.variable"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreJSON</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv427MultiExperimentProcessPrefs" title="MultiExperimentProcessPrefs"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49StoreJSONP27MultiExperimentProcessPrefs8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422PostLoadNextExperiment6string">
+<span id="_CPPv322PostLoadNextExperiment6string"></span><span id="_CPPv222PostLoadNextExperiment6string"></span><span id="PostLoadNextExperiment__string"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostLoadNextExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nextExperimentFullPath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422PostLoadNextExperiment6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AfterFileOpenHook8variable6string6string6string6string8variable">
+<span id="_CPPv317AfterFileOpenHook8variable6string6string6string6string8variable"></span><span id="_CPPv217AfterFileOpenHook8variable6string6string6string6string8variable"></span><span id="AfterFileOpenHook__variable.string.string.string.string.variable"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AfterFileOpenHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">creator</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kind</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AfterFileOpenHook8variable6string6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427StartMultiExperimentProcessv">
+<span id="_CPPv327StartMultiExperimentProcessv"></span><span id="_CPPv227StartMultiExperimentProcessv"></span><span id="StartMultiExperimentProcess"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1ad8d3f09f223ab74d90ce9e92d2aa4094"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StartMultiExperimentProcess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427StartMultiExperimentProcessv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv434StartMultiExperimentProcessWrapperv">
+<span id="_CPPv334StartMultiExperimentProcessWrapperv"></span><span id="_CPPv234StartMultiExperimentProcessWrapperv"></span><span id="StartMultiExperimentProcessWrapper"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StartMultiExperimentProcessWrapper</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434StartMultiExperimentProcessWrapperv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412INPUT_FOLDER">
+<span id="_CPPv312INPUT_FOLDER"></span><span id="_CPPv212INPUT_FOLDER"></span><span id="INPUT_FOLDER__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a21a35036409bb978e8988f8d2f72dbcd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INPUT_FOLDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv412INPUT_FOLDER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413OUTPUT_FOLDER">
+<span id="_CPPv313OUTPUT_FOLDER"></span><span id="_CPPv213OUTPUT_FOLDER"></span><span id="OUTPUT_FOLDER__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a410a2e375802f86de47466e80292a102"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OUTPUT_FOLDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv413OUTPUT_FOLDER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412kPackageName">
+<span id="_CPPv312kPackageName"></span><span id="_CPPv212kPackageName"></span><span id="kPackageName__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3cadbf173cf62142fa3ad2c736f5c814"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPackageName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;MIES</span> <span class="pre">PXP</span> <span class="pre">to</span> <span class="pre">NWBv2&quot;</span></span><a class="headerlink" href="#_CPPv412kPackageName" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420kPreferencesFileName">
+<span id="_CPPv320kPreferencesFileName"></span><span id="_CPPv220kPreferencesFileName"></span><span id="kPreferencesFileName__stringC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4224140433ed0ecac04ad78bc031707c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPreferencesFileName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ProcessPrefsMIESNWBv2.bin&quot;</span></span><a class="headerlink" href="#_CPPv420kPreferencesFileName" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414kPrefsRecordID">
+<span id="_CPPv314kPrefsRecordID"></span><span id="_CPPv214kPrefsRecordID"></span><span id="kPrefsRecordID__doubleC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2eb4c303b9cb8a11f173668f43ab8726"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPrefsRecordID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv414kPrefsRecordID" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419kPrefsVersionNumber">
+<span id="_CPPv319kPrefsVersionNumber"></span><span id="_CPPv219kPrefsVersionNumber"></span><span id="kPrefsVersionNumber__doubleC"></span><span class="target" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4837f42c81ca26404e4b575b4df1a67a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kPrefsVersionNumber</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">102</span></span><a class="headerlink" href="#_CPPv419kPrefsVersionNumber" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv427MultiExperimentProcessPrefs">
+<span id="_CPPv327MultiExperimentProcessPrefs"></span><span id="_CPPv227MultiExperimentProcessPrefs"></span><span id="MultiExperimentProcessPrefs"></span><span class="target" id="struct_multi_experiment_process_prefs"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MultiExperimentProcessPrefs</span></span></span><a class="headerlink" href="#_CPPv427MultiExperimentProcessPrefs" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs7versionE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs7versionE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs7versionE"></span><span id="MultiExperimentProcessPrefs::version__uint32"></span><span class="target" id="struct_multi_experiment_process_prefs_1a584eb068918113d4382a658d2eed937c"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">version</span></span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs7versionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs14processRunningE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs14processRunningE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs14processRunningE"></span><span id="MultiExperimentProcessPrefs::processRunning__uint32"></span><span class="target" id="struct_multi_experiment_process_prefs_1a1049252c562c363b3ff6e348864af0e3"></span><span class="n"><span class="pre">uint32</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">processRunning</span></span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs14processRunningE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N27MultiExperimentProcessPrefs12settingsFileE">
+<span id="_CPPv3N27MultiExperimentProcessPrefs12settingsFileE"></span><span id="_CPPv2N27MultiExperimentProcessPrefs12settingsFileE"></span><span id="MultiExperimentProcessPrefs::settingsFile__cA"></span><span class="target" id="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">settingsFile</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">256</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N27MultiExperimentProcessPrefs12settingsFileE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___logging_8ipf.html"
+                          title="previous chapter">File MIES_Logging.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___menu_8ipf.html"
+                          title="next chapter">File MIES_Menu.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___menu_8ipf.html" title="File MIES_Menu.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___logging_8ipf.html" title="File MIES_Logging.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_MassExperimentProcessing.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

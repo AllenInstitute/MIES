@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___check_installation_8ipf" kind="file" language="C++">
+    <compoundname>MIES_CheckInstallation.ipf</compoundname>
+    <innerclass refid="struct_c_h_i___installation_state" prot="public">CHI_InstallationState</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___check_installation_8ipf_1a444530ca300c756b1b1bf7c144d97ad2" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string CHI_NIDAQ_XOP_64_HASH</definition>
+        <argsstring></argsstring>
+        <name>CHI_NIDAQ_XOP_64_HASH</name>
+        <initializer>= &quot;92427feeec9d330d410452b15ff1b6da90fe8e2dd0b8362cd711358c8726706a&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___check_installation_8ipf_1a95afd8c4e98bb9a405e7c93eec04afda" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string CHI_NIDAQ_XOP_HASH</definition>
+        <argsstring></argsstring>
+        <name>CHI_NIDAQ_XOP_HASH</name>
+        <initializer>= &quot;ed7f5bc51553608bcf7850b06d472dc739952a32939c1b196b80d131a87f2527&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___check_installation_8ipf_1afcdceb722860d4d3b0b59ca0e1bba407" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string CHI_JSON_XOP_VERSION</definition>
+        <argsstring></argsstring>
+        <name>CHI_JSON_XOP_VERSION</name>
+        <initializer>= &quot;version-753-g902d43f&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1ad5c61285e5ddf367e5436665226828f5" compoundref="_m_i_e_s___check_installation_8ipf" startline="31" endline="47">CHI_CheckJSONXOPVersion</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___check_installation_8ipf_1a5243175c4caf2149df5de6112cf570bf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CHI_InitInstallationState</definition>
+        <argsstring>(CHI_InstallationState *state)</argsstring>
+        <name>CHI_InitInstallationState</name>
+        <param>
+          <type><ref refid="struct_c_h_i___installation_state" kindref="compound">CHI_InstallationState</ref> *</type>
+          <declname>state</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="24" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="24" bodyend="29"/>
+        <references refid="struct_c_h_i___installation_state_1ad61ee1127d6285b196dd37e4e60da92d" compoundref="_m_i_e_s___check_installation_8ipf" startline="19">CHI_InstallationState::numErrors</references>
+        <references refid="struct_c_h_i___installation_state_1a21de332e3d3adf07b83063efe8ae3392" compoundref="_m_i_e_s___check_installation_8ipf" startline="21">CHI_InstallationState::numTries</references>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___check_installation_8ipf_1ad5c61285e5ddf367e5436665226828f5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CHI_CheckJSONXOPVersion</definition>
+        <argsstring>(CHI_InstallationState *state)</argsstring>
+        <name>CHI_CheckJSONXOPVersion</name>
+        <param>
+          <type><ref refid="struct_c_h_i___installation_state" kindref="compound">CHI_InstallationState</ref> *</type>
+          <declname>state</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="31" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="31" bodyend="47"/>
+        <references refid="_m_i_e_s___check_installation_8ipf_1afcdceb722860d4d3b0b59ca0e1bba407" compoundref="_m_i_e_s___check_installation_8ipf" startline="16">CHI_JSON_XOP_VERSION</references>
+        <references refid="struct_c_h_i___installation_state_1ad61ee1127d6285b196dd37e4e60da92d" compoundref="_m_i_e_s___check_installation_8ipf" startline="19">CHI_InstallationState::numErrors</references>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___check_installation_8ipf_1a8a28a6b978c1391e0c49f219a02515f0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CHI_CheckXOP</definition>
+        <argsstring>(string *list, string *item, string *name, CHI_InstallationState *state, string expectedHash=defaultValue)</argsstring>
+        <name>CHI_CheckXOP</name>
+        <param>
+          <type>string *</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>item</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_c_h_i___installation_state" kindref="compound">CHI_InstallationState</ref> *</type>
+          <declname>state</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>expectedHash</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Search list for matches of item and print the results. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="50" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="50" bodyend="108"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af0e1149d7bc46ab9216abcc41cedc7df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5119" endline="5134">CalcHashForFile</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac05f10bb08e33c8fd8e99f37f655b009" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5138" endline="5165">CheckIfPathsRefIdenticalFiles</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7e975dc8cfba3cf15f418603df123192" compoundref="_m_i_e_s___utilities_8ipf" startline="5105" endline="5116">GetFileVersion</references>
+        <references refid="struct_c_h_i___installation_state_1ad61ee1127d6285b196dd37e4e60da92d" compoundref="_m_i_e_s___check_installation_8ipf" startline="19">CHI_InstallationState::numErrors</references>
+        <references refid="struct_c_h_i___installation_state_1a21de332e3d3adf07b83063efe8ae3392" compoundref="_m_i_e_s___check_installation_8ipf" startline="21">CHI_InstallationState::numTries</references>
+        <referencedby refid="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" compoundref="_m_i_e_s___check_installation_8ipf" startline="115" endline="234">CHI_CheckInstallation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___check_installation_8ipf_1a22de37dd0744ebe27687dcaa23349462" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CHI_CheckInstallation</definition>
+        <argsstring>()</argsstring>
+        <name>CHI_CheckInstallation</name>
+        <briefdescription>
+<para>Check the installation and print the results to the history. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Currently checks that all expected/optional XOPs are installed.</para>
+<para><simplesect kind="return"><para>number of errors </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" line="115" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf" bodystart="115" bodyend="234"/>
+        <references refid="_m_i_e_s___check_installation_8ipf_1ad5c61285e5ddf367e5436665226828f5" compoundref="_m_i_e_s___check_installation_8ipf" startline="31" endline="47">CHI_CheckJSONXOPVersion</references>
+        <references refid="_m_i_e_s___check_installation_8ipf_1a8a28a6b978c1391e0c49f219a02515f0" compoundref="_m_i_e_s___check_installation_8ipf" startline="50" endline="108">CHI_CheckXOP</references>
+        <references refid="_m_i_e_s___check_installation_8ipf_1a5243175c4caf2149df5de6112cf570bf" compoundref="_m_i_e_s___check_installation_8ipf" startline="24" endline="29">CHI_InitInstallationState</references>
+        <references refid="_m_i_e_s___check_installation_8ipf_1a444530ca300c756b1b1bf7c144d97ad2" compoundref="_m_i_e_s___check_installation_8ipf" startline="14">CHI_NIDAQ_XOP_64_HASH</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2bf90f6830e37603aa197e07c14235a" compoundref="_m_i_e_s___utilities_8ipf" startline="2872" endline="2943">GetAllFilesRecursivelyFromPath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1d83dd0074789e90293e5b7bc33be609" compoundref="_m_i_e_s___utilities_8ipf" startline="2820" endline="2827">GetArchitectureBits</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a02b77b61286695059a89c8226736d20f" compoundref="_m_i_e_s___utilities_8ipf" startline="4645" endline="4666">GetASLREnabledState</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1a38220b009261b544a2dbef04046860" compoundref="_m_i_e_s___utilities_8ipf" startline="2770" endline="2777">GetIgorExtensionFolderName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abe7eae12945773c6be75d7a39b731c51" compoundref="_m_i_e_s___utilities_8ipf" startline="2850" endline="2861">GetUniqueSymbolicPath</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad28eef4b81041760ea09f2e5b1db851c" compoundref="_m_i_e_s___utilities_8ipf" startline="4684" endline="4690">IsWindows10</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af1ad7af435433dc29de937c8f92a9a0e" compoundref="_m_i_e_s___utilities_8ipf" startline="4355" endline="4359">ToTrueFalse</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ba2c4af364e94f911a59e642be6bc0c" compoundref="_m_i_e_s___constants_8ipf" startline="605">UNKNOWN_MIES_VERSION</references>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af2a679d7f195c16967ab0c20cc6fdadb" compoundref="_m_i_e_s___menu_8ipf" startline="163" endline="199">MEN_CreateIssueOnGithub</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>CHI</bold> Routines for checking the health of the MIES installation </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_CheckInstallation.ipf"/>
+  </compounddef>
+</doxygen>

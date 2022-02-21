@@ -1,0 +1,4 @@
+Struct FormulaProperties
+========================
+
+.. doxygenstruct:: FormulaProperties

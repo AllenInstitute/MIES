@@ -1,0 +1,1910 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Labnotebook descriptions &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation instructions" href="installation.html" />
+    <link rel="prev" title="Automatic test pulse tuning" href="auto_testpulse_tuning.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="auto_testpulse_tuning.html" title="Automatic test pulse tuning"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Labnotebook descriptions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="labnotebook-descriptions">
+<h1>Labnotebook descriptions<a class="headerlink" href="#labnotebook-descriptions" title="Permalink to this headline">¶</a></h1>
+<table class="colwidths-given docutils align-default" id="id1">
+<caption><span class="caption-text">Numerical entries</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 68%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Unit</p></th>
+<th class="head"><p>Tolerance</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Headstage Contingency</p></th>
+<th class="head"><p>ClampMode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SweepNum</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TimeStamp</p></td>
+<td><p>s</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TimeStampSinceIgorEpochUTC</p></td>
+<td><p>s</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Time Stamp: Seconds since Igor epoch (1/1/1904) in coordinated universal time zone (UTC) with millisecond precision. Written at time of labnotebook entry.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>EntrySourceType</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Entry source type: type of the labnotebook entry, 0 for data acquisition, 1 for test pulse, NaN for all other types including user entries.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>AcquisitionState</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Stores the current numbered state of data acquistion.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TP Baseline Vm</p></td>
+<td><p>mV</p></td>
+<td><p>1</p></td>
+<td><p>Testpulse Baseline: Average membrane potential, see <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a></p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Baseline pA</p></td>
+<td><p>pA</p></td>
+<td><p>50</p></td>
+<td><p>Testpulse Baseline: Average holding current, see <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a></p></td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Peak Resistance</p></td>
+<td><p>MΩ</p></td>
+<td><p>runtime</p></td>
+<td><p>Testpulse Peak Resistance: Instantaneous resistance measurement calculated from testpulse profil, <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a></p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TP Steady State Resistance</p></td>
+<td><p>MΩ</p></td>
+<td><p>runtime</p></td>
+<td><p>Testpulse Steady State Resistance: Resistance measurement obtained from the end of the applied testpulse profile, see <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a></p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Fast compensation capacitance</p></td>
+<td><p>F</p></td>
+<td><p>1e-12</p></td>
+<td><p>Fast capacitance compensation: Cp Fast sets the parameters of current injected into the headstage atvoltage steps to charge (and discharge) the fast component of electrodecapacitance. The adjustable fields display estimates of the magnitudeand time constant for this capacitance.</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Slow compensation capacitance</p></td>
+<td><p>F</p></td>
+<td><p>1e-12</p></td>
+<td><p>Slow capacitance compensation: Settings for Cp Slow determine the parameters of current injected intothe headstage at voltage steps to charge and discharge the slow componentof electrode capacitance. The adjustable fields display estimates of themagnitude and time constant for this capacitance.</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Fast compensation time</p></td>
+<td><p>s</p></td>
+<td><p>1e-6</p></td>
+<td><p>Fast compensation time: Time constant for Fast compensation</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Slow compensation time</p></td>
+<td><p>s</p></td>
+<td><p>1e-6</p></td>
+<td><p>Slow compensation time: Time constant for slow compensation</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Headstage Active</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Headtage Active State: Specifies if the hardware associated with the headstage is in use.</p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>DAC</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Digital Analog Channel used for testpulse or data acquisition</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>ADC</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Analog digital channel used for testpulse or data acquisition</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Clamp Mode</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Amplifier clamp state: One of 0 (VC aka Voltage Clamp), 1 (IC aka Current Clamp), 2 (I=0 aka I Equal Zero)</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TP Baseline Fraction</p></td>
+<td></td>
+<td><p>0.01</p></td>
+<td><p>Testpulse baseline fraction: Fraction of the full test pulse length used for baseline. Proportional to test pulse repeat frequency f = ???.</p>
+<p>See also <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a></p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TP Amplitude VC</p></td>
+<td><p>pA</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Testpulse Amplitude: Current injected during testpulse</p></td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Amplitude IC</p></td>
+<td><p>mV</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Testpulse Amplitude: Applied potential relative to the holding potential of the amplifier.</p>
+<p>See also <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a>.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Pulse Duration</p></td>
+<td><p>ms</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Duration of the applied testpulse without baseline.</p>
+<p>See also <a class="reference external" href="https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html">https://alleninstitute.github.io/MIES/CalculateTPLikePropsFromSweep.html</a>.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Stim Scale Factor</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Scalar applied to the stimulus set at acquisition time.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>DA Gain</p></td>
+<td></td>
+<td><p>.000001</p></td>
+<td><p>Digital Analog amplifier gain: Termed external command sensitivity in the Multiclamp Commander.</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>AD Gain</p></td>
+<td></td>
+<td><p>.000001</p></td>
+<td><p>Analog digital amplifier gain for current and voltag clamp.</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Set Sweep Count</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Non-negative sweep (timeseries)  index for the stimulus set.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TP Insert Checkbox</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Inserted Testpulse:</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Inter-trial interval</p></td>
+<td><p>s</p></td>
+<td><p>0.01</p></td>
+<td><p>Target interval for consecutive sweeps, start to start, in seconds</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TTL rack zero bits</p></td>
+<td><p>bit mask</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>ITC hardware specific: Bit mask for active DAEphys TTL channels of rack zero.</p>
+<p>See also <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable">https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable</a> and <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable">https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable</a>.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TTL rack one bits</p></td>
+<td><p>bit mask</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>ITC hardware specific: Bit mask for active DAEphys TTL channels of rack one.</p>
+<p>See also <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable">https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable</a> and <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable">https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable</a>.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TTL rack zero channel</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>ITC hardware specific: ITC XOP TTL hardware channel for rack zero, e.g., ITC 1600 = 0, ITC 18USB = 1</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TTL rack one channel</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>ITC hardware specific: ITC XOP TTL hardware channel for rack one, e.g., ITC 1600 = 3. Of the ITC devices, only the ITC1600 can have up to two racks.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Delay onset user</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>User defined delay of stimset onset in milliseconds across all active channels. Occurs immediately after an optionally inserted Testpulse. Output is constant zero during the delay.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id2">https://alleninstitute.github.io/MIES/#id2</a> for a visualization of the sweep delays during data acquisition.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Delay onset auto</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>Automatically defined delay in milliseconds due to the Testpulse (optionally) inserted at sweep onset.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id2">https://alleninstitute.github.io/MIES/#id2</a> for a visualization of the sweep delays during data acquisition.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Delay termination</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>User defined delay of sweep termination in milliseconds across all active channels. Occurs immediately after stimulus set termination. Output is constant zero during the delay.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id2">https://alleninstitute.github.io/MIES/#id2</a> for a visualization of the sweep delays during data acquisition.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Delay distributed DAQ</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>Distributed data acquisition distributes in time the selected stimsets across all active channels in a single sweep. The delay is the time in milliseconds between stimsets on each active channel.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id3">https://alleninstitute.github.io/MIES/index.html#id3</a> for visualization of the delay.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Distributed DAQ</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Distributed data acquisition distributes in time the selected stimsets across all active channels in a single sweep.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id3">https://alleninstitute.github.io/MIES/index.html#id3</a> for visualization of the delay.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Repeat Sets</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>User defined value that sets the minimum number of times a stimulus set is acquired within a repeated acquisition cycle.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of set repetition and indexing.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Scaling zero</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>The DA scaling for active channels is set to zero after the stimulus set has cycled once. Only applies with locked indexing.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of scaling to zero.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Indexing</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Enables the acquistion of multiple stimulus sets, for an active channel, on a single repeated acquisition cycle.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of indexing.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Locked indexing</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Enables the acquistion of multiple stimulus sets, for an active channel, on a single repeated acquisition cycle.
+A special form of  indexing where the transition to the next stimulus set happens on the same sweep for all active channels.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of indexing.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Repeated Acquisition</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Automated acquisition of more than one sweep.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of repeated acquisition.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Random Repeated Acquisition</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Randomizes the sweep acquisition order within a stimulus set.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/index.html#id1">https://alleninstitute.github.io/MIES/index.html#id1</a> for a visualisation of indexing.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Sampling interval</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>Time interval between consecutive data points.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Sampling interval multiplier</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>The hardware limited minimum interval between consecutive data points is called the minimum sampling interval.
+This interval can be prolonged by the user configured sampling interval multiplier.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Stim set length</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Number of points in each sweep of the stimulus set. This is determined by the acquisition sampling interval.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>oodDAQ Pre Feature</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>oodDAQ pre delay is the leading time envelope for non-zero parts of the stimulus set sweeps.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id4">https://alleninstitute.github.io/MIES/#id4</a> for a visualisation of oodDAQ.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>oodDAQ Post Feature</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>oodDAQ post delay is the trailing time envelope for non-zero parts of the stimulus set sweeps.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id4">https://alleninstitute.github.io/MIES/#id4</a> for a visualisation of oodDAQ.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>oodDAQ Resolution</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>The minimum search step for the oodDAQ time offset calculation.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id4">https://alleninstitute.github.io/MIES/#id4</a> for a visualisation of oodDAQ.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Optimized Overlap dDAQ</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Optimized overlap distributed data acquisition (oodDAQ) offsets in time stimulus set sweeps across headstages. The offset is determined such that the non-zero parts, plus user defined envelope (pre and post delay),  of the stimset sweeps don’t overlap on different headstages.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id4">https://alleninstitute.github.io/MIES/#id4</a> for a visualisation of oodDAQ.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Delay onset oodDAQ</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>Calculated total oodDAQ offset used for acquisition.</p>
+<p>See <a class="reference external" href="https://alleninstitute.github.io/MIES/#id4">https://alleninstitute.github.io/MIES/#id4</a> for a visualisation of oodDAQ.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Pulse To Pulse Length</p></td>
+<td><p>ms</p></td>
+<td><p>1</p></td>
+<td><p>Not used in newer MIES versions.</p></td>
+<td><p>ALL</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Repeated Acq Cycle ID</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>The “Repeated Acq Cycle ID” labels each repeated acquisition with a unique integer number.
+Sweeps belonging to the same repeated acquisition cycle have the same ID.
+For yoked devices the follower and lead devices will have the same ID,
+which also helps in that case to group sweeps together.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Stim Wave Checksum</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>The “Stim Wave Checksum” is a unique identifier for the stimulus set contents.</p>
+<p>Changes in this ID catches cases where the stimset has the same name but different contents.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Multi Device mode</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Support for multiple DAQ devices acquiring data simultaneously. When turned off, legacy single device mode is used.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Background Testpulse</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>When enabled, a running testpulse does not block the Igor Pro user interface.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Background DAQ</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>When enabled, data acquisition does not block the Igor Pro user interface.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>TP buffer size</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Size of the running average window for the testpulse results.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TP during ITI</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>When checked the testpulse runs during the inter-trial-interval.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Amplifier change via I=0</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Switching between voltage and current clamp passes through I=0 mode if enabled.</p>
+<p>For theoretical details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Skip analysis functions</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Analysis functions attached to simulus sets are not called when enabled.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Repeat sweep on async alarm</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>When an asynchronous’ channel alarm is triggered (user configurable) the last sweep is continously reacquired until the alarm state is cleared.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>TP after DAQ</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Run the testpulse immediately after data acquisition finished or was stopped prematurely.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Set Cycle Count</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>The number of stimulus set repetitions in one repeated acquisition cycle.</p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Stimset Acq Cycle ID</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><blockquote>
+<div><dl class="simple">
+<dt>This identifier changes if one of the folllowing properties change:</dt><dd><ul class="simple">
+<li><p>Repeated acquisition cycle ID</p></li>
+<li><p>Stimulus set</p></li>
+<li><p>Stimulus set checksum</p></li>
+<li><p>Stimulus set cycle count</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p>The primary use case is for querying all labnotebook entries of all sweeps from the current set.
+In analysis function terms all sweeps which are acquired between pre set event and post set event, see
+also <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___analysis_functions_8ipf.html">https://alleninstitute.github.io/MIES/file/_m_i_e_s___analysis_functions_8ipf.html</a>.</p>
+<p>A visualisation is available at <a class="reference external" href="https://alleninstitute.github.io/MIES/#id1">https://alleninstitute.github.io/MIES/#id1</a>.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>DAQ stop reason</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Documents why data acquisition was stopped.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Digitizer Hardware Type</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>Hardware type (integer) of the DAEphys panel digitizer.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Fixed frequency acquisition</p></td>
+<td><p>kHz</p></td>
+<td><p>1</p></td>
+<td><p>The sampling frequency of the digitizer in kHz when fixed frequency acquisition is enabled.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Igor Pro bitness</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Architecture bitness (32 or 64) of Igor Pro.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>DA ChannelType</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>Acquisition mode of the given DA channel. Can be one of Testpulse (2), data acquisition (1) or unknown (-1).</p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>AD ChannelType</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>Acquisition mode of the given AD channel. Can be one of Testpulse (2), data acquisition (1) or unknown (-1).</p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>oodDAQ member</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Set to one for headstages taking part in oodDAQ, set to zero for TP during DAQ headstages.</p></td>
+<td><p>DEPEND</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>V-Clamp Holding Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Enables the holding potential in Voltage Clamp.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-even"><td><p>V-Clamp Holding Level</p></td>
+<td><p>mV</p></td>
+<td><p>0.9</p></td>
+<td><p>Holding potential in Voltage Clamp.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Osc Killer Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Disables or reduces capacitance neutralization (Current Clamp) or RS compensation (Voltage Clamp) when oscillations are detected.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC</p></td>
+</tr>
+<tr class="row-even"><td><p>RsComp Bandwidth</p></td>
+<td><p>Hz</p></td>
+<td><p>0.9</p></td>
+<td><p>The lowpass filter cutoff frequency of the series compensation signal.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>RsComp Correction</p></td>
+<td><p>%</p></td>
+<td><p>0.9</p></td>
+<td><p>Percentage of active series resistance compensation applied.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-even"><td><p>RsComp Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Compensates the series resistance in voltage clamp.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>RsComp Prediction</p></td>
+<td><p>%</p></td>
+<td><p>0.9</p></td>
+<td><p>Open loop amplification of output current transient.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-even"><td><p>Whole Cell Comp Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Voltage clamp whole cell capacitance and resistance compensation.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Whole Cell Comp Cap</p></td>
+<td><p>pF</p></td>
+<td><p>0.9</p></td>
+<td><p>Voltage clamp capacitance for whole cell compensation.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-even"><td><p>Whole Cell Comp Resist</p></td>
+<td><p>MΩ</p></td>
+<td><p>0.9</p></td>
+<td><p>Voltage clamp resistance for whole cell compensation.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>I-Clamp Holding Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Bias current in current clamp.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>I-Clamp Holding Level</p></td>
+<td><p>pA</p></td>
+<td><p>0.9</p></td>
+<td><p>Bias current level in current clamp.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Neut Cap Enabled</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Pipette Capacitance Neutralization.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Neut Cap Value</p></td>
+<td><p>pF</p></td>
+<td><p>0.9</p></td>
+<td><p>User defined pipette capacitance.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bridge Bal Enable</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Pipette series resistance bridge balance.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Bridge Bal Value</p></td>
+<td><p>MΩ</p></td>
+<td><p>0.9</p></td>
+<td><p>User defined pipette series resistance.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Serial Number</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Vendor defined amplifier serial number. More than one headstage can share one amplifier.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Channel ID</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Amplifier headstage channel. Unique for each headstage of a given amplifier.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>ComPort ID</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Always -1 for 700B amplifiers.</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>AxoBus ID</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Always -1 for 700B amplifiers.</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Operating Mode</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Clamp mode of the headstage.</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Scaled Out Signal</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Type of output signal:</p>
+<ul class="simple">
+<li><p>Membrane Current</p></li>
+<li><p>Membrane Potential</p></li>
+<li><p>Pipette Potential</p></li>
+<li><p>100x AC Membrane Potential</p></li>
+<li><p>External Command Potential</p></li>
+<li><p>Auxiliary 1 Potential</p></li>
+<li><p>Auxiliary 2 Current</p></li>
+</ul>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Alpha</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Output gain for primary output signal.</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Scale Factor</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Gain scale factor (for Alpha == 1) of primary output signal</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Scale Factor Units</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Units of the scaled output signal</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>LPF Cutoff</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Primary output low pass filter cut off value (Bessel)</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Membrane Cap</p></td>
+<td><p>pF</p></td>
+<td><p>0.9</p></td>
+<td><p>User configured whole cell membrane capacitance.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>VC</p></td>
+</tr>
+<tr class="row-even"><td><p>Ext Cmd Sens</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Scaling between the external command voltage sent to the COMMAND input BNCs on the amplifier front panel, and voltage or current steps delivered to the cell.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Raw Out Signal</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>User configured signal type of secondary output</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Raw Scale Factor</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Gain scale factor (for Alpha == 1) of secondary output signal.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Raw Scale Factor Units</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Number denoting the unit of the Raw Scale Factor.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Hardware Type</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Identifier of the amplifier hardware, will be 1 for the 700B. A string version is available in the textual labnotebook as “HardwareTypeString”.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Secondary Alpha</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Output gain for secondary output</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Secondary LPF Cutoff</p></td>
+<td></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Secondary output lowpass filter cutoff frequency, in Hz.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Series Resistance</p></td>
+<td><p>MΩ</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Measured series resistance</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Pipette Offset</p></td>
+<td><p>mV</p></td>
+<td><p>0.1</p></td>
+<td><p>Removes the differential voltage between the ground and the pipette.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Slow current injection</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Varies holding level to hit a certain voltage.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Slow current injection level</p></td>
+<td><p>V</p></td>
+<td><p>0.1</p></td>
+<td><p>Holding level for “Slow current injection”.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Slow current injection settling time</p></td>
+<td><p>s</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Time constant for “Slow current injection”.</p>
+<p>For more details see the MultiClamp700B Manual.</p>
+</td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Autobias Vcom</p></td>
+<td><p>mV</p></td>
+<td><p>0.1</p></td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Autobias Vcom variance</p></td>
+<td><p>mV</p></td>
+<td><p>0.1</p></td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Autobias Ibias max</p></td>
+<td><p>pA</p></td>
+<td><p>0.1</p></td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Autobias Interval</p></td>
+<td><p>s</p></td>
+<td><p>0.1</p></td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Autobias %</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Autobias</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>During the inter trial interval (“ITI”) autobias adjusts the holding current to maintain the user defined “Autobias Vcom” within “Autobias Vcom variance”. The autobias evaluates a user defined part (“Autobias (%)”) of the Testpulse baseline at the “Autobias Interval” (DaEphys-&gt;Settings-&gt;Amplifier).</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>Sweep Rollback</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Sweep rollback allows to remove existing sweeps by decreasing the device sweep counter. This entry documents that sweep rollback has happened and the new target sweep number.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Skip Sweeps</p></td>
+<td></td>
+<td><p>0.1</p></td>
+<td><p>Whenever the user issues a “Skip Sweeps” command this entry documents the new and to be jumped to sweep number.</p></td>
+<td><p>INDEP</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Async 0 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 1 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 2 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 3 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 4 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 5 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 6 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 7 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 0 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 1 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 2 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 3 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 4 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 5 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async 6 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async 7 Gain</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 0 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 1 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 2 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 3 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 4 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 5 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 6 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 7 On/Off</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 0 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 1 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 2 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 3 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 4 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 5 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm 6 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm 7 Min</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm  0 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm  1 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm  2 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm  3 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm  4 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm  5 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async Alarm  6 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async Alarm  7 Max</p></td>
+<td></td>
+<td><p>.001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async AD 0 [Set Temperature]</p></td>
+<td><p>degC</p></td>
+<td><p>0</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async AD 1 [Bath Temperature]</p></td>
+<td><p>degC</p></td>
+<td><p>17.5</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async AD 2</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async AD 3</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async AD 4</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async AD 5</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Async AD 6</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Async AD 7</p></td>
+<td></td>
+<td><p>.0001</p></td>
+<td><p>Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.</p>
+<p>Alarm is triggered when enabled and minimum or maximum is exceeded.</p>
+<p>The value is stored in a new labnotebook column called “Async AD$X: $Name” where X is the asynchronous channel and $Name the title of the entry.</p>
+</td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Auto</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Automatic adjustment of testpulse baeline fraction and IC amplitude</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Auto max current</p></td>
+<td><p>pA</p></td>
+<td><p>0.1</p></td>
+<td><p>Maximum allowed current for automatic testpulse</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Auto voltage</p></td>
+<td><p>mV</p></td>
+<td><p>0.1</p></td>
+<td><p>Target voltage of the pulse</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Auto voltage range</p></td>
+<td><p>mV</p></td>
+<td><p>0.1</p></td>
+<td><p>Acceptable deviation from the set voltage to the measured voltage</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Auto percentage</p></td>
+<td><p>%</p></td>
+<td><p>1</p></td>
+<td><p>Scaling factor for the amplitude adjustment</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Auto interval</p></td>
+<td><p>s</p></td>
+<td><p>0.1</p></td>
+<td><p>Interval how often to try tuning the Auto testpulse parameters</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-even"><td><p>TP Auto QC</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Determines if the desired auto testpulse propertes were reached or not.</p></td>
+<td><p>DEPEND</p></td>
+<td><p>IC</p></td>
+</tr>
+<tr class="row-odd"><td><p>TP Cycle ID</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>An arbitrary but unique number where all testpulse from the same run have the same ID. “Fast” testpulse restarting is considered to be the same run.</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Minimum TP resistance for tolerance</p></td>
+<td><p>MΩ</p></td>
+<td><p>1</p></td>
+<td><p>Testpulse resistance values which differ more than this value from their value on the last TP run are documented in the sweep wave note.</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Send TP settings to all headstages</p></td>
+<td><p>On/Off</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>GUI control for headstage dependent testpulse settings.</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+<tr class="row-even"><td><p>Epochs version</p></td>
+<td></td>
+<td><p>1</p></td>
+<td><p>Version number of the stored epoch information.</p></td>
+<td><p>INDEP</p></td>
+<td><p>IC;VC;I=0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="auto_testpulse_tuning.html"
+                          title="previous chapter">Automatic test pulse tuning</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="next chapter">Installation instructions</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="auto_testpulse_tuning.html" title="Automatic test pulse tuning"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Labnotebook descriptions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

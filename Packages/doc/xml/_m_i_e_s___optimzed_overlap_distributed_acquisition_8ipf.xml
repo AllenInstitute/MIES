@@ -1,0 +1,632 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" kind="file" language="C++">
+    <compoundname>MIES_OptimzedOverlapDistributedAcquisition.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a9e35efedf073c93a62664bfd48a1e347" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double OOD_SIGNAL_THRESHOLD</definition>
+        <argsstring></argsstring>
+        <name>OOD_SIGNAL_THRESHOLD</name>
+        <initializer>= 0.1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Signal threshold level in parts of dynamic range above minimum <simplesect kind="see"><para><ref refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3" kindref="member">OOD_GetThresholdLevel()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="19" endline="26">OOD_GetThresholdLevel</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OOD_GetThresholdLevel</definition>
+        <argsstring>(wave stimset)</argsstring>
+        <name>OOD_GetThresholdLevel</name>
+        <param>
+          <type>wave</type>
+          <declname>stimset</declname>
+        </param>
+        <briefdescription>
+<para>returns the threshold level for ood region detection from a single column stimset </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">stimset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1d wave containing stimset data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>threshold level defining signal above baseline </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="19" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="19" bodyend="26"/>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a9e35efedf073c93a62664bfd48a1e347" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="14">OOD_SIGNAL_THRESHOLD</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a0457e1ea87dd050e2d131cdfbcf72550" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="33" endline="83">OOD_GetRegionsFromStimset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a0457e1ea87dd050e2d131cdfbcf72550" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_GetRegionsFromStimset</definition>
+        <argsstring>(wave stimset, variable prePoints, variable postPoints)</argsstring>
+        <name>OOD_GetRegionsFromStimset</name>
+        <param>
+          <type>wave</type>
+          <declname>stimset</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>prePoints</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>postPoints</declname>
+        </param>
+        <briefdescription>
+<para>retrieves regions with signal from a 1D data wave, used for stimsets </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">stimset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1D wave containing stimset data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">prePoints</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>oodDAQ pre delay in points the regions get expanded at the rising edge </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">postPoints</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>oodDAQ post delay in points the regions get expanded at the falling edge </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>2D wave with region information </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="33" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="33" bodyend="83"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="19" endline="26">OOD_GetThresholdLevel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a53ce1308121e4378fb0d071b29a360aa" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="125" endline="138">OOD_GetRegionsFromStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a4f58d99aa1a1ff5f529612444de30e67" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_CompactRegions</definition>
+        <argsstring>(wave regions)</argsstring>
+        <name>OOD_CompactRegions</name>
+        <param>
+          <type>wave</type>
+          <declname>regions</declname>
+        </param>
+        <briefdescription>
+<para>Reduces a 2D region wave by joining overlapping regions to one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">regions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>2D wave containing region data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>2D wave with compacted regions </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="88" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="88" bodyend="120"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="176" endline="235">OOD_CalculateOffsets</referencedby>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a53ce1308121e4378fb0d071b29a360aa" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="125" endline="138">OOD_GetRegionsFromStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a53ce1308121e4378fb0d071b29a360aa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_GetRegionsFromStimsets</definition>
+        <argsstring>(OOdDAQParams *params)</argsstring>
+        <name>OOD_GetRegionsFromStimsets</name>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>generates regions data waves from stimsets taking the pre and post delay into account </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>wave reference wave holding the 2D region waves for each stimset </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="125" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="125" bodyend="138"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2a7a1e58d0101d25bf08190d05ba369e" compoundref="_m_i_e_s___utilities_8ipf" startline="3564" endline="3622">DeepCopyWaveRefWave</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a4f58d99aa1a1ff5f529612444de30e67" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="88" endline="120">OOD_CompactRegions</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a0457e1ea87dd050e2d131cdfbcf72550" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="33" endline="83">OOD_GetRegionsFromStimset</references>
+        <references refid="struct_o_od_d_a_q_params_1a363b782b13ed1dba6f9c87235414d757" compoundref="_m_i_e_s___structures_8ipf" startline="225">OOdDAQParams::postFeaturePoints</references>
+        <references refid="struct_o_od_d_a_q_params_1a8f6ee3ae8fd00f7cd785f87f7f0736c1" compoundref="_m_i_e_s___structures_8ipf" startline="224">OOdDAQParams::preFeaturePoints</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_o_od_d_a_q_params_1ade070174bf7b196596bdecd11d2abf85" compoundref="_m_i_e_s___structures_8ipf" startline="223">OOdDAQParams::setColumns</references>
+        <references refid="struct_o_od_d_a_q_params_1a1c1088e413db2967f6e3b5e51581a24e" compoundref="_m_i_e_s___structures_8ipf" startline="222">OOdDAQParams::stimSets</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abb695aad7da2491c072ae3917e3dbe2b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_GetFeatureRegions</definition>
+        <argsstring>(WaveRefWave setRegions, wave offsets)</argsstring>
+        <name>OOD_GetFeatureRegions</name>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>setRegions</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>offsets</declname>
+        </param>
+        <briefdescription>
+<para>returns a 1D wave with regions as lists from the input regions waves, is used for the LNB </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">setRegions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave reference wave of 2D region waves </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">offsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>offset wave storing the offsets per stimset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1D text wave with lists of regions </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="144" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="144" bodyend="165"/>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a2baf61c071a9ea20edfd5ee7207b536b" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="312" endline="321">OOD_AddToRegionList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_CalculateOffsets</definition>
+        <argsstring>(WaveRefWave setRegions, wave *baseRegions, variable yoked)</argsstring>
+        <name>OOD_CalculateOffsets</name>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>setRegions</declname>
+        </param>
+        <param>
+          <type>wave *</type>
+          <declname>baseRegions</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>yoked</declname>
+        </param>
+        <briefdescription>
+<para>Calculates offsets for each stimset for OOD. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">setRegions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave reference wave of 2D region waves for each stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">baseRegions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>2D region wave that contains initial reserved regions, e.g. when using with yoking the caller function can preload from the previous device For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">yoked</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1 if yoked operation, 0 if not</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1D wave with offsets for each stimset in points </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="176" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="176" bodyend="235"/>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a4f58d99aa1a1ff5f529612444de30e67" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="88" endline="120">OOD_CompactRegions</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OOD_CalculateOffsetsYoked</definition>
+        <argsstring>(string device, OOdDAQParams *params)</argsstring>
+        <name>OOD_CalculateOffsetsYoked</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Calculated the offsets for normal acquisition and yoked mode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of the device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure with oodDAQ setup data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="240" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="240" bodyend="275"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ada53aefe2e034d0e9cebe237a9b7bd87" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5500" endline="5510">DeviceIsFollower</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9db7326e6aa280ac8654558d91ac7eb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5552" endline="5554">GetDistDAQFolder</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="struct_o_od_d_a_q_params_1a397d3bb1c99375271d3d2af895f99642" compoundref="_m_i_e_s___structures_8ipf" startline="231">OOdDAQParams::offsets</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="176" endline="235">OOD_CalculateOffsets</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ab177716e6e4431eefcf91e3a88cb780e" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="325" endline="358">OOD_Debugging</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abb695aad7da2491c072ae3917e3dbe2b" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="144" endline="165">OOD_GetFeatureRegions</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a53ce1308121e4378fb0d071b29a360aa" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="125" endline="138">OOD_GetRegionsFromStimsets</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1aebb08aeb526c668544f0e0f8850a8ab8" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="280" endline="286">OOD_LoadPreload</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a1a36c95921a7f11f9e64d4c0fae642fa" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="291" endline="305">OOD_StorePreload</references>
+        <references refid="struct_o_od_d_a_q_params_1aafdf321e29199e2a2c80a04e778a799f" compoundref="_m_i_e_s___structures_8ipf" startline="216">OOdDAQParams::preload</references>
+        <references refid="struct_o_od_d_a_q_params_1abc125e475f7aea1fb25e5332e37eae3f" compoundref="_m_i_e_s___structures_8ipf" startline="232">OOdDAQParams::regions</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1aebb08aeb526c668544f0e0f8850a8ab8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OOD_LoadPreload</definition>
+        <argsstring>(string device, OOdDAQParams *params)</argsstring>
+        <name>OOD_LoadPreload</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Load the preload data into <computeroutput>params.preload</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of the device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure where the data is preloaded into </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="280" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="280" bodyend="286"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9db7326e6aa280ac8654558d91ac7eb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5552" endline="5554">GetDistDAQFolder</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a361ce3bb7b4e5e5202e0831ddd19c590" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5565" endline="5581">GetDistDAQPreloadWave</references>
+        <references refid="struct_o_od_d_a_q_params_1aafdf321e29199e2a2c80a04e778a799f" compoundref="_m_i_e_s___structures_8ipf" startline="216">OOdDAQParams::preload</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a1a36c95921a7f11f9e64d4c0fae642fa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OOD_StorePreload</definition>
+        <argsstring>(string device, wave preload)</argsstring>
+        <name>OOD_StorePreload</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>preload</declname>
+        </param>
+        <briefdescription>
+<para>Store the preload data so that the next device can use it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of the device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">preload</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave that is stored containing the preload data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="291" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="291" bodyend="305"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a361ce3bb7b4e5e5202e0831ddd19c590" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5565" endline="5581">GetDistDAQPreloadWave</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1af234240403414dc255162e7b96d71e36" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="683" endline="691">HW_ITC_BuildDeviceString</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a2baf61c071a9ea20edfd5ee7207b536b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string OOD_AddToRegionList</definition>
+        <argsstring>(variable first, variable last, string list)</argsstring>
+        <name>OOD_AddToRegionList</name>
+        <param>
+          <type>variable</type>
+          <declname>first</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>last</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Return a list with <computeroutput>$first-$last</computeroutput> added at the end with <computeroutput>;</computeroutput> as separator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sample point number in wavebuilder scale with start of region </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">last</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sample point number in wavebuilder scale with end of region </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list string where the element is added </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>list string with added element </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="312" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="312" bodyend="321"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a4f3e6b5f198de9f2b14c00cff7d70d22" compoundref="_m_i_e_s___constants_8ipf" startline="704">WAVEBUILDER_MIN_SAMPINT</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abb695aad7da2491c072ae3917e3dbe2b" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="144" endline="165">OOD_GetFeatureRegions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ab177716e6e4431eefcf91e3a88cb780e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable OOD_Debugging</definition>
+        <argsstring>(OOdDAQParams *params)</argsstring>
+        <name>OOD_Debugging</name>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure with oodDAQ internals </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="325" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="325" bodyend="358"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2a7a1e58d0101d25bf08190d05ba369e" compoundref="_m_i_e_s___utilities_8ipf" startline="3564" endline="3622">DeepCopyWaveRefWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aa3bb3e8917af7d6267c46c8cf6d7151e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5173" endline="5176">GetUniqueTempPath</references>
+        <references refid="struct_o_od_d_a_q_params_1a397d3bb1c99375271d3d2af895f99642" compoundref="_m_i_e_s___structures_8ipf" startline="231">OOdDAQParams::offsets</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a573dbe9b1c0cbebef788ceb61f16652e" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="407" endline="443">OOD_CreateStimSet</references>
+        <references refid="struct_o_od_d_a_q_params_1aafdf321e29199e2a2c80a04e778a799f" compoundref="_m_i_e_s___structures_8ipf" startline="216">OOdDAQParams::preload</references>
+        <references refid="struct_o_od_d_a_q_params_1abc125e475f7aea1fb25e5332e37eae3f" compoundref="_m_i_e_s___structures_8ipf" startline="232">OOdDAQParams::regions</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_o_od_d_a_q_params_1ade070174bf7b196596bdecd11d2abf85" compoundref="_m_i_e_s___structures_8ipf" startline="223">OOdDAQParams::setColumns</references>
+        <references refid="struct_o_od_d_a_q_params_1a1c1088e413db2967f6e3b5e51581a24e" compoundref="_m_i_e_s___structures_8ipf" startline="222">OOdDAQParams::stimSets</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave OOD_GetResultWaves</definition>
+        <argsstring>(string device, OOdDAQParams *params)</argsstring>
+        <name>OOD_GetResultWaves</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Return the oodDAQ optimized stimsets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The offsets and the regions are returned in <computeroutput>params</computeroutput> and all results are cached.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of the device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure with the initial settings </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>one dimensional numberic wave with the offsets in points for each stimset </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="368" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="368" bodyend="399"/>
+        <references refid="_m_i_e_s___cache_8ipf_1a3d26c7b337569593a134c240048a5c40" compoundref="_m_i_e_s___cache_8ipf" startline="74" endline="95">CA_DistDAQCreateCacheKey</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</references>
+        <references refid="struct_o_od_d_a_q_params_1a397d3bb1c99375271d3d2af895f99642" compoundref="_m_i_e_s___structures_8ipf" startline="231">OOdDAQParams::offsets</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a573dbe9b1c0cbebef788ceb61f16652e" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="407" endline="443">OOD_CreateStimSet</references>
+        <references refid="struct_o_od_d_a_q_params_1abc125e475f7aea1fb25e5332e37eae3f" compoundref="_m_i_e_s___structures_8ipf" startline="232">OOdDAQParams::regions</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a573dbe9b1c0cbebef788ceb61f16652e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave OOD_CreateStimSet</definition>
+        <argsstring>(OOdDAQParams *params)</argsstring>
+        <name>OOD_CreateStimSet</name>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Generate a stimset for &quot;overlapped dDAQ&quot; from the calculated offsets by <ref refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240" kindref="member">OOD_CalculateOffsets()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> structure with the stimsets and offset information</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>stimsets with offsets, one wave per offset </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" line="407" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf" bodystart="407" bodyend="443"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="struct_o_od_d_a_q_params_1a397d3bb1c99375271d3d2af895f99642" compoundref="_m_i_e_s___structures_8ipf" startline="231">OOdDAQParams::offsets</references>
+        <references refid="struct_o_od_d_a_q_params_1a363b782b13ed1dba6f9c87235414d757" compoundref="_m_i_e_s___structures_8ipf" startline="225">OOdDAQParams::postFeaturePoints</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_o_od_d_a_q_params_1ade070174bf7b196596bdecd11d2abf85" compoundref="_m_i_e_s___structures_8ipf" startline="223">OOdDAQParams::setColumns</references>
+        <references refid="struct_o_od_d_a_q_params_1a1c1088e413db2967f6e3b5e51581a24e" compoundref="_m_i_e_s___structures_8ipf" startline="222">OOdDAQParams::stimSets</references>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ab177716e6e4431eefcf91e3a88cb780e" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="325" endline="358">OOD_Debugging</referencedby>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>OOD</bold> This file holds functions related to oodDAQ. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_OptimzedOverlapDistributedAcquisition.ipf"/>
+  </compounddef>
+</doxygen>

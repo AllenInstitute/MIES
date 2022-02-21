@@ -1,0 +1,4 @@
+Struct Uuid
+===========
+
+.. doxygenstruct:: Uuid

@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___asynchronous_data_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AsynchronousData.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___asynchronous_data_8ipf_1af0c7372cb8a69b0004600fabe65fc85e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASD_CheckAsynAlarmState</definition>
+        <argsstring>(string device, variable channel, variable value)</argsstring>
+        <name>ASD_CheckAsynAlarmState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given asynchronous channel is in alarm state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if in alarm state, false if not in alarm state or not enabled. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AsynchronousData.ipf" line="15" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AsynchronousData.ipf" bodystart="15" bodyend="34"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a489290bc9f8a7c5ad98f783cfa08247b" compoundref="_m_i_e_s___constants_8ipf" startline="220">CHANNEL_CONTROL_ALARM_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76d199e8cffac5f43969240830b4e333" compoundref="_m_i_e_s___constants_8ipf" startline="219">CHANNEL_CONTROL_ALARM_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad58e348c622c424cb0c9fc95edc1e3fe" compoundref="_m_i_e_s___constants_8ipf" startline="218">CHANNEL_TYPE_ALARM</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___asynchronous_data_8ipf_1abeed0ed37415346dafff0300e3a6a7fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASD_ReadChannel</definition>
+        <argsstring>(string device, variable channel)</argsstring>
+        <name>ASD_ReadChannel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <briefdescription>
+<para>Read the given asynchronous channel and return the scaled value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AsynchronousData.ipf" line="37" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AsynchronousData.ipf" bodystart="37" bodyend="53"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a423cc2db7127dce04d22ac0910f01894" compoundref="_m_i_e_s___constants_8ipf" startline="213">CHANNEL_CONTROL_GAIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3f0b37070c8ae971d3264bb93c53c418" compoundref="_m_i_e_s___constants_8ipf" startline="217">CHANNEL_TYPE_ASYNC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1acc9fed6adff67f89ff7e03a33be6571c" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1830" endline="1838">HW_ITC_CalculateDevChannelOff</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1af4988bec1ac5a7f590dd3871ae11b1df" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="229" endline="246">HW_ReadADC</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4e6d1d8e82f8e4e6745857a539e7a4ca" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="690" endline="765">ED_createAsyncWaveNoteTags</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>ASD</bold> Support functions for the asynchronous channels </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AsynchronousData.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_analysis_function___v3" kind="struct" language="C++" prot="public">
+    <compoundname>AnalysisFunction_V3</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::eventType</definition>
+        <argsstring></argsstring>
+        <name>eventType</name>
+        <briefdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1EVENT_TYPE_ANALYSIS_FUNCTIONS" kindref="member">EVENT_TYPE_ANALYSIS_FUNCTIONS</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="240" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="238" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a62f74151ff49f293eaac148f6fb4599e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="271" endline="294">MeasureMidSweepTiming_V3</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1ab77f46e9935064af498ee2e4d7487754" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE AnalysisFunction_V3::rawDACWave</definition>
+        <argsstring></argsstring>
+        <name>rawDACWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>raw data wave for interacting with the DAC hardware (locked to prevent changes using <computeroutput>SetWaveLock</computeroutput>). The exact wave format depends on the hardware. <simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" kindref="member">GetDAQDataWave()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="245" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="245" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a01b5476b9a5dbe2aee1cf1b9cfdc6799" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE AnalysisFunction_V3::scaledDACWave</definition>
+        <argsstring></argsstring>
+        <name>scaledDACWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>scaled and undecimated data from the DAC hardware, 2D floating-point wave Rows has channel data, one column per channel, channels are in the order DA/AD/TTL </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="249" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="249" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1402" endline="1429">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a2ce664d720581516eb52c0310d93c466" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::headStage</definition>
+        <argsstring></argsstring>
+        <name>headStage</name>
+        <briefdescription>
+<para>active headstage index, <computeroutput>[0, NUM_HEADSTAGES[</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="252" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="252" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a57ffb42fa405a342eedc14851c632811" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::lastValidRowIndex</definition>
+        <argsstring></argsstring>
+        <name>lastValidRowIndex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>last valid row index in <computeroutput>rawDACWave</computeroutput> which will be filled with data at the end of DAQ. The total number of rows in <computeroutput>rawDACWave</computeroutput> might be higher due to alignment requirements of the data acquisition hardware.</para>
+<para>Always <computeroutput>NaN</computeroutput> for <ref refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" kindref="member">PRE_DAQ_EVENT</ref>/<ref refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" kindref="member">PRE_SET_EVENT</ref> events. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="259" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="259" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a0d8ccfd8f2ecdf8b31f115f7be61a39e" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="293" endline="350">PSQ_EvaluateBaselineChunks</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a1fe69365499bd53bfd25268f88a3a0e3" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::lastKnownRowIndex</definition>
+        <argsstring></argsstring>
+        <name>lastKnownRowIndex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>last written row index in <computeroutput>rawDACWave</computeroutput>/<computeroutput>scaledDACWave</computeroutput> with already acquired data</para>
+<para>Always <computeroutput>NaN</computeroutput> for <ref refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" kindref="member">PRE_DAQ_EVENT</ref>/<ref refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" kindref="member">PRE_SET_EVENT</ref>/<ref refid="_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d" kindref="member">PRE_SWEEP_CONFIG_EVENT</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="264" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="264" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a0d8ccfd8f2ecdf8b31f115f7be61a39e" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="293" endline="350">PSQ_EvaluateBaselineChunks</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::sweepNo</definition>
+        <argsstring></argsstring>
+        <name>sweepNo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Potential <emphasis>future</emphasis> number of the sweep. Once the sweep is finished it will be saved with this number. Use <ref refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" kindref="member">GetSweepWave()</ref> to query the sweep itself. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="268" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="268" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1402" endline="1429">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a0d8ccfd8f2ecdf8b31f115f7be61a39e" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="293" endline="350">PSQ_EvaluateBaselineChunks</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a15a0fdc47e6b7c83602fb9c78526584c" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable AnalysisFunction_V3::sweepsInSet</definition>
+        <argsstring></argsstring>
+        <name>sweepsInSet</name>
+        <briefdescription>
+<para>Number of sweeps in the currently acquired stimset of the passed headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="271" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="271" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string AnalysisFunction_V3::params</definition>
+        <argsstring></argsstring>
+        <name>params</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Analysis function parameters set in the stimset&apos;s textual parameter wave. Settable via <ref refid="_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec" kindref="member">AFH_AddAnalysisParameter()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="275" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="275" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1402" endline="1429">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The structure passed into <computeroutput>V3</computeroutput> and later analysis functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="238" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="238" bodyend="276"/>
+    <listofallmembers>
+      <member refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>eventType</name></member>
+      <member refid="struct_analysis_function___v3_1a2ce664d720581516eb52c0310d93c466" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>headStage</name></member>
+      <member refid="struct_analysis_function___v3_1a1fe69365499bd53bfd25268f88a3a0e3" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>lastKnownRowIndex</name></member>
+      <member refid="struct_analysis_function___v3_1a57ffb42fa405a342eedc14851c632811" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>lastValidRowIndex</name></member>
+      <member refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>params</name></member>
+      <member refid="struct_analysis_function___v3_1ab77f46e9935064af498ee2e4d7487754" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>rawDACWave</name></member>
+      <member refid="struct_analysis_function___v3_1a01b5476b9a5dbe2aee1cf1b9cfdc6799" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>scaledDACWave</name></member>
+      <member refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>sweepNo</name></member>
+      <member refid="struct_analysis_function___v3_1a15a0fdc47e6b7c83602fb9c78526584c" prot="public" virt="non-virtual"><scope>AnalysisFunction_V3</scope><name>sweepsInSet</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

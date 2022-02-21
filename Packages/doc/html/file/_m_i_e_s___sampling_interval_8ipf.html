@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_SamplingInterval.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_StimsetAPI.ipf" href="_m_i_e_s___stimset_a_p_i_8ipf.html" />
+    <link rel="prev" title="File MIES_RepeatedAcquisition.ipf" href="_m_i_e_s___repeated_acquisition_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___stimset_a_p_i_8ipf.html" title="File MIES_StimsetAPI.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___repeated_acquisition_8ipf.html" title="File MIES_RepeatedAcquisition.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SamplingInterval.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-samplinginterval-ipf">
+<span id="id1"></span><h1>File MIES_SamplingInterval.ipf<a class="headerlink" href="#file-mies-samplinginterval-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>SI</strong> Routines for calculating and handling the minimum sampling interval </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416SI_FillITCConfig4wave4wave8variable8variable8variable8variable">
+<span id="_CPPv316SI_FillITCConfig4wave4wave8variable8variable8variable8variable"></span><span id="_CPPv216SI_FillITCConfig4wave4wave8variable8variable8variable8variable"></span><span id="SI_FillITCConfig__wave.wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a6a445519d657c159b2988c0d7015f8da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_FillITCConfig</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">results</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalNumDA</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalNumAD</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">totalNumTTL</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SI_FillITCConfig4wave4wave8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill the passed wave to be used as DAQConfigWave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SI_FillITCConfigWithPerms4wave8variable8variable8variable">
+<span id="_CPPv325SI_FillITCConfigWithPerms4wave8variable8variable8variable"></span><span id="_CPPv225SI_FillITCConfigWithPerms4wave8variable8variable8variable"></span><span id="SI_FillITCConfigWithPerms__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1acad3a5bf675cd9a0f52a357526064c22"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_FillITCConfigWithPerms</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_FillITCConfigWithPerms4wave8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill the passed wave to be used as DAQConfigWave for the exhaustive search. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415SI_CompressWave4wave">
+<span id="_CPPv315SI_CompressWave4wave"></span><span id="_CPPv215SI_CompressWave4wave"></span><span id="SI_CompressWave__wave"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a3909150a27e49f9bc396306eb28ce0bd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_CompressWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SI_CompressWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Removes invalid and duplicated entries from the generated table from <a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1ad07feadb6f27cbdca0d3474ef6ccbadb"><span class="std std-ref">SI_CreateLookupWave</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411SI_SortWave4wave">
+<span id="_CPPv311SI_SortWave4wave"></span><span id="_CPPv211SI_SortWave4wave"></span><span id="SI_SortWave__wave"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a79e2d2b48409328779adfef4a2c83751"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_SortWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411SI_SortWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sort the lookup wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SI_FindMatchingTableEntry4waveP14ActiveChannels">
+<span id="_CPPv325SI_FindMatchingTableEntry4waveP14ActiveChannels"></span><span id="_CPPv225SI_FindMatchingTableEntry4waveP14ActiveChannels"></span><span id="SI_FindMatchingTableEntry__wave.ActiveChannelsP"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_FindMatchingTableEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <a class="reference internal" href="../struct/struct_active_channels.html#_CPPv414ActiveChannels" title="ActiveChannels"><span class="n"><span class="pre">ActiveChannels</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ac</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_FindMatchingTableEntry4waveP14ActiveChannels" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Search the given active channel combination in the lookup wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425SI_LoadMinSampIntFromDisk6string">
+<span id="_CPPv325SI_LoadMinSampIntFromDisk6string"></span><span id="_CPPv225SI_LoadMinSampIntFromDisk6string"></span><span id="SI_LoadMinSampIntFromDisk__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a2fbe61947de02cee97d3714292a68148"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_LoadMinSampIntFromDisk</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_LoadMinSampIntFromDisk6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Try to load the lookup wave for the minimum sampling interval from disk for the given deviceType. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a lookup wave or an invalid wave ref if it could not be loaded from disk </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424SI_StoreMinSampIntOnDisk4wave6string">
+<span id="_CPPv324SI_StoreMinSampIntOnDisk4wave6string"></span><span id="_CPPv224SI_StoreMinSampIntOnDisk4wave6string"></span><span id="SI_StoreMinSampIntOnDisk__wave.string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a6ed8e8dba1034c546186ef07317cc3fc"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_StoreMinSampIntOnDisk</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SI_StoreMinSampIntOnDisk4wave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the lookup wave on disc. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SI_FillActiveChannelsStruct6stringP14ActiveChannels">
+<span id="_CPPv327SI_FillActiveChannelsStruct6stringP14ActiveChannels"></span><span id="_CPPv227SI_FillActiveChannelsStruct6stringP14ActiveChannels"></span><span id="SI_FillActiveChannelsStruct__string.ActiveChannelsP"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_FillActiveChannelsStruct</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../struct/struct_active_channels.html#_CPPv414ActiveChannels" title="ActiveChannels"><span class="n"><span class="pre">ActiveChannels</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ac</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SI_FillActiveChannelsStruct6stringP14ActiveChannels" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query the DA_EPhys panel for the active channels and fill it in the passed structure. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>number of active channels </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419SI_CreateLookupWave6string8variable">
+<span id="_CPPv319SI_CreateLookupWave6string8variable"></span><span id="_CPPv219SI_CreateLookupWave6string8variable"></span><span id="SI_CreateLookupWave__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ad07feadb6f27cbdca0d3474ef6ccbadb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_CreateLookupWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreChannelOrder</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SI_CreateLookupWave6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414SI_TestSampInt6string">
+<span id="_CPPv314SI_TestSampInt6string"></span><span id="_CPPv214SI_TestSampInt6string"></span><span id="SI_TestSampInt__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ae4204ccd2c8c7a910ad578be6680349e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_TestSampInt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SI_TestSampInt6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427SI_CalculateMinSampInterval6string8variable">
+<span id="_CPPv327SI_CalculateMinSampInterval6string8variable"></span><span id="_CPPv227SI_CalculateMinSampInterval6string8variable"></span><span id="SI_CalculateMinSampInterval__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_CalculateMinSampInterval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SI_CalculateMinSampInterval6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>, ignores TTL channels for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430SI_NI_CalculateMinSampInterval6string">
+<span id="_CPPv330SI_NI_CalculateMinSampInterval6string"></span><span id="_CPPv230SI_NI_CalculateMinSampInterval6string"></span><span id="SI_NI_CalculateMinSampInterval__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a9ee20480d92202d8b615b6f9a8e546e4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_NI_CalculateMinSampInterval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SI_NI_CalculateMinSampInterval6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval for NI hardware. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6"><span class="std std-ref">SI_CalculateMinSampInterval</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431SI_ITC_CalculateMinSampInterval6string8variable">
+<span id="_CPPv331SI_ITC_CalculateMinSampInterval6string8variable"></span><span id="_CPPv231SI_ITC_CalculateMinSampInterval6string8variable"></span><span id="SI_ITC_CalculateMinSampInterval__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1aab58bb63b63021a1b0ff1ff1cebde84c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_ITC_CalculateMinSampInterval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataAcqOrTP</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431SI_ITC_CalculateMinSampInterval6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1ac8f9a1e457fa665e1c0a32137f13d2d6"><span class="std std-ref">SI_CalculateMinSampInterval</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>dataAcqOrTP</strong> – one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>, ignores TTL channels for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420SI_GetMinSampIntWave6string">
+<span id="_CPPv320SI_GetMinSampIntWave6string"></span><span id="_CPPv220SI_GetMinSampIntWave6string"></span><span id="SI_GetMinSampIntWave__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ab6078e898b445d2087990c321bf505f4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SI_GetMinSampIntWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SI_GetMinSampIntWave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a wave ref with the lookup wave for the sampling interval. </p>
+<p>This functions tries to load the wave from disk on the first call so this function might take a while to execute. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423MIN_CONSECUTIVE_SAMPINT">
+<span id="_CPPv323MIN_CONSECUTIVE_SAMPINT"></span><span id="_CPPv223MIN_CONSECUTIVE_SAMPINT"></span><span id="MIN_CONSECUTIVE_SAMPINT__doubleC"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ab24bcd5a617af012a88b835c06ddc7ba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MIN_CONSECUTIVE_SAMPINT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv423MIN_CONSECUTIVE_SAMPINT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The consecutive check in <a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1ae4204ccd2c8c7a910ad578be6680349e"><span class="std std-ref">SI_TestSampInt</span></a> enforces not only one sucessfull sampling interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT Set to 0 to deactivate </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___repeated_acquisition_8ipf.html"
+                          title="previous chapter">File MIES_RepeatedAcquisition.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___stimset_a_p_i_8ipf.html"
+                          title="next chapter">File MIES_StimsetAPI.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___stimset_a_p_i_8ipf.html" title="File MIES_StimsetAPI.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___repeated_acquisition_8ipf.html" title="File MIES_RepeatedAcquisition.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SamplingInterval.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

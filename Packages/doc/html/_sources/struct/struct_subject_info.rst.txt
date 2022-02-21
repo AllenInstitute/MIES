@@ -1,0 +1,4 @@
+Struct SubjectInfo
+==================
+
+.. doxygenstruct:: SubjectInfo

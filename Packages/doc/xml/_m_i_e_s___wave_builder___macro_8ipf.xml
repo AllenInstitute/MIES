@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___wave_builder___macro_8ipf" kind="file" language="C++">
+    <compoundname>MIES_WaveBuilder_Macro.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___wave_builder___macro_8ipf_1a0b38156af61fa3c0adc0706127c2bc20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void WaveBuilder</definition>
+        <argsstring>()</argsstring>
+        <name>WaveBuilder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder_Macro.ipf" line="12" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder_Macro.ipf" bodystart="12" bodyend="1240"/>
+        <references refid="_m_i_e_s___wave_builder_panel_8ipf_1abc2153c80b27b42d3362588d39634b5e" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="17">WaveBuilderGraph</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>WBPM</bold> WaveBuilder panel macro </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder_Macro.ipf"/>
+  </compounddef>
+</doxygen>

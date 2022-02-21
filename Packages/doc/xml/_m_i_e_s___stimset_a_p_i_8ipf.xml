@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___stimset_a_p_i_8ipf" kind="file" language="C++">
+    <compoundname>MIES_StimsetAPI.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Functions for manipulating stimulus sets</header>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ST_GetStimsetList</definition>
+        <argsstring>(variable channelType=defaultValue, string searchString=defaultValue, string *WBstimSetList=defaultValue, string *thirdPartyStimSetList=defaultValue)</argsstring>
+        <name>ST_GetStimsetList</name>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>searchString</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>WBstimSetList</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>thirdPartyStimSetList</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a sorted list of all DA/TTL stim set waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to all] <ref refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" kindref="member">CHANNEL_TYPE_DAC</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" kindref="member">CHANNEL_TYPE_TTL</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">searchString</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to &quot;*&quot;] search string in wildcard syntax </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">WBstimSetList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] returns the list of stim sets built with the wavebuilder </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">thirdPartyStimSetList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] returns the list of third party stim sets not built with the wavebuilder </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="195" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="195" bodyend="256"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae3f10e3789b8735e397cab0eb25717ef" compoundref="_m_i_e_s___utilities_8ipf" startline="1962" endline="1978">GetListDifference</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a59ce08e0e4c7234740cd6b40dde869ed" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4593" endline="4603">GetSetFolder</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a726467a4420729df48929bb59cd36e26" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4625" endline="4635">GetSetParamFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0257e66d7f180f9d40d736e62f4c82fd" compoundref="_m_i_e_s___constants_8ipf" startline="1271">MATCH_WILDCARD</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ad686192dcb0a7481dab14d30ef46dc96" compoundref="_i_p_n_w_b___utils_8ipf" startline="215" endline="237">RemovePrefixFromListItem</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1aed29078f9980cc9c56ed9a668436fd1a" compoundref="_m_i_e_s___blowout_8ipf" startline="69" endline="112">BWO_CheckGlobalSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae73243b4c645649e7af729b71192ec2c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="938" endline="1005">DAP_SetVarProc_Channel_Search</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3f36d49a62a3c068572932a58456e005" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5693" endline="5746">DAP_UpdateDaEphysStimulusSetPopups</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a2c3020201b453a5b91a8627445d8389e" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="55" endline="68">IH_KillStimSets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a6dbf0225fcc4a88d5fff23d3ffe5f506" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="906" endline="925">NWB_PrepareExport</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a4eaeed1c1d5d83a1d693697eacd0639e" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="393" endline="417">StimParamGUI</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a5367596404fc49a91edde57e149c43e4" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1792" endline="1831">WB_UpdateEpochCombineList</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a54d9d44e12164c3c74390a404606a213" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="919" endline="932">WBP_ReturnListSavedSets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1ga615b9032ac8edb677d206a936138be05" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ST_CreateStimSet</definition>
+        <argsstring>(string baseName, variable stimulusType, variable setNumber=defaultValue, variable saveAsBuiltin=defaultValue)</argsstring>
+        <name>ST_CreateStimSet</name>
+        <param>
+          <type>string</type>
+          <declname>baseName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stimulusType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>setNumber</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>saveAsBuiltin</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Create a new empty stimset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>baseName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>user choosable part of the stimset name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stimulusType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" kindref="member">CHANNEL_TYPE_DAC</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" kindref="member">CHANNEL_TYPE_TTL</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to 0] stimset number, allows for convenient alphabetic increasing names used in indexing </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>saveAsBuiltin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] allows to create builtin stimsets when enabled </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="266" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="266" bodyend="285"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3daa71e2a627a5ad75cc0d7326486998" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3954" endline="3965">GetSegmentTypeWaveAsFree</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a978cf936498a6cf8a7755a8a3d49a21d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3640" endline="3661">GetWaveBuilderWaveParamAsFree</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afa35813c7d350f41c3a0d2dc682bffda" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3870" endline="3876">GetWaveBuilderWaveTextParamAsFree</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a3dc331ccd70ddb58407379b28b5de782" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2444" endline="2499">WB_SaveStimSet</references>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1gae97461d89014c40cd121fa725f8bc7f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ST_RemoveStimSet</definition>
+        <argsstring>(string setName)</argsstring>
+        <name>ST_RemoveStimSet</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <briefdescription>
+<para>Remove the given stimulus set and update all relevant GUIs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="290" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="290" bodyend="306"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ac15e2b1847fdbc681fa8534b816ea335" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5770" endline="5789">DAP_DeleteStimulusSet</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a3dc331ccd70ddb58407379b28b5de782" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2444" endline="2499">WB_SaveStimSet</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a59cfbd3f1a49138c60d6e673b8b3b7a5" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="502" endline="526">WBP_ButtonProc_DeleteSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1ga14df6aafb19a921397498bdbb690beae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave ST_GetStimsetParameters</definition>
+        <argsstring>(string setName, variable epochType=defaultValue)</argsstring>
+        <name>ST_GetStimsetParameters</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epochType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the available stimsets parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the epoch-independent parameters when epochType is not present. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="313" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="313" bodyend="326"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1ga78821f3a3ce49d32c577beda1b87cb99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ST_GetStimsetParameterAsVariable</definition>
+        <argsstring>(string setName, string entry, variable epochIndex=defaultValue)</argsstring>
+        <name>ST_GetStimsetParameterAsVariable</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epochIndex</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the given stimset numeric parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>setName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the parameter, can be global or epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epochIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, when not given this sets global parameters] epoch index (0-based) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="335" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="335" bodyend="356"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae2415cec650043d3217816015b8f7104" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4532" endline="4540">PSQ_PB_GetPrePulseBaselineDuration</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1ga758aebd603f1dc498a270fa53e51bc8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ST_GetStimsetParameterAsString</definition>
+        <argsstring>(string setName, string entry, variable epochIndex=defaultValue)</argsstring>
+        <name>ST_GetStimsetParameterAsString</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epochIndex</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the given stimset string parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>setName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the parameter, can be global or epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epochIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, when not given this sets global parameters] epoch index (0-based) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="365" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="365" bodyend="397"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+      </memberdef>
+      <memberdef kind="function" id="group___stimset_a_p_i_functions_1ga7c1e7244a8db5bac9415e8a62302c0fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ST_SetStimsetParameter</definition>
+        <argsstring>(string setName, string entry, variable epochIndex=defaultValue, variable var=defaultValue, string str=defaultValue)</argsstring>
+        <name>ST_SetStimsetParameter</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epochIndex</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Set the given stimset parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If you use this function in analysis functions be sure to use an event which happens <emphasis>before</emphasis> the stimset is read, for example <computeroutput>PRE_DAQ_EVENT</computeroutput>, <computeroutput>PRE_SET_EVENT</computeroutput> or <computeroutput>PRE_SWEEP_CONFIG_EVENT</computeroutput>. The last one is always called for each sweep before it is configured.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>setName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the stimset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the parameter, can be global or epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epochIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, when not given this sets global parameters] epoch index (0-based) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, one of <computeroutput>var</computeroutput>/<computeroutput>str</computeroutput> must be present] numeric parameter to set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, one of <computeroutput>var</computeroutput>/<computeroutput>str</computeroutput> must be present] string parameter to set</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on success, 1 on error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" line="414" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf" bodystart="414" bodyend="492"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a620333611771c98ab4ac5e5b218343b9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4580" endline="4588">GetStimSetType</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a007c8086327de535eb3386fa92121c7e" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2426" endline="2442">WB_SetAnalysisFunctionGeneric</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>ST</bold> Stimulus set API </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_StimsetAPI.ipf"/>
+  </compounddef>
+</doxygen>

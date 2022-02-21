@@ -1,0 +1,1211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_Configuration.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Constants.ipf" href="_m_i_e_s___constants_8ipf.html" />
+    <link rel="prev" title="File MIES_CheckInstallation.ipf" href="_m_i_e_s___check_installation_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___constants_8ipf.html" title="File MIES_Constants.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___check_installation_8ipf.html" title="File MIES_CheckInstallation.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Configuration.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-configuration-ipf">
+<span id="id1"></span><h1>File MIES_Configuration.ipf<a class="headerlink" href="#file-mies-configuration-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>CONF</strong> Import user settings to configure paramters for Ephys experiments </p>
+<p><span class="target" id="_m_i_e_s___configuration_8ipf_1Configuration"></span>Module brief description </p>
+<p>The Configuration module allows to save and load the GUI state of complete windows including its subwindows</p>
+<p>The main functions are CONF_SaveWindow and CONF_RestoreWindow. CONF_SaveWindow automatically detects if the current window is a DA_Ephys panel and uses the DA_Ephys GUI state savig configuration settings and saves additional information. CONF_RestoreWindow also detects if the current window is of DA_Ephys type and handles that specific for this case. CONF_RestoreDAEphys can be called directly as well if there is no panel open. It will open a new DA_Ephys panel automatically if no other viable candidate panel was found.</p>
+<p>The GUI state is saved in a text file in json format. In the basic structure of the file the main blocks are the windows and subwindows and within are the control blocks. A bitmask parameter allows to configure which control information is saved. See WindowControlSavingMask Currently supported is Value, Position/Size, Userdata, Disabled state and Type of a control. Not implemented is e.g. Color/Background Color As Value only the V_Value and/or S_Value and/or S_DataFolder is saved. Special control properties for e.g. ListBox like V_SelCol are currently not implemented.</p>
+<p>How GUI controls are handled can be controlled through userdata settings of each control. The following userdata settings are supported:<ul class="simple">
+<li><p>Config_NiceName: sets a human readable name of the control used in the configuration file This name may not be a duplicate of another controls name or ControlArray name. Also suffixing with ” ControlGroup” is not allowed.</p></li>
+<li><p>Config_GroupPath: Sets a group path in which the control appears in the configuration file. If not set then “Generic” is used. The group path elements can not contain the ‘/’ character. Several levels can be separated by “;”, e.g. “level1;level2;”. In the configuration file the group path elements are suffixed by ” ControlGroup” which identifies them as path compared to actual control names.</p></li>
+<li><p>Config_DontSave: When set to 1 the control is ignored on saving the window.</p></li>
+<li><p>Config_DontRestore: When set to 1 the control is ignored on restoring the window.</p></li>
+<li><p>Config_PushButtonOnRestore: Only valid with Button controls. When the button is restored a button press is issued.</p></li>
+<li><p>Config_RestorePriority: Sets a double precision number that defines the order in which controls get restored. Lower numbers correspond to earlier restore. If not set a priority of Inf is used. If multiple controls have the same priority the order of restore is not defined.</p></li>
+<li><p>Config_RadioCouplingFunc: A function name of a function that returns a text wave with lists of coupled CheckBoxes (aka RadioButtons). It is assumed that only one CheckBox of the group is in enabled state at the same time. See DAP_GetRadioButtonCoupling for example.</p></li>
+<li><p>ControlArray: Stores a name of a group of controls. All controls with the same ControlArray name are saved as group with that name in the configuration file. ControlArrays save only values and nothing is saved if the configured WindowControlSavingMask does not include values.</p></li>
+<li><p>ControlArrayIndex: Only valid if also ControlArray is set. Stores the index number of the control in its ControlArray. All member of the same ControlArray must have different indices. Currently not more than 100 controls are allowed for each ControlArray.</p></li>
+</ul>
+</p>
+<p>The function WindowtoJSON allows to give optional a list of control types that should be excluded.</p>
+<p>If the type of the control was saved, it is checked against the GUI controls type on restore.</p>
+<p>CheckBoxes are saved with true/false values.</p>
+<p>For the DA_Ephys panel: The function CONF_DefaultSettings sets default values for parameters not present in the GUI.</p>
+<p>Special mask flags:<ul class="simple">
+<li><p>EXPCONFIG_SAVE_ONLY_RELEVANT: Saves only most relevant value data of a control. It is configured in EXPCONFIG_GUI_PREFERRED</p></li>
+<li><p>EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY: Saves value for PopupMenu only as string</p></li>
+<li><p>EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY: Saves value for PopupMenu only as index value</p></li>
+<li><p>EXPCONFIG_MINIMIZE_ON_RESTORE: Minimize window while restoring it.</p></li>
+<li><p>EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED: Saves Buttons only when its userdata Config_PushButtonOnRestore is “1”</p></li>
+</ul>
+</p>
+<p>Handling of window names on restore: The currently selected windows main window is used as reference. The main window name in the configuration file is internally replaced with the current main window. This allows to save from “DataBrowser” and load to “DataBrowser2”.</p>
+<p>Handling of errors in input data: If input data is of unexpected format an ASSERTion or RTE is issued. The wrapping function converts the RTE to an ASSERT. The panel restore is aborted and the panel stays in its state. It gets unhided.</p>
+<p>Default configuration for generic windows: By default only the Value property is saved and controls from EXPCONFIG_EXCLUDE_CTRLTYPES excluded.</p>
+<p>Default configuration for DA_Ephys panel:<ul class="simple">
+<li><p>By default only the Value property is saved</p></li>
+<li><p>Controls from DAEPHYS_EXCLUDE_CTRLTYPES are excluded.</p></li>
+<li><p>The window is minimized while restoring</p></li>
+<li><p>PopupMenu values are saved as string only</p></li>
+<li><p>Buttons are only saved if its userdata Config_PushButtonOnRestore is “1”</p></li>
+<li><p>Only most relevant data of a control is saved. </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-unnamed-group">Unnamed Group</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423CONF_AUTO_LOADER_GLOBAL">
+<span id="_CPPv323CONF_AUTO_LOADER_GLOBAL"></span><span id="_CPPv223CONF_AUTO_LOADER_GLOBAL"></span><span id="CONF_AUTO_LOADER_GLOBAL__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a759e0a8c8fd4da216ae7dc59fc84758b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AUTO_LOADER_GLOBAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x0</span></span><a class="headerlink" href="#_CPPv423CONF_AUTO_LOADER_GLOBAL" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Parameters for <a class="reference internal" href="#_m_i_e_s___configuration_8ipf_1a874b8d0272d9a3200a9fb5442ee600a1"><span class="std std-ref">CONF_GetSettingsPath()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421CONF_AUTO_LOADER_USER">
+<span id="_CPPv321CONF_AUTO_LOADER_USER"></span><span id="_CPPv221CONF_AUTO_LOADER_USER"></span><span id="CONF_AUTO_LOADER_USER__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a06ec66667cc4bc73ba3035bca64c7bfe"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AUTO_LOADER_USER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1</span></span><a class="headerlink" href="#_CPPv421CONF_AUTO_LOADER_USER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CONF_DefaultSettingsv">
+<span id="_CPPv320CONF_DefaultSettingsv"></span><span id="_CPPv220CONF_DefaultSettingsv"></span><span id="CONF_DefaultSettings"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae1484c7707bacbeaa5c384c9cc337f67"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_DefaultSettings</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CONF_DefaultSettingsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a json with default experiment configuration block. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>json with default experiment configuration </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425CONF_OpenConfigInNotebookv">
+<span id="_CPPv325CONF_OpenConfigInNotebookv"></span><span id="_CPPv225CONF_OpenConfigInNotebookv"></span><span id="CONF_OpenConfigInNotebook"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a4c35a9c1ed4c6cf852c6fd07b43f5542"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_OpenConfigInNotebook</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425CONF_OpenConfigInNotebookv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Open all configuration files in plain text notebooks. </p>
+<p>Existing notebooks with the files are brought to the front. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CONF_GetConfigFilesv">
+<span id="_CPPv319CONF_GetConfigFilesv"></span><span id="_CPPv219CONF_GetConfigFilesv"></span><span id="CONF_GetConfigFiles"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a906416adde7c5101aca856e1c78a6926"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetConfigFiles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CONF_GetConfigFilesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a text wave with absolute paths to the JSON configuration files. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CONF_AutoLoaderv">
+<span id="_CPPv315CONF_AutoLoaderv"></span><span id="_CPPv215CONF_AutoLoaderv"></span><span id="CONF_AutoLoader"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa2003d6a2e390f5af764ec434a40e3c0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AutoLoader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CONF_AutoLoaderv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CONF_GetSettingsPath8variable">
+<span id="_CPPv320CONF_GetSettingsPath8variable"></span><span id="_CPPv220CONF_GetSettingsPath8variable"></span><span id="CONF_GetSettingsPath__variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a874b8d0272d9a3200a9fb5442ee600a1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetSettingsPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CONF_GetSettingsPath8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a symbolic path to the settings folder. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type</strong> – One of <a class="reference internal" href="#_m_i_e_s___configuration_8ipf_1a759e0a8c8fd4da216ae7dc59fc84758b"><span class="std std-ref">CONF_AUTO_LOADER_GLOBAL</span></a> or CONF_AUTO_LOADER_USER </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of an igor symbolic path to the settings folder </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CONF_SaveWindow6string">
+<span id="_CPPv315CONF_SaveWindow6string"></span><span id="_CPPv215CONF_SaveWindow6string"></span><span id="CONF_SaveWindow__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac9d6ecadcd12e4e6b84eda13fb9d0d8d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_SaveWindow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CONF_SaveWindow6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves the GUI state of a window and all of its subwindows to a configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fName</strong> – file name of configuration file to save configuration </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CONF_RestoreWindow6string8variable6string">
+<span id="_CPPv318CONF_RestoreWindow6string8variable6string"></span><span id="_CPPv218CONF_RestoreWindow6string8variable6string"></span><span id="CONF_RestoreWindow__string.variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0c62f527bf02abe0b8113ec8af51f537"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreWindow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fName</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">usePanelTypeFromFile</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rigFile</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CONF_RestoreWindow6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restores the GUI state of window and all of its subwindows from a configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fName</strong> – file name of configuration file to read configuration </p></li>
+<li><p><strong>usePanelTypeFromFile</strong> – [optional, default = 0] if set to 1 then the panel type from the json is interpreted and a new panel of that type is opened </p></li>
+<li><p><strong>rigFile</strong> – [optional, default = “”] name of secondary rig configuration file with complementary data. This parameter is valid when loading for a DA_Ephys panel </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CONF_SaveDAEphys6string">
+<span id="_CPPv316CONF_SaveDAEphys6string"></span><span id="_CPPv216CONF_SaveDAEphys6string"></span><span id="CONF_SaveDAEphys__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a5027cf13a0bbbfcf137c2e0fa3505b47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_SaveDAEphys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CONF_SaveDAEphys6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves the GUI state of a DA_Ephys panel to a configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fName</strong> – file name of configuration file to store DA_Ephys configuration </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CONF_RestoreDAEphys8variable6string8variable8variable">
+<span id="_CPPv319CONF_RestoreDAEphys8variable6string8variable8variable"></span><span id="_CPPv219CONF_RestoreDAEphys8variable6string8variable8variable"></span><span id="CONF_RestoreDAEphys__variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1abe1af21c0ce53fe601416917bd4a6620"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreDAEphys</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullFilePath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">middleOfExperiment</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">forceNewPanel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CONF_RestoreDAEphys8variable6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restores the GUI state of a DA_Ephys panel from a configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – json ID of json object to restore DA_Ephys panel from </p></li>
+<li><p><strong>fullFilePath</strong> – full file path of the file where the json object was parsed from </p></li>
+<li><p><strong>middleOfExperiment</strong> – [optional, default = 0] Allows MIES config in the middle of experiment. Instead of setting MCC parameters they are pulled from actively recording MCCs to configure MIES] </p></li>
+<li><p><strong>forceNewPanel</strong> – [optional, default = 0] When set opens always a fresh DA_Ephys panel, otherwise follows this priority order:<ul>
+<li><p>Reuses locked DA_Ephys panel with same device as saved in configuration</p></li>
+<li><p>Uses open unlocked DA_Ephys panel</p></li>
+<li><p>Opens new DA_Ephys panel</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of the created DAEphys panel </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426CONF_AddConfigFileUserData6string6string6string">
+<span id="_CPPv326CONF_AddConfigFileUserData6string6string6string"></span><span id="_CPPv226CONF_AddConfigFileUserData6string6string6string"></span><span id="CONF_AddConfigFileUserData__string.string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1afe69d6e9c93ba6b922be56596d191ed9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AddConfigFileUserData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rigFile</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426CONF_AddConfigFileUserData6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add the config file paths and SHA-256 hashes to the panel as user data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414CONF_ParseJSON6string">
+<span id="_CPPv314CONF_ParseJSON6string"></span><span id="_CPPv214CONF_ParseJSON6string"></span><span id="CONF_ParseJSON__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa64181a5f39ea00b1c207481b918d10a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_ParseJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414CONF_ParseJSON6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Parses a json formatted string to a json object. This function shows a helpful error message if the parse fails. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> – <strong>[in]</strong> string in json format </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>jsonID of the json object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv431CONF_GetDAEphysActiveHeadstages8variable">
+<span id="_CPPv331CONF_GetDAEphysActiveHeadstages8variable"></span><span id="_CPPv231CONF_GetDAEphysActiveHeadstages8variable"></span><span id="CONF_GetDAEphysActiveHeadstages__variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a92a53c3505f4f0b252205befce0ab896"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetDAEphysActiveHeadstages</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431CONF_GetDAEphysActiveHeadstages8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves list of active headstages saved in a DA_Ephys configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>jsonID</strong> – ID of existing json </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of active head stages </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429CONF_RequireConfigBlockExists8variable">
+<span id="_CPPv329CONF_RequireConfigBlockExists8variable"></span><span id="_CPPv229CONF_RequireConfigBlockExists8variable"></span><span id="CONF_RequireConfigBlockExists__variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a4839a40c7690698fd7bb22244bba86c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RequireConfigBlockExists</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429CONF_RequireConfigBlockExists8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if EXPCONFIG_RESERVED_DATABLOCK exists in json; ASSERTion is thrown if not found. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>jsonID</strong> – ID of existing json </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426CONF_GetStringFromSettings8variable6string">
+<span id="_CPPv326CONF_GetStringFromSettings8variable6string"></span><span id="_CPPv226CONF_GetStringFromSettings8variable6string"></span><span id="CONF_GetStringFromSettings__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ad0ba2db06068855ed9a2b57e80beb44e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetStringFromSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426CONF_GetStringFromSettings8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves a string value from a setting. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>keyName</strong> – key name of setting </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string from member with keyname in the EXPCONFIG_RESERVED_DATABLOCK </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428CONF_GetVariableFromSettings8variable6string8variable">
+<span id="_CPPv328CONF_GetVariableFromSettings8variable6string8variable"></span><span id="_CPPv228CONF_GetVariableFromSettings8variable6string8variable"></span><span id="CONF_GetVariableFromSettings__variable.string.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ad349a55fc08fb77fbfe10f845fa2050d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetVariableFromSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defaultValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv428CONF_GetVariableFromSettings8variable6string8variable" title="CONF_GetVariableFromSettings::defaultValue"><span class="n"><span class="pre">defaultValue</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428CONF_GetVariableFromSettings8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves a variable/boolean/null value from a saved control note: boolean control property values are also saved in the EXPCONFIG_FIELD_CTRLVVALUE field. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>keyName</strong> – key name of setting </p></li>
+<li><p><strong>defaultValue</strong> – [optional, defaults to off] allows to query optional entries, if the value could not be found this is returned instead</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CONF_FindControl8variable6string">
+<span id="_CPPv316CONF_FindControl8variable6string"></span><span id="_CPPv216CONF_FindControl8variable6string"></span><span id="CONF_FindControl__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a70e6f6c0400438e5c04b068b1e0af50f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_FindControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">niceName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CONF_FindControl8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the path to the first control named nicename found in the json in all saved windows This might as well be a ControlArray. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>niceName</strong> – nice name of control </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to control in json, empty string if not found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CONF_TraversalFinder8variable6string6string">
+<span id="_CPPv320CONF_TraversalFinder8variable6string6string"></span><span id="_CPPv220CONF_TraversalFinder8variable6string6string"></span><span id="CONF_TraversalFinder__variable.string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1af4d46775f223b96c7cabb746fe26809c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_TraversalFinder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">basePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">niceName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CONF_TraversalFinder8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the path to the first control named nicename found traversing the json starting at basePath This might as well be a ControlArray. This function runs recursively. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>basePath</strong> – root of traversal start </p></li>
+<li><p><strong>niceName</strong> – nice name of control </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to control in json, empty string if not found </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433CONF_GetWaveFromSavedControlArray8variable6string">
+<span id="_CPPv333CONF_GetWaveFromSavedControlArray8variable6string"></span><span id="_CPPv233CONF_GetWaveFromSavedControlArray8variable6string"></span><span id="CONF_GetWaveFromSavedControlArray__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a6fdb205076e64d6798bee2392ca49cd7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetWaveFromSavedControlArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arrayName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433CONF_GetWaveFromSavedControlArray8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves a wave from a saved ControlArray It is REQUIRED that ALL ELEMENTS of the ControlArray are of NUMERIC type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>arrayName</strong> – name of ControlArray </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>text wave with data from ControlArray </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430CONF_GetStringFromSavedControl8variable6string">
+<span id="_CPPv330CONF_GetStringFromSavedControl8variable6string"></span><span id="_CPPv230CONF_GetStringFromSavedControl8variable6string"></span><span id="CONF_GetStringFromSavedControl__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a6b0c127f0c1544844062b6216cf8888c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetStringFromSavedControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">niceName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430CONF_GetStringFromSavedControl8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves a string value from a saved control. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>niceName</strong> – nice name of control </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value of the EXPCONFIG_FIELD_CTRLSVALUE field of the control </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432CONF_GetVariableFromSavedControl8variable6string">
+<span id="_CPPv332CONF_GetVariableFromSavedControl8variable6string"></span><span id="_CPPv232CONF_GetVariableFromSavedControl8variable6string"></span><span id="CONF_GetVariableFromSavedControl__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a7c7bf390220ddf6d2e66d379ddcf2cc2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetVariableFromSavedControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">niceName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432CONF_GetVariableFromSavedControl8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves a variable value from a saved control. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>niceName</strong> – nice name of control </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CONF_GetWindowNames8variable">
+<span id="_CPPv319CONF_GetWindowNames8variable"></span><span id="_CPPv219CONF_GetWindowNames8variable"></span><span id="CONF_GetWindowNames__variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae5407b297a8c0c34f819a8e78ad37ae9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetWindowNames</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CONF_GetWindowNames8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a wave with all configuration sections ( aka control groups). This equals the top level keys without the EXPCONFIG_RESERVED_DATABLOCK key. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>jsonID</strong> – <strong>[in]</strong> ID of existing json </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Text wave with all named configuration sections </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CONF_GetControlArrayList6string">
+<span id="_CPPv324CONF_GetControlArrayList6string"></span><span id="_CPPv224CONF_GetControlArrayList6string"></span><span id="CONF_GetControlArrayList__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a879f64ab20055b367b66be022e2d466d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetControlArrayList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CONF_GetControlArrayList6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a two column free wave with ControlArrayName and associated control list from a window. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wName</strong> – <strong>[in]</strong> Name of window </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Text wave with two columns and in each row ControlArray name (column ARRAYNAME) and control list (column CTRLNAMELIST) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427CONF_GatherControlsFromJSON8WaveText8variable6string">
+<span id="_CPPv327CONF_GatherControlsFromJSON8WaveText8variable6string"></span><span id="_CPPv227CONF_GatherControlsFromJSON8WaveText8variable6string"></span><span id="CONF_GatherControlsFromJSON__WaveText.variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac5c52f111069d189b1a790c2d03ddb56"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GatherControlsFromJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrlData</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">basePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427CONF_GatherControlsFromJSON8WaveText8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Gathers recursively all control nice names and control paths from a configuration json by traversing all sub objects. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctrlData</strong> – <strong>[in]</strong> ctrlData wave, 2d four column text wave as created in <a class="reference internal" href="#_m_i_e_s___configuration_8ipf_1a76fab7a579bebccfcc5b0f876b1465cb"><span class="std std-ref">CONF_JSONToWindow()</span></a>. This wave is updated by this function. </p></li>
+<li><p><strong>jsonID</strong> – <strong>[in]</strong> json object to traverse </p></li>
+<li><p><strong>basePath</strong> – <strong>[in]</strong> root path for traversal </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CONF_JSONToWindow6string8variable8variable">
+<span id="_CPPv317CONF_JSONToWindow6string8variable8variable"></span><span id="_CPPv217CONF_JSONToWindow6string8variable8variable"></span><span id="CONF_JSONToWindow__string.variable.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a76fab7a579bebccfcc5b0f876b1465cb"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_JSONToWindow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">restoreMask</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CONF_JSONToWindow6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restores GUI state of a window from a json The following userdata properties are considered: EXPCONFIG_UDATA_EXCLUDE_RESTORE, EXPCONFIG_UDATA_RESTORE_PRIORITY It is supported that the current main reference window in the GUI changes its name. It is not supported that a not yet restored subwindow of it changes its name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wName</strong> – main reference window name in GUI </p></li>
+<li><p><strong>restoreMask</strong> – Bit mask which properties are restored from WindowControlSavingMask constants </p></li>
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of main window after restore </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CONF_FindWindow6string6string">
+<span id="_CPPv315CONF_FindWindow6string6string"></span><span id="_CPPv215CONF_FindWindow6string6string"></span><span id="CONF_FindWindow__string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a2e04a92fbd2e73e27ce2b0db7aee8e9e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_FindWindow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winHandle</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">uKey</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CONF_FindWindow6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the window with the set window handle. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>winHandle</strong> – window handle </p></li>
+<li><p><strong>uKey</strong> – [optional, default = EXPCONFIG_UDATA_WINHANDLE] userdata key that stores the handle value </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Window name of the window with the given handle; empty string if not found. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419CONF_RestoreControl6string8variable8variable6string6string">
+<span id="_CPPv319CONF_RestoreControl6string8variable8variable6string6string"></span><span id="_CPPv219CONF_RestoreControl6string8variable8variable6string6string"></span><span id="CONF_RestoreControl__string.variable.variable.string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0598275af08c5e1c7fd2146b49a47b80"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">restoreMask</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrlName</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonPath</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419CONF_RestoreControl6string8variable8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restores properties of a control from a json The following control userdata properties are considered: EXPCONFIG_UDATA_EXCLUDE_RESTORE; EXPCONFIG_UDATA_BUTTONPRESS (for Buttons) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wName</strong> – Window name </p></li>
+<li><p><strong>restoreMask</strong> – Bit mask which properties are restored from WindowControlSavingMask constants </p></li>
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>ctrlName</strong> – Control name </p></li>
+<li><p><strong>jsonPath</strong> – [optional, default = n/a] When given: the control is expected to be a named json object (with the control nice name) If not given: the jsons second level (assuming default format) is searched for the associated object. This is slower. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CONF_AllWindowsToJSON6string8variable6string">
+<span id="_CPPv321CONF_AllWindowsToJSON6string8variable6string"></span><span id="_CPPv221CONF_AllWindowsToJSON6string8variable6string"></span><span id="CONF_AllWindowsToJSON__string.variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a60aee5a4af84b79bf0cdb2e3047b1dee"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AllWindowsToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveMask</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">excCtrlTypes</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CONF_AllWindowsToJSON6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Serializes all controls of a window and its subwindows into a json object. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>WindowControlSavingMask </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wName</strong> – <strong>[in]</strong> name of main window </p></li>
+<li><p><strong>saveMask</strong> – <strong>[in]</strong> bit pattern based configuration setting for saving </p></li>
+<li><p><strong>excCtrlTypes</strong> – <strong>[in]</strong> [optional, default = “”], list of control type codes for excluded control types for saving e.g. “1;6;” to exclude all buttons and charts </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>json ID of object where all controls where serialized into </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436CONF_GetRadioButtonCouplingProtoFuncv">
+<span id="_CPPv336CONF_GetRadioButtonCouplingProtoFuncv"></span><span id="_CPPv236CONF_GetRadioButtonCouplingProtoFuncv"></span><span id="CONF_GetRadioButtonCouplingProtoFunc"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a3ac4178acbda44c717ef17f3bcf54336"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetRadioButtonCouplingProtoFunc</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436CONF_GetRadioButtonCouplingProtoFuncv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417CONF_WindowToJSON6string8variable6string">
+<span id="_CPPv317CONF_WindowToJSON6string8variable6string"></span><span id="_CPPv217CONF_WindowToJSON6string8variable6string"></span><span id="CONF_WindowToJSON__string.variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a4053a04ad7c95a32dd2ea899fe3b7b8d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_WindowToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveMask</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">excCtrlTypes</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417CONF_WindowToJSON6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Saves complete GUI state of a window in a json For coupled CheckBoxes aka (radio buttons) the enabled radio button is saved, the disabled is not saved. For three or more coupled CheckBoxes the first enabled radio button is saved, the disabled are not saved. For three or more coupled CheckBoxes an assertion is thrown if no CheckBox is set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wName</strong> – Window name </p></li>
+<li><p><strong>saveMask</strong> – Bit mask which properties are saved from WindowControlSavingMask constants </p></li>
+<li><p><strong>excCtrlTypes</strong> – [optional, default = “”] List of excluded control types that are ignored </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>jsonID ID of json containing the serialized GUI data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428CONF_GetCompleteJSONCtrlPath6string">
+<span id="_CPPv328CONF_GetCompleteJSONCtrlPath6string"></span><span id="_CPPv228CONF_GetCompleteJSONCtrlPath6string"></span><span id="CONF_GetCompleteJSONCtrlPath__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a30e963cb562efe965161dc6f22d7cbc4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetCompleteJSONCtrlPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428CONF_GetCompleteJSONCtrlPath6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CONF_ControlToJSON6string6string8variable8variable6string6string">
+<span id="_CPPv318CONF_ControlToJSON6string6string8variable8variable6string6string"></span><span id="_CPPv218CONF_ControlToJSON6string6string8variable8variable6string6string"></span><span id="CONF_ControlToJSON__string.string.variable.variable.string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a56f15bf5f2477d54470158caa21a06c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_ControlToJSON</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrlName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">saveMask</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">excCtrlTypes</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">excUserKeys</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CONF_ControlToJSON6string6string8variable8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adds properties of a control to a json. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wName</strong> – Window name </p></li>
+<li><p><strong>ctrlName</strong> – Control name </p></li>
+<li><p><strong>saveMask</strong> – Bit mask which properties are saved from WindowControlSavingMask constants </p></li>
+<li><p><strong>jsonID</strong> – ID of existing json </p></li>
+<li><p><strong>excCtrlTypes</strong> – List of excluded control types that are ignored </p></li>
+<li><p><strong>excUserKeys</strong> – List of excluded keys of userdata fields that are ignored </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432CONF_RestoreHeadstageAssociation6string8variable8variable">
+<span id="_CPPv332CONF_RestoreHeadstageAssociation6string8variable8variable"></span><span id="_CPPv232CONF_RestoreHeadstageAssociation6string8variable8variable"></span><span id="CONF_RestoreHeadstageAssociation__string.variable.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a5c5eca9858d73f4daf77341760683b93"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreHeadstageAssociation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">midExp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432CONF_RestoreHeadstageAssociation6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Opens MCCs and restores Headstage Association from configuration data to DA_Ephys panel. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> panel title of DA_Ephys panel </p></li>
+<li><p><strong>jsonID</strong> – <strong>[in]</strong> ID of json object with configuration data </p></li>
+<li><p><strong>midExp</strong> – <strong>[in]</strong> middle of experiment - uploads MCC relevant settings from panel to MCC instead </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CONF_GetUserPressure6string">
+<span id="_CPPv320CONF_GetUserPressure6string"></span><span id="_CPPv220CONF_GetUserPressure6string"></span><span id="CONF_GetUserPressure__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a409b8a3c701c9634181b1adf12012f84"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetUserPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CONF_GetUserPressure6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves current User Pressure settings to json. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> – <strong>[in]</strong> panel title of DA_Ephys panel </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>jsonID ID of json object with user pressure configuration data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424CONF_RestoreUserPressure6string8variable">
+<span id="_CPPv324CONF_RestoreUserPressure6string8variable"></span><span id="_CPPv224CONF_RestoreUserPressure6string8variable"></span><span id="CONF_RestoreUserPressure__string.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1afc38e60d4409f85676843d3aa573b3b4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreUserPressure</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424CONF_RestoreUserPressure6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restore User Pressure settings. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> panel title of DA_Ephys panel </p></li>
+<li><p><strong>jsonID</strong> – <strong>[in]</strong> ID of json object with configuration data </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425CONF_GetAmplifierSettings6string">
+<span id="_CPPv325CONF_GetAmplifierSettings6string"></span><span id="_CPPv225CONF_GetAmplifierSettings6string"></span><span id="CONF_GetAmplifierSettings__string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a59f0c63f41d0ec3753b4141f0439279c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_GetAmplifierSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425CONF_GetAmplifierSettings6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retrieves current amplifier and pressure settings to json. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> – <strong>[in]</strong> device </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>jsonID ID of json object with user pressure configuration data </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429CONF_RestoreAmplifierSettings6string8variable8variable6string">
+<span id="_CPPv329CONF_RestoreAmplifierSettings6string8variable8variable6string"></span><span id="_CPPv229CONF_RestoreAmplifierSettings6string8variable8variable6string"></span><span id="CONF_RestoreAmplifierSettings__string.variable.variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1a99dc9125f1d36720b476f1255d06a4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_RestoreAmplifierSettings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">basePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429CONF_RestoreAmplifierSettings6string8variable8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restore the per headstage amplifier settings. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – <strong>[in]</strong> device </p></li>
+<li><p><strong>headStage</strong> – <strong>[in]</strong> MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><strong>jsonID</strong> – <strong>[in]</strong> ID of json object with configuration data </p></li>
+<li><p><strong>basePath</strong> – <strong>[in]</strong> absolute path in the json file to search the entries </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418CONF_FindAmpInList8variable8variable">
+<span id="_CPPv318CONF_FindAmpInList8variable8variable"></span><span id="_CPPv218CONF_FindAmpInList8variable8variable"></span><span id="CONF_FindAmpInList__variable.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ad569190465b45a17cb745833c6096e29"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_FindAmpInList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ampSerialRef</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ampChannelIDRef</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418CONF_FindAmpInList8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find the list index of a connected amplifier serial number. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ampSerialRef</strong> – Amplifier Serial Number to search for </p></li>
+<li><p><strong>ampChannelIDRef</strong> – Headstage reference number </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415CONF_MCC_MidExp6string8variable8variable">
+<span id="_CPPv315CONF_MCC_MidExp6string8variable8variable"></span><span id="_CPPv215CONF_MCC_MidExp6string8variable8variable"></span><span id="CONF_MCC_MidExp__string.variable.variable"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a6768d2273a60a85081e0d59d586ea438"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_MCC_MidExp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">headStage</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415CONF_MCC_MidExp6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CONF_Position_MCC_Win6string6string6string">
+<span id="_CPPv321CONF_Position_MCC_Win6string6string6string"></span><span id="_CPPv221CONF_Position_MCC_Win6string6string6string"></span><span id="CONF_Position_MCC_Win__string.string.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a6e3bf01e38b73ba631821fb2af1d2996"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_Position_MCC_Win</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">serialNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winTitle</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">winPosition</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CONF_Position_MCC_Win6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Position MCC windows to upper right monitor using nircmd.exe. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>serialNum</strong> – Serial number of MCC </p></li>
+<li><p><strong>winTitle</strong> – Name of MCC window </p></li>
+<li><p><strong>winPosition</strong> – One of 4 monitors to position MCCs in </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416CONF_JoinRigFile8variable6string">
+<span id="_CPPv316CONF_JoinRigFile8variable6string"></span><span id="_CPPv216CONF_JoinRigFile8variable6string"></span><span id="CONF_JoinRigFile__variable.string"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa357374031aa7ac19b9b3c35aab2107c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_JoinRigFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jsonID</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rigFileName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416CONF_JoinRigFile8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Loads, parses and joins a *_rig.json file to a main configuration file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jsonID</strong> – <strong>[in]</strong> jsonID of main configuration </p></li>
+<li><p><strong>rigFileName</strong> – <strong>[in]</strong> full file path of rig file </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_FIELD_CTRLTYPE">
+<span id="_CPPv324EXPCONFIG_FIELD_CTRLTYPE"></span><span id="_CPPv224EXPCONFIG_FIELD_CTRLTYPE"></span><span id="EXPCONFIG_FIELD_CTRLTYPE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1add28f559c0f31a22b90c02d7ec4bfa6e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLTYPE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Type&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_FIELD_CTRLTYPE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_FIELD_CTRLVVALUE">
+<span id="_CPPv326EXPCONFIG_FIELD_CTRLVVALUE"></span><span id="_CPPv226EXPCONFIG_FIELD_CTRLVVALUE"></span><span id="EXPCONFIG_FIELD_CTRLVVALUE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab5f2db03567e177dd1ec20f93d006821"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLVVALUE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;NumValue&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_FIELD_CTRLVVALUE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_FIELD_CTRLSVALUE">
+<span id="_CPPv326EXPCONFIG_FIELD_CTRLSVALUE"></span><span id="_CPPv226EXPCONFIG_FIELD_CTRLSVALUE"></span><span id="EXPCONFIG_FIELD_CTRLSVALUE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a25cedc821d8867e1136c0a4d227d51b6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLSVALUE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;StrValue&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_FIELD_CTRLSVALUE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_FIELD_CTRLSDF">
+<span id="_CPPv323EXPCONFIG_FIELD_CTRLSDF"></span><span id="_CPPv223EXPCONFIG_FIELD_CTRLSDF"></span><span id="EXPCONFIG_FIELD_CTRLSDF__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a862b1bf7121a2b4a88880581c5c3e52a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLSDF</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DataSource&quot;</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_FIELD_CTRLSDF" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_CTRLDISABLED">
+<span id="_CPPv328EXPCONFIG_FIELD_CTRLDISABLED"></span><span id="_CPPv228EXPCONFIG_FIELD_CTRLDISABLED"></span><span id="EXPCONFIG_FIELD_CTRLDISABLED__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a137d48f8ccfd0212b8759d7e46c189bc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLDISABLED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Disabled&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_CTRLDISABLED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_FIELD_CTRLPOSHEIGHT">
+<span id="_CPPv329EXPCONFIG_FIELD_CTRLPOSHEIGHT"></span><span id="_CPPv229EXPCONFIG_FIELD_CTRLPOSHEIGHT"></span><span id="EXPCONFIG_FIELD_CTRLPOSHEIGHT__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ada0fb46551149444aaa3727f59e004ab"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSHEIGHT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Height&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_FIELD_CTRLPOSHEIGHT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_CTRLPOSWIDTH">
+<span id="_CPPv328EXPCONFIG_FIELD_CTRLPOSWIDTH"></span><span id="_CPPv228EXPCONFIG_FIELD_CTRLPOSWIDTH"></span><span id="EXPCONFIG_FIELD_CTRLPOSWIDTH__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a3fa10fc3a451110cb24af07c0eaca21c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSWIDTH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Width&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_CTRLPOSWIDTH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_FIELD_CTRLPOSTOP">
+<span id="_CPPv326EXPCONFIG_FIELD_CTRLPOSTOP"></span><span id="_CPPv226EXPCONFIG_FIELD_CTRLPOSTOP"></span><span id="EXPCONFIG_FIELD_CTRLPOSTOP__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a914c1c2734f5c65661f1c10e0d476077"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSTOP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Top&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_FIELD_CTRLPOSTOP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_FIELD_CTRLPOSLEFT">
+<span id="_CPPv327EXPCONFIG_FIELD_CTRLPOSLEFT"></span><span id="_CPPv227EXPCONFIG_FIELD_CTRLPOSLEFT"></span><span id="EXPCONFIG_FIELD_CTRLPOSLEFT__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0c16f5447363ef1c722b7ee64ee1d59f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSLEFT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Left&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_FIELD_CTRLPOSLEFT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_CTRLPOSRIGHT">
+<span id="_CPPv328EXPCONFIG_FIELD_CTRLPOSRIGHT"></span><span id="_CPPv228EXPCONFIG_FIELD_CTRLPOSRIGHT"></span><span id="EXPCONFIG_FIELD_CTRLPOSRIGHT__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a87f787876390686a8b868855bb8f04f7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSRIGHT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Right&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_CTRLPOSRIGHT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_FIELD_CTRLPOSPOS">
+<span id="_CPPv326EXPCONFIG_FIELD_CTRLPOSPOS"></span><span id="_CPPv226EXPCONFIG_FIELD_CTRLPOSPOS"></span><span id="EXPCONFIG_FIELD_CTRLPOSPOS__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a695b04773ce0f06a9029b38e54e867d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSPOS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Pos&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_FIELD_CTRLPOSPOS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_CTRLPOSALIGN">
+<span id="_CPPv328EXPCONFIG_FIELD_CTRLPOSALIGN"></span><span id="_CPPv228EXPCONFIG_FIELD_CTRLPOSALIGN"></span><span id="EXPCONFIG_FIELD_CTRLPOSALIGN__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a7d475c159bacd4ce1fcb8c5d505eb236"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLPOSALIGN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Align&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_CTRLPOSALIGN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_CTRLUSERDATA">
+<span id="_CPPv328EXPCONFIG_FIELD_CTRLUSERDATA"></span><span id="_CPPv228EXPCONFIG_FIELD_CTRLUSERDATA"></span><span id="EXPCONFIG_FIELD_CTRLUSERDATA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1eb5025a9014f9460a4ef88adf579894"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLUSERDATA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Userdata&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_CTRLUSERDATA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_FIELD_BASE64PREFIX">
+<span id="_CPPv328EXPCONFIG_FIELD_BASE64PREFIX"></span><span id="_CPPv228EXPCONFIG_FIELD_BASE64PREFIX"></span><span id="EXPCONFIG_FIELD_BASE64PREFIX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1d6d6a7340feff78eeaead5a294435da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_BASE64PREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Base64</span> <span class="pre">&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_FIELD_BASE64PREFIX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431EXPCONFIG_FIELD_CTRLARRAYVALUES">
+<span id="_CPPv331EXPCONFIG_FIELD_CTRLARRAYVALUES"></span><span id="_CPPv231EXPCONFIG_FIELD_CTRLARRAYVALUES"></span><span id="EXPCONFIG_FIELD_CTRLARRAYVALUES__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aceeb3dff8aa5b2f559ba522b250ef8d1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FIELD_CTRLARRAYVALUES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Values&quot;</span></span><a class="headerlink" href="#_CPPv431EXPCONFIG_FIELD_CTRLARRAYVALUES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_UDATA_NICENAME">
+<span id="_CPPv324EXPCONFIG_UDATA_NICENAME"></span><span id="_CPPv224EXPCONFIG_UDATA_NICENAME"></span><span id="EXPCONFIG_UDATA_NICENAME__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ad51fa31bbaa9e3f34cf65e69c2dad8a8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_NICENAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_NiceName&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_UDATA_NICENAME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_UDATA_JSONPATH">
+<span id="_CPPv324EXPCONFIG_UDATA_JSONPATH"></span><span id="_CPPv224EXPCONFIG_UDATA_JSONPATH"></span><span id="EXPCONFIG_UDATA_JSONPATH__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a4768e88f144e257d838757e9f0c2a332"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_JSONPATH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_GroupPath&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_UDATA_JSONPATH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_UDATA_EXCLUDE_SAVE">
+<span id="_CPPv328EXPCONFIG_UDATA_EXCLUDE_SAVE"></span><span id="_CPPv228EXPCONFIG_UDATA_EXCLUDE_SAVE"></span><span id="EXPCONFIG_UDATA_EXCLUDE_SAVE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1cad8a650635ae6ba563a6ddbf4a536b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_EXCLUDE_SAVE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_DontSave&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_UDATA_EXCLUDE_SAVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431EXPCONFIG_UDATA_EXCLUDE_RESTORE">
+<span id="_CPPv331EXPCONFIG_UDATA_EXCLUDE_RESTORE"></span><span id="_CPPv231EXPCONFIG_UDATA_EXCLUDE_RESTORE"></span><span id="EXPCONFIG_UDATA_EXCLUDE_RESTORE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab635a5c686a27685b3a08f4e37e549dc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_EXCLUDE_RESTORE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_DontRestore&quot;</span></span><a class="headerlink" href="#_CPPv431EXPCONFIG_UDATA_EXCLUDE_RESTORE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_UDATA_BUTTONPRESS">
+<span id="_CPPv327EXPCONFIG_UDATA_BUTTONPRESS"></span><span id="_CPPv227EXPCONFIG_UDATA_BUTTONPRESS"></span><span id="EXPCONFIG_UDATA_BUTTONPRESS__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa3fb894a8d8bbd51d0c1bbaba3086883"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_BUTTONPRESS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_PushButtonOnRestore&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_UDATA_BUTTONPRESS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv432EXPCONFIG_UDATA_RESTORE_PRIORITY">
+<span id="_CPPv332EXPCONFIG_UDATA_RESTORE_PRIORITY"></span><span id="_CPPv232EXPCONFIG_UDATA_RESTORE_PRIORITY"></span><span id="EXPCONFIG_UDATA_RESTORE_PRIORITY__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa67bc8612becc460dc27f5e726c6491f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_RESTORE_PRIORITY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_RestorePriority&quot;</span></span><a class="headerlink" href="#_CPPv432EXPCONFIG_UDATA_RESTORE_PRIORITY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425EXPCONFIG_UDATA_WINHANDLE">
+<span id="_CPPv325EXPCONFIG_UDATA_WINHANDLE"></span><span id="_CPPv225EXPCONFIG_UDATA_WINHANDLE"></span><span id="EXPCONFIG_UDATA_WINHANDLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac82313aa06f346bcd3404b110dc25367"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_WINHANDLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_WindowHandle&quot;</span></span><a class="headerlink" href="#_CPPv425EXPCONFIG_UDATA_WINHANDLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_UDATA_RADIOCOUPLING">
+<span id="_CPPv329EXPCONFIG_UDATA_RADIOCOUPLING"></span><span id="_CPPv229EXPCONFIG_UDATA_RADIOCOUPLING"></span><span id="EXPCONFIG_UDATA_RADIOCOUPLING__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1af4b32937d80888fa881abc715c628b2c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_RADIOCOUPLING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Config_RadioCouplingFunc&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_UDATA_RADIOCOUPLING" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425EXPCONFIG_UDATA_CTRLARRAY">
+<span id="_CPPv325EXPCONFIG_UDATA_CTRLARRAY"></span><span id="_CPPv225EXPCONFIG_UDATA_CTRLARRAY"></span><span id="EXPCONFIG_UDATA_CTRLARRAY__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aaec94bc41091f6597748948e9f81e1e4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_CTRLARRAY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ControlArray&quot;</span></span><a class="headerlink" href="#_CPPv425EXPCONFIG_UDATA_CTRLARRAY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv430EXPCONFIG_UDATA_CTRLARRAYINDEX">
+<span id="_CPPv330EXPCONFIG_UDATA_CTRLARRAYINDEX"></span><span id="_CPPv230EXPCONFIG_UDATA_CTRLARRAYINDEX"></span><span id="EXPCONFIG_UDATA_CTRLARRAYINDEX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a3ac8d5e896806450398b610215111aaa"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_CTRLARRAYINDEX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ControlArrayIndex&quot;</span></span><a class="headerlink" href="#_CPPv430EXPCONFIG_UDATA_CTRLARRAYINDEX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433EXPCONFIG_UDATA_MAXCTRLARRAYINDEX">
+<span id="_CPPv333EXPCONFIG_UDATA_MAXCTRLARRAYINDEX"></span><span id="_CPPv233EXPCONFIG_UDATA_MAXCTRLARRAYINDEX"></span><span id="EXPCONFIG_UDATA_MAXCTRLARRAYINDEX__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ad1b3e42b5331d4f9adb29d9510129c2a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_UDATA_MAXCTRLARRAYINDEX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv433EXPCONFIG_UDATA_MAXCTRLARRAYINDEX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421EXPCONFIG_JSON_INDENT">
+<span id="_CPPv321EXPCONFIG_JSON_INDENT"></span><span id="_CPPv221EXPCONFIG_JSON_INDENT"></span><span id="EXPCONFIG_JSON_INDENT__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aec4cb6d31f82ecac7dd21902cfeed8b8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_INDENT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv421EXPCONFIG_JSON_INDENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420EXPCONFIG_FILEFILTER">
+<span id="_CPPv320EXPCONFIG_FILEFILTER"></span><span id="_CPPv220EXPCONFIG_FILEFILTER"></span><span id="EXPCONFIG_FILEFILTER__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a65c6f9a7fb864ce4a8c69c856bc1023d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_FILEFILTER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Configuration</span> <span class="pre">Files</span> <span class="pre">(*.json):.json;All</span> <span class="pre">Files:.*;&quot;</span></span><a class="headerlink" href="#_CPPv420EXPCONFIG_FILEFILTER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_CTRLGROUP_SUFFIX">
+<span id="_CPPv326EXPCONFIG_CTRLGROUP_SUFFIX"></span><span id="_CPPv226EXPCONFIG_CTRLGROUP_SUFFIX"></span><span id="EXPCONFIG_CTRLGROUP_SUFFIX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae57bf0dfd6e711627b8191e93e42af47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_CTRLGROUP_SUFFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;</span> <span class="pre">ControlGroup&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_CTRLGROUP_SUFFIX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425EXPCONFIG_SETTINGS_FOLDER">
+<span id="_CPPv325EXPCONFIG_SETTINGS_FOLDER"></span><span id="_CPPv225EXPCONFIG_SETTINGS_FOLDER"></span><span id="EXPCONFIG_SETTINGS_FOLDER__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a8de2c1445c3e8995667a88ff870ebead"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_SETTINGS_FOLDER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Settings&quot;</span></span><a class="headerlink" href="#_CPPv425EXPCONFIG_SETTINGS_FOLDER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423DAEPHYS_UDATA_WINHANDLE">
+<span id="_CPPv323DAEPHYS_UDATA_WINHANDLE"></span><span id="_CPPv223DAEPHYS_UDATA_WINHANDLE"></span><span id="DAEPHYS_UDATA_WINHANDLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae3c202ce9c7669bb80203f0b5b0ad359"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DAEPHYS_UDATA_WINHANDLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DAEphys_WindowHandle&quot;</span></span><a class="headerlink" href="#_CPPv423DAEPHYS_UDATA_WINHANDLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv432DAEPHYS_HEADSTAGECTRLARRAYPREFIX">
+<span id="_CPPv332DAEPHYS_HEADSTAGECTRLARRAYPREFIX"></span><span id="_CPPv232DAEPHYS_HEADSTAGECTRLARRAYPREFIX"></span><span id="DAEPHYS_HEADSTAGECTRLARRAYPREFIX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a8d450faa2c7849824eee405a7817a1d3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DAEPHYS_HEADSTAGECTRLARRAYPREFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Check_DataAcqHS&quot;</span></span><a class="headerlink" href="#_CPPv432DAEPHYS_HEADSTAGECTRLARRAYPREFIX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425DAEPHYS_EXCLUDE_CTRLTYPES">
+<span id="_CPPv325DAEPHYS_EXCLUDE_CTRLTYPES"></span><span id="_CPPv225DAEPHYS_EXCLUDE_CTRLTYPES"></span><span id="DAEPHYS_EXCLUDE_CTRLTYPES__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a6d0e8cb0bfa18fbb6caefe7dde96bcb4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DAEPHYS_EXCLUDE_CTRLTYPES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;12;9;10;4;&quot;</span></span><a class="headerlink" href="#_CPPv425DAEPHYS_EXCLUDE_CTRLTYPES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431EXPCONFIG_DEFAULT_CTRL_JSONPATH">
+<span id="_CPPv331EXPCONFIG_DEFAULT_CTRL_JSONPATH"></span><span id="_CPPv231EXPCONFIG_DEFAULT_CTRL_JSONPATH"></span><span id="EXPCONFIG_DEFAULT_CTRL_JSONPATH__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1c860b4390691f8256343c040ed847db"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_DEFAULT_CTRL_JSONPATH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Generic&quot;</span></span><a class="headerlink" href="#_CPPv431EXPCONFIG_DEFAULT_CTRL_JSONPATH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_RESERVED_DATABLOCK">
+<span id="_CPPv328EXPCONFIG_RESERVED_DATABLOCK"></span><span id="_CPPv228EXPCONFIG_RESERVED_DATABLOCK"></span><span id="EXPCONFIG_RESERVED_DATABLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0b4972ea0cd33b71944bfecb38ab72ee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_RESERVED_DATABLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Common</span> <span class="pre">configuration</span> <span class="pre">data&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_RESERVED_DATABLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_RESERVED_TAGENTRY">
+<span id="_CPPv327EXPCONFIG_RESERVED_TAGENTRY"></span><span id="_CPPv227EXPCONFIG_RESERVED_TAGENTRY"></span><span id="EXPCONFIG_RESERVED_TAGENTRY__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a9424b2b13df7a09b9b9307097aa057b9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_RESERVED_TAGENTRY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Target</span> <span class="pre">Window</span> <span class="pre">Type&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_RESERVED_TAGENTRY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_EXCLUDE_USERDATA">
+<span id="_CPPv326EXPCONFIG_EXCLUDE_USERDATA"></span><span id="_CPPv226EXPCONFIG_EXCLUDE_USERDATA"></span><span id="EXPCONFIG_EXCLUDE_USERDATA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a8c63b0bac36c37b8a36e2a5b60ea4472"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_EXCLUDE_USERDATA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ResizeControlsInfo;&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_EXCLUDE_USERDATA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_EXCLUDE_CTRLTYPES">
+<span id="_CPPv327EXPCONFIG_EXCLUDE_CTRLTYPES"></span><span id="_CPPv227EXPCONFIG_EXCLUDE_CTRLTYPES"></span><span id="EXPCONFIG_EXCLUDE_CTRLTYPES__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a700a8057ad613c1003576374d36c563e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_EXCLUDE_CTRLTYPES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;12;9;10;&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_EXCLUDE_CTRLTYPES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_SETTINGS_AMPTITLE">
+<span id="_CPPv327EXPCONFIG_SETTINGS_AMPTITLE"></span><span id="_CPPv227EXPCONFIG_SETTINGS_AMPTITLE"></span><span id="EXPCONFIG_SETTINGS_AMPTITLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac90889c472195e1f8700207339bf08d4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_SETTINGS_AMPTITLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;0,1;2,3;4,5;6,7&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_SETTINGS_AMPTITLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_JSON_HSASSOCBLOCK">
+<span id="_CPPv327EXPCONFIG_JSON_HSASSOCBLOCK"></span><span id="_CPPv227EXPCONFIG_JSON_HSASSOCBLOCK"></span><span id="EXPCONFIG_JSON_HSASSOCBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a164c26ee4b7195653cd7454d1dee1bd2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_HSASSOCBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Headstage</span> <span class="pre">Association&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_JSON_HSASSOCBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_JSON_AMPBLOCK">
+<span id="_CPPv323EXPCONFIG_JSON_AMPBLOCK"></span><span id="_CPPv223EXPCONFIG_JSON_AMPBLOCK"></span><span id="EXPCONFIG_JSON_AMPBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a38680f0124e69789b2277f42b506e635"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Amplifier&quot;</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_JSON_AMPBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_ICBLOCK">
+<span id="_CPPv322EXPCONFIG_JSON_ICBLOCK"></span><span id="_CPPv222EXPCONFIG_JSON_ICBLOCK"></span><span id="EXPCONFIG_JSON_ICBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a66f455935672bf3c1a830f2caf39273e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_ICBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;IC&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_ICBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_VCBLOCK">
+<span id="_CPPv322EXPCONFIG_JSON_VCBLOCK"></span><span id="_CPPv222EXPCONFIG_JSON_VCBLOCK"></span><span id="EXPCONFIG_JSON_VCBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a871bb847b2f2c882583f33c922dfea88"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_VCBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;VC&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_VCBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_JSON_PRESSUREBLOCK">
+<span id="_CPPv328EXPCONFIG_JSON_PRESSUREBLOCK"></span><span id="_CPPv228EXPCONFIG_JSON_PRESSUREBLOCK"></span><span id="EXPCONFIG_JSON_PRESSUREBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a49801b1df308f22e509702cade38fd3c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSUREBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Pressure&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_JSON_PRESSUREBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_JSON_AMPSERIAL">
+<span id="_CPPv324EXPCONFIG_JSON_AMPSERIAL"></span><span id="_CPPv224EXPCONFIG_JSON_AMPSERIAL"></span><span id="EXPCONFIG_JSON_AMPSERIAL__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1afbcbb27d40802e9a74ce618bceefa959"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPSERIAL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Serial&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_JSON_AMPSERIAL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_JSON_AMPTITLE">
+<span id="_CPPv323EXPCONFIG_JSON_AMPTITLE"></span><span id="_CPPv223EXPCONFIG_JSON_AMPTITLE"></span><span id="EXPCONFIG_JSON_AMPTITLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa4e028b67422c84c4792ff3ad032ff0a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPTITLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Title&quot;</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_JSON_AMPTITLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425EXPCONFIG_JSON_AMPCHANNEL">
+<span id="_CPPv325EXPCONFIG_JSON_AMPCHANNEL"></span><span id="_CPPv225EXPCONFIG_JSON_AMPCHANNEL"></span><span id="EXPCONFIG_JSON_AMPCHANNEL__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a79df4b5ae8f94ff5c6dfe638197cdb07"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPCHANNEL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Channel&quot;</span></span><a class="headerlink" href="#_CPPv425EXPCONFIG_JSON_AMPCHANNEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_AMPVCDA">
+<span id="_CPPv322EXPCONFIG_JSON_AMPVCDA"></span><span id="_CPPv222EXPCONFIG_JSON_AMPVCDA"></span><span id="EXPCONFIG_JSON_AMPVCDA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a71f46319d890891bebde8cb79040fa9e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPVCDA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_AMPVCDA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_AMPVCAD">
+<span id="_CPPv322EXPCONFIG_JSON_AMPVCAD"></span><span id="_CPPv222EXPCONFIG_JSON_AMPVCAD"></span><span id="EXPCONFIG_JSON_AMPVCAD__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a3479dea71a0abbea458dfe94656f57d0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPVCAD</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AD&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_AMPVCAD" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_AMPICDA">
+<span id="_CPPv322EXPCONFIG_JSON_AMPICDA"></span><span id="_CPPv222EXPCONFIG_JSON_AMPICDA"></span><span id="EXPCONFIG_JSON_AMPICDA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a07f0db15e3f275c725fb28f7dca5ade5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPICDA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_AMPICDA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_AMPICAD">
+<span id="_CPPv322EXPCONFIG_JSON_AMPICAD"></span><span id="_CPPv222EXPCONFIG_JSON_AMPICAD"></span><span id="EXPCONFIG_JSON_AMPICAD__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0648b1ecbf0d2c4061961cad3b34b1a6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMPICAD</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AD&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_AMPICAD" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_JSON_PRESSDEV">
+<span id="_CPPv323EXPCONFIG_JSON_PRESSDEV"></span><span id="_CPPv223EXPCONFIG_JSON_PRESSDEV"></span><span id="EXPCONFIG_JSON_PRESSDEV__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0baae222d89ca7e5c4c217167de1ad3c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSDEV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Device&quot;</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_JSON_PRESSDEV" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_PRESSDA">
+<span id="_CPPv322EXPCONFIG_JSON_PRESSDA"></span><span id="_CPPv222EXPCONFIG_JSON_PRESSDA"></span><span id="EXPCONFIG_JSON_PRESSDA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae26473f035daa5971a9e4b9d454894c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSDA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_PRESSDA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_JSON_PRESSAD">
+<span id="_CPPv322EXPCONFIG_JSON_PRESSAD"></span><span id="_CPPv222EXPCONFIG_JSON_PRESSAD"></span><span id="EXPCONFIG_JSON_PRESSAD__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a69f19b14bd030a7163555ed6a295ef68"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSAD</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AD&quot;</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_JSON_PRESSAD" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_PRESSDAGAIN">
+<span id="_CPPv326EXPCONFIG_JSON_PRESSDAGAIN"></span><span id="_CPPv226EXPCONFIG_JSON_PRESSDAGAIN"></span><span id="EXPCONFIG_JSON_PRESSDAGAIN__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae2c4149f5407e7a2a8ca89672d46f3d9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSDAGAIN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA</span> <span class="pre">Gain&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_PRESSDAGAIN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_PRESSADGAIN">
+<span id="_CPPv326EXPCONFIG_JSON_PRESSADGAIN"></span><span id="_CPPv226EXPCONFIG_JSON_PRESSADGAIN"></span><span id="EXPCONFIG_JSON_PRESSADGAIN__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a69b02a1964b9da739a85d1718b4d96df"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSADGAIN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AD</span> <span class="pre">Gain&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_PRESSADGAIN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_PRESSDAUNIT">
+<span id="_CPPv326EXPCONFIG_JSON_PRESSDAUNIT"></span><span id="_CPPv226EXPCONFIG_JSON_PRESSDAUNIT"></span><span id="EXPCONFIG_JSON_PRESSDAUNIT__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a5098705c981e19b5e724f48e5be0414a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSDAUNIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA</span> <span class="pre">Unit&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_PRESSDAUNIT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_PRESSADUNIT">
+<span id="_CPPv326EXPCONFIG_JSON_PRESSADUNIT"></span><span id="_CPPv226EXPCONFIG_JSON_PRESSADUNIT"></span><span id="EXPCONFIG_JSON_PRESSADUNIT__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a13fabde9d46e05ac9cac0359b0add345"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSADUNIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AD</span> <span class="pre">Unit&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_PRESSADUNIT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_JSON_PRESSTTLA">
+<span id="_CPPv324EXPCONFIG_JSON_PRESSTTLA"></span><span id="_CPPv224EXPCONFIG_JSON_PRESSTTLA"></span><span id="EXPCONFIG_JSON_PRESSTTLA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab1ba8ddb7d59a347ea82b2d062bb78b6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSTTLA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;TTLA&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_JSON_PRESSTTLA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_JSON_PRESSTTLB">
+<span id="_CPPv324EXPCONFIG_JSON_PRESSTTLB"></span><span id="_CPPv224EXPCONFIG_JSON_PRESSTTLB"></span><span id="EXPCONFIG_JSON_PRESSTTLB__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a2230bae2cadf3b068de3451d72432b06"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSTTLB</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;TTLB&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_JSON_PRESSTTLB" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_JSON_PRESSCONSTNEG">
+<span id="_CPPv328EXPCONFIG_JSON_PRESSCONSTNEG"></span><span id="_CPPv228EXPCONFIG_JSON_PRESSCONSTNEG"></span><span id="EXPCONFIG_JSON_PRESSCONSTNEG__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa5753d6d27a0d61e084a0a2cf66b46b5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSCONSTNEG</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;const</span> <span class="pre">double</span> <span class="pre">Negative&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_JSON_PRESSCONSTNEG" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv428EXPCONFIG_JSON_PRESSCONSTPOS">
+<span id="_CPPv328EXPCONFIG_JSON_PRESSCONSTPOS"></span><span id="_CPPv228EXPCONFIG_JSON_PRESSCONSTPOS"></span><span id="EXPCONFIG_JSON_PRESSCONSTPOS__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a30cc8f9ee5bb81bec90edefeff782cc3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_PRESSCONSTPOS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;const</span> <span class="pre">double</span> <span class="pre">Positive&quot;</span></span><a class="headerlink" href="#_CPPv428EXPCONFIG_JSON_PRESSCONSTPOS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv424EXPCONFIG_JSON_SAVE_PATH">
+<span id="_CPPv324EXPCONFIG_JSON_SAVE_PATH"></span><span id="_CPPv224EXPCONFIG_JSON_SAVE_PATH"></span><span id="EXPCONFIG_JSON_SAVE_PATH__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae5b9a928c670680407d1dcf6219b28b5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_SAVE_PATH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Save</span> <span class="pre">data</span> <span class="pre">to&quot;</span></span><a class="headerlink" href="#_CPPv424EXPCONFIG_JSON_SAVE_PATH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_JSON_STIMSET_NAME">
+<span id="_CPPv327EXPCONFIG_JSON_STIMSET_NAME"></span><span id="_CPPv227EXPCONFIG_JSON_STIMSET_NAME"></span><span id="EXPCONFIG_JSON_STIMSET_NAME__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0e4b69745ca032be4d7ad09e990fd632"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_STIMSET_NAME</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Stim</span> <span class="pre">set</span> <span class="pre">file</span> <span class="pre">name&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_JSON_STIMSET_NAME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_JSON_POSITION_MCC">
+<span id="_CPPv327EXPCONFIG_JSON_POSITION_MCC"></span><span id="_CPPv227EXPCONFIG_JSON_POSITION_MCC"></span><span id="EXPCONFIG_JSON_POSITION_MCC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1affd172fb1ec76991e43243647fb58753"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_POSITION_MCC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Position</span> <span class="pre">MCCs&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_JSON_POSITION_MCC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_JSON_SWEEP_ROLLBACK">
+<span id="_CPPv329EXPCONFIG_JSON_SWEEP_ROLLBACK"></span><span id="_CPPv229EXPCONFIG_JSON_SWEEP_ROLLBACK"></span><span id="EXPCONFIG_JSON_SWEEP_ROLLBACK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a75a2c3be25c7b51ffcc5c7e8e7508135"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_SWEEP_ROLLBACK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Sweep</span> <span class="pre">Rollback</span> <span class="pre">allowed&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_JSON_SWEEP_ROLLBACK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431EXPCONFIG_SWEEPROLLBACK_DEFAULT">
+<span id="_CPPv331EXPCONFIG_SWEEPROLLBACK_DEFAULT"></span><span id="_CPPv231EXPCONFIG_SWEEPROLLBACK_DEFAULT"></span><span id="EXPCONFIG_SWEEPROLLBACK_DEFAULT__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0e16fd1c43325814adc2e3c265226c31"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_SWEEPROLLBACK_DEFAULT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv431EXPCONFIG_SWEEPROLLBACK_DEFAULT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_JSON_LOGFILE_UPLOAD">
+<span id="_CPPv329EXPCONFIG_JSON_LOGFILE_UPLOAD"></span><span id="_CPPv229EXPCONFIG_JSON_LOGFILE_UPLOAD"></span><span id="EXPCONFIG_JSON_LOGFILE_UPLOAD__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac8cbe039a8e6924852fdebd9848e1051"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_LOGFILE_UPLOAD</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Automatic</span> <span class="pre">logfile</span> <span class="pre">upload&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_JSON_LOGFILE_UPLOAD" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv437EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT">
+<span id="_CPPv337EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT"></span><span id="_CPPv237EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT"></span><span id="EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a2e8ba52a92dda7123a6117181fb08df7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv437EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_JSON_USERPRESSBLOCK">
+<span id="_CPPv329EXPCONFIG_JSON_USERPRESSBLOCK"></span><span id="_CPPv229EXPCONFIG_JSON_USERPRESSBLOCK"></span><span id="EXPCONFIG_JSON_USERPRESSBLOCK__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab1aa053962c220094b66b382dc3912c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_USERPRESSBLOCK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;User</span> <span class="pre">Pressure</span> <span class="pre">Devices&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_JSON_USERPRESSBLOCK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_JSON_USERPRESSDEV">
+<span id="_CPPv327EXPCONFIG_JSON_USERPRESSDEV"></span><span id="_CPPv227EXPCONFIG_JSON_USERPRESSDEV"></span><span id="EXPCONFIG_JSON_USERPRESSDEV__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aa7bc4d83de3cd887b31df62342558025"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_USERPRESSDEV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DAC</span> <span class="pre">Device&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_JSON_USERPRESSDEV" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_USERPRESSDA">
+<span id="_CPPv326EXPCONFIG_JSON_USERPRESSDA"></span><span id="_CPPv226EXPCONFIG_JSON_USERPRESSDA"></span><span id="EXPCONFIG_JSON_USERPRESSDA__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a7f5107cf08b7b00ad353bff3018d8168"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_USERPRESSDA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;DA&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_USERPRESSDA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_AMP_HOLD_VC">
+<span id="_CPPv326EXPCONFIG_JSON_AMP_HOLD_VC"></span><span id="_CPPv226EXPCONFIG_JSON_AMP_HOLD_VC"></span><span id="EXPCONFIG_JSON_AMP_HOLD_VC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab5b819c88f7c9b82634be0f05f260518"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_HOLD_VC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Holding&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_AMP_HOLD_VC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC">
+<span id="_CPPv333EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC"></span><span id="_CPPv233EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC"></span><span id="EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aed6d1245fcc477ec7dc1295409868a39"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Holding</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv433EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv436EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC">
+<span id="_CPPv336EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC"></span><span id="_CPPv236EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC"></span><span id="EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a0c04614fec5bcb399e35d8b21f068beb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Pipette</span> <span class="pre">Offset&quot;</span></span><a class="headerlink" href="#_CPPv436EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv441EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE">
+<span id="_CPPv341EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE"></span><span id="_CPPv241EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE"></span><span id="EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a7409714a08713ae528d77fa61cb6731a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Whole</span> <span class="pre">Cell</span> <span class="pre">Capacitance&quot;</span></span><a class="headerlink" href="#_CPPv441EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv440EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE">
+<span id="_CPPv340EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE"></span><span id="_CPPv240EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE"></span><span id="EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a5492c7cf9b161f614a37fc53f78aa20c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Whole</span> <span class="pre">Cell</span> <span class="pre">Resistance&quot;</span></span><a class="headerlink" href="#_CPPv440EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv436EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE">
+<span id="_CPPv336EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE"></span><span id="_CPPv236EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE"></span><span id="EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1abe3855c5ab7bc2a55474b740efbbce2d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Whole</span> <span class="pre">Cell</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv436EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv437EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION">
+<span id="_CPPv337EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION"></span><span id="_CPPv237EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION"></span><span id="EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a239d81efc61146fea5963cf08d718aa1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;RS</span> <span class="pre">Compensation</span> <span class="pre">Correction&quot;</span></span><a class="headerlink" href="#_CPPv437EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv437EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION">
+<span id="_CPPv337EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION"></span><span id="_CPPv237EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION"></span><span id="EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ab5a53399e42dce7021ba186d0b5d41a0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;RS</span> <span class="pre">Compensation</span> <span class="pre">Prediction&quot;</span></span><a class="headerlink" href="#_CPPv437EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433EXPCONFIG_JSON_AMP_RS_COMP_ENABLE">
+<span id="_CPPv333EXPCONFIG_JSON_AMP_RS_COMP_ENABLE"></span><span id="_CPPv233EXPCONFIG_JSON_AMP_RS_COMP_ENABLE"></span><span id="EXPCONFIG_JSON_AMP_RS_COMP_ENABLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a432c45d0a86643ae220dd5f1dada46ba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_RS_COMP_ENABLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;RS</span> <span class="pre">Compensation</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv433EXPCONFIG_JSON_AMP_RS_COMP_ENABLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_JSON_AMP_COMP_CHAIN">
+<span id="_CPPv329EXPCONFIG_JSON_AMP_COMP_CHAIN"></span><span id="_CPPv229EXPCONFIG_JSON_AMP_COMP_CHAIN"></span><span id="EXPCONFIG_JSON_AMP_COMP_CHAIN__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a8215f5fa31cfb6f5fc61243366c45231"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_COMP_CHAIN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;RS</span> <span class="pre">Compensation</span> <span class="pre">Chain&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_JSON_AMP_COMP_CHAIN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPCONFIG_JSON_AMP_HOLD_IC">
+<span id="_CPPv326EXPCONFIG_JSON_AMP_HOLD_IC"></span><span id="_CPPv226EXPCONFIG_JSON_AMP_HOLD_IC"></span><span id="EXPCONFIG_JSON_AMP_HOLD_IC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a4c7082946ef9ce72a1b233be7dd6cc88"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_HOLD_IC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Holding&quot;</span></span><a class="headerlink" href="#_CPPv426EXPCONFIG_JSON_AMP_HOLD_IC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC">
+<span id="_CPPv333EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC"></span><span id="_CPPv233EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC"></span><span id="EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a1244a5737ef15279c4345da47de3cefd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Holding</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv433EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv433EXPCONFIG_JSON_AMP_BRIDGE_BALANCE">
+<span id="_CPPv333EXPCONFIG_JSON_AMP_BRIDGE_BALANCE"></span><span id="_CPPv233EXPCONFIG_JSON_AMP_BRIDGE_BALANCE"></span><span id="EXPCONFIG_JSON_AMP_BRIDGE_BALANCE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a87ab9e5f07c083f8585ff9131a5f8cd8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_BRIDGE_BALANCE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Bridge</span> <span class="pre">Balance&quot;</span></span><a class="headerlink" href="#_CPPv433EXPCONFIG_JSON_AMP_BRIDGE_BALANCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv440EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE">
+<span id="_CPPv340EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE"></span><span id="_CPPv240EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE"></span><span id="EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a91c308ece61de7e2ff4e045a05a6663f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Bridge</span> <span class="pre">Balance</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv440EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv437EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION">
+<span id="_CPPv337EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION"></span><span id="_CPPv237EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION"></span><span id="EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a166269e367e3aaa158aadbca77e451c7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Capacitance</span> <span class="pre">Neutralization&quot;</span></span><a class="headerlink" href="#_CPPv437EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv444EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE">
+<span id="_CPPv344EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE"></span><span id="_CPPv244EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE"></span><span id="EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ac48190138f3075f1d9a0acbd769c5f5e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Capacitance</span> <span class="pre">Neutralization</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv444EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv429EXPCONFIG_JSON_AMP_AUTOBIAS_V">
+<span id="_CPPv329EXPCONFIG_JSON_AMP_AUTOBIAS_V"></span><span id="_CPPv229EXPCONFIG_JSON_AMP_AUTOBIAS_V"></span><span id="EXPCONFIG_JSON_AMP_AUTOBIAS_V__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1ae7b66a2b66fdf9606f24ff88dc35c6eb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_AUTOBIAS_V</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Autobias</span> <span class="pre">Voltage&quot;</span></span><a class="headerlink" href="#_CPPv429EXPCONFIG_JSON_AMP_AUTOBIAS_V" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv435EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE">
+<span id="_CPPv335EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE"></span><span id="_CPPv235EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE"></span><span id="EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a9359e6f54df6c6c0e7f0b2f98489c9a1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Autobias</span> <span class="pre">Voltage</span> <span class="pre">Range&quot;</span></span><a class="headerlink" href="#_CPPv435EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv438EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX">
+<span id="_CPPv338EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX"></span><span id="_CPPv238EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX"></span><span id="EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a56ed97d6d114d9e9560bcadc0c5896ec"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Autobias</span> <span class="pre">Current</span> <span class="pre">Max&quot;</span></span><a class="headerlink" href="#_CPPv438EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv427EXPCONFIG_JSON_AMP_AUTOBIAS">
+<span id="_CPPv327EXPCONFIG_JSON_AMP_AUTOBIAS"></span><span id="_CPPv227EXPCONFIG_JSON_AMP_AUTOBIAS"></span><span id="EXPCONFIG_JSON_AMP_AUTOBIAS__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a63561975cc668f9dbb5147db554a4f95"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_AUTOBIAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Autobias</span> <span class="pre">Enable&quot;</span></span><a class="headerlink" href="#_CPPv427EXPCONFIG_JSON_AMP_AUTOBIAS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv436EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC">
+<span id="_CPPv336EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC"></span><span id="_CPPv236EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC"></span><span id="EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1aeae0ad336ac428b16f0cdaf7c08c8977"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Pipette</span> <span class="pre">Offset&quot;</span></span><a class="headerlink" href="#_CPPv436EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_RIGFILESUFFIX">
+<span id="_CPPv323EXPCONFIG_RIGFILESUFFIX"></span><span id="_CPPv223EXPCONFIG_RIGFILESUFFIX"></span><span id="EXPCONFIG_RIGFILESUFFIX__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1acc96b8084501044792a2b3d8373d662e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_RIGFILESUFFIX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;_rig.json&quot;</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_RIGFILESUFFIX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423EXPCONFIG_MIDDLEEXP_OFF">
+<span id="_CPPv323EXPCONFIG_MIDDLEEXP_OFF"></span><span id="_CPPv223EXPCONFIG_MIDDLEEXP_OFF"></span><span id="EXPCONFIG_MIDDLEEXP_OFF__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1adb3d10c0aaa67d8c9e07f12ad91140bd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_MIDDLEEXP_OFF</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv423EXPCONFIG_MIDDLEEXP_OFF" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422EXPCONFIG_MIDDLEEXP_ON">
+<span id="_CPPv322EXPCONFIG_MIDDLEEXP_ON"></span><span id="_CPPv222EXPCONFIG_MIDDLEEXP_ON"></span><span id="EXPCONFIG_MIDDLEEXP_ON__doubleC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1afa21b5412c0686390fb1c50fadcc1c2b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPCONFIG_MIDDLEEXP_ON</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv422EXPCONFIG_MIDDLEEXP_ON" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426CONF_AUTO_LOADER_USER_PATH">
+<span id="_CPPv326CONF_AUTO_LOADER_USER_PATH"></span><span id="_CPPv226CONF_AUTO_LOADER_USER_PATH"></span><span id="CONF_AUTO_LOADER_USER_PATH__stringC"></span><span class="target" id="_m_i_e_s___configuration_8ipf_1a742132f981fd8f977b9171f820a1ae86"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CONF_AUTO_LOADER_USER_PATH</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;C:ProgramData:AllenInstitute:MIES:Settings&quot;</span></span><a class="headerlink" href="#_CPPv426CONF_AUTO_LOADER_USER_PATH" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___check_installation_8ipf.html"
+                          title="previous chapter">File MIES_CheckInstallation.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___constants_8ipf.html"
+                          title="next chapter">File MIES_Constants.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___constants_8ipf.html" title="File MIES_Constants.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___check_installation_8ipf.html" title="File MIES_CheckInstallation.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Configuration.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

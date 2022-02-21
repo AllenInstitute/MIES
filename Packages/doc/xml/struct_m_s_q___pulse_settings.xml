@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_m_s_q___pulse_settings" kind="struct" language="C++" prot="public">
+    <compoundname>MSQ_PulseSettings</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_m_s_q___pulse_settings_1a3dc046eb58e4a165e5353894d2bbc23f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable MSQ_PulseSettings::prePulseChunkLength</definition>
+        <argsstring></argsstring>
+        <name>prePulseChunkLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="62" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="61" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a71d22390b623123666e23a4f94e24dfe" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="68" endline="82">MSQ_GetPulseSettingsForType</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_m_s_q___pulse_settings_1a52b0f0bcef6482eeb6f2c041b8574263" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable MSQ_PulseSettings::pulseDuration</definition>
+        <argsstring></argsstring>
+        <name>pulseDuration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="63" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="63" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a71d22390b623123666e23a4f94e24dfe" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="68" endline="82">MSQ_GetPulseSettingsForType</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_m_s_q___pulse_settings_1aef7d378c16d6e8ff32c571708f84b285" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable MSQ_PulseSettings::postPulseChunkLength</definition>
+        <argsstring></argsstring>
+        <name>postPulseChunkLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="64" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="64" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a71d22390b623123666e23a4f94e24dfe" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="68" endline="82">MSQ_GetPulseSettingsForType</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Settings structure filled by <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a71d22390b623123666e23a4f94e24dfe" kindref="member">MSQ_GetPulseSettingsForType()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="61" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="61" bodyend="65"/>
+    <listofallmembers>
+      <member refid="struct_m_s_q___pulse_settings_1aef7d378c16d6e8ff32c571708f84b285" prot="public" virt="non-virtual"><scope>MSQ_PulseSettings</scope><name>postPulseChunkLength</name></member>
+      <member refid="struct_m_s_q___pulse_settings_1a3dc046eb58e4a165e5353894d2bbc23f" prot="public" virt="non-virtual"><scope>MSQ_PulseSettings</scope><name>prePulseChunkLength</name></member>
+      <member refid="struct_m_s_q___pulse_settings_1a52b0f0bcef6482eeb6f2c041b8574263" prot="public" virt="non-virtual"><scope>MSQ_PulseSettings</scope><name>pulseDuration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

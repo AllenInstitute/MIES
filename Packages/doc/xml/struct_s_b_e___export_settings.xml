@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_s_b_e___export_settings" kind="struct" language="C++" prot="public">
+    <compoundname>SBE_ExportSettings</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a3a253957dc66eb19e06c4d2ec63064d7" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SBE_ExportSettings::dataFolder</definition>
+        <argsstring></argsstring>
+        <name>dataFolder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="15" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a0026f5d847b52468dcc466ced68c7245" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::useCursorRange</definition>
+        <argsstring></argsstring>
+        <name>useCursorRange</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="16" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a464262e75f06009d8d957351ebb54498" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::resetWaveZero</definition>
+        <argsstring></argsstring>
+        <name>resetWaveZero</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="16" column="25" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1aef022e203a47155230fc67a92d8eecd4" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::manualRangeBegin</definition>
+        <argsstring></argsstring>
+        <name>manualRangeBegin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="17" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a958694457eaedeabf8419c753fa65748" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::manualRangeEnd</definition>
+        <argsstring></argsstring>
+        <name>manualRangeEnd</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="17" column="27" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a51acea7a9b9fee123582e09c28982cc4" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SBE_ExportSettings::leftAxis</definition>
+        <argsstring></argsstring>
+        <name>leftAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="18" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1adfb5c9a04ec6f63914a55921b60b64db" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SBE_ExportSettings::bottomAxis</definition>
+        <argsstring></argsstring>
+        <name>bottomAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="18" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a559b4b82f469da4a166db35dd1133ed5" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SBE_ExportSettings::targetGraph</definition>
+        <argsstring></argsstring>
+        <name>targetGraph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="19" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a5187d947a8c6ea560b1b9cc1aaa2c823" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SBE_ExportSettings::sourceGraph</definition>
+        <argsstring></argsstring>
+        <name>sourceGraph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="19" column="20" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1af635c93d1f25ca4541db81d7a6f39eeb" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::axisEqualizing</definition>
+        <argsstring></argsstring>
+        <name>axisEqualizing</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="20" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1adad35666094526debfe7a1b8b67c13fa" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::equalYRange</definition>
+        <argsstring></argsstring>
+        <name>equalYRange</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="20" column="25" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a469b458164ae91affdec99e1ccdf8dde" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::usePulses</definition>
+        <argsstring></argsstring>
+        <name>usePulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="21" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a051b395e7ec92b833f314350a12504b6" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::numPulses</definition>
+        <argsstring></argsstring>
+        <name>numPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="21" column="20" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a4adfadb60f7b9f5006b53dbfa34f4e68" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::preFirstPulse</definition>
+        <argsstring></argsstring>
+        <name>preFirstPulse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="21" column="30" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a6cd87f7bc1afa5f483fd2a3e9ce4605d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::postLastPulse</definition>
+        <argsstring></argsstring>
+        <name>postLastPulse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="21" column="44" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_s_b_e___export_settings_1a43b24eedfe0599cdd47f4c851bee4f05" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SBE_ExportSettings::ADC</definition>
+        <argsstring></argsstring>
+        <name>ADC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="21" column="58" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1ae59472c655a45d991f651c327bbaadd5" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="24" endline="89">SBE_FillExportSettings</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" line="14" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisBrowser_SweepBrowser_Export.ipf" bodystart="14" bodyend="22"/>
+    <listofallmembers>
+      <member refid="struct_s_b_e___export_settings_1a43b24eedfe0599cdd47f4c851bee4f05" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>ADC</name></member>
+      <member refid="struct_s_b_e___export_settings_1af635c93d1f25ca4541db81d7a6f39eeb" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>axisEqualizing</name></member>
+      <member refid="struct_s_b_e___export_settings_1adfb5c9a04ec6f63914a55921b60b64db" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>bottomAxis</name></member>
+      <member refid="struct_s_b_e___export_settings_1a3a253957dc66eb19e06c4d2ec63064d7" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>dataFolder</name></member>
+      <member refid="struct_s_b_e___export_settings_1adad35666094526debfe7a1b8b67c13fa" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>equalYRange</name></member>
+      <member refid="struct_s_b_e___export_settings_1a51acea7a9b9fee123582e09c28982cc4" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>leftAxis</name></member>
+      <member refid="struct_s_b_e___export_settings_1aef022e203a47155230fc67a92d8eecd4" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>manualRangeBegin</name></member>
+      <member refid="struct_s_b_e___export_settings_1a958694457eaedeabf8419c753fa65748" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>manualRangeEnd</name></member>
+      <member refid="struct_s_b_e___export_settings_1a051b395e7ec92b833f314350a12504b6" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>numPulses</name></member>
+      <member refid="struct_s_b_e___export_settings_1a6cd87f7bc1afa5f483fd2a3e9ce4605d" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>postLastPulse</name></member>
+      <member refid="struct_s_b_e___export_settings_1a4adfadb60f7b9f5006b53dbfa34f4e68" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>preFirstPulse</name></member>
+      <member refid="struct_s_b_e___export_settings_1a464262e75f06009d8d957351ebb54498" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>resetWaveZero</name></member>
+      <member refid="struct_s_b_e___export_settings_1a5187d947a8c6ea560b1b9cc1aaa2c823" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>sourceGraph</name></member>
+      <member refid="struct_s_b_e___export_settings_1a559b4b82f469da4a166db35dd1133ed5" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>targetGraph</name></member>
+      <member refid="struct_s_b_e___export_settings_1a0026f5d847b52468dcc466ced68c7245" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>useCursorRange</name></member>
+      <member refid="struct_s_b_e___export_settings_1a469b458164ae91affdec99e1ccdf8dde" prot="public" virt="non-virtual"><scope>SBE_ExportSettings</scope><name>usePulses</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

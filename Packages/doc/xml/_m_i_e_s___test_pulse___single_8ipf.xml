@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___test_pulse___single_8ipf" kind="file" language="C++">
+    <compoundname>MIES_TestPulse_Single.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___single_8ipf_1a8eed22e507a0699d485b440c19aba385" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_StartBackgroundTestPulse</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TPS_StartBackgroundTestPulse</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="12" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="12" bodyend="16"/>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___single_8ipf_1abe2a65daa0f36815588b796651988c73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_StopTestPulseSingleDevice</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TPS_StopTestPulseSingleDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="18" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="18" bodyend="30"/>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1233" endline="1265">TP_StopTestPulseWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_TestPulseFunc</definition>
+        <argsstring>(BackgroundStruct *s)</argsstring>
+        <name>TPS_TestPulseFunc</name>
+        <param>
+          <type><ref refid="struct_background_struct" kindref="compound">BackgroundStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background TP Single Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="35" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="35" bodyend="71"/>
+        <references refid="struct_background_struct_1a9581db220a0af538314cdd15a046804b" compoundref="_m_i_e_s___structures_8ipf" startline="16">BackgroundStruct::count</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9bfdaafa444865d941a42acbf2b0e609" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1776" endline="1785">HW_ITC_MoreData</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a3a1abd152f148ce4bbefe05139720c34" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1688" endline="1695">HW_ITC_ResetFifo</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_StartTestPulseSingleDevice</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TPS_StartTestPulseSingleDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Start a single device test pulse, either in background or in foreground mode depending on the settings. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fast</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Starts TP without any checks or setup. Can be called after stopping it with <ref refid="_m_i_e_s___test_pulse_8ipf_1a12d7a6d3e09c49f52e9523aef5357e7f" kindref="member">TP_StopTestPulseFast()</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="79" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="79" bodyend="132"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3c161796838de2aa4e5c4e8a943a183c" compoundref="_m_i_e_s___constants_8ipf" startline="1540">DQ_STOP_REASON_TP_STARTED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1a7163067ce52b5f19c86cd58a1e207fb5" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1747" endline="1757">P_InitBeforeTP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a373a0379f40d191a1874f77be4115b8b" compoundref="_m_i_e_s___constants_8ipf" startline="431">TEST_PULSE_BG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0d11d805ed39cd5f89c63fca4e463e5b" compoundref="_m_i_e_s___constants_8ipf" startline="433">TEST_PULSE_FG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1297" endline="1339">TP_Setup</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1a8eed22e507a0699d485b440c19aba385" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="12" endline="16">TPS_StartBackgroundTestPulse</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="140" endline="187">TPS_StartTestPulseForeground</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1268" endline="1291">TP_RestartTestPulse</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPS_StartTestPulseForeground</definition>
+        <argsstring>(string device, variable elapsedTime=defaultValue)</argsstring>
+        <name>TPS_StartTestPulseForeground</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>elapsedTime</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Start the single device foreground test pulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>elapsedTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[defaults to infinity] allow to run the testpulse for the given amount of seconds only. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>zero if time elapsed, one if the Testpulse was manually stopped </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" line="140" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf" bodystart="140" bodyend="187"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9bfdaafa444865d941a42acbf2b0e609" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1776" endline="1785">HW_ITC_MoreData</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a3a1abd152f148ce4bbefe05139720c34" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1688" endline="1695">HW_ITC_ResetFifo</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Single.ipf"/>
+  </compounddef>
+</doxygen>

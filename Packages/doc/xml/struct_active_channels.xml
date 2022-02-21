@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_active_channels" kind="struct" language="C++" prot="public">
+    <compoundname>ActiveChannels</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_active_channels_1ac494681c600fc06fe0d3c049f59501aa" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numDARack1</definition>
+        <argsstring></argsstring>
+        <name>numDARack1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="569" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="568" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_active_channels_1a7a6b6d8f42ca78304055a8dba7807359" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numADRack1</definition>
+        <argsstring></argsstring>
+        <name>numADRack1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="570" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="570" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_active_channels_1aee6d831c3d9f897b2c2b4356cc42b01e" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numTTLRack1</definition>
+        <argsstring></argsstring>
+        <name>numTTLRack1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="571" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="571" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_active_channels_1a8afba645feeba9de90a211d8f3b30cbe" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numDARack2</definition>
+        <argsstring></argsstring>
+        <name>numDARack2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="572" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="572" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_active_channels_1afe711bddbcab83bbbe0de02cb9bf7170" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numADRack2</definition>
+        <argsstring></argsstring>
+        <name>numADRack2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="573" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="573" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_active_channels_1a54ff98cfe49bdec1b42f9eb55f88cec1" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 ActiveChannels::numTTLRack2</definition>
+        <argsstring></argsstring>
+        <name>numTTLRack2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="574" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="574" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0828481ac777584943e8515f85aa33f0" compoundref="_m_i_e_s___cache_8ipf" startline="301" endline="316">CA_SamplingIntervalKey</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1aa4cb645d5657e483fc7a38d21c2689b9" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="230" endline="251">SI_FillActiveChannelsStruct</referencedby>
+        <referencedby refid="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5" compoundref="_m_i_e_s___sampling_interval_8ipf" startline="167" endline="202">SI_FindMatchingTableEntry</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper struct for storing the number of active channels per rack. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="568" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="568" bodyend="575"/>
+    <listofallmembers>
+      <member refid="struct_active_channels_1a7a6b6d8f42ca78304055a8dba7807359" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numADRack1</name></member>
+      <member refid="struct_active_channels_1afe711bddbcab83bbbe0de02cb9bf7170" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numADRack2</name></member>
+      <member refid="struct_active_channels_1ac494681c600fc06fe0d3c049f59501aa" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numDARack1</name></member>
+      <member refid="struct_active_channels_1a8afba645feeba9de90a211d8f3b30cbe" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numDARack2</name></member>
+      <member refid="struct_active_channels_1aee6d831c3d9f897b2c2b4356cc42b01e" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numTTLRack1</name></member>
+      <member refid="struct_active_channels_1a54ff98cfe49bdec1b42f9eb55f88cec1" prot="public" virt="non-virtual"><scope>ActiveChannels</scope><name>numTTLRack2</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

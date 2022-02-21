@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_vector_data" kind="struct" language="C++" prot="public">
+    <compoundname>VectorData</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_vector_data_1ae0ca21d0aec6c7ef3b597fc9c630a7c2" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string VectorData::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="250" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="249" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a1534fc7be8c2697fb3a0c6c1f0e7c00c" compoundref="_i_p_n_w_b___structures_8ipf" startline="255" endline="261">InitVectorData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_vector_data_1ab86a50cf872c803b06d28d718a752529" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string VectorData::data_type</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="251" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="251" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a1534fc7be8c2697fb3a0c6c1f0e7c00c" compoundref="_i_p_n_w_b___structures_8ipf" startline="255" endline="261">InitVectorData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_vector_data_1afb34cd6a4a1080598b322c500429ca2b" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string VectorData::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="252" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="252" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a1534fc7be8c2697fb3a0c6c1f0e7c00c" compoundref="_i_p_n_w_b___structures_8ipf" startline="255" endline="261">InitVectorData</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="249" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="249" bodyend="253"/>
+    <listofallmembers>
+      <member refid="struct_vector_data_1ab86a50cf872c803b06d28d718a752529" prot="public" virt="non-virtual"><scope>VectorData</scope><name>data_type</name></member>
+      <member refid="struct_vector_data_1ae0ca21d0aec6c7ef3b597fc9c630a7c2" prot="public" virt="non-virtual"><scope>VectorData</scope><name>description</name></member>
+      <member refid="struct_vector_data_1afb34cd6a4a1080598b322c500429ca2b" prot="public" virt="non-virtual"><scope>VectorData</scope><name>path</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

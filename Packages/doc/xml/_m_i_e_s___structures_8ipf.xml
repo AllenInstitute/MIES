@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___structures_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Structures.ipf</compoundname>
+    <innerclass refid="struct_background_struct" prot="public">BackgroundStruct</innerclass>
+    <innerclass refid="struct_post_plot_settings" prot="public">PostPlotSettings</innerclass>
+    <innerclass refid="struct_pulse_average_settings" prot="public">PulseAverageSettings</innerclass>
+    <innerclass refid="struct_pulse_average_deconv_settings" prot="public">PulseAverageDeconvSettings</innerclass>
+    <innerclass refid="struct_pulse_average_set_indices" prot="public">PulseAverageSetIndices</innerclass>
+    <innerclass refid="struct_tiled_graph_settings" prot="public">TiledGraphSettings</innerclass>
+    <innerclass refid="struct_formula_properties" prot="public">FormulaProperties</innerclass>
+    <innerclass refid="struct_wave_location_mod" prot="public">WaveLocationMod</innerclass>
+    <innerclass refid="struct_o_od_d_a_q_params" prot="public">OOdDAQParams</innerclass>
+    <innerclass refid="struct_analysis_function___v3" prot="public">AnalysisFunction_V3</innerclass>
+    <innerclass refid="struct_delta_control_names" prot="public">DeltaControlNames</innerclass>
+    <innerclass refid="struct_t_p_analysis_input" prot="public">TPAnalysisInput</innerclass>
+    <innerclass refid="struct_rect_d" prot="public">RectD</innerclass>
+    <innerclass refid="struct_hardware_data_t_p_input" prot="public">HardwareDataTPInput</innerclass>
+    <innerclass refid="struct_buffered_draw_info" prot="public">BufferedDrawInfo</innerclass>
+    <innerclass refid="struct_chirp_bounds_info" prot="public">ChirpBoundsInfo</innerclass>
+    <innerclass refid="struct_n_w_b_async_parameters" prot="public">NWBAsyncParameters</innerclass>
+    <innerclass refid="struct_data_configuration_result" prot="public">DataConfigurationResult</innerclass>
+    <innerclass refid="struct_active_channels" prot="public">ActiveChannels</innerclass>
+    <innerclass refid="struct_p_s_q___pulse_settings" prot="public">PSQ_PulseSettings</innerclass>
+    <innerclass refid="struct_check_parameters_struct" prot="public">CheckParametersStruct</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1a19761053ceb810edf07b4540d0522a64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitPulseAverageSettings</definition>
+        <argsstring>(PulseAverageSettings *pa)</argsstring>
+        <name>InitPulseAverageSettings</name>
+        <param>
+          <type><ref refid="struct_pulse_average_settings" kindref="compound">PulseAverageSettings</ref> *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="45" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="45" bodyend="69"/>
+        <references refid="struct_pulse_average_settings_1a232f3d18f41cc263a17f2564a6f33baa" compoundref="_m_i_e_s___structures_8ipf" startline="76">PulseAverageSettings::autoTimeAlignment</references>
+        <references refid="struct_pulse_average_settings_1a42481d8e5104c6e27d42129827d6962a" compoundref="_m_i_e_s___structures_8ipf" startline="89">PulseAverageSettings::dfr</references>
+        <references refid="struct_pulse_average_settings_1acdfbdff160304eae3e86a6dd90274bcb" compoundref="_m_i_e_s___structures_8ipf" startline="79">PulseAverageSettings::drawXZeroLine</references>
+        <references refid="struct_pulse_average_settings_1a4079b87d9f3078c44f8afea308ea0fe8" compoundref="_m_i_e_s___structures_8ipf" startline="76">PulseAverageSettings::enabled</references>
+        <references refid="struct_pulse_average_settings_1a595cf389c1138ddbee6c26fb73f6e8fe" compoundref="_m_i_e_s___structures_8ipf" startline="86">PulseAverageSettings::endingPulse</references>
+        <references refid="struct_pulse_average_settings_1a2f80fd989e1f9b9fa5d08f4ae90378fb" compoundref="_m_i_e_s___structures_8ipf" startline="78">PulseAverageSettings::failedPulsesLevel</references>
+        <references refid="struct_pulse_average_settings_1aa03f273ccc12c744fda09f334c6d9a26" compoundref="_m_i_e_s___structures_8ipf" startline="86">PulseAverageSettings::fixedPulseLength</references>
+        <references refid="struct_pulse_average_settings_1a17a72cdc286444f54b7cfb683be72209" compoundref="_m_i_e_s___structures_8ipf" startline="77">PulseAverageSettings::hideFailedPulses</references>
+        <references refid="struct_pulse_average_settings_1a01e5f108699be85838a45a06fbc44600" compoundref="_m_i_e_s___structures_8ipf" startline="81">PulseAverageSettings::imageColorScale</references>
+        <references refid="struct_pulse_average_settings_1a92b6fd09497d771214a59b8bce243cf7" compoundref="_m_i_e_s___structures_8ipf" startline="75">PulseAverageSettings::multipleGraphs</references>
+        <references refid="struct_pulse_average_settings_1af91cfcd285c9d26f6f2449d62f36c0ac" compoundref="_m_i_e_s___structures_8ipf" startline="86">PulseAverageSettings::overridePulseLength</references>
+        <references refid="struct_pulse_average_settings_1a40040b21569f612b9722c615a3b08cd6" compoundref="_m_i_e_s___structures_8ipf" startline="80">PulseAverageSettings::pulseSortOrder</references>
+        <references refid="struct_pulse_average_settings_1acef0088f4c056f0aefbc4aec7f1f4690" compoundref="_m_i_e_s___structures_8ipf" startline="75">PulseAverageSettings::regionSlider</references>
+        <references refid="struct_pulse_average_settings_1a453a5c95c5eaf6c7671e5f0df5f98b9e" compoundref="_m_i_e_s___structures_8ipf" startline="77">PulseAverageSettings::searchFailedPulses</references>
+        <references refid="struct_pulse_average_settings_1aaf52cad5d534404f88c9cc5a2f8d7021" compoundref="_m_i_e_s___structures_8ipf" startline="74">PulseAverageSettings::showAverage</references>
+        <references refid="struct_pulse_average_settings_1ad664c4c942c5c98d32bce90e9672d49a" compoundref="_m_i_e_s___structures_8ipf" startline="79">PulseAverageSettings::showImages</references>
+        <references refid="struct_pulse_average_settings_1a01d6cfcde4912dc4e5fafb4b15bcb622" compoundref="_m_i_e_s___structures_8ipf" startline="73">PulseAverageSettings::showIndividualPulses</references>
+        <references refid="struct_pulse_average_settings_1a4e057f1b99ea7416b22b53268c25ecda" compoundref="_m_i_e_s___structures_8ipf" startline="79">PulseAverageSettings::showTraces</references>
+        <references refid="struct_pulse_average_settings_1a91c2223a6ce8916e2e81d578b8576c7f" compoundref="_m_i_e_s___structures_8ipf" startline="86">PulseAverageSettings::startingPulse</references>
+        <references refid="struct_pulse_average_settings_1ae74fed4e7f19e4e8bd3cca5c6f7ab9bc" compoundref="_m_i_e_s___structures_8ipf" startline="78">PulseAverageSettings::yScaleBarLength</references>
+        <references refid="struct_pulse_average_settings_1a5fc4578f1024f226168b392886eb5a0f" compoundref="_m_i_e_s___structures_8ipf" startline="76">PulseAverageSettings::zeroPulses</references>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ada0447d0c9d3c798172b819266636353" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1219" endline="1257">PA_GatherSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1ab4ab0cdd851352d59edbdec46fe902c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitFormulaProperties</definition>
+        <argsstring>(FormulaProperties *fp)</argsstring>
+        <name>InitFormulaProperties</name>
+        <param>
+          <type><ref refid="struct_formula_properties" kindref="compound">FormulaProperties</ref> *</type>
+          <declname>fp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="174" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="174" bodyend="181"/>
+        <references refid="struct_formula_properties_1ae88d155b2a57a62b35f0a5ea4d48a3ed" compoundref="_m_i_e_s___structures_8ipf" startline="169">FormulaProperties::formula</references>
+        <references refid="struct_formula_properties_1a5445c347af0f426d0e0139f4ac0bbfc1" compoundref="_m_i_e_s___structures_8ipf" startline="171">FormulaProperties::numCols</references>
+        <references refid="struct_formula_properties_1a768b9fe27432b70aa12f76c6b378a6c6" compoundref="_m_i_e_s___structures_8ipf" startline="171">FormulaProperties::numRows</references>
+        <references refid="struct_formula_properties_1abb5526224be6419cb6c288af1abdab11" compoundref="_m_i_e_s___structures_8ipf" startline="170">FormulaProperties::stimsetList</references>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1afe407fee2f7e201ffe6c93a29d0da40d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1920" endline="1969">WB_FormulaSwitchToStimset</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a29498049fc194be4182892e8419a45b4" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1861" endline="1917">WB_ParseCombinerFormula</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1ac0c0cd9386e404a4b74732c06dd8adf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitOOdDAQParams</definition>
+        <argsstring>(OOdDAQParams *params, WaveRefWave stimSets, wave setColumns, variable preFeatureTime, variable postFeatureTime)</argsstring>
+        <name>InitOOdDAQParams</name>
+        <param>
+          <type><ref refid="struct_o_od_d_a_q_params" kindref="compound">OOdDAQParams</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>stimSets</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>setColumns</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>preFeatureTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>postFeatureTime</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="191" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="191" bodyend="210"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="struct_o_od_d_a_q_params_1a397d3bb1c99375271d3d2af895f99642" compoundref="_m_i_e_s___structures_8ipf" startline="231">OOdDAQParams::offsets</references>
+        <references refid="struct_o_od_d_a_q_params_1a363b782b13ed1dba6f9c87235414d757" compoundref="_m_i_e_s___structures_8ipf" startline="225">OOdDAQParams::postFeaturePoints</references>
+        <references refid="struct_o_od_d_a_q_params_1a8f6ee3ae8fd00f7cd785f87f7f0736c1" compoundref="_m_i_e_s___structures_8ipf" startline="224">OOdDAQParams::preFeaturePoints</references>
+        <references refid="struct_o_od_d_a_q_params_1aafdf321e29199e2a2c80a04e778a799f" compoundref="_m_i_e_s___structures_8ipf" startline="216">OOdDAQParams::preload</references>
+        <references refid="struct_o_od_d_a_q_params_1abc125e475f7aea1fb25e5332e37eae3f" compoundref="_m_i_e_s___structures_8ipf" startline="232">OOdDAQParams::regions</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_o_od_d_a_q_params_1ade070174bf7b196596bdecd11d2abf85" compoundref="_m_i_e_s___structures_8ipf" startline="223">OOdDAQParams::setColumns</references>
+        <references refid="struct_o_od_d_a_q_params_1a1c1088e413db2967f6e3b5e51581a24e" compoundref="_m_i_e_s___structures_8ipf" startline="222">OOdDAQParams::stimSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4f3e6b5f198de9f2b14c00cff7d70d22" compoundref="_m_i_e_s___constants_8ipf" startline="704">WAVEBUILDER_MIN_SAMPINT</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1aae6803e3b5502e6bad2c2ad1e87aa1cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitDeltaControlNames</definition>
+        <argsstring>(DeltaControlNames *s)</argsstring>
+        <name>InitDeltaControlNames</name>
+        <param>
+          <type><ref refid="struct_delta_control_names" kindref="compound">DeltaControlNames</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="278" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="278" bodyend="286"/>
+        <references refid="struct_delta_control_names_1ade80e7fed830de094426d506698dfc6e" compoundref="_m_i_e_s___structures_8ipf" startline="290">DeltaControlNames::delta</references>
+        <references refid="struct_delta_control_names_1a03d5993049c8af089681fc4fc1497cf8" compoundref="_m_i_e_s___structures_8ipf" startline="290">DeltaControlNames::dme</references>
+        <references refid="struct_delta_control_names_1a6ef3bdfa3a5fe6a0aa89230a1d609637" compoundref="_m_i_e_s___structures_8ipf" startline="290">DeltaControlNames::ldelta</references>
+        <references refid="struct_delta_control_names_1a24b7f3f9b72b73880510cdc1882ea1d5" compoundref="_m_i_e_s___structures_8ipf" startline="289">DeltaControlNames::main</references>
+        <references refid="struct_delta_control_names_1a77856c616e969cbf64f0e2b81f9cedc9" compoundref="_m_i_e_s___structures_8ipf" startline="290">DeltaControlNames::op</references>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1aaee86e0ecd9cc373fbad0c82fea1bd55" compoundref="_m_i_e_s___wave_builder_8ipf" startline="558" endline="584">WB_GetDeltaDimLabel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1a02508fe217eeee299cd3fdb6763318e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitRectD</definition>
+        <argsstring>(RectD *s)</argsstring>
+        <name>InitRectD</name>
+        <param>
+          <type><ref refid="struct_rect_d" kindref="compound">RectD</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="316" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="316" bodyend="323"/>
+        <references refid="struct_rect_d_1a0966cb83c2665af787761be743023808" compoundref="_m_i_e_s___structures_8ipf" startline="312">RectD::bottom</references>
+        <references refid="struct_rect_d_1a53356b63b447d9a255c7b2776e4a129d" compoundref="_m_i_e_s___structures_8ipf" startline="311">RectD::left</references>
+        <references refid="struct_rect_d_1ac21043918dc25f4a24e29b3b8c523c96" compoundref="_m_i_e_s___structures_8ipf" startline="313">RectD::right</references>
+        <references refid="struct_rect_d_1a44c69df4210de0bbfe251468b3df9cc7" compoundref="_m_i_e_s___structures_8ipf" startline="309">RectD::top</references>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1a0dee5e6bd5faa704e772fe330f2b1008" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable InitBufferedDrawInfo</definition>
+        <argsstring>(BufferedDrawInfo *s)</argsstring>
+        <name>InitBufferedDrawInfo</name>
+        <param>
+          <type><ref refid="struct_buffered_draw_info" kindref="compound">BufferedDrawInfo</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>initializes a <ref refid="struct_buffered_draw_info" kindref="compound">BufferedDrawInfo</ref> structure The json path for AppendTracesToGraph and Labels is set empty by default </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___mies_utilities_8ipf_1a98a735cad98a7e8915931153ae23cb66" kindref="member">TiledGraphAccelerateDraw</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="338" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="338" bodyend="348"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a39c82131a679fd5e50edf1b1d0647534" compoundref="_m_i_e_s___constants_8ipf" startline="1496">BUFFEREDDRAWAPPEND</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab08b54b46e322d01d1a290713481ce13" compoundref="_m_i_e_s___constants_8ipf" startline="1499">BUFFEREDDRAWDDAQAXES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3ee9f13a31c6f8e4bc64d0ba9cfbe597" compoundref="_m_i_e_s___constants_8ipf" startline="1498">BUFFEREDDRAWHIDDENTRACES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad0c9c140bdb75d9a609522d6da386723" compoundref="_m_i_e_s___constants_8ipf" startline="1497">BUFFEREDDRAWLABEL</references>
+        <references refid="struct_buffered_draw_info_1a42bc43a36a3aee2aa45f1d70df6bbc34" compoundref="_m_i_e_s___structures_8ipf" startline="353">BufferedDrawInfo::jsonID</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a28455723849888d17f159cd58f608a83" compoundref="_m_i_e_s___constants_8ipf" startline="115">MINIMUM_WAVE_SIZE_LARGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="struct_buffered_draw_info_1ac3673d4a55ede635111ca6d91df8f143" compoundref="_m_i_e_s___structures_8ipf" startline="355">BufferedDrawInfo::traceWaves</references>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1adaf840f82141dd505da9f150a0feac63" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="843" endline="952">OVS_EndIncrementalUpdate</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable NWB_ASYNC_SerializeStruct</definition>
+        <argsstring>(NWBAsyncParameters *s, dfref threadDFR)</argsstring>
+        <name>NWB_ASYNC_SerializeStruct</name>
+        <param>
+          <type><ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>threadDFR</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="386" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="386" bodyend="409"/>
+        <references refid="_m_i_e_s___async_8ipf_1a4db78dbdee22abd609d1149fe9d8aef5" compoundref="_m_i_e_s___async_8ipf" startline="346" endline="388">ASYNC_AddParam</references>
+        <references refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::compressionMode</references>
+        <references refid="struct_n_w_b_async_parameters_1a6ee153a1b072bb7f25888101281ac7c0" compoundref="_m_i_e_s___structures_8ipf" startline="373">NWBAsyncParameters::DAQConfigWave</references>
+        <references refid="struct_n_w_b_async_parameters_1a371a607b2d7369c582a5fe766c1320f6" compoundref="_m_i_e_s___structures_8ipf" startline="373">NWBAsyncParameters::DAQDataWave</references>
+        <references refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" compoundref="_m_i_e_s___structures_8ipf" startline="367">NWBAsyncParameters::device</references>
+        <references refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::locationID</references>
+        <references refid="struct_n_w_b_async_parameters_1ab725ce3a13beaff472ccc3c9a8acefbb" compoundref="_m_i_e_s___structures_8ipf" startline="376">NWBAsyncParameters::numericalKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1a8befd6cb3e9c7613c91a6cc509c39c0f" compoundref="_m_i_e_s___structures_8ipf" startline="381">NWBAsyncParameters::numericalResultsKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1afe95bb7ef1b8a5ea8e322171d4c9e756" compoundref="_m_i_e_s___structures_8ipf" startline="380">NWBAsyncParameters::numericalResultsValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" compoundref="_m_i_e_s___structures_8ipf" startline="375">NWBAsyncParameters::numericalValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" compoundref="_m_i_e_s___structures_8ipf" startline="371">NWBAsyncParameters::nwbVersion</references>
+        <references refid="struct_n_w_b_async_parameters_1a76793c1263f32b1cf2aceac891ef7a85" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::session_start_time</references>
+        <references refid="struct_n_w_b_async_parameters_1a2826956c0d937926fa527ffcdfbad56b" compoundref="_m_i_e_s___structures_8ipf" startline="370">NWBAsyncParameters::sweep</references>
+        <references refid="struct_n_w_b_async_parameters_1ac247b79093587c9ed5fc8654f03be8ac" compoundref="_m_i_e_s___structures_8ipf" startline="378">NWBAsyncParameters::textualKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1a5b7bfc997402a22f07ba6de33486aec7" compoundref="_m_i_e_s___structures_8ipf" startline="383">NWBAsyncParameters::textualResultsKeys</references>
+        <references refid="struct_n_w_b_async_parameters_1add6b391639ae89a76f09cf53e0de4990" compoundref="_m_i_e_s___structures_8ipf" startline="382">NWBAsyncParameters::textualResultsValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" compoundref="_m_i_e_s___structures_8ipf" startline="377">NWBAsyncParameters::textualValues</references>
+        <references refid="struct_n_w_b_async_parameters_1a98c2beea930ed021caac06f3f16a2e87" compoundref="_m_i_e_s___structures_8ipf" startline="368">NWBAsyncParameters::userComment</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; <ref refid="struct_n_w_b_async_parameters" kindref="compound">NWBAsyncParameters</ref> &gt;</type>
+        <definition>std::tuple&lt; NWBAsyncParameters &gt; NWB_ASYNC_DeserializeStruct</definition>
+        <argsstring>(dfref threadDFR)</argsstring>
+        <name>NWB_ASYNC_DeserializeStruct</name>
+        <param>
+          <type>dfref</type>
+          <declname>threadDFR</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="411" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="411" bodyend="454"/>
+        <references refid="_m_i_e_s___async_8ipf_1aafb64ac648892aecae5c61ed7e6f94ff" compoundref="_m_i_e_s___async_8ipf" startline="409" endline="415">ASYNC_FetchString</references>
+        <references refid="_m_i_e_s___async_8ipf_1a85651bc5fc822f7180c28b336a5e9520" compoundref="_m_i_e_s___async_8ipf" startline="400" endline="406">ASYNC_FetchVariable</references>
+        <references refid="_m_i_e_s___async_8ipf_1a595a3452d6f5457880088d9b51e6b37b" compoundref="_m_i_e_s___async_8ipf" startline="391" endline="397">ASYNC_FetchWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0963283a75a5eb42369e6b9d553f4e8e" compoundref="_m_i_e_s___utilities_8ipf" startline="4534" endline="4558">ChangeWaveLock</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>All non-static structures together with their initialization routines are defined here. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf"/>
+  </compounddef>
+</doxygen>

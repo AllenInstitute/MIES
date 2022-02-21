@@ -1,0 +1,4 @@
+Struct GeneralInfo
+==================
+
+.. doxygenstruct:: GeneralInfo

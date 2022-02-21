@@ -1,0 +1,793 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___indexing_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Indexing.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a3de48dba4f86fec4b77e316b6dbca416" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_StoreStartFinishForIndexing</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_StoreStartFinishForIndexing</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="12" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="12" bodyend="29"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" compoundref="_m_i_e_s___indexing_8ipf" startline="194" endline="205">IDX_GetCurrentSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a3947c87ee6e52bf72479cb9cf9433bf8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_ResetStartFinishForIndexing</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_ResetStartFinishForIndexing</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Resets the selected set popupmenus stored by <ref refid="_m_i_e_s___indexing_8ipf_1a3de48dba4f86fec4b77e316b6dbca416" kindref="member">IDX_StoreStartFinishForIndexing</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="32" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="32" bodyend="56"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a35652d9f717b5245384c9ab9bfc80a7a" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="397" endline="432">DAG_Update</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5331" endline="5352">DAP_UpdateDAQControls</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a577150e0687fc0729fe27931fe213d9c" compoundref="_m_i_e_s___constants_8ipf" startline="929">REASON_STIMSET_CHANGE</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a7fe088c1d04218bed35a0240a7531379" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="442" endline="452">SetPopupMenuIndex</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a9b939976bd847ba6c4d69ccaec5e40a0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_IndexingDoIt</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_IndexingDoIt</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Locked indexing, indexes all active channels at once. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="59" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="59" bodyend="92"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5331" endline="5352">DAP_UpdateDAQControls</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac6c6177584f36b8dc0e455d6e1128b02" compoundref="_m_i_e_s___constants_8ipf" startline="931">REASON_STIMSET_CHANGE_DUR_DAQ</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_IndexSingleChannel</definition>
+        <argsstring>(string device, variable channelType, variable channel)</argsstring>
+        <name>IDX_IndexSingleChannel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <briefdescription>
+<para>Indexes a single channel - used when indexing is unlocked. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Callers need to call <ref refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" kindref="member">DAP_UpdateDAQControls()</ref> with <ref refid="_m_i_e_s___constants_8ipf_1ac6c6177584f36b8dc0e455d6e1128b02" kindref="member">REASON_STIMSET_CHANGE_DUR_DAQ</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="97" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="97" bodyend="135"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a35652d9f717b5245384c9ab9bfc80a7a" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="397" endline="432">DAG_Update</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" compoundref="_m_i_e_s___indexing_8ipf" startline="194" endline="205">IDX_GetCurrentSets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a7fe088c1d04218bed35a0240a7531379" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="442" endline="452">SetPopupMenuIndex</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" compoundref="_m_i_e_s___indexing_8ipf" startline="407" endline="445">IDX_ApplyUnLockedIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9b939976bd847ba6c4d69ccaec5e40a0" compoundref="_m_i_e_s___indexing_8ipf" startline="59" endline="92">IDX_IndexingDoIt</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a6bf9335e227b334452fe88f0fdf192c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_MaxSweepsLockedIndexing</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_MaxSweepsLockedIndexing</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Sum of the largest sets for each indexing step. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="138" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="138" bodyend="152"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ad753e0cd7ab5f5d06a6fec409fa4e570" compoundref="_m_i_e_s___indexing_8ipf" startline="208" endline="228">IDX_MaxSets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6e2725a8a6994cacd17ed5bf5e6f64c5" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1853" endline="1873">DAP_UpdateSweepSetVariables</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_StepsInSetWithMaxSweeps</definition>
+        <argsstring>(string device, variable IndexNo, variable channelType)</argsstring>
+        <name>IDX_StepsInSetWithMaxSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>IndexNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of steps in the largest set for a particular index number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="155" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="155" bodyend="191"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" compoundref="_m_i_e_s___indexing_8ipf" startline="194" endline="205">IDX_GetCurrentSets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a6bf9335e227b334452fe88f0fdf192c2" compoundref="_m_i_e_s___indexing_8ipf" startline="138" endline="152">IDX_MaxSweepsLockedIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable &gt; IDX_GetCurrentSets</definition>
+        <argsstring>(string device, variable channelType, variable channelNumber)</argsstring>
+        <name>IDX_GetCurrentSets</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <briefdescription>
+<para>Return the 0-based popup menu indizes of the current WAVE/INDEX_END stimsets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="194" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="194" bodyend="205"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ad753e0cd7ab5f5d06a6fec409fa4e570" compoundref="_m_i_e_s___indexing_8ipf" startline="208" endline="228">IDX_MaxSets</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3de48dba4f86fec4b77e316b6dbca416" compoundref="_m_i_e_s___indexing_8ipf" startline="12" endline="29">IDX_StoreStartFinishForIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1ad753e0cd7ab5f5d06a6fec409fa4e570" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_MaxSets</definition>
+        <argsstring>(string device, variable channelType)</argsstring>
+        <name>IDX_MaxSets</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of sets on the active channel with the most sets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="208" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="208" bodyend="228"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab823afc32b339ccfef6c7f8bf6f0aa46" compoundref="_m_i_e_s___indexing_8ipf" startline="194" endline="205">IDX_GetCurrentSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a6bf9335e227b334452fe88f0fdf192c2" compoundref="_m_i_e_s___indexing_8ipf" startline="138" endline="152">IDX_MaxSweepsLockedIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a161a621959a4ee37091a6410121462bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_MaxNoOfSweeps</definition>
+        <argsstring>(string device, variable IndexOverRide)</argsstring>
+        <name>IDX_MaxNoOfSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>IndexOverRide</declname>
+        </param>
+        <briefdescription>
+<para>determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels works for unlocked (independent) indexing </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>IndexOverRide</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>index override is the same as indexing off. some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="237" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="237" bodyend="287"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a161a621959a4ee37091a6410121462bc" compoundref="_m_i_e_s___indexing_8ipf" startline="237" endline="287">IDX_MaxNoOfSweeps</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1acca29af77251f73609e88a239b39d0f5" compoundref="_m_i_e_s___indexing_8ipf" startline="370" endline="385">IDX_NumberOfSweepsAcrossSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5331" endline="5352">DAP_UpdateDAQControls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6e2725a8a6994cacd17ed5bf5e6f64c5" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1853" endline="1873">DAP_UpdateSweepSetVariables</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a161a621959a4ee37091a6410121462bc" compoundref="_m_i_e_s___indexing_8ipf" startline="237" endline="287">IDX_MaxNoOfSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a3f9ef5f9d3900eadadc369bf89e9107c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_MinNoOfSweeps</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_MinNoOfSweeps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of sweeps in the stimulus set with the smallest number of sweeps (across all active stimulus sets). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="292" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="292" bodyend="321"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1acca29af77251f73609e88a239b39d0f5" compoundref="_m_i_e_s___indexing_8ipf" startline="370" endline="385">IDX_NumberOfSweepsAcrossSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1add2cc461dacc1404519aaceb7c8ed61c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5446" endline="5452">DAP_getFilteredSkipAhead</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a4fdea68c5bdf6a18cda2028f079e02b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5461" endline="5474">DAP_SetVarProc_skipAhead</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1afb2ba7be3d22f4683c2b708fc685b97f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave IDX_GetSetsInRange</definition>
+        <argsstring>(string device, variable channel, variable channelType, variable lockedIndexing)</argsstring>
+        <name>IDX_GetSetsInRange</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>lockedIndexing</declname>
+        </param>
+        <briefdescription>
+<para>Returns a 1D textwave of selected set names. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CHANNEL_TYPE_DAC or CHANNEL_TYPE_TTL </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lockedIndexing</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defaults to false, true returns just the DAC/TTL setname</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Constants are defined at <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="330" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="330" bodyend="367"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a691f42e64faf4398595562faa3ad62d5" compoundref="_m_i_e_s___utilities_8ipf" startline="1945" endline="1954">DuplicateSubRange</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad210dd8583db24ef1c4877d3208f847d" compoundref="_m_i_e_s___utilities_8ipf" startline="1938" endline="1942">MinMax</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1d8b2789fc76c320a05681a12380187f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3023" endline="3097">DAP_CheckStimset</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1acca29af77251f73609e88a239b39d0f5" compoundref="_m_i_e_s___indexing_8ipf" startline="370" endline="385">IDX_NumberOfSweepsAcrossSets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1acca29af77251f73609e88a239b39d0f5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_NumberOfSweepsAcrossSets</definition>
+        <argsstring>(string device, variable channel, variable channelType, variable lockedIndexing)</argsstring>
+        <name>IDX_NumberOfSweepsAcrossSets</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>lockedIndexing</declname>
+        </param>
+        <briefdescription>
+<para>Determine the number of sweeps for a DA or TTL channel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="370" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="370" bodyend="385"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1afb2ba7be3d22f4683c2b708fc685b97f" compoundref="_m_i_e_s___indexing_8ipf" startline="330" endline="367">IDX_GetSetsInRange</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a161a621959a4ee37091a6410121462bc" compoundref="_m_i_e_s___indexing_8ipf" startline="237" endline="287">IDX_MaxNoOfSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3f9ef5f9d3900eadadc369bf89e9107c" compoundref="_m_i_e_s___indexing_8ipf" startline="292" endline="321">IDX_MinNoOfSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_NumberOfSweepsInSet</definition>
+        <argsstring>(string setName)</argsstring>
+        <name>IDX_NumberOfSweepsInSet</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="388" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="388" bodyend="405"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" compoundref="_m_i_e_s___indexing_8ipf" startline="497" endline="525">IDX_DetIfCountIsAtSetBorder</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1acca29af77251f73609e88a239b39d0f5" compoundref="_m_i_e_s___indexing_8ipf" startline="370" endline="385">IDX_NumberOfSweepsAcrossSets</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" compoundref="_m_i_e_s___indexing_8ipf" startline="447" endline="468">IDX_TotalIndexingListSteps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" compoundref="_m_i_e_s___indexing_8ipf" startline="470" endline="495">IDX_UnlockedIndexingStepNo</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="321" endline="360">MSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="936" endline="993">PSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="170" endline="181">SC_LastSweepInSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_ApplyUnLockedIndexing</definition>
+        <argsstring>(string device, variable count)</argsstring>
+        <name>IDX_ApplyUnLockedIndexing</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="407" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="407" bodyend="445"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5331" endline="5352">DAP_UpdateDAQControls</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" compoundref="_m_i_e_s___indexing_8ipf" startline="497" endline="525">IDX_DetIfCountIsAtSetBorder</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac6c6177584f36b8dc0e455d6e1128b02" compoundref="_m_i_e_s___constants_8ipf" startline="931">REASON_STIMSET_CHANGE_DUR_DAQ</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_TotalIndexingListSteps</definition>
+        <argsstring>(string device, variable channelNumber, variable channelType)</argsstring>
+        <name>IDX_TotalIndexingListSteps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="447" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="447" bodyend="468"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad210dd8583db24ef1c4877d3208f847d" compoundref="_m_i_e_s___utilities_8ipf" startline="1938" endline="1942">MinMax</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" compoundref="_m_i_e_s___indexing_8ipf" startline="497" endline="525">IDX_DetIfCountIsAtSetBorder</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" compoundref="_m_i_e_s___indexing_8ipf" startline="470" endline="495">IDX_UnlockedIndexingStepNo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_UnlockedIndexingStepNo</definition>
+        <argsstring>(string device, variable channelNumber, variable channelType, variable count)</argsstring>
+        <name>IDX_UnlockedIndexingStepNo</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="470" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="470" bodyend="495"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" compoundref="_m_i_e_s___indexing_8ipf" startline="447" endline="468">IDX_TotalIndexingListSteps</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IDX_DetIfCountIsAtSetBorder</definition>
+        <argsstring>(string device, variable count, variable channelNumber, variable channelType)</argsstring>
+        <name>IDX_DetIfCountIsAtSetBorder</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>count</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="497" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="497" bodyend="525"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aee0a07601a56837ad6e3ee6c9cb8236c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5135" endline="5161">GetIndexingStorageWave</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" compoundref="_m_i_e_s___indexing_8ipf" startline="561" endline="581">IDX_GetSingleStimset</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" compoundref="_m_i_e_s___indexing_8ipf" startline="540" endline="552">IDX_GetStimsets</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" compoundref="_m_i_e_s___indexing_8ipf" startline="447" endline="468">IDX_TotalIndexingListSteps</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" compoundref="_m_i_e_s___indexing_8ipf" startline="407" endline="445">IDX_ApplyUnLockedIndexing</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_CalculcateActiveSetCount</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_CalculcateActiveSetCount</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the active set count. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="528" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="528" bodyend="537"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" compoundref="_m_i_e_s___indexing_8ipf" startline="407" endline="445">IDX_ApplyUnLockedIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" compoundref="_m_i_e_s___indexing_8ipf" startline="583" endline="645">IDX_HandleIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9b939976bd847ba6c4d69ccaec5e40a0" compoundref="_m_i_e_s___indexing_8ipf" startline="59" endline="92">IDX_IndexingDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab2cdf31f969cb7681d4c106431e5f932" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="137" endline="145">RA_GetTotalNumberOfSweepsLowLev</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave IDX_GetStimsets</definition>
+        <argsstring>(string device, variable channelIdx, variable channelType)</argsstring>
+        <name>IDX_GetStimsets</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelIdx</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Extract the list of stimsets from the control user data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="540" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="540" bodyend="552"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac0cbac1a226021573efbf6038e771951" compoundref="_m_i_e_s___constants_8ipf" startline="1296">USER_DATA_MENU_EXP</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" compoundref="_m_i_e_s___indexing_8ipf" startline="497" endline="525">IDX_DetIfCountIsAtSetBorder</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1afb2ba7be3d22f4683c2b708fc685b97f" compoundref="_m_i_e_s___indexing_8ipf" startline="330" endline="367">IDX_GetSetsInRange</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3947c87ee6e52bf72479cb9cf9433bf8" compoundref="_m_i_e_s___indexing_8ipf" startline="32" endline="56">IDX_ResetStartFinishForIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" compoundref="_m_i_e_s___indexing_8ipf" startline="447" endline="468">IDX_TotalIndexingListSteps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" compoundref="_m_i_e_s___indexing_8ipf" startline="470" endline="495">IDX_UnlockedIndexingStepNo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a176f1d7e2f631952b065471281b89392" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string IDX_GetSingleStimset</definition>
+        <argsstring>(WaveText listWave, variable idx, variable allowNone=defaultValue)</argsstring>
+        <name>IDX_GetSingleStimset</name>
+        <param>
+          <type>WaveText</type>
+          <declname>listWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>allowNone</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the stimset from the list of stimsets returned by <ref refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" kindref="member">IDX_GetStimsets()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>listWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list of stim sets returned by <ref refid="_m_i_e_s___indexing_8ipf_1a2a627a00618ee9646406ff20b139e7ab" kindref="member">IDX_GetStimsets()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>idx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>0-based index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>allowNone</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Return the <computeroutput>NONE</computeroutput> stimset for idx <computeroutput>0</computeroutput>. Not allowed during DAQ. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="561" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="561" bodyend="581"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1abc713e6baebb67f89d4c9a1269553450" compoundref="_m_i_e_s___indexing_8ipf" startline="497" endline="525">IDX_DetIfCountIsAtSetBorder</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1ab4ab9c4c5f105f1991898e33c02a60e1" compoundref="_m_i_e_s___indexing_8ipf" startline="97" endline="135">IDX_IndexSingleChannel</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3947c87ee6e52bf72479cb9cf9433bf8" compoundref="_m_i_e_s___indexing_8ipf" startline="32" endline="56">IDX_ResetStartFinishForIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9c22cf0d2076436af174a2a5305ac1f8" compoundref="_m_i_e_s___indexing_8ipf" startline="155" endline="191">IDX_StepsInSetWithMaxSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a2c157db5f1b911efa9432e004bc651ca" compoundref="_m_i_e_s___indexing_8ipf" startline="447" endline="468">IDX_TotalIndexingListSteps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" compoundref="_m_i_e_s___indexing_8ipf" startline="470" endline="495">IDX_UnlockedIndexingStepNo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___indexing_8ipf_1a5fffdf6cec589985f96d001014516e4b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IDX_HandleIndexing</definition>
+        <argsstring>(string device)</argsstring>
+        <name>IDX_HandleIndexing</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" line="583" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf" bodystart="583" bodyend="645"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" compoundref="_m_i_e_s___indexing_8ipf" startline="407" endline="445">IDX_ApplyUnLockedIndexing</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a9b939976bd847ba6c4d69ccaec5e40a0" compoundref="_m_i_e_s___indexing_8ipf" startline="59" endline="92">IDX_IndexingDoIt</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>IDX</bold> Indexing related functionality </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Indexing.ipf"/>
+  </compounddef>
+</doxygen>

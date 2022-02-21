@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="namespace_compilation_tester" kind="namespace" language="C++">
+    <compoundname>CompilationTester</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespace_compilation_tester_1aa979c9f28187fb5ebfa930d210eac733" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CompilationTester::TestCompilation</definition>
+        <argsstring>()</argsstring>
+        <name>TestCompilation</name>
+        <briefdescription>
+<para>Perform compilation testing. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function should be called by a Function named <computeroutput>run</computeroutput> without arguments in ProcGlobal, see <ulink url="https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#automate-test-runs">https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#automate-test-runs</ulink>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" line="29" column="10" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" bodystart="29" bodyend="67"/>
+        <references refid="namespace_compilation_tester_1a9bb3e5b4519964fe7e41eb6f2fd3c8cc" compoundref="_compilation_tester_utils_8ipf" startline="9" endline="39">LoadTextFile</references>
+        <references refid="namespace_compilation_tester_1adcae1024c057f10ccbbfeae8b4b697bc" compoundref="_compilation_tester_utils_8ipf" startline="106" endline="118">NormalizeToEOL</references>
+        <references refid="namespace_compilation_tester_1a5397c4e225ff64f93c0a7d758ead5efe" compoundref="_compilation_tester_8ipf" startline="69" endline="99">TestCompilationOnFile</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a5397c4e225ff64f93c0a7d758ead5efe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CompilationTester::TestCompilationOnFile</definition>
+        <argsstring>(string includeFile, variable useDefine=defaultValue, string define=defaultValue)</argsstring>
+        <name>TestCompilationOnFile</name>
+        <param>
+          <type>string</type>
+          <declname>includeFile</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>useDefine</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>define</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" line="69" column="10" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" bodystart="69" bodyend="99"/>
+        <references refid="namespace_compilation_tester_1a6de1e283f32aad2f709498699db3a0c3" compoundref="_compilation_tester_utils_8ipf" startline="97" endline="102">IsEmpty</references>
+        <referencedby refid="namespace_compilation_tester_1aa979c9f28187fb5ebfa930d210eac733" compoundref="_compilation_tester_8ipf" startline="29" endline="67">TestCompilation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a9a789680ce92de3d825048bdc0992f99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CompilationTester::EvaluateResult</definition>
+        <argsstring>()</argsstring>
+        <name>EvaluateResult</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" line="101" column="10" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" bodystart="101" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a9bb3e5b4519964fe7e41eb6f2fd3c8cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CompilationTester::LoadTextFile</definition>
+        <argsstring>(string filePath, variable required=defaultValue)</argsstring>
+        <name>LoadTextFile</name>
+        <param>
+          <type>string</type>
+          <declname>filePath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>required</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Load the contents of the given file into data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>absolute path to a text file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>required</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] decides if we abort on a failure to load the file (true) or return an empty string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="9" column="8" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="9" bodyend="39"/>
+        <referencedby refid="namespace_compilation_tester_1aa979c9f28187fb5ebfa930d210eac733" compoundref="_compilation_tester_8ipf" startline="29" endline="67">TestCompilation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a72f2002ad856f225ff0099440a342fd7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string CompilationTester::GetNVARAsString</definition>
+        <argsstring>(dfref dfr, string globalVarName, variable initialValue=defaultValue)</argsstring>
+        <name>GetNVARAsString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>globalVarName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>initialValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the full path to a global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>location of the global variable, must exist </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>globalVarName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the global variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>initial value of the variable. Will only be used if it is created. 0 by default. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="47" column="15" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="47" bodyend="64"/>
+        <referencedby refid="namespace_compilation_tester_1a57d7c639b49b329f5be4a56f95aff6b0" compoundref="_compilation_tester_utils_8ipf" startline="74" endline="78">GetCompilationState</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a57d7c639b49b329f5be4a56f95aff6b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CompilationTester::GetCompilationState</definition>
+        <argsstring>()</argsstring>
+        <name>GetCompilationState</name>
+        <briefdescription>
+<para>Return the compilation state variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>-NaN: Not initialized -0x0: Initialization done -0x1: input.txt could be read from disk and has contents -0x2: Compilation was started -0x4: Compilation was successfull -0x8: Compilation was <emphasis>not</emphasis> successfull (Requires Igor Pro 7, build 30097) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="74" column="8" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="74" bodyend="78"/>
+        <references refid="namespace_compilation_tester_1a72f2002ad856f225ff0099440a342fd7" compoundref="_compilation_tester_utils_8ipf" startline="47" endline="64">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a6e30997426d22887954ca54ff0a8ad80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CompilationTester::IsProcGlobalCompiled</definition>
+        <argsstring>()</argsstring>
+        <name>IsProcGlobalCompiled</name>
+        <briefdescription>
+<para>Return true if ProcGlobal is compiled, false if not. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Observed behaviour:<itemizedlist>
+<listitem><para>ProcGlobal is compiled after all independent modules</para>
+</listitem><listitem><para>FunctionInfo returns an empty string for a non existing function, but an error message if ProcGlobal is not compiled </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="86" column="10" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="86" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1a6de1e283f32aad2f709498699db3a0c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CompilationTester::IsEmpty</definition>
+        <argsstring>(string *str)</argsstring>
+        <name>IsEmpty</name>
+        <param>
+          <type>string *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Returns one if str is empty or null, zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>must not be a SVAR </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="97" column="11" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="97" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="function" id="namespace_compilation_tester_1adcae1024c057f10ccbbfeae8b4b697bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string CompilationTester::NormalizeToEOL</definition>
+        <argsstring>(string str, string eol)</argsstring>
+        <name>NormalizeToEOL</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>eol</declname>
+        </param>
+        <briefdescription>
+<para>Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (<computeroutput>\r</computeroutput>) or Unix EOLs (<computeroutput>\n</computeroutput>) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" line="106" column="8" bodyfile="/home/firma/devel/mies/tools/unit-testing/CompilationTesterUtils.ipf" bodystart="106" bodyend="118"/>
+        <referencedby refid="namespace_compilation_tester_1aa979c9f28187fb5ebfa930d210eac733" compoundref="_compilation_tester_8ipf" startline="29" endline="67">TestCompilation</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf" line="2" column="1"/>
+  </compounddef>
+</doxygen>

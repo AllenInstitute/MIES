@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="dir_4eeb864c4eec08c7d6b9d3b0352cfdde" kind="dir">
+    <compoundname>tools</compoundname>
+    <innerdir refid="dir_a9b4a30e91a03659d36dd84294c3a1a0">unit-testing</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/tools/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,4 @@
+Struct ElementIdentifiers
+=========================
+
+.. doxygenstruct:: ElementIdentifiers

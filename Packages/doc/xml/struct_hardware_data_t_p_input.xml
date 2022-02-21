@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_hardware_data_t_p_input" kind="struct" language="C++" prot="public">
+    <compoundname>HardwareDataTPInput</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::hardwareType</definition>
+        <argsstring></argsstring>
+        <name>hardwareType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="327" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="326" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a6ea61cf897b46890249f1334d2c7b083" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1605" endline="1652">DC_CheckIfDataWaveHasBorderVals</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1acf90de23632d9c1dfd2eb04252b70945" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::numDACs</definition>
+        <argsstring></argsstring>
+        <name>numDACs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="328" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="328" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a94e9df2c99dab7afcc5f4569aa500ddb" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::numActiveChannels</definition>
+        <argsstring></argsstring>
+        <name>numActiveChannels</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="328" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="328" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a22b2f85dc7670f7797632bb15ad20793" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::numberOfRows</definition>
+        <argsstring></argsstring>
+        <name>numberOfRows</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="329" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="329" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1ae7b9c044081637bcbba877ba389ccb82" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::samplingInterval</definition>
+        <argsstring></argsstring>
+        <name>samplingInterval</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="330" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="330" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2004" endline="2041">DC_ReturnTotalLengthIncrease</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a73bd7a34597a7b5acdaa2622f349de77" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE HardwareDataTPInput::DAGain</definition>
+        <argsstring></argsstring>
+        <name>DAGain</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="331" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="331" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1aac9a5b9494197810e70871004872506c" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE HardwareDataTPInput::DACAmpTP</definition>
+        <argsstring></argsstring>
+        <name>DACAmpTP</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="331" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="331" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a3028ec7b9a930708a454d44c30e9e838" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::testPulseLength</definition>
+        <argsstring></argsstring>
+        <name>testPulseLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="332" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="332" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_hardware_data_t_p_input_1a115a445b8e28f3aa1d0875267004b48b" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable HardwareDataTPInput::baselineFrac</definition>
+        <argsstring></argsstring>
+        <name>baselineFrac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="332" column="26" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="332" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" kindref="member">CA_HardwareDataTPKey()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="326" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="326" bodyend="333"/>
+    <listofallmembers>
+      <member refid="struct_hardware_data_t_p_input_1a115a445b8e28f3aa1d0875267004b48b" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>baselineFrac</name></member>
+      <member refid="struct_hardware_data_t_p_input_1aac9a5b9494197810e70871004872506c" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>DACAmpTP</name></member>
+      <member refid="struct_hardware_data_t_p_input_1a73bd7a34597a7b5acdaa2622f349de77" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>DAGain</name></member>
+      <member refid="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>hardwareType</name></member>
+      <member refid="struct_hardware_data_t_p_input_1a94e9df2c99dab7afcc5f4569aa500ddb" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>numActiveChannels</name></member>
+      <member refid="struct_hardware_data_t_p_input_1a22b2f85dc7670f7797632bb15ad20793" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>numberOfRows</name></member>
+      <member refid="struct_hardware_data_t_p_input_1acf90de23632d9c1dfd2eb04252b70945" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>numDACs</name></member>
+      <member refid="struct_hardware_data_t_p_input_1ae7b9c044081637bcbba877ba389ccb82" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>samplingInterval</name></member>
+      <member refid="struct_hardware_data_t_p_input_1a3028ec7b9a930708a454d44c30e9e838" prot="public" virt="non-virtual"><scope>HardwareDataTPInput</scope><name>testPulseLength</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

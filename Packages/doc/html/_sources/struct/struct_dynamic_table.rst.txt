@@ -1,0 +1,4 @@
+Struct DynamicTable
+===================
+
+.. doxygenstruct:: DynamicTable

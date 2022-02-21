@@ -1,0 +1,1265 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___global_string_and_variable_access_8ipf" kind="file" language="C++">
+    <compoundname>MIES_GlobalStringAndVariableAccess.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetNVARAsString</definition>
+        <argsstring>(dfref dfr, string globalVarName, variable initialValue=defaultValue)</argsstring>
+        <name>GetNVARAsString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>globalVarName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>initialValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the full path to a global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>location of the global variable, must exist </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>globalVarName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the global variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>initial value of the variable. Will only be used if it is created. 0 by default. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="56" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="56" bodyend="75"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="609" endline="611">GetAcquisitionState</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a340cd572f869c68ce9354427b0447a64" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="338" endline="342">GetActiveSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a5190903488649e2d5940a6b8808cb10d" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="320" endline="324">GetADChannelToMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a54af820805b9efce33341e1589a1a5b6" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="547" endline="551">GetAnalysisFuncErrorCounter</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ae68eae7cfaa4de156ebe4ed9db185afc" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="616" endline="618">GetBugCount</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3140c7906937c6db68bcbe3509a493f2" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="288" endline="292">GetCount</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3995463a9ceb8b57100e241758494c3d" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="278" endline="282">GetDAQDeviceID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a977c0d906793ae5b83121b4b7aa998c6" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="262" endline="266">GetDataAcqRunMode</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad13aa9dde4b64f4f9206189184624678" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="388" endline="392">GetFIFOFileRef</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="538" endline="542">GetFifoPosition</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="350" endline="353">GetInteractiveMode</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a47b2127eb761a93b3173750649d51e6e" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="381" endline="385">GetLastAcqHookCallTimeStamp</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a2bfb70c7d586c028ee74b562e50ec45f" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="556" endline="560">GetMaxIntertrialInterval</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ae7523e49e71070b7967e852de860103a" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="409" endline="413">GetNI_ADCTaskID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad6eee2a2453d6b076e93a4a53b7ea838" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="416" endline="420">GetNI_DACTaskID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3eb742074e91bee1e14795fa74bddf79" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="423" endline="427">GetNI_TTLTaskID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1af85dfbb96de6cfd70ee697292127050f" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="395" endline="399">GetNITestPulseCounter</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad16e4b6a70159e4fcd6590023c358faf" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="438" endline="441">GetNWBFileIDExport</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a80b492ffa4d8855cd95cba0aab5a3b0b" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="563" endline="565">GetPxPVersion</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a9d1b9f36e70528c2acf2d81aa53bda0a" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="570" endline="574">GetPxPVersionForAB</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a6494bab164731498576646da3642fb95" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="500" endline="504">GetRepeatedAcquisitionCycleID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aecec717a144ac72f66762779a3d93315" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="528" endline="531">GetRepeatedAcquisitionDuration</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3b58ecc1fbaf6cb120d054deb321e5ec" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="522" endline="525">GetRepeatedAcquisitionStart</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a8ecf48164e6bf6c4806d08138c253c74" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="509" endline="513">GetRepurposedSweepTime</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a63e1b626159a3a65c97e6749b45a97ac" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="493" endline="497">GetRNGSeed</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a8e90d941a596041dcda1b1ff37256c5c" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="432" endline="435">GetSessionStartTime</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c6a6b8df5388b983374b8bc7542f7a1" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="451" endline="454">GetSessionStartTimeReadBack</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4d53bf6535cf03bedaa49de8a2e1f480" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="592" endline="604">GetSettingsJSONid</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="311" endline="315">GetStopCollectionPoint</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a145904e1a098dc319d86e8d3620afcda" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="577" endline="581">GetSweepFormulaJSONid</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aad0de24fd30f41b4c108c3827f9da946" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="474" endline="477">GetTemporaryVar</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="628" endline="632">GetTestpulseCycleID</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a9aea77f2eb4da81cb026140e3193e9de" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="356" endline="360">GetTestpulseRunMode</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a633d413537112783083c8b428abf79fc" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="457" endline="461">GetThreadGroupIDFIFO</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetSVARAsString</definition>
+        <argsstring>(dfref dfr, string globalStrName, string initialValue=defaultValue)</argsstring>
+        <name>GetSVARAsString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>globalStrName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>initialValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the full path to a global string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>location of the global string, must exist </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>globalStrName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the global string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>initial value of the string. Will only be used if it is created. null by default. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="83" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="83" bodyend="102"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3757e1cc55dc87c63381fe8c346a789a" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="271" endline="275">GetFollowerList</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a739671684c1e57c2ab2c9901343330ee" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="374" endline="378">GetITCDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a289b0a1d7414d8eea85391a887528c3e" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="295" endline="299">GetLockedDevices</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="131" endline="141">GetMiesVersion</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aa0babb364f77c7e305c3834210f488fe" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="402" endline="406">GetNI_AISetup</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ab16b2a84848f3df29af5b9db1b5071d1" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="365" endline="369">GetNIDeviceList</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c7707d59a5652bd1c19362c904c51ae" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="444" endline="447">GetNWBFilePathExport</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a96404019e0c7b0aad0655cb1ba7c87df" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="623" endline="625">GetNWBOverrideHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a5fb485e045a498749fc3c1c9f1c211e9" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="516" endline="519">GetRepeatedAcquisitionFuncList</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a0257840920250c017401be79ecb53e5e" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="328" endline="331">GetRunningSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ac5bcdef1b72817fc268f27a68a4c76ed" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="584" endline="587">GetSweepFormulaParseErrorMessage</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aaa97b3849ccf0eb5e0235501370800bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="466" endline="469">GetTemporaryString</referencedby>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a81285fc54f95db40c79e7e3c831051c2" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="302" endline="306">GetUserComment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ROVar</definition>
+        <argsstring>(string path)</argsstring>
+        <name>ROVar</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to get read-only access to a global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>absolute path to a global variable </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="107" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="107" bodyend="114"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a360ca6c03fa34be960a2273574ec9433" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="183" endline="203">DQ_StopDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ROStr</definition>
+        <argsstring>(string path)</argsstring>
+        <name>ROStr</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to get read-only access to a global string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>absolute path to a global string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="119" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="119" bodyend="126"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a984517a408afb32d11abe6a5b5525014" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2317" endline="2365">AB_ScanFolder</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a457f2f9d1bbeae5aec69247581a31d03" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1926" endline="1947">DeviceHasUserComments</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a70381017ea450fa3c293aa03fc6fc03c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7127" endline="7139">GenerateJSONTemplateForUpload</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="247" endline="269">IgorStartOrNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af2a679d7f195c16967ab0c20cc6fdadb" compoundref="_m_i_e_s___menu_8ipf" startline="163" endline="199">MEN_CreateIssueOnGithub</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" compoundref="_m_i_e_s___menu_8ipf" startline="95" endline="148">MEN_OpenAboutDialog</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad66ea1519293474f173e0e5f9b7fdff9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="733" endline="741">NWB_GetExportedFileSize</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetMiesVersion</definition>
+        <argsstring>()</argsstring>
+        <name>GetMiesVersion</name>
+        <briefdescription>
+<para>Returns the full path to the mies-igor version string. Creating it when necessary. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Never ever write this string! </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="131" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="131" bodyend="141"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="160" endline="257">CreateMiesVersion</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ba2c4af364e94f911a59e642be6bc0c" compoundref="_m_i_e_s___constants_8ipf" startline="605">UNKNOWN_MIES_VERSION</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aa57bf494513fec75fd3bb98efd42845d" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2372" endline="2404">AB_OpenAnalysisBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a70381017ea450fa3c293aa03fc6fc03c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7127" endline="7139">GenerateJSONTemplateForUpload</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="247" endline="269">IgorStartOrNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af2a679d7f195c16967ab0c20cc6fdadb" compoundref="_m_i_e_s___menu_8ipf" startline="163" endline="199">MEN_CreateIssueOnGithub</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" compoundref="_m_i_e_s___menu_8ipf" startline="95" endline="148">MEN_OpenAboutDialog</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a692edf0e8819d31ac0f67630167ccc91" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string CreateMiesVersion</definition>
+        <argsstring>()</argsstring>
+        <name>CreateMiesVersion</name>
+        <briefdescription>
+<para>Return the version string for the mies-igor project. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The mies version looks like</para>
+<para><verbatim>/// Release_1.4_20170929-16-g497e7aa8
+/// Date and time of last commit: 2018-05-08T14:42:50+02:00
+/// Submodule status:
+/// 160000 6c47163858d99986b27c70f6226e8fca894ed5f7 0   Packages/IPNWB
+/// 160000 ed7e824a6e065e383ae31bb304383e13d7c7ccb5 0   Packages/ITCXOP2
+/// 160000 2bd259940cb332339ed3c82b74632f06c9b68a15 0   Packages/ZeroMQ
+/// 160000 657e9e8abdc92aa299301796d710a0a717da4ef8 0   Packages/unit-testing
+/// </verbatim> <verbatim>or #UNKNOWN_MIES_VERSION on error
+
+@returns the mies version 
+</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="160" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="160" bodyend="257"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a2d3e2b05a6ee62a27968d683de6dd153" compoundref="_i_p_n_w_b___utils_8ipf" startline="489" endline="496">FolderExists</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8986311194bf0486ce5ee66cb7e683d0" compoundref="_m_i_e_s___utilities_8ipf" startline="3673" endline="3684">GetSystemUserName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ba2c4af364e94f911a59e642be6bc0c" compoundref="_m_i_e_s___constants_8ipf" startline="605">UNKNOWN_MIES_VERSION</references>
+        <referencedby refid="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="131" endline="141">GetMiesVersion</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a977c0d906793ae5b83121b4b7aa998c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetDataAcqRunMode</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetDataAcqRunMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the absolute path to the variable <computeroutput>runMode</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The variable holds one of <ref refid="_m_i_e_s___constants_8ipf_1DAQRunModes" kindref="member">DAQRunModes</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="262" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="262" bodyend="266"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a360ca6c03fa34be960a2273574ec9433" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="183" endline="203">DQ_StopDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3757e1cc55dc87c63381fe8c346a789a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFollowerList</definition>
+        <argsstring>(string leadPanel)</argsstring>
+        <name>GetFollowerList</name>
+        <param>
+          <type>string</type>
+          <declname>leadPanel</declname>
+        </param>
+        <briefdescription>
+<para>Return the list of follower devices of a lead device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___mies_utilities_8ipf_1a5b8c5714c062fa8e642d7d54248da817" kindref="member">GetListofLeaderAndPossFollower()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="271" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="271" bodyend="275"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3995463a9ceb8b57100e241758494c3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetDAQDeviceID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetDAQDeviceID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the absolute path to the device ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="278" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="278" bodyend="282"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3140c7906937c6db68bcbe3509a493f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetCount</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetCount</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the absolute path to the global variable <computeroutput>count</computeroutput> storing the number of data acquisition cycles performed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Count equals zero on the first sweep. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="288" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="288" bodyend="292"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a289b0a1d7414d8eea85391a887528c3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetLockedDevices</definition>
+        <argsstring>()</argsstring>
+        <name>GetLockedDevices</name>
+        <briefdescription>
+<para>Returns the list of locked devices. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="295" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="295" bodyend="299"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a81285fc54f95db40c79e7e3c831051c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetUserComment</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetUserComment</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the absolute path to the user comment string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="302" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="302" bodyend="306"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a457f2f9d1bbeae5aec69247581a31d03" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1926" endline="1947">DeviceHasUserComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetStopCollectionPoint</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetStopCollectionPoint</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the stop collection point, this is a <emphasis>length</emphasis>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e" kindref="member">GetFifoPosition()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="311" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="311" bodyend="315"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a3e8bcdfc89fa981f432d8d2235e47570" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="784" endline="808">SCOPE_ITC_AdjustFIFOPos</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="699" endline="776">SCOPE_ITC_UpdateOscilloscope</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="637" endline="697">SCOPE_NI_UpdateOscilloscope</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a5190903488649e2d5940a6b8808cb10d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetADChannelToMonitor</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetADChannelToMonitor</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the ADC to monitor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the first actice AD channel in DAQDataWave and DAQConfigWave. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="320" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="320" bodyend="324"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a0257840920250c017401be79ecb53e5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRunningSingleDevice</definition>
+        <argsstring>()</argsstring>
+        <name>GetRunningSingleDevice</name>
+        <briefdescription>
+<para>Return global device for background tasks. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000019"><xreftitle>Todo</xreftitle><xrefdescription><para>remove and use background struct members for the deviceID and GetDeviceMapping instead </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="328" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="328" bodyend="331"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a340cd572f869c68ce9354427b0447a64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetActiveSetCount</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetActiveSetCount</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the active set count. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Active set count keeps track of how many steps of the largest currently selected set on all active channels still have to be done. Not counting the currently acquiring sweep. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="338" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="338" bodyend="342"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1dfa0b59fdb91a14432358efe1e17baf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetInteractiveMode</definition>
+        <argsstring>()</argsstring>
+        <name>GetInteractiveMode</name>
+        <briefdescription>
+<para>Return the interactive mode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>By default MIES operates in interactive mode (1) in the main thread and in non-interactive mode in preemptive threads. The user can change that to non-interactive mode where all dialog/popups etc. are avoided and replaced with sensible defaults. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="350" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="350" bodyend="353"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___input_dialog_8ipf_1ad1a2a30f660686bf0fe2b1e9b845caf8" compoundref="_m_i_e_s___input_dialog_8ipf" startline="26" endline="76">ID_AskUserForSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9aea77f2eb4da81cb026140e3193e9de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetTestpulseRunMode</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetTestpulseRunMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the absolute path to the testpulse running modes, holds one of <ref refid="_m_i_e_s___constants_8ipf_1TestPulseRunModes" kindref="member">TestPulseRunModes</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="356" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="356" bodyend="360"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a408ee887d959b1a5597c1c8faf49b1b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4139" endline="4159">DAP_AdaptAutoTPColorAndDependent</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ab16b2a84848f3df29af5b9db1b5071d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNIDeviceList</definition>
+        <argsstring>()</argsstring>
+        <name>GetNIDeviceList</name>
+        <briefdescription>
+<para>Returns NI device list. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Internal use only, prefer <ref refid="_m_i_e_s___d_a_ephys_8ipf_1acc3b5391210c9e24aa924c2d01af32f6" kindref="member">DAP_GetNIDeviceList()</ref> instead. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="365" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="365" bodyend="369"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a739671684c1e57c2ab2c9901343330ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetITCDeviceList</definition>
+        <argsstring>()</argsstring>
+        <name>GetITCDeviceList</name>
+        <briefdescription>
+<para>Returns ITC device list. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Internal use only, prefer <ref refid="_m_i_e_s___d_a_ephys_8ipf_1ad912d8cd4f901587d1fb7ff369c857d2" kindref="member">DAP_GetITCDeviceList()</ref> instead. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="374" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="374" bodyend="378"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a47b2127eb761a93b3173750649d51e6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetLastAcqHookCallTimeStamp</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetLastAcqHookCallTimeStamp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the last time stamp HW_NI_RepeatAcqHook was called. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="381" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="381" bodyend="385"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad13aa9dde4b64f4f9206189184624678" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFIFOFileRef</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetFIFOFileRef</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns FIFO file reference. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="388" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="388" bodyend="392"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1af85dfbb96de6cfd70ee697292127050f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNITestPulseCounter</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetNITestPulseCounter</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns TestPulse Counter for Background Task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="395" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="395" bodyend="399"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aa0babb364f77c7e305c3834210f488fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNI_AISetup</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetNI_AISetup</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the current NI setup string for analog in through DAQmx_Scan. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="402" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="402" bodyend="406"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae7523e49e71070b7967e852de860103a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNI_ADCTaskID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetNI_ADCTaskID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ADC task ID set after DAQmx_Scan in HW_NI_StartAcq. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="409" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="409" bodyend="413"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad6eee2a2453d6b076e93a4a53b7ea838" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNI_DACTaskID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetNI_DACTaskID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the DAC task ID set after DAQmx_WaveFormGen in HW_NI_PrepareAcq. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="416" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="416" bodyend="420"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3eb742074e91bee1e14795fa74bddf79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNI_TTLTaskID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetNI_TTLTaskID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="423" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="423" bodyend="427"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a8e90d941a596041dcda1b1ff37256c5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetSessionStartTime</definition>
+        <argsstring>()</argsstring>
+        <name>GetSessionStartTime</name>
+        <briefdescription>
+<para>Return the experiment session start time in NWB-speech. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the time when the last device was locked. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="432" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="432" bodyend="435"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1a161020f996c7f5df8e01376a4ece2c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5380" endline="5382">GetNWBFolder</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ad16e4b6a70159e4fcd6590023c358faf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNWBFileIDExport</definition>
+        <argsstring>()</argsstring>
+        <name>GetNWBFileIDExport</name>
+        <briefdescription>
+<para>Return the HDF5 file identifier for the NWB export. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="438" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="438" bodyend="441"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1a161020f996c7f5df8e01376a4ece2c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5380" endline="5382">GetNWBFolder</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c7707d59a5652bd1c19362c904c51ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNWBFilePathExport</definition>
+        <argsstring>()</argsstring>
+        <name>GetNWBFilePathExport</name>
+        <briefdescription>
+<para>Return the absolute path to the file for NWB export. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="444" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="444" bodyend="447"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1a161020f996c7f5df8e01376a4ece2c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5380" endline="5382">GetNWBFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a984517a408afb32d11abe6a5b5525014" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2317" endline="2365">AB_ScanFolder</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad66ea1519293474f173e0e5f9b7fdff9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="733" endline="741">NWB_GetExportedFileSize</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a1c6a6b8df5388b983374b8bc7542f7a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetSessionStartTimeReadBack</definition>
+        <argsstring>()</argsstring>
+        <name>GetSessionStartTimeReadBack</name>
+        <briefdescription>
+<para>Return the experiment session start time in NWB-speech as read back from the NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="451" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="451" bodyend="454"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1a161020f996c7f5df8e01376a4ece2c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5380" endline="5382">GetNWBFolder</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a633d413537112783083c8b428abf79fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetThreadGroupIDFIFO</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetThreadGroupIDFIFO</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the thread group ID for the FIFO monitor/resetting daemon. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="457" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="457" bodyend="461"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aaa97b3849ccf0eb5e0235501370800bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetTemporaryString</definition>
+        <argsstring>()</argsstring>
+        <name>GetTemporaryString</name>
+        <briefdescription>
+<para>Return the absolute path to the temporary global string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Callers should always assume that this string contains garbage. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="466" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="466" bodyend="469"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a4d30efb5284afbc8c2906d44c52e5941" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5164" endline="5167">GetTempPath</references>
+        <referencedby refid="_m_i_e_s___gui_utilities_8ipf_1af8f8f1796a40ac3fff4dbcadb634ea5b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="2053" endline="2080">GetPopupMenuList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aad0de24fd30f41b4c108c3827f9da946" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetTemporaryVar</definition>
+        <argsstring>()</argsstring>
+        <name>GetTemporaryVar</name>
+        <briefdescription>
+<para>Return the absolute path to the temporary global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Callers should always assume that this variable contains garbage. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="474" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="474" bodyend="477"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a4d30efb5284afbc8c2906d44c52e5941" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5164" endline="5167">GetTempPath</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a63e1b626159a3a65c97e6749b45a97ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRNGSeed</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetRNGSeed</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the absolute path to the RNG seed value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This seed value can be used for deriving device dependent random numbers.</para>
+<para>Typical sequence:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   NVAR rngSeed = $GetRNGSeed(device)
+*   SetRandomSeed/BETR=1 rngSeed
+*   rngSeed += 1
+*   variable val = GetReproducibleRandonNumber()
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="493" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="493" bodyend="497"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a6494bab164731498576646da3642fb95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRepeatedAcquisitionCycleID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetRepeatedAcquisitionCycleID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the absolute path to the repeated acquisition cycle ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="500" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="500" bodyend="504"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a8ecf48164e6bf6c4806d08138c253c74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRepurposedSweepTime</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetRepurposedSweepTime</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the absolute path to the repurposed sweep time global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Units are seconds. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="509" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="509" bodyend="513"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a5fb485e045a498749fc3c1c9f1c211e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRepeatedAcquisitionFuncList</definition>
+        <argsstring>()</argsstring>
+        <name>GetRepeatedAcquisitionFuncList</name>
+        <briefdescription>
+<para>Return the list of functions to be executed after ITI in repeated acquisition. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="516" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="516" bodyend="519"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a3b58ecc1fbaf6cb120d054deb321e5ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRepeatedAcquisitionStart</definition>
+        <argsstring>()</argsstring>
+        <name>GetRepeatedAcquisitionStart</name>
+        <briefdescription>
+<para>Return the start time, in ticks, of the ITI cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="522" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="522" bodyend="525"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aecec717a144ac72f66762779a3d93315" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetRepeatedAcquisitionDuration</definition>
+        <argsstring>()</argsstring>
+        <name>GetRepeatedAcquisitionDuration</name>
+        <briefdescription>
+<para>Return the duration, in ticks, of the ITI cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="528" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="528" bodyend="531"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetFifoPosition</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetFifoPosition</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the current fifo position (a length) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Only valid if called during DAQ with DATA_ACQUISITION_MODE. This value is relative to first row of the rawDACWave, so an possible offset is already included in it. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="538" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="538" bodyend="542"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a54af820805b9efce33341e1589a1a5b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetAnalysisFuncErrorCounter</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetAnalysisFuncErrorCounter</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the error counter for the analysis function management. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Mainly used during testing to ensure that no RTE was thrown. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="547" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="547" bodyend="551"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a2bfb70c7d586c028ee74b562e50ec45f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetMaxIntertrialInterval</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetMaxIntertrialInterval</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the maximum ITI of all active sets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Only meaningful after preparing DAQ in <ref refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" kindref="member">DC_Configure()</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="556" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="556" bodyend="560"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a80b492ffa4d8855cd95cba0aab5a3b0b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetPxPVersion</definition>
+        <argsstring>()</argsstring>
+        <name>GetPxPVersion</name>
+        <briefdescription>
+<para>Return the version number of the Igor experiment. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="563" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="563" bodyend="565"/>
+        <references refid="_m_i_e_s___constants_8ipf_1aee8fa5f3d4f3b3a55107b0a357c6cf6a" compoundref="_m_i_e_s___constants_8ipf" startline="1245">EXPERIMENT_VERSION</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a9d1b9f36e70528c2acf2d81aa53bda0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetPxPVersionForAB</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>GetPxPVersionForAB</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Return the version number of the Igor experiment loaded into the analysis browser. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>experiment folder, </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2fa01d94d78e576fd292f64bd6a4e0e5" kindref="member">GetAnalysisExpFolder()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="570" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="570" bodyend="574"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a145904e1a098dc319d86e8d3620afcda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetSweepFormulaJSONid</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>GetSweepFormulaJSONid</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Return the JSON ID for the sweep formula. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="577" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="577" bodyend="581"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ac5bcdef1b72817fc268f27a68a4c76ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetSweepFormulaParseErrorMessage</definition>
+        <argsstring>()</argsstring>
+        <name>GetSweepFormulaParseErrorMessage</name>
+        <briefdescription>
+<para>Return the formula error message for the sweep formula. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="584" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="584" bodyend="587"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a544dfe94e7c47fb522ba2cd37a87291e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="682" endline="684">GetSweepFormulaPath</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a4d53bf6535cf03bedaa49de8a2e1f480" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetSettingsJSONid</definition>
+        <argsstring>()</argsstring>
+        <name>GetSettingsJSONid</name>
+        <briefdescription>
+<para>Return the JSON id of the settings file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Loads the stored settings on disc if required. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="592" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="592" bodyend="604"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae0c8bf2bf6773845518e3b7c68495493" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6733" endline="6746">GenerateSettingsDefaults</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a5916d98b9d69bfadfe61f396baa773b7" compoundref="_m_i_e_s___package_settings_8ipf" startline="34" endline="55">PS_ReadSettings</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8582e3e9b29f3bd46062bd6436567bbf" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6748" endline="6760">UpgradeSettings</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a7fe3a81d8e6ca7489f1c584d0daf3529" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetAcquisitionState</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetAcquisitionState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the path to the acquisition state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Holds one of <ref refid="_m_i_e_s___constants_8ipf_1AcquisitionStates" kindref="member">AcquisitionStates</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="609" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="609" bodyend="611"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a06e8df590ce432cd75aafd56cbcc4826" compoundref="_m_i_e_s___constants_8ipf" startline="534">AS_INACTIVE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="142" endline="182">AS_GetSweepNumber</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a34c1251e8dc233e7b965992970412e21" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="59" endline="107">ED_createTextNotes</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1ad28341f838398bdb4fccd26559f5301b" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="159" endline="203">ED_createWaveNotes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1ae68eae7cfaa4de156ebe4ed9db185afc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetBugCount</definition>
+        <argsstring>()</argsstring>
+        <name>GetBugCount</name>
+        <briefdescription>
+<para>Return the global bug count, incremented by Bug() </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Mostly used for testing. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="616" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="616" bodyend="618"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1a96404019e0c7b0aad0655cb1ba7c87df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetNWBOverrideHistoryAndLogFile</definition>
+        <argsstring>()</argsstring>
+        <name>GetNWBOverrideHistoryAndLogFile</name>
+        <briefdescription>
+<para>Temporary storage for IP history and logfile. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Used for reexporting from NWBv1 into NWBv2, see <ref refid="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c" kindref="member">AB_ReExport()</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="623" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="623" bodyend="625"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="83" endline="102">GetSVARAsString</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetTestpulseCycleID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>GetTestpulseCycleID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the absolute path to the test pulse cycle ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" line="628" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf" bodystart="628" bodyend="632"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="56" endline="75">GetNVARAsString</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper functions for accessing global variables and strings. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The functions <ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" kindref="member">GetNVARAsString()</ref> and <ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1adda663266b20accc016fcca9afdb3a76" kindref="member">GetSVARAsString()</ref> are static as they should not be used directly.</para>
+<para>Instead if you have a global variable named <computeroutput>iceCreamCounter</computeroutput> in <computeroutput>root:myfood</computeroutput> you would write in this file here a function like <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function/S GetIceCreamCounterAsVariable()
+*       return GetNVARAsString(createDFWithAllParents(&quot;root:myfood&quot;), &quot;iceCreamCounter&quot;)
+*   End
+*  </verbatim> and then use it in your code as <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function doStuff()
+*       NVAR iceCreamCounter = $GetIceCreamCounterAsVariable()
+* 
+*       iceCreamCounter += 1
+*   End
+*  </verbatim></para>
+<para>if you want to ensure that you only get read-only access you can use <ref refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" kindref="member">ROVar()</ref> as in</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   Function doStuffReadOnly()
+*       variable iceCreamCounter = ROVar(GetIceCreamCounterAsVariable())
+* 
+*       iceCreamCounter += 1
+*   End
+*  </verbatim></para>
+<para>this avoids accidental changes. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_GlobalStringAndVariableAccess.ipf"/>
+  </compounddef>
+</doxygen>

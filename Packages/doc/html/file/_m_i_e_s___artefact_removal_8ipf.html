@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_ArtefactRemoval.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Async.ipf" href="_m_i_e_s___async_8ipf.html" />
+    <link rel="prev" title="File MIES_AnalysisFunctions_PatchSeq.ipf" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___async_8ipf.html" title="File MIES_Async.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html" title="File MIES_AnalysisFunctions_PatchSeq.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_ArtefactRemoval.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-artefactremoval-ipf">
+<span id="id1"></span><h1>File MIES_ArtefactRemoval.ipf<a class="headerlink" href="#file-mies-artefactremoval-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>AR</strong> Functions related to artefact removal </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416AR_ComputeRanges5dfref8variable4wave">
+<span id="_CPPv316AR_ComputeRanges5dfref8variable4wave"></span><span id="_CPPv216AR_ComputeRanges5dfref8variable4wave"></span><span id="AR_ComputeRanges__dfref.variable.wave"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_ComputeRanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numericalValues</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AR_ComputeRanges5dfref8variable4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a free 2D wave with artefact positions and the corresponding DA channel from which it originated. </p>
+<p>Columns:<ul class="simple">
+<li><p>Artefact position [ms]</p></li>
+<li><p>DAC</p></li>
+<li><p>ADC</p></li>
+<li><p>Headstage </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414AR_UpdatePanel6string4wave5dfref">
+<span id="_CPPv314AR_UpdatePanel6string4wave5dfref"></span><span id="_CPPv214AR_UpdatePanel6string4wave5dfref"></span><span id="AR_UpdatePanel__string.wave.dfref"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a4b2b910de63417d8c95537b55c97b774"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_UpdatePanel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ranges</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414AR_UpdatePanel6string4wave5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AR_UpdateListBoxWave6string">
+<span id="_CPPv320AR_UpdateListBoxWave6string"></span><span id="_CPPv220AR_UpdateListBoxWave6string"></span><span id="AR_UpdateListBoxWave__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1aac252ba51ce1bb25c3452e5e9ae19e1c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_UpdateListBoxWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AR_UpdateListBoxWave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AR_RemoveTraces6string">
+<span id="_CPPv315AR_RemoveTraces6string"></span><span id="_CPPv215AR_RemoveTraces6string"></span><span id="AR_RemoveTraces__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a3d5f781622166aa348d60fb0523c4c5a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_RemoveTraces</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AR_RemoveTraces6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove the traces used for highlightning the to-be-removed ranges. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421AR_GetHighlightTraces6string">
+<span id="_CPPv321AR_GetHighlightTraces6string"></span><span id="_CPPv221AR_GetHighlightTraces6string"></span><span id="AR_GetHighlightTraces__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a01935ef3c2e7b808756aed3e39fd98a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_GetHighlightTraces</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421AR_GetHighlightTraces6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of the traces used for highlightning the to-be-removed ranges. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AR_HighlightArtefactsEntry6string">
+<span id="_CPPv326AR_HighlightArtefactsEntry6string"></span><span id="_CPPv226AR_HighlightArtefactsEntry6string"></span><span id="AR_HighlightArtefactsEntry__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a160e998cd36e22f7302df733aa274315"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_HighlightArtefactsEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AR_HighlightArtefactsEntry6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AR_HandleRanges6string8variable">
+<span id="_CPPv315AR_HandleRanges6string8variable"></span><span id="_CPPv215AR_HandleRanges6string8variable"></span><span id="AR_HandleRanges__string.variable"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1ad4da9733a1b02b83943dc23e2df467b2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_HandleRanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">removeRange</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AR_HandleRanges6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412AR_GetFolder6string">
+<span id="_CPPv312AR_GetFolder6string"></span><span id="_CPPv212AR_GetFolder6string"></span><span id="AR_GetFolder__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a82b73f8f1bcc598abcfdecfca609a44b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_GetFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412AR_GetFolder6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the datafolder reference to the folder storing the listbox wave and the artefact data wave. </p>
+<p>Requires the user data <code class="docutils literal notranslate"><span class="pre">PANEL_FOLDER</span></code> of the external artefact removal panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AR_GetSweepFolder6string">
+<span id="_CPPv317AR_GetSweepFolder6string"></span><span id="_CPPv217AR_GetSweepFolder6string"></span><span id="AR_GetSweepFolder__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1aec48a545360bac218e27d81bca9f803d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_GetSweepFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AR_GetSweepFolder6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the datafolder reference to the folder storing the single 1D sweep waves. </p>
+<p>Requires the user data <code class="docutils literal notranslate"><span class="pre">AR_SWEEPFOLDER</span></code> of the external artefact removal panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AR_SetSweepFolder6string5dfref">
+<span id="_CPPv317AR_SetSweepFolder6string5dfref"></span><span id="_CPPv217AR_SetSweepFolder6string5dfref"></span><span id="AR_SetSweepFolder__string.dfref"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1ac68a6ba58bc17c2d95ccd981d9a29d4e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_SetSweepFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AR_SetSweepFolder6string5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Updates the <code class="docutils literal notranslate"><span class="pre">AR_SWEEPFOLDER</span></code> user data of the artefact removal panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AR_MainListBoxProcP15WMListboxAction">
+<span id="_CPPv318AR_MainListBoxProcP15WMListboxAction"></span><span id="_CPPv218AR_MainListBoxProcP15WMListboxAction"></span><span id="AR_MainListBoxProc__WMListboxActionP"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a600594e0b612fa9c11119b273323e944"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_MainListBoxProc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMListboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AR_MainListBoxProcP15WMListboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AR_SetVarProcCutoffLengthP19WMSetVariableAction">
+<span id="_CPPv325AR_SetVarProcCutoffLengthP19WMSetVariableAction"></span><span id="_CPPv225AR_SetVarProcCutoffLengthP19WMSetVariableAction"></span><span id="AR_SetVarProcCutoffLength__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a6c8fdb52337d45e35143b8fd392c8670"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_SetVarProcCutoffLength</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMSetVariableAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sva</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AR_SetVarProcCutoffLengthP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AR_ButtonProc_RemoveRangesP14WMButtonAction">
+<span id="_CPPv326AR_ButtonProc_RemoveRangesP14WMButtonAction"></span><span id="_CPPv226AR_ButtonProc_RemoveRangesP14WMButtonAction"></span><span id="AR_ButtonProc_RemoveRanges__WMButtonActionP"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1ad9e73cb019625872cdb057d7f19e3aa8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_ButtonProc_RemoveRanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AR_ButtonProc_RemoveRangesP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AR_UpdateTracesIfReq6string5dfref8variable">
+<span id="_CPPv320AR_UpdateTracesIfReq6string5dfref8variable"></span><span id="_CPPv220AR_UpdateTracesIfReq6string5dfref8variable"></span><span id="AR_UpdateTracesIfReq__string.dfref.variable"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_UpdateTracesIfReq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepFolder</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AR_UpdateTracesIfReq6string5dfref8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AR_CheckProc_UpdateP16WMCheckboxAction">
+<span id="_CPPv319AR_CheckProc_UpdateP16WMCheckboxAction"></span><span id="_CPPv219AR_CheckProc_UpdateP16WMCheckboxAction"></span><span id="AR_CheckProc_Update__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a3bc29c81c63acc549cd0655554827683"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_CheckProc_Update</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AR_CheckProc_UpdateP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411AR_IsActive6string">
+<span id="_CPPv311AR_IsActive6string"></span><span id="_CPPv211AR_IsActive6string"></span><span id="AR_IsActive__string"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1a432ff11ee42a87b7ae89b9691a1dac7c"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_IsActive</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AR_IsActive6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>checks if AR is active. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419AR_MIN_RANGE_FACTOR">
+<span id="_CPPv319AR_MIN_RANGE_FACTOR"></span><span id="_CPPv219AR_MIN_RANGE_FACTOR"></span><span id="AR_MIN_RANGE_FACTOR__doubleC"></span><span class="target" id="_m_i_e_s___artefact_removal_8ipf_1aaa0217550e931560066708d88d2d4e52"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AR_MIN_RANGE_FACTOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.1</span></span><a class="headerlink" href="#_CPPv419AR_MIN_RANGE_FACTOR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html"
+                          title="previous chapter">File MIES_AnalysisFunctions_PatchSeq.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___async_8ipf.html"
+                          title="next chapter">File MIES_Async.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___async_8ipf.html" title="File MIES_Async.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html" title="File MIES_AnalysisFunctions_PatchSeq.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_ArtefactRemoval.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

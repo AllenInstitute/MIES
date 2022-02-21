@@ -1,0 +1,1323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___logbook_viewer_8ipf" kind="file" language="C++">
+    <compoundname>MIES_LogbookViewer.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a8290672b21c2d12b62afafbb453a4587" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME</definition>
+        <argsstring></argsstring>
+        <name>LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME</name>
+        <initializer>= &quot;Relative time [s]&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1aacb984a7a3c5436ef3d65f6812c09205" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string LABNOTEBOOK_BOTTOM_AXIS_TIME</definition>
+        <argsstring></argsstring>
+        <name>LABNOTEBOOK_BOTTOM_AXIS_TIME</name>
+        <initializer>= &quot;Timestamp (a. u.)&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1ab78228525eb2254073973d29b703e635" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string LABNOTEBOOK_BOTTOM_AXIS_SWEEP</definition>
+        <argsstring></argsstring>
+        <name>LABNOTEBOOK_BOTTOM_AXIS_SWEEP</name>
+        <initializer>= &quot;Sweep Number (a. u.)&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a8de67a2caea9fa1310240149c7690f88" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_VALUES_WAVE</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_VALUES_WAVE</name>
+        <initializer>= &quot;values&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="16" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a20ecf60ccb367826741d5a38266b635a" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_KEYS_WAVE</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_KEYS_WAVE</name>
+        <initializer>= &quot;keys&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="17" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a0f7571daef57a6a347bb1f2b0bd9d44e" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_HEADSTAGE</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_HEADSTAGE</name>
+        <initializer>= &quot;headstage&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="18" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a5c1ba75396b9501fad0667f5f66b5f11" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_KEY</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_KEY</name>
+        <initializer>= &quot;key&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="19" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1aa424c3e666bb11ce8e5573a3e2c1ded0" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_ISTEXT</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_ISTEXT</name>
+        <initializer>= &quot;text&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="20" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___logbook_viewer_8ipf_1a19d9e88cf2241faf8cc3deb992c161a0" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string LBV_UD_YAXIS</definition>
+        <argsstring></argsstring>
+        <name>LBV_UD_YAXIS</name>
+        <initializer>= &quot;yaxis&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="21" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LBV_GetSettingsHistoryPanel</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetSettingsHistoryPanel</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="23" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="23" bodyend="26"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3e68713c505afef4868fad371321de8b" compoundref="_m_i_e_s___constants_8ipf" startline="36">EXT_PANEL_SETTINGSHISTORY</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a1875f962a9c7410f6ef51eec893b19dd" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1472" endline="1480">BSP_DynamicSettingsHistory</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a4c4d89498fdf5ddba75a80a593b184a6" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="179" endline="226">BSP_DynamicStartupSettings</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a6e69ba8b13be479c6f5589f2bcb83330" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1495" endline="1506">BSP_UnHideSettingsHistory</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a572991c79778e7b4146b78725214f19f" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1483" endline="1493">BSP_UnsetDynamicSettingsHistory</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aea2116e83cfad4c04c22bd8607f8f1eb" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="255" endline="276">BSP_UnsetDynamicStartupSettingsOfDataBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136" compoundref="_m_i_e_s___data_browser_8ipf" startline="40" endline="242">DB_ResetAndStoreCurrentDBPanel</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a187a1c29c3c7b1551c9962a5dcdd68b4" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="179" endline="202">LBV_CloseSettingsHistoryHook</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a8ccb2fe03ff16d90fefc10cd3ce819d4" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="329" endline="359">LBV_GetAllDevicesForExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a947af2a3c5c9d148a736baff30ca2947" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="33" endline="36">LBV_GetDescriptionNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1aa08576fd4e92cad2b2d58e1f418d847b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="154" endline="176">LBV_GetTPStorageLocation</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1aa2085a8118e07903e090a7113479a433" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1089" endline="1128">LBV_PlotAllAnalysisFunctionLBNKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a3b3a8b8fab8a951136fd278cdc7081cc" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="965" endline="989">LBV_SelectExperimentAndDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LBV_GetLabNoteBookGraph</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetLabNoteBookGraph</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="28" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="28" bodyend="31"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a33772ce2f8a2dccf417641e0612960ae" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="77" endline="88">BSP_InitPanel</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af9da26410e7772a54ad822b99fdcd700" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="215" endline="226">LBV_ButtonProc_SwitchXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a91189621085ac3f7ff3fe3a3e7a75a85" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="228" endline="249">LBV_PopMenuProc_LabNotebookAndResults</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac9f0d47494575e68b6259637286f22a2" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="299" endline="318">LBV_PopMenuProc_TPStorage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a947af2a3c5c9d148a736baff30ca2947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LBV_GetDescriptionNotebook</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetDescriptionNotebook</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="33" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="33" bodyend="36"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136" compoundref="_m_i_e_s___data_browser_8ipf" startline="40" endline="242">DB_ResetAndStoreCurrentDBPanel</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave LBV_PopupExtFormatEntries</definition>
+        <argsstring>(WaveTextOrNull entries)</argsstring>
+        <name>LBV_PopupExtFormatEntries</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>entries</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="38" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="38" bodyend="44"/>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a07bf80a6f54273060e2d918f8ee2068e" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="656" endline="717">PEXT_GenerateSubMenuNames</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a942aabfa8f8a0458d71c695c67372f6d" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="577" endline="650">PEXT_SplitToSubMenus</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abaa250be247beec3a2db80f3b4fc78a5" compoundref="_m_i_e_s___constants_8ipf" startline="1392">PEXT_SUBSPLIT_ALPHA</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1afc47510bbc8a47247de7b01855fcd035" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="60" endline="72">LBV_PopupExtGetLBKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a1f07f6a23a73f7aabf471abef02c7b83" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="75" endline="87">LBV_PopupExtGetResultsKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1add6e9d3012a816a756e6e285e946aa26" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="47" endline="57">LBV_PopupExtGetTPStorageKeys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1add6e9d3012a816a756e6e285e946aa26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LBV_PopupExtGetTPStorageKeys</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_PopupExtGetTPStorageKeys</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Returns the list of TPStorage keys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="47" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="47" bodyend="57"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a36a3152f29569a6db473c9fb20031e4e" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="128" endline="151">LBV_GetTPStorageEntries</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa08576fd4e92cad2b2d58e1f418d847b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="154" endline="176">LBV_GetTPStorageLocation</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="38" endline="44">LBV_PopupExtFormatEntries</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1afc47510bbc8a47247de7b01855fcd035" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LBV_PopupExtGetLBKeys</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_PopupExtGetLBKeys</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Returns the list of LNB keys for the settings history window menu. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="60" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="60" bodyend="72"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a443155ae8852df2f0f755742f9c4f1c9" compoundref="_m_i_e_s___constants_8ipf" startline="1580">LBN_NUMERICAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1add1de29832e949e102bb3d3a9c478f90" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="90" endline="107">LBV_GetAllLogbookKeys</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="38" endline="44">LBV_PopupExtFormatEntries</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a1f07f6a23a73f7aabf471abef02c7b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LBV_PopupExtGetResultsKeys</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_PopupExtGetResultsKeys</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Returns the list of results keys for the settings history window menu. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="75" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="75" bodyend="87"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a443155ae8852df2f0f755742f9c4f1c9" compoundref="_m_i_e_s___constants_8ipf" startline="1580">LBN_NUMERICAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1add1de29832e949e102bb3d3a9c478f90" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="90" endline="107">LBV_GetAllLogbookKeys</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="38" endline="44">LBV_PopupExtFormatEntries</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1add1de29832e949e102bb3d3a9c478f90" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave LBV_GetAllLogbookKeys</definition>
+        <argsstring>(WaveTextOrNull textualKeys, WaveTextOrNull numericalKeys)</argsstring>
+        <name>LBV_GetAllLogbookKeys</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>textualKeys</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>numericalKeys</declname>
+        </param>
+        <briefdescription>
+<para>Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="90" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="90" bodyend="107"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a26fae6af9b355505ee7d981df13cc3d8" compoundref="_m_i_e_s___utilities_8ipf" startline="3743" endline="3786">GetSetUnion</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a884937d2c209b86854d34d677414bb04" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="110" endline="125">LBV_GetLogbookKeys</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1aa2085a8118e07903e090a7113479a433" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1089" endline="1128">LBV_PlotAllAnalysisFunctionLBNKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1afc47510bbc8a47247de7b01855fcd035" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="60" endline="72">LBV_PopupExtGetLBKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a1f07f6a23a73f7aabf471abef02c7b83" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="75" endline="87">LBV_PopupExtGetResultsKeys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a884937d2c209b86854d34d677414bb04" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave LBV_GetLogbookKeys</definition>
+        <argsstring>(WaveTextOrNull keyWave)</argsstring>
+        <name>LBV_GetLogbookKeys</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>keyWave</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave with all keys in the logbook key wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="110" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="110" bodyend="125"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac46edb6d83c640daf2a28c88100b2fe2" compoundref="_m_i_e_s___utilities_8ipf" startline="3791" endline="3817">GetSetDifference</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0fd17adfb20604bd3d861a67c7638e11" compoundref="_m_i_e_s___constants_8ipf" startline="251">LABNOTEBOOK_KEYS_INITIAL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1add1de29832e949e102bb3d3a9c478f90" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="90" endline="107">LBV_GetAllLogbookKeys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a36a3152f29569a6db473c9fb20031e4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LBV_GetTPStorageEntries</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>LBV_GetTPStorageEntries</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Return a text wave with all entries from all TPStorage waves which are candidates for plotting. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="128" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="128" bodyend="151"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae885184983697f47f03ba4d1b0556816" compoundref="_m_i_e_s___utilities_8ipf" startline="5710" endline="5726">GrepTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a539d7a470dc4ca48c81eb4959f90b204" compoundref="_m_i_e_s___constants_8ipf" startline="55">TP_STORAGE_REGEXP</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1add6e9d3012a816a756e6e285e946aa26" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="47" endline="57">LBV_PopupExtGetTPStorageKeys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1aa08576fd4e92cad2b2d58e1f418d847b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref LBV_GetTPStorageLocation</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetTPStorageLocation</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Return the datafolder reference where TPStorage waves can be found. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="154" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="154" bodyend="176"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8c2338dccabb3055dd14f532926c120a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4702" endline="4705">GetAnalysisDeviceTestpulse</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac9f0d47494575e68b6259637286f22a2" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="299" endline="318">LBV_PopMenuProc_TPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1add6e9d3012a816a756e6e285e946aa26" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="47" endline="57">LBV_PopupExtGetTPStorageKeys</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a187a1c29c3c7b1551c9962a5dcdd68b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_CloseSettingsHistoryHook</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>LBV_CloseSettingsHistoryHook</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>panel close hook for settings history panel </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="179" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="179" bodyend="202"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a60f2b8c8ecd25f992f4bf354e2f229f8" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="573" endline="590">BSP_MainPanelButtonToggle</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ac896fff9808e848be6520033cebf49ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_ButtonProc_ClearGraph</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>LBV_ButtonProc_ClearGraph</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="204" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="204" bodyend="213"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1af9da26410e7772a54ad822b99fdcd700" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_ButtonProc_SwitchXAxis</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>LBV_ButtonProc_SwitchXAxis</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="215" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="215" bodyend="226"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a91189621085ac3f7ff3fe3a3e7a75a85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_PopMenuProc_LabNotebookAndResults</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>LBV_PopMenuProc_LabNotebookAndResults</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="228" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="228" bodyend="249"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ab0ee752ce69f5a9a44920ce0a417b1f3" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="254" endline="297">LBV_GetLogbookWavesForEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1aa2085a8118e07903e090a7113479a433" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1089" endline="1128">LBV_PlotAllAnalysisFunctionLBNKeys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ab0ee752ce69f5a9a44920ce0a417b1f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WAVE, WAVE &gt;</type>
+        <definition>std::tuple&lt; WAVE, WAVE &gt; LBV_GetLogbookWavesForEntry</definition>
+        <argsstring>(string win, string key)</argsstring>
+        <name>LBV_GetLogbookWavesForEntry</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Return the keys/values logbook pair for the given key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>valid waves or null if it can not be found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="254" column="12" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="254" bodyend="297"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a443155ae8852df2f0f755742f9c4f1c9" compoundref="_m_i_e_s___constants_8ipf" startline="1580">LBN_NUMERICAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a91189621085ac3f7ff3fe3a3e7a75a85" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="228" endline="249">LBV_PopMenuProc_LabNotebookAndResults</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ac9f0d47494575e68b6259637286f22a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_PopMenuProc_TPStorage</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>LBV_PopMenuProc_TPStorage</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="299" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="299" bodyend="318"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa08576fd4e92cad2b2d58e1f418d847b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="154" endline="176">LBV_GetTPStorageLocation</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ad0d8bf4b1fd98bcd76930c1b2b83048f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LBV_GetExperiments</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetExperiments</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="320" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="320" bodyend="327"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1a4b909f8bbc51551f3e0b90163502d54e" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="140" endline="158">SB_GetListOfExperiments</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a3b3a8b8fab8a951136fd278cdc7081cc" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="965" endline="989">LBV_SelectExperimentAndDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a8ccb2fe03ff16d90fefc10cd3ce819d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LBV_GetAllDevicesForExperiment</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_GetAllDevicesForExperiment</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="329" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="329" bodyend="359"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac9f70b0e7a6d1047b258b346e9f919d3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4895" endline="4910">GetAnalysisDeviceWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a3b3a8b8fab8a951136fd278cdc7081cc" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="965" endline="989">LBV_SelectExperimentAndDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_ClearGraph</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_ClearGraph</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="361" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="361" bodyend="378"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a947af2a3c5c9d148a736baff30ca2947" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="33" endline="36">LBV_GetDescriptionNotebook</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9f617b4fe7d51f67553a809aeb6d0513" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5205" endline="5215">RemoveDrawLayers</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a84aaf20149b706a3696cda50fb4b3e94" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5168" endline="5187">RemoveFreeAxisFromGraph</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae25a2a2e24980410bee5fa0dbadd2d82" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1609" endline="1618">ReplaceNotebookText</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="34" endline="61">TUD_Clear</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136" compoundref="_m_i_e_s___data_browser_8ipf" startline="40" endline="242">DB_ResetAndStoreCurrentDBPanel</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac896fff9808e848be6520033cebf49ba" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="204" endline="213">LBV_ButtonProc_ClearGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_UpdateLBGraphLegend</definition>
+        <argsstring>(string graph, string traceList=defaultValue)</argsstring>
+        <name>LBV_UpdateLBGraphLegend</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>traceList</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Update the legend in the labnotebook graph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Passing traceList is required if you just added traces to the graph as these can not be immediately queried using <computeroutput>TraceNameList</computeroutput> as that would require an <computeroutput>DoUpdate</computeroutput> call before.</para>
+<para>Assumes that the traceList displays information from the labnotebook. All entries with indizes equal or higher than <ref refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" kindref="member">NUM_HEADSTAGES</ref> will be labeled as <computeroutput>all</computeroutput> denoting that the information is headstage independent and therefore valid for all headstages.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>traceList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list of traces in the graph </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="392" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="392" bodyend="451"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a0f7571daef57a6a347bb1f2b0bd9d44e" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="18">LBV_UD_HEADSTAGE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa424c3e666bb11ce8e5573a3e2c1ded0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="20">LBV_UD_ISTEXT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a6a82ce1218def1e5a94dbfb7448ab4fc" compoundref="_m_i_e_s___utilities_8ipf" startline="2148" endline="2161">RemoveEndingRegExp</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave LBV_GetTraceUserDataNames</definition>
+        <argsstring>()</argsstring>
+        <name>LBV_GetTraceUserDataNames</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="453" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="453" bodyend="457"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a0f7571daef57a6a347bb1f2b0bd9d44e" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="18">LBV_UD_HEADSTAGE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa424c3e666bb11ce8e5573a3e2c1ded0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="20">LBV_UD_ISTEXT</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a5c1ba75396b9501fad0667f5f66b5f11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="19">LBV_UD_KEY</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a20ecf60ccb367826741d5a38266b635a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="17">LBV_UD_KEYS_WAVE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8de67a2caea9fa1310240149c7690f88" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="16">LBV_UD_VALUES_WAVE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a19d9e88cf2241faf8cc3deb992c161a0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="21">LBV_UD_YAXIS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1ae4eae22e753b335b34cea049362b3ba1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string LBV_MakeTraceNameUnique</definition>
+        <argsstring>(string graph, string trace)</argsstring>
+        <name>LBV_MakeTraceNameUnique</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>trace</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="459" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="459" bodyend="466"/>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ae2da780526834d116f3142aa2d5f2395" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="265" endline="268">TUD_TraceIsOnGraph</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7a92f59a3edcc0563b56464bd12476c0" compoundref="_m_i_e_s___utilities_8ipf" startline="2319" endline="2345">UniqueTraceName</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_AddTraceToLBGraph</definition>
+        <argsstring>(string graph, wave keys, wave values, string key)</argsstring>
+        <name>LBV_AddTraceToLBGraph</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Add a trace to the labnotebook graph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>graph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the graph </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>keys</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>labnotebook keys wave (numerical or text) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>labnotebook values wave (numerical or text) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the key to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="474" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="474" bodyend="579"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5a010ce2abfb157f1fa7b3805a431c73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3273" endline="3351">EquallySpaceAxis</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a51a5b7d4001c72e413c8b512c4ac6ff3" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="216" endline="222">ExtractLogbookSliceEmpty</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7d4d5599673261a687da74e31d0ad976" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="210" endline="213">ExtractLogbookSliceSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af2cd422bb3566dfda8623fa58286e6b1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3244" endline="3261">GetHeadstageColor</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1ea73b9b6baa307f2fa0ef3a3422fd79" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="94" endline="108">GetLogbookType</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1adc2dc2ee785f038f8b43636b579732be" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="998" endline="1006">GetNextFreeAxisName</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="771" endline="832">LBV_AddTagsForTextualLBNEntries</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="922" endline="938">LBV_CheckIfXAxisIsTime</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a15b305c445079d493e74a32594d7e683" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="748" endline="760">LBV_GetPropertiesForLabnotebookEntry</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ae4eae22e753b335b34cea049362b3ba1" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="459" endline="466">LBV_MakeTraceNameUnique</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="211" endline="242">TUD_SetUserDataFromWaves</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5a2dad15edfb0ccc3098b2984b9901d6" compoundref="_m_i_e_s___constants_8ipf" startline="400">VERT_AXIS_BASE_NAME</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a91189621085ac3f7ff3fe3a3e7a75a85" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="228" endline="249">LBV_PopMenuProc_LabNotebookAndResults</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a021e3e23550b326b35d2de18cb3457fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_Update</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_Update</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="581" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="581" bodyend="584"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_UpdateTagsForTextualLBNEntries</definition>
+        <argsstring>(string win, variable sweepNo)</argsstring>
+        <name>LBV_UpdateTagsForTextualLBNEntries</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="586" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="586" bodyend="613"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045" compoundref="_m_i_e_s___data_browser_8ipf" startline="472" endline="478">DB_GetLBNWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="771" endline="832">LBV_AddTagsForTextualLBNEntries</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa424c3e666bb11ce8e5573a3e2c1ded0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="20">LBV_UD_ISTEXT</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a5c1ba75396b9501fad0667f5f66b5f11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="19">LBV_UD_KEY</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_AddTraceToLBGraphTPStorage</definition>
+        <argsstring>(string graph, dfref dfr, string key, variable isTimeAxis=defaultValue)</argsstring>
+        <name>LBV_AddTraceToLBGraphTPStorage</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>isTimeAxis</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="615" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="615" bodyend="746"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5b22a6d115805ba2f7b31c4243d27a32" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="926" endline="945">AFH_GetHeadstageFromActiveADC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a51c3de9cfa4b5acc53fa0a9dd2bb45d3" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="320" endline="327">BSP_GetChannelSelectionWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5a010ce2abfb157f1fa7b3805a431c73" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3273" endline="3351">EquallySpaceAxis</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af2cd422bb3566dfda8623fa58286e6b1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3244" endline="3261">GetHeadstageColor</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1adc2dc2ee785f038f8b43636b579732be" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="998" endline="1006">GetNextFreeAxisName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="922" endline="938">LBV_CheckIfXAxisIsTime</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a03578dccbe3d8c5c0ac3bde563455454" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="762" endline="769">LBV_GenerateTraceNames</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ac2bd717f5cf1ec28254703d7cebdd092" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="453" endline="457">LBV_GetTraceUserDataNames</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ae4eae22e753b335b34cea049362b3ba1" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="459" endline="466">LBV_MakeTraceNameUnique</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a618880f1c668fa78784ae756d2aa3651" compoundref="_m_i_e_s___constants_8ipf" startline="198">PROP_NON_EMPTY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a539d7a470dc4ca48c81eb4959f90b204" compoundref="_m_i_e_s___constants_8ipf" startline="55">TP_STORAGE_REGEXP</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a16af2ea1e022b1278bd7c5a79a967149" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="211" endline="242">TUD_SetUserDataFromWaves</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5a2dad15edfb0ccc3098b2984b9901d6" compoundref="_m_i_e_s___constants_8ipf" startline="400">VERT_AXIS_BASE_NAME</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1ac9f0d47494575e68b6259637286f22a2" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="299" endline="318">LBV_PopMenuProc_TPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a15b305c445079d493e74a32594d7e683" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveTextOrNull, string, string, variable &gt;</type>
+        <definition>static std::tuple&lt; WaveTextOrNull, string, string, variable &gt; LBV_GetPropertiesForLabnotebookEntry</definition>
+        <argsstring>(WaveText keys, string key)</argsstring>
+        <name>LBV_GetPropertiesForLabnotebookEntry</name>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="748" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="748" bodyend="760"/>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___labnotebook_8ipf_1a8661fa2197a26706cb6dfaf5135a0b99" compoundref="_m_i_e_s___labnotebook_8ipf" startline="41" endline="63">LBN_GetEntryProperties</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a03578dccbe3d8c5c0ac3bde563455454" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="762" endline="769">LBV_GenerateTraceNames</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="771" endline="832">LBV_AddTagsForTextualLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a03578dccbe3d8c5c0ac3bde563455454" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveText, string &gt;</type>
+        <definition>static std::tuple&lt; WaveText, string &gt; LBV_GenerateTraceNames</definition>
+        <argsstring>(string name, variable count)</argsstring>
+        <name>LBV_GenerateTraceNames</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="762" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="762" bodyend="769"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac8e1ce286486edbb4093581c040a74bb" compoundref="_m_i_e_s___utilities_8ipf" startline="1468" endline="1500">LineBreakingIntoPar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" compoundref="_i_p_n_w_b___constants_8ipf" startline="98">MAX_OBJECT_NAME_LENGTH_IN_BYTES</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a15b305c445079d493e74a32594d7e683" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="748" endline="760">LBV_GetPropertiesForLabnotebookEntry</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_AddTagsForTextualLBNEntries</definition>
+        <argsstring>(string graph, WaveText keys, WaveText values, string key, variable firstSweep=defaultValue)</argsstring>
+        <name>LBV_AddTagsForTextualLBNEntries</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>firstSweep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="771" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="771" bodyend="832"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7d4d5599673261a687da74e31d0ad976" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="210" endline="213">ExtractLogbookSliceSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af2cd422bb3566dfda8623fa58286e6b1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3244" endline="3261">GetHeadstageColor</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="922" endline="938">LBV_CheckIfXAxisIsTime</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a15b305c445079d493e74a32594d7e683" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="748" endline="760">LBV_GetPropertiesForLabnotebookEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_SwitchLBGraphXAxis</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>LBV_SwitchLBGraphXAxis</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Switch the labnotebook graph x axis type (time &lt;-&gt; sweep numbers) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="835" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="835" bodyend="918"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7d4d5599673261a687da74e31d0ad976" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="210" endline="213">ExtractLogbookSliceSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1ea73b9b6baa307f2fa0ef3a3422fd79" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="94" endline="108">GetLogbookType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a681a27bebe88795640bbad1f5f26c044" compoundref="_m_i_e_s___constants_8ipf" startline="1574">LBT_RESULTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adcbca0ea477a7e4bde74bf94e9c82ec4" compoundref="_m_i_e_s___constants_8ipf" startline="1573">LBT_TPSTORAGE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="922" endline="938">LBV_CheckIfXAxisIsTime</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa08576fd4e92cad2b2d58e1f418d847b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="154" endline="176">LBV_GetTPStorageLocation</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="943" endline="962">LBV_SetLabNotebookBottomLabel</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aa424c3e666bb11ce8e5573a3e2c1ded0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="20">LBV_UD_ISTEXT</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8de67a2caea9fa1310240149c7690f88" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="16">LBV_UD_VALUES_WAVE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9efbe3c78d01ab947e17006d212e2295" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="392" endline="451">LBV_UpdateLBGraphLegend</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ad375fa332e629b9a98d8da14e381790b" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="97" endline="105">TUD_GetUserData</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ab3d6d70193333841c8054f6aaeed6374" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="258" endline="262">TUD_RemoveUserData</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1af9da26410e7772a54ad822b99fdcd700" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="215" endline="226">LBV_ButtonProc_SwitchXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_CheckIfXAxisIsTime</definition>
+        <argsstring>(string graph)</argsstring>
+        <name>LBV_CheckIfXAxisIsTime</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+<para>Check if the x wave belonging to the first trace in the graph has a date/time scale. Returns false if no traces have been found. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="922" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="922" bodyend="938"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9d15097014b0cab7b2ef81dc4d72455a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="771" endline="832">LBV_AddTagsForTextualLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a8ac5b14e15aa084bd10fb111611e1d0d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_SetLabNotebookBottomLabel</definition>
+        <argsstring>(string graph, variable isTimeAxis)</argsstring>
+        <name>LBV_SetLabNotebookBottomLabel</name>
+        <param>
+          <type>string</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>isTimeAxis</declname>
+        </param>
+        <briefdescription>
+<para>Set the appropriate label for the bottom axis of the graph created by CreateTiledChannelGraph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Assumes that wave data units are equal for all traces </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="943" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="943" bodyend="962"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8290672b21c2d12b62afafbb453a4587" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="12">LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ab78228525eb2254073973d29b703e635" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="14">LABNOTEBOOK_BOTTOM_AXIS_SWEEP</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1aacb984a7a3c5436ef3d65f6812c09205" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="13">LABNOTEBOOK_BOTTOM_AXIS_TIME</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a9bfb4f9936dfb9e4cf1bc1cbf89726cf" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="474" endline="579">LBV_AddTraceToLBGraph</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a3b3a8b8fab8a951136fd278cdc7081cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_SelectExperimentAndDevice</definition>
+        <argsstring>(string win)</argsstring>
+        <name>LBV_SelectExperimentAndDevice</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="965" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="965" bodyend="989"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa8588b6b7329369c25fbd768f02f7c32" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="97" endline="108">DisableControl</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a8ccb2fe03ff16d90fefc10cd3ce819d4" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="329" endline="359">LBV_GetAllDevicesForExperiment</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ad0d8bf4b1fd98bcd76930c1b2b83048f" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="320" endline="327">LBV_GetExperiments</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a7fe088c1d04218bed35a0240a7531379" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="442" endline="452">SetPopupMenuIndex</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acfb0db7b33d86deb61e12449d4af31af" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2561" endline="2586">AB_ButtonProc_LoadSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1af99aaf6b1067ca9b1074adc5d06b28ce" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string LBV_FormatDescription</definition>
+        <argsstring>(WaveTextOrNull keys, string name)</argsstring>
+        <name>LBV_FormatDescription</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="991" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="991" bodyend="1018"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1020" endline="1087">LBV_EntryDescription</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a296f56965cda12e85202cbf1cbe29521" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_EntryDescription</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>LBV_EntryDescription</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="1020" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="1020" bodyend="1087"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7891437f7c2630099b414543725147fc" compoundref="_m_i_e_s___constants_8ipf" startline="461">AXIS_ORIENTATION_LEFT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ad76dc9089e58cb62ae7c86f82368be3b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="831" endline="854">GetAxisOrientation</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a67976b3461206d7b9cbcbc243db4646a" compoundref="_m_i_e_s___utilities_8ipf" startline="4021" endline="4045">GetNumFromModifyStr</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1af99aaf6b1067ca9b1074adc5d06b28ce" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="991" endline="1018">LBV_FormatDescription</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a947af2a3c5c9d148a736baff30ca2947" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="33" endline="36">LBV_GetDescriptionNotebook</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a5c1ba75396b9501fad0667f5f66b5f11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="19">LBV_UD_KEY</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a20ecf60ccb367826741d5a38266b635a" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="17">LBV_UD_KEYS_WAVE</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a19d9e88cf2241faf8cc3deb992c161a0" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="21">LBV_UD_YAXIS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0ee8f79f82cbc5aa6c3c0bb00c7e0e03" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="2206" endline="2223">ReflowNotebookText</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae25a2a2e24980410bee5fa0dbadd2d82" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1609" endline="1618">ReplaceNotebookText</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a4813791c6b76e4dc512c07cd0d2ad812" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="115" endline="183">TUD_GetUserDataAsWave</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1aa2085a8118e07903e090a7113479a433" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_PlotAllAnalysisFunctionLBNKeys</definition>
+        <argsstring>(string browser, variable anaFuncType)</argsstring>
+        <name>LBV_PlotAllAnalysisFunctionLBNKeys</name>
+        <param>
+          <type>string</type>
+          <declname>browser</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>anaFuncType</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="1089" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="1089" bodyend="1128"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac46edb6d83c640daf2a28c88100b2fe2" compoundref="_m_i_e_s___utilities_8ipf" startline="3791" endline="3817">GetSetDifference</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae885184983697f47f03ba4d1b0556816" compoundref="_m_i_e_s___utilities_8ipf" startline="5710" endline="5726">GrepTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a443155ae8852df2f0f755742f9c4f1c9" compoundref="_m_i_e_s___constants_8ipf" startline="1580">LBN_NUMERICAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a16ccbaa4d4252d8ec0d861372de96d50" compoundref="_m_i_e_s___constants_8ipf" startline="1582">LBN_TEXTUAL_KEYS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1add1de29832e949e102bb3d3a9c478f90" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="90" endline="107">LBV_GetAllLogbookKeys</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a91189621085ac3f7ff3fe3a3e7a75a85" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="228" endline="249">LBV_PopMenuProc_LabNotebookAndResults</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adaeef1da64f41b086024acabf9847e59" compoundref="_m_i_e_s___constants_8ipf" startline="858">STIMSET_SCALE_FACTOR_KEY</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LBV_LimitXRangeToSelected</definition>
+        <argsstring>(string browser)</argsstring>
+        <name>LBV_LimitXRangeToSelected</name>
+        <param>
+          <type>string</type>
+          <declname>browser</declname>
+        </param>
+        <briefdescription>
+<para>Limit the bottom axis of the settings history graph to the selected/displayed sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="1131" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="1131" bodyend="1192"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af080e79941b70edb3d9b4876c600ac39" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1286" endline="1337">BSP_GetLogbookWave</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a7817b51ec2d40af5e33d218901fcc586" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="922" endline="938">LBV_CheckIfXAxisIsTime</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1ace3a18ae6de787e66c7c74fb6410a62c" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="28" endline="31">LBV_GetLabNoteBookGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="353" endline="387">OVS_GetSelectedSweeps</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ae1ed1e6a848dcd5f0f5cca3350f764" compoundref="_m_i_e_s___constants_8ipf" startline="941">OVS_SWEEP_SELECTION_SWEEPNO</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1a832c8024c6ace0885c3a2d7960c89c44" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="251" endline="255">TUD_GetTraceCount</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a4e922dd60f3d50f52b95f366f0b56e46" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1194" endline="1206">LBV_CheckProc_XRangeSelected</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a6ca45630922b90dc7d85753c3ff1615b" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="835" endline="918">LBV_SwitchLBGraphXAxis</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a021e3e23550b326b35d2de18cb3457fa" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="581" endline="584">LBV_Update</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logbook_viewer_8ipf_1a4e922dd60f3d50f52b95f366f0b56e46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBV_CheckProc_XRangeSelected</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>LBV_CheckProc_XRangeSelected</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" line="1194" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf" bodystart="1194" bodyend="1206"/>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>LBV</bold> Panel for browsing the labnotebook and TPStorage waves </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_LogbookViewer.ipf"/>
+  </compounddef>
+</doxygen>

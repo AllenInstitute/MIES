@@ -1,0 +1,1872 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___test_pulse_8ipf" kind="file" language="C++">
+    <compoundname>MIES_TestPulse.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1ae06f2cd0e1a0fc05874c826bbaf6ebc6" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_MAX_VALID_RESISTANCE</definition>
+        <argsstring></argsstring>
+        <name>TP_MAX_VALID_RESISTANCE</name>
+        <initializer>= 3000</initializer>
+        <briefdescription>
+<para>Units MΩ </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1aa857e2cdfe9fed4af3a12f8634093c00" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_TPSTORAGE_EVAL_INTERVAL</definition>
+        <argsstring></argsstring>
+        <name>TP_TPSTORAGE_EVAL_INTERVAL</name>
+        <initializer>= 0.18</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1177" endline="1204">TP_AnalyzeTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1a2e22e3ddeadb7ec50989e4c916efb70e" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_FIT_POINTS</definition>
+        <argsstring></argsstring>
+        <name>TP_FIT_POINTS</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1177" endline="1204">TP_AnalyzeTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1a0d3a3a7526e49893a1257fec815bf1dd" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_PRESSURE_INTERVAL</definition>
+        <argsstring></argsstring>
+        <name>TP_PRESSURE_INTERVAL</name>
+        <initializer>= 0.090</initializer>
+        <briefdescription>
+<para>[s] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1a5d9d227766573695b02c612bb94b3bbe" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_EVAL_POINT_OFFSET</definition>
+        <argsstring></argsstring>
+        <name>TP_EVAL_POINT_OFFSET</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" compoundref="_m_i_e_s___test_pulse_8ipf" startline="896" endline="1010">TP_TSAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1aa62097b91c146da3e08befe8feb200f7" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_BASELINE_FITTING_INSET</definition>
+        <argsstring></argsstring>
+        <name>TP_BASELINE_FITTING_INSET</name>
+        <initializer>= 0.3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="18" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52" compoundref="_m_i_e_s___test_pulse_8ipf" startline="411" endline="507">TP_AutoFitBaseline</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse_8ipf_1ad4bf349fc9c0de0c798d854920ca84f0" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TP_SET_PRECISION</definition>
+        <argsstring></argsstring>
+        <name>TP_SET_PRECISION</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="19" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="302" endline="381">TP_AutoBaseline</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a3d404b4b1a9ece68cd84d31f0ca5c10f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_IsValidBaselineFraction</definition>
+        <argsstring>(variable value)</argsstring>
+        <name>TP_IsValidBaselineFraction</name>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Check if the value is a valid baseline fraction. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="25" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="25" bodyend="27"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5b4ecf0ce87ebb693f5b1ce3ebd4196" compoundref="_m_i_e_s___constants_8ipf" startline="1644">TP_BASELINE_FRACTION_HIGH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aec020537d4e7b54be0e1f7cc8ae17b7a" compoundref="_m_i_e_s___constants_8ipf" startline="1643">TP_BASELINE_FRACTION_LOW</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aa9521c79fd3c4b6d0520eb3ab42fbe98" compoundref="_m_i_e_s___test_pulse_8ipf" startline="33" endline="38">TP_CalculateTestPulseLength</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1aa9521c79fd3c4b6d0520eb3ab42fbe98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_CalculateTestPulseLength</definition>
+        <argsstring>(variable pulseDuration, variable baselineFrac)</argsstring>
+        <name>TP_CalculateTestPulseLength</name>
+        <param>
+          <type>variable</type>
+          <declname>pulseDuration</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>baselineFrac</declname>
+        </param>
+        <briefdescription>
+<para>Return the total length of a single testpulse with baseline. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pulseDuration</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>duration of the high portion of the testpulse in points or time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>baselineFrac</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>fraction, <emphasis>not</emphasis> percentage, of the baseline </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="33" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="33" bodyend="38"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a3d404b4b1a9ece68cd84d31f0ca5c10f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="25" endline="27">TP_IsValidBaselineFraction</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a83a7d15303f554acbb5494c1df8c517e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4078" endline="4093">DAP_UpdateOnsetDelay</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ad37624addc6464a23456855a939b1b9c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1549" endline="1565">TP_UpdateTPSettingsCalculated</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1ad29f35b5cca962087f7913fbbb47cdd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_CalculateBaselineFraction</definition>
+        <argsstring>(variable pulseDuration, variable totalLength)</argsstring>
+        <name>TP_CalculateBaselineFraction</name>
+        <param>
+          <type>variable</type>
+          <declname>pulseDuration</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalLength</declname>
+        </param>
+        <briefdescription>
+<para>Inverse function of TP_CalculateTestPulseLength. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="41" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="41" bodyend="43"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="302" endline="381">TP_AutoBaseline</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_StoreTP</definition>
+        <argsstring>(string device, wave TPWave, variable tpMarker, string hsList)</argsstring>
+        <name>TP_StoreTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>tpMarker</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>hsList</declname>
+        </param>
+        <briefdescription>
+<para>Stores the given TP wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>TPWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reference to wave holding the TP data, see <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" kindref="member">GetOscilloscopeWave()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tpMarker</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>unique number for this set of TPs from all TP channels </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>hsList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list of headstage numbers in the same order as the columns of TPWave</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+The stored test pulse waves will have column dimension labels in the format <computeroutput>HS_X</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="53" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="53" bodyend="82"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae06ce11a65d995a76c4c8a66b95285fe" compoundref="_i_p_n_w_b___utils_8ipf" startline="500" endline="512">AddPrefixToEachListItem</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4efe03637db5f7efb628a974fdea83" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2820" endline="2835">GetStoredTestPulseWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="628" endline="632">GetTestpulseCycleID</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aad5064853a8e54ebdf9ad47b4455ff19" compoundref="_m_i_e_s___utilities_8ipf" startline="3319" endline="3339">SetDimensionLabels</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1accdab15aff6c18c3d4394a4386990e37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave TP_GetStoredTPs</definition>
+        <argsstring>(string device, variable tpMarker, variable number)</argsstring>
+        <name>TP_GetStoredTPs</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>tpMarker</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>number</declname>
+        </param>
+        <briefdescription>
+<para>Return a number of consecutive test pulses ending with the TP identified by tpMarker. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The wave reference wave will have as many columns as active headstages were used. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="88" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="88" bodyend="127"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4efe03637db5f7efb628a974fdea83" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2820" endline="2835">GetStoredTestPulseWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a490d90d95e8fd2513d841e387d9aa3cc" compoundref="_m_i_e_s___test_pulse_8ipf" startline="289" endline="300">TP_GetTPWaveForAutoTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a825102e1a659436ef7e511ad09e304f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_SplitStoredTestPulseWave</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_SplitStoredTestPulseWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Split the stored testpulse wave reference wave into single waves for easier handling. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="131" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="131" bodyend="150"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1c452cc6ac751bd009aad3571227d92" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2742" endline="2745">GetDeviceTestPulse</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adf4efe03637db5f7efb628a974fdea83" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2820" endline="2835">GetStoredTestPulseWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a52ae17375c19ec4b745228587a621a41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_ROAnalysis</definition>
+        <argsstring>(dfref dfr, variable err, string errmsg)</argsstring>
+        <name>TP_ROAnalysis</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errmsg</declname>
+        </param>
+        <briefdescription>
+<para>Receives data from the async function <ref refid="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" kindref="member">TP_TSAnalysis()</ref>, buffers partial results and puts complete results back to main thread, results are base line level, steady state resistance, instantaneous resistance and their positions collected results for all channels of a measurement are send to <ref refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" kindref="member">TP_RecordTP()</ref>, <ref refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" kindref="member">DQ_ApplyAutoBias()</ref> when complete. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output data folder from ASYNC frame work with results from workloads associated with this registered function The output parameter in the data folder follow the definition as created in <ref refid="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" kindref="member">TP_TSAnalysis()</ref></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code of <ref refid="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" kindref="member">TP_TSAnalysis()</ref> function</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>errmsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error message of <ref refid="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" kindref="member">TP_TSAnalysis()</ref> function </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="163" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="163" bodyend="248"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3fa616255e8ae41f149bde165dc8b7e1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="458" endline="492">GetTPResultAsyncBuffer</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad160e64624a55553a590d272ed91df9e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2891" endline="2917">GetTPResultsBuffer</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a23c277a8aa8786cc64e676baf4e520e8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1013" endline="1034">TP_CalculateAverage</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a8b236ce33f6094176ab94d092a1e090c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave TP_CreateOverrideResults</definition>
+        <argsstring>(string device, variable type)</argsstring>
+        <name>TP_CreateOverrideResults</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="250" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="250" bodyend="280"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aad5064853a8e54ebdf9ad47b4455ff19" compoundref="_m_i_e_s___utilities_8ipf" startline="3319" endline="3339">SetDimensionLabels</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae092d71edae353ba08d2cc406abb2af3" compoundref="_m_i_e_s___constants_8ipf" startline="1658">TP_OVERRIDE_RESULTS_AUTO_TP</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a490d90d95e8fd2513d841e387d9aa3cc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave TP_GetTPWaveForAutoTP</definition>
+        <argsstring>(string device, variable marker)</argsstring>
+        <name>TP_GetTPWaveForAutoTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>marker</declname>
+        </param>
+        <briefdescription>
+<para>Return a 2D wave with two testpulses concatenated. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Rows:<itemizedlist>
+<listitem><para>TPs</para>
+</listitem></itemizedlist>
+</para>
+<para>Columns:<itemizedlist>
+<listitem><para>Active headstages </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="289" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="289" bodyend="300"/>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1accdab15aff6c18c3d4394a4386990e37" compoundref="_m_i_e_s___test_pulse_8ipf" startline="88" endline="127">TP_GetStoredTPs</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_AutoBaseline</definition>
+        <argsstring>(string device, variable headstage, wave TPResults, wave TPs)</argsstring>
+        <name>TP_AutoBaseline</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPResults</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="302" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="302" bodyend="381"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7da64c72560e6b6d8a74c4d27a0f2a30" compoundref="_m_i_e_s___utilities_8ipf" startline="4634" endline="4637">RoundNumber</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5ef0c8ed413fe09dde5835f6aa2b8683" compoundref="_m_i_e_s___utilities_8ipf" startline="4348" endline="4352">ToPassFail</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af1ad7af435433dc29de937c8f92a9a0e" compoundref="_m_i_e_s___utilities_8ipf" startline="4355" endline="4359">ToTrueFalse</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52" compoundref="_m_i_e_s___test_pulse_8ipf" startline="411" endline="507">TP_AutoFitBaseline</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1183af8844d5bdfb59696ed80f71021e" compoundref="_m_i_e_s___constants_8ipf" startline="1664">TP_BASELINE_FIT_RESULT_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1b4bf038b9ad71d7c55833739e2af91a" compoundref="_m_i_e_s___constants_8ipf" startline="1663">TP_BASELINE_FIT_RESULT_OK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad1190fc2fc5c07df240bf9d82ed42bf7" compoundref="_m_i_e_s___constants_8ipf" startline="1666">TP_BASELINE_FIT_RESULT_TOO_NOISY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5b4ecf0ce87ebb693f5b1ce3ebd4196" compoundref="_m_i_e_s___constants_8ipf" startline="1644">TP_BASELINE_FRACTION_HIGH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aec020537d4e7b54be0e1f7cc8ae17b7a" compoundref="_m_i_e_s___constants_8ipf" startline="1643">TP_BASELINE_FRACTION_LOW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6a109cf0a7fbd4ca9ae4c9755be8d036" compoundref="_m_i_e_s___constants_8ipf" startline="1651">TP_BASELINE_RATIO_HIGH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a999e4508a5ce6e217e855e4f0a279558" compoundref="_m_i_e_s___constants_8ipf" startline="1653">TP_BASELINE_RATIO_LOW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ace34c65387ffe7f97849eaedfd7136ae" compoundref="_m_i_e_s___constants_8ipf" startline="1652">TP_BASELINE_RATIO_OPT</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ad29f35b5cca962087f7913fbbb47cdd1" compoundref="_m_i_e_s___test_pulse_8ipf" startline="41" endline="43">TP_CalculateBaselineFraction</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ad4bf349fc9c0de0c798d854920ca84f0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="19">TP_SET_PRECISION</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" compoundref="_m_i_e_s___test_pulse_8ipf" startline="516" endline="654">TP_AutoAmplitudeAndBaseline</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable, variable &gt; TP_AutoFitBaseline</definition>
+        <argsstring>(wave data, variable pulseLengthMS)</argsstring>
+        <name>TP_AutoFitBaseline</name>
+        <param>
+          <type>wave</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>pulseLengthMS</declname>
+        </param>
+        <briefdescription>
+<para>Fit the tail of the first TP with an expontential and return it&apos;s time constant. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>///
+///        +----+        +----+
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///    ----+    +--------+    +----
+///
+///             &lt;--------&gt;
+///            Fitting range
+///
+///    &lt;------------&gt;
+///        One TP
+///
+///        &lt;----&gt;
+///        Pulse
+///
+/// </verbatim> <verbatim>@param data          input data
+@param pulseLengthMS length of the pulse (high part) of the testpulse [ms]
+
+@retval result       One of @ref TPBaselineFitResults
+@retval tau          time constant of the decay [ms]
+@retval baseline     baseline length of one pulse (same as the fitting range) [ms] 
+</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="411" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="411" bodyend="507"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad487ff74aa64a76d6a6288d2352126ab" compoundref="_m_i_e_s___utilities_8ipf" startline="3650" endline="3656">IsFloatingPointWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1183af8844d5bdfb59696ed80f71021e" compoundref="_m_i_e_s___constants_8ipf" startline="1664">TP_BASELINE_FIT_RESULT_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1b4bf038b9ad71d7c55833739e2af91a" compoundref="_m_i_e_s___constants_8ipf" startline="1663">TP_BASELINE_FIT_RESULT_OK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad1190fc2fc5c07df240bf9d82ed42bf7" compoundref="_m_i_e_s___constants_8ipf" startline="1666">TP_BASELINE_FIT_RESULT_TOO_NOISY</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aa62097b91c146da3e08befe8feb200f7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="18">TP_BASELINE_FITTING_INSET</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="302" endline="381">TP_AutoBaseline</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1af00667f335ee1637ed9245e5662911cb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_AutoAmplitudeAndBaseline</definition>
+        <argsstring>(string device, wave TPResults, variable marker)</argsstring>
+        <name>TP_AutoAmplitudeAndBaseline</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPResults</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>marker</declname>
+        </param>
+        <briefdescription>
+<para>Automatically tune the Testpulse amplitude and baseline. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decision logic flowchart:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. image:: /dot/auto-testpulse.svg
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+<para>all variables holding physical units use plain values without prefixes e.g Amps instead of pA</para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="516" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="516" bodyend="654"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a96f5cff33a67cf5d56ab68cd285c2d82" compoundref="_m_i_e_s___constants_8ipf" startline="259">AUTOTP_LAST_INVOCATION_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a1b0ce3cd262bc75a7939a91ed0007dfb" compoundref="_i_p_n_w_b___constants_8ipf" startline="94">NOISE_GEN_MERSENNE_TWISTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a7da64c72560e6b6d8a74c4d27a0f2a30" compoundref="_m_i_e_s___utilities_8ipf" startline="4634" endline="4637">RoundNumber</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a285b95d3cc0012b59693f0aac5460a1b" compoundref="_m_i_e_s___constants_8ipf" startline="188">TICKS_TO_SECONDS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a928b85eef9af8a7f8485d810c3b723e7" compoundref="_m_i_e_s___test_pulse_8ipf" startline="302" endline="381">TP_AutoBaseline</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a490d90d95e8fd2513d841e387d9aa3cc" compoundref="_m_i_e_s___test_pulse_8ipf" startline="289" endline="300">TP_GetTPWaveForAutoTP</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ad4bf349fc9c0de0c798d854920ca84f0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="19">TP_SET_PRECISION</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a52ae17375c19ec4b745228587a621a41" compoundref="_m_i_e_s___test_pulse_8ipf" startline="163" endline="248">TP_ROAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a90c0656cc0c0d56dd62053fa33aced20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_AutoTPActive</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_AutoTPActive</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="656" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="656" bodyend="667"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a408ee887d959b1a5597c1c8faf49b1b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4139" endline="4159">DAP_AdaptAutoTPColorAndDependent</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1af6251d4fb1849df34964edab4da192f0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_AutoTPTurnOff</definition>
+        <argsstring>(string device, wave autoTPEnable, variable headstage, variable QC)</argsstring>
+        <name>TP_AutoTPTurnOff</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>autoTPEnable</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>QC</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="669" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="669" bodyend="680"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a6e6ca9be9646968c8c737b3dbcd512fd" compoundref="_m_i_e_s___test_pulse_8ipf" startline="793" endline="809">TP_AutoTPGenerateNewCycleID</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aec05c539c1ec28fb37fbb4bf40c11bde" compoundref="_m_i_e_s___test_pulse_8ipf" startline="747" endline="783">TP_PublishAutoTPResult</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_AutoDisableIfFinished</definition>
+        <argsstring>(string device, wave TPStorage)</argsstring>
+        <name>TP_AutoDisableIfFinished</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPStorage</declname>
+        </param>
+        <briefdescription>
+<para>Disable Auto TP if it passed <computeroutput>TP_AUTO_TP_CONSECUTIVE_PASSES</computeroutput> times in a row. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="683" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="683" bodyend="745"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b05c5f29bb0410ec9af10bdce32ebf9" compoundref="_m_i_e_s___constants_8ipf" startline="1656">TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab7097ef983cd40a045ed5a5a5ee01a5d" compoundref="_m_i_e_s___constants_8ipf" startline="1655">TP_AUTO_TP_CONSECUTIVE_PASSES</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1af6251d4fb1849df34964edab4da192f0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="669" endline="680">TP_AutoTPTurnOff</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af830736fe4d04e0e01d996e2fde0bb0b" compoundref="_m_i_e_s___constants_8ipf" startline="1673">TP_GETVALUES_LATEST_AUTOTPCYCLE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67" compoundref="_m_i_e_s___test_pulse_8ipf" startline="818" endline="889">TP_GetValuesFromTPStorage</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1268" endline="1291">TP_RestartTestPulse</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1220" endline="1224">TP_StopTestPulse</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1aec05c539c1ec28fb37fbb4bf40c11bde" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_PublishAutoTPResult</definition>
+        <argsstring>(string device, variable headstage, variable result)</argsstring>
+        <name>TP_PublishAutoTPResult</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="747" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="747" bodyend="783"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afab62eeb921f8fb91316e3167faea989" compoundref="_m_i_e_s___constants_8ipf" startline="1593">AUTO_TP_FILTER</references>
+        <references refid="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="61" endline="72">FFI_GetJSONTemplate</references>
+        <references refid="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="92" endline="106">FFI_Publish</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67" compoundref="_m_i_e_s___test_pulse_8ipf" startline="818" endline="889">TP_GetValuesFromTPStorage</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af6251d4fb1849df34964edab4da192f0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="669" endline="680">TP_AutoTPTurnOff</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a6e6ca9be9646968c8c737b3dbcd512fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_AutoTPGenerateNewCycleID</definition>
+        <argsstring>(string device, variable headstage=defaultValue, variable first=defaultValue, variable last=defaultValue)</argsstring>
+        <name>TP_AutoTPGenerateNewCycleID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>first</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>last</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Generate new auto TP cycle IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is required everytime we lock a device or toggle Auto TP for a headstage</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to all headstages] only update it for a specific headstage </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to all headstages] only update the range [first, last] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>last</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to all headstages] only update the range [first, last] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="793" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="793" bodyend="809"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a88c0ce306cc93b048ad2db67d4165684" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6103" endline="6113">GetNextRandomNumberForDevice</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5852" endline="5893">DAP_TPGUISettingToWave</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1af6251d4fb1849df34964edab4da192f0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="669" endline="680">TP_AutoTPTurnOff</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a2a5cf7e7589bf8ce08ffae78d1b8ac67" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave TP_GetValuesFromTPStorage</definition>
+        <argsstring>(wave TPStorage, variable headstage, string entry, variable numReqEntries, variable options=defaultValue)</argsstring>
+        <name>TP_GetValuesFromTPStorage</name>
+        <param>
+          <type>wave</type>
+          <declname>TPStorage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numReqEntries</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>options</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last <computeroutput>numReqEntries</computeroutput> non-NaN values from layer <computeroutput>entry</computeroutput> of <computeroutput>headstage</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>TPStorage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>TP results wave, see <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" kindref="member">GetTPStorage()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Headstage </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the value to search </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numReqEntries</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of entries to return, supports integer values and inf </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default to nothing] One of <ref refid="_m_i_e_s___constants_8ipf_1TPStorageQueryingOptions" kindref="member">TPStorageQueryingOptions</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="818" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="818" bodyend="889"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d7e6514b422bd00d912b2014c5c82cd" compoundref="_m_i_e_s___constants_8ipf" startline="1672">TP_GETVALUES_DEFAULT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af830736fe4d04e0e01d996e2fde0bb0b" compoundref="_m_i_e_s___constants_8ipf" startline="1673">TP_GETVALUES_LATEST_AUTOTPCYCLE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aec05c539c1ec28fb37fbb4bf40c11bde" compoundref="_m_i_e_s___test_pulse_8ipf" startline="747" endline="783">TP_PublishAutoTPResult</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a557cc92c280c222fd1a1f2e86563d74a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref TP_TSAnalysis</definition>
+        <argsstring>(dfref dfrInp)</argsstring>
+        <name>TP_TSAnalysis</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfrInp</declname>
+        </param>
+        <briefdescription>
+<para>This function analyses a TP data set. It is called by the ASYNC frame work in an own thread. currently six properties are determined. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfrInp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input data folder from the ASYNC framework, parameter input order therein follows the setup in <ref refid="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0" kindref="member">TP_SendToAnalysis()</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="896" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="896" bodyend="1010"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" compoundref="_m_i_e_s___debugging_8ipf" startline="263" endline="303">DEBUGPRINT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a5d9d227766573695b02c612bb94b3bbe" compoundref="_m_i_e_s___test_pulse_8ipf" startline="16">TP_EVAL_POINT_OFFSET</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a23c277a8aa8786cc64e676baf4e520e8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_CalculateAverage</definition>
+        <argsstring>(wave TPResultsBuffer, wave TPResults)</argsstring>
+        <name>TP_CalculateAverage</name>
+        <param>
+          <type>wave</type>
+          <declname>TPResultsBuffer</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPResults</declname>
+        </param>
+        <briefdescription>
+<para>Calculates running average [box average] for all entries and all headstages. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1013" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1013" bodyend="1034"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a52ae17375c19ec4b745228587a621a41" compoundref="_m_i_e_s___test_pulse_8ipf" startline="163" endline="248">TP_ROAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_RecordTP</definition>
+        <argsstring>(string device, wave TPResults, variable now, variable tpMarker)</argsstring>
+        <name>TP_RecordTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>TPResults</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>now</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>tpMarker</declname>
+        </param>
+        <briefdescription>
+<para>Records values from TPResults into TPStorage at defined intervals. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Used for analysis of TP over time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1039" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1039" bodyend="1140"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7a00e19be174b3b4d19f6604f3731f99" compoundref="_i_p_n_w_b___utils_8ipf" startline="62" endline="64">DateTimeInUTC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2618b417471a034b8fafae4ab5418861" compoundref="_m_i_e_s___constants_8ipf" startline="256">DIMENSION_SCALING_LAST_INVOC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c64142b3a7bfa94b58bcc3e5096f7c0" compoundref="_m_i_e_s___constants_8ipf" startline="1543">DQ_STOP_REASON_OUT_OF_MEMORY</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1a360ca6c03fa34be960a2273574ec9433" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="183" endline="203">DQ_StopDAQ</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a74dd79d2b64a28ad003e78a657aaf78f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="166" endline="185">ExtractLogbookSliceTimeStamp</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="628" endline="632">GetTestpulseCycleID</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1a66721d2365eea4774f62178d3b679766" compoundref="_m_i_e_s___pressure_control_8ipf" startline="64" endline="116">P_PressureControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4890bfe62d2a099413d6a943ce71590a" compoundref="_m_i_e_s___constants_8ipf" startline="257">PRESSURE_CTRL_LAST_INVOC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1177" endline="1204">TP_AnalyzeTP</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ae06f2cd0e1a0fc05874c826bbaf6ebc6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="12">TP_MAX_VALID_RESISTANCE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a0d3a3a7526e49893a1257fec815bf1dd" compoundref="_m_i_e_s___test_pulse_8ipf" startline="15">TP_PRESSURE_INTERVAL</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1220" endline="1224">TP_StopTestPulse</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1468" endline="1494">TP_UpdateHoldCmdInTPStorage</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a52ae17375c19ec4b745228587a621a41" compoundref="_m_i_e_s___test_pulse_8ipf" startline="163" endline="248">TP_ROAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a0b66cfca83590ab7728e5d7adda28649" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_FitResistance</definition>
+        <argsstring>(wave TPStorage, variable startRow, variable endRow, variable headstage)</argsstring>
+        <name>TP_FitResistance</name>
+        <param>
+          <type>wave</type>
+          <declname>TPStorage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startRow</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>endRow</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Threadsafe wrapper for performing CurveFits on the TPStorage wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1143" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1143" bodyend="1169"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1177" endline="1204">TP_AnalyzeTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_AnalyzeTP</definition>
+        <argsstring>(string device, WaveOrNull TPStorage, variable endRow)</argsstring>
+        <name>TP_AnalyzeTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>TPStorage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>endRow</declname>
+        </param>
+        <briefdescription>
+<para>Determine the slope of the steady state resistance over a user defined window (in seconds) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>locked device string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>TPStorage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>test pulse storage wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>endRow</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>last valid row index in TPStorage </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1177" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1177" bodyend="1204"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2109" endline="2125">DC_GetChannelTypefromHS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a2e22e3ddeadb7ec50989e4c916efb70e" compoundref="_m_i_e_s___test_pulse_8ipf" startline="14">TP_FIT_POINTS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a0b66cfca83590ab7728e5d7adda28649" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1143" endline="1169">TP_FitResistance</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aa857e2cdfe9fed4af3a12f8634093c00" compoundref="_m_i_e_s___test_pulse_8ipf" startline="13">TP_TPSTORAGE_EVAL_INTERVAL</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a4c235f43e3ecf246b0a901e37dd068b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_StopTestPulseOnAllDevices</definition>
+        <argsstring>()</argsstring>
+        <name>TP_StopTestPulseOnAllDevices</name>
+        <briefdescription>
+<para>Stop running background testpulse on all locked devices. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1207" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1207" bodyend="1210"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8b1dacdf9e9c080a3f2e2b28e8bc9af5" compoundref="_m_i_e_s___utilities_8ipf" startline="1751" endline="1768">CallFunctionForEachListItem</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1220" endline="1224">TP_StopTestPulse</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a12d7a6d3e09c49f52e9523aef5357e7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_StopTestPulseFast</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_StopTestPulseFast</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" kindref="member">TP_StopTestPulseWrapper</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1213" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1213" bodyend="1217"/>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1233" endline="1265">TP_StopTestPulseWrapper</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_StopTestPulse</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_StopTestPulse</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" kindref="member">TP_StopTestPulseWrapper</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1220" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1220" bodyend="1224"/>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1233" endline="1265">TP_StopTestPulseWrapper</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa45fb2ca2a0311a540f67cf699cce939" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3583" endline="3650">DAP_ChangeHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3fce16e5b32f2bd046d95ac415dc849f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5671" endline="5688">DAP_CheckProc_PowerSpectrum</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5852" endline="5893">DAP_TPGUISettingToWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a4c235f43e3ecf246b0a901e37dd068b0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1207" endline="1210">TP_StopTestPulseOnAllDevices</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_StopTestPulseWrapper</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TP_StopTestPulseWrapper</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Stop any running background test pulses. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fast</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Performs only the totally necessary steps for tear down.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>One of <ref refid="_m_i_e_s___constants_8ipf_1TestPulseRunModes" kindref="member">TestPulseRunModes</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1233" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1233" bodyend="1265"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a742a8cdcd8bebd5675178f0b6123ec6b" compoundref="_m_i_e_s___constants_8ipf" startline="432">TEST_PULSE_BG_MULTI_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a373a0379f40d191a1874f77be4115b8b" compoundref="_m_i_e_s___constants_8ipf" startline="431">TEST_PULSE_BG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0d11d805ed39cd5f89c63fca4e463e5b" compoundref="_m_i_e_s___constants_8ipf" startline="433">TEST_PULSE_FG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1b161043fd8e1ae19faf8cef394e26f" compoundref="_m_i_e_s___constants_8ipf" startline="430">TEST_PULSE_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1abe2a65daa0f36815588b796651988c73" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="18" endline="30">TPS_StopTestPulseSingleDevice</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1220" endline="1224">TP_StopTestPulse</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a12d7a6d3e09c49f52e9523aef5357e7f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1213" endline="1217">TP_StopTestPulseFast</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_RestartTestPulse</definition>
+        <argsstring>(string device, variable testPulseMode, variable fast=defaultValue)</argsstring>
+        <name>TP_RestartTestPulse</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>testPulseMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Restarts a test pulse previously stopped with <ref refid="_m_i_e_s___test_pulse_8ipf_1a1da417d3cc442a8b750ba55c6106d567" kindref="member">TP_StopTestPulse</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1268" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1268" bodyend="1291"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a742a8cdcd8bebd5675178f0b6123ec6b" compoundref="_m_i_e_s___constants_8ipf" startline="432">TEST_PULSE_BG_MULTI_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a373a0379f40d191a1874f77be4115b8b" compoundref="_m_i_e_s___constants_8ipf" startline="431">TEST_PULSE_BG_SINGLE_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1b161043fd8e1ae19faf8cef394e26f" compoundref="_m_i_e_s___constants_8ipf" startline="430">TEST_PULSE_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a1749e191720dbe121f4bacdfde450ff8" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="99" endline="125">TPM_StartTestPulseMultiDevice</references>
+        <references refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa45fb2ca2a0311a540f67cf699cce939" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3583" endline="3650">DAP_ChangeHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3fce16e5b32f2bd046d95ac415dc849f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5671" endline="5688">DAP_CheckProc_PowerSpectrum</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5852" endline="5893">DAP_TPGUISettingToWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ad276946b4bd40f5d4666547a1ed408c3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5904" endline="5952">DAP_TPSettingsToGUI</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a7d4c8d21c7b557eed8e4e3a5b86082c3" compoundref="_m_i_e_s___test_pulse_8ipf" startline="683" endline="745">TP_AutoDisableIfFinished</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_Setup</definition>
+        <argsstring>(string device, variable runMode, variable fast=defaultValue)</argsstring>
+        <name>TP_Setup</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>runMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Prepare device for TestPulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>runMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Testpulse running mode, one of <ref refid="_m_i_e_s___constants_8ipf_1TestPulseRunModes" kindref="member">TestPulseRunModes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fast</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Performs only the totally necessary steps for setup </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1297" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1297" bodyend="1339"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6386a152b612b0f0c6e15848869d8e01" compoundref="_m_i_e_s___constants_8ipf" startline="870">CONTROLS_DISABLE_DURING_DAQ_TP</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a408ee887d959b1a5597c1c8faf49b1b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4139" endline="4159">DAP_AdaptAutoTPColorAndDependent</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1abecd8145789daa255a8de0cc7723d9bb" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3677" endline="3692">DAP_ToggleTestpulseButton</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a5be335d0759af2844df1eead0156a482" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="96" endline="111">HW_PrepareAcq</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a742a8cdcd8bebd5675178f0b6123ec6b" compoundref="_m_i_e_s___constants_8ipf" startline="432">TEST_PULSE_BG_MULTI_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2d5b008b9a9eca0bf708d3071b58b56b" compoundref="_m_i_e_s___constants_8ipf" startline="434">TEST_PULSE_DURING_RA_MOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a550312947ef255992f79f28577af35c9" compoundref="_m_i_e_s___constants_8ipf" startline="491">TESTPULSE_BUTTON_TO_STOP</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1342" endline="1376">TP_SetupCommon</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_SetupCommon</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_SetupCommon</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Common setup calls for TP and TP during DAQ. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1342" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1342" bodyend="1376"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a053a9a73b2651e5103d20cf75cde3db5" compoundref="_m_i_e_s___constants_8ipf" startline="255">AUTOBIAS_LAST_INVOCATION_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a96f5cff33a67cf5d56ab68cd285c2d82" compoundref="_m_i_e_s___constants_8ipf" startline="259">AUTOTP_LAST_INVOCATION_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2618b417471a034b8fafae4ab5418861" compoundref="_m_i_e_s___constants_8ipf" startline="256">DIMENSION_SCALING_LAST_INVOC</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3fa616255e8ae41f149bde165dc8b7e1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="458" endline="492">GetTPResultAsyncBuffer</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c5041b01fdc0477f885fa2b71d3e4f7" compoundref="_m_i_e_s___constants_8ipf" startline="258">INDEX_ON_TP_START</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4890bfe62d2a099413d6a943ce71590a" compoundref="_m_i_e_s___constants_8ipf" startline="257">PRESSURE_CTRL_LAST_INVOC</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a285b95d3cc0012b59693f0aac5460a1b" compoundref="_m_i_e_s___constants_8ipf" startline="188">TICKS_TO_SECONDS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a1e8a31af68a3cb6a11dcc3a71fa79970" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1662" endline="1673">TP_GetTPCycleID</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1297" endline="1339">TP_Setup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_Teardown</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TP_Teardown</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Perform common actions after the testpulse. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1379" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1379" bodyend="1411"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a408ee887d959b1a5597c1c8faf49b1b3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4139" endline="4159">DAP_AdaptAutoTPColorAndDependent</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a59bfb7b3da9d71768c6a83bbf79f9691" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4049" endline="4059">DAP_HandleSingleDeviceDependentControls</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1abecd8145789daa255a8de0cc7723d9bb" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3677" endline="3692">DAP_ToggleTestpulseButton</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ae75c2dade88b290680abb2a70122927e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="51" endline="59">SCOPE_KillScopeWindowIfRequest</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2d5b008b9a9eca0bf708d3071b58b56b" compoundref="_m_i_e_s___constants_8ipf" startline="434">TEST_PULSE_DURING_RA_MOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1b161043fd8e1ae19faf8cef394e26f" compoundref="_m_i_e_s___constants_8ipf" startline="430">TEST_PULSE_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aed407800fb5615943fea208215ad9989" compoundref="_m_i_e_s___constants_8ipf" startline="492">TESTPULSE_BUTTON_TO_START</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a08c11ff4302a9c3724d3e9b89fce1f64" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1414" endline="1421">TP_TeardownCommon</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a2f1a01cc429986628fb542797cc0da7d" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="84" endline="132">RA_HandleITI</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="345" endline="372">TPM_StopTPMDWrapper</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1abe2a65daa0f36815588b796651988c73" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="18" endline="30">TPS_StopTestPulseSingleDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a08c11ff4302a9c3724d3e9b89fce1f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_TeardownCommon</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_TeardownCommon</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Common teardown calls for TP and TP during DAQ. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1414" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1414" bodyend="1421"/>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1a1710756d32b67efac122d32e5b9d4b91" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1760" endline="1794">P_LoadPressureButtonState</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a05c6185043db58f01260c824eb316c3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_GetNumDevicesWithTPRunning</definition>
+        <argsstring>()</argsstring>
+        <name>TP_GetNumDevicesWithTPRunning</name>
+        <briefdescription>
+<para>Return the number of devices which have TP running. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1424" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1424" bodyend="1437"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1abc9d0ae67fe6475a0052cf163744b589" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1375" endline="1417">WBP_ButtonProc_OpenAnaFuncs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_CheckIfTestpulseIsRunning</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_CheckIfTestpulseIsRunning</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Check if the testpulse is running. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1442" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1442" bodyend="1448"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a25dc56630c23fe842bf229e14d73a586" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5074" endline="5112">IsDeviceActiveWithBGTask</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adbd459c18ee170bc71d37334dd7b4497" compoundref="_m_i_e_s___constants_8ipf" startline="41">TASKNAME_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af09b1233411a5bc4d9c787334660abe1" compoundref="_m_i_e_s___constants_8ipf" startline="42">TASKNAME_TPMD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1b161043fd8e1ae19faf8cef394e26f" compoundref="_m_i_e_s___constants_8ipf" startline="430">TEST_PULSE_NOT_RUNNING</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1a16fa0df8222a6a091d0398923bc2b317" compoundref="_m_i_e_s___blowout_8ipf" startline="115" endline="123">BWO_ConfigureTP</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a33504bd9f96657a15fd1f0f92b0f100b" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="292" endline="309">IVS_RunGigOhmSealQC</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a279b6064e3192f69ec91e14cb8527957" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="204" endline="235">IVS_runInitAccessResisQC</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a75bfb9e2d185fec19aa5a70d234c862b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1960" endline="1969">P_PressureMethodPossible</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1acf5d5d9e240cf8d19024176997b08cb8" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2562" endline="2568">P_RunP_ControlIfTPOFF</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a5523c374d3a5c8287f7d1f204131ef88" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1686" endline="1745">P_SetPressureOffset</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a05c6185043db58f01260c824eb316c3a" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1424" endline="1437">TP_GetNumDevicesWithTPRunning</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1468" endline="1494">TP_UpdateHoldCmdInTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a1749e191720dbe121f4bacdfde450ff8" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="99" endline="125">TPM_StartTestPulseMultiDevice</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a6c792eac18a85e2268327f1ccf1d34d0" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="79" endline="132">TPS_StartTestPulseSingleDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a22ac989c8b825350aea646f90a9af5cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_TestPulseHasCycled</definition>
+        <argsstring>(string device, variable cycles)</argsstring>
+        <name>TP_TestPulseHasCycled</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>cycles</declname>
+        </param>
+        <briefdescription>
+<para>See if the testpulse has run enough times to create valid measurements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DA_Ephys panel name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cycles</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of cycles that test pulse must run </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1454" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1454" bodyend="1465"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c5041b01fdc0477f885fa2b71d3e4f7" compoundref="_m_i_e_s___constants_8ipf" startline="258">INDEX_ON_TP_START</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="group___background_functions_1ga2a66fc4b2633d203f546d2662c80e288" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="353" endline="408">IVS_finishGigOhmSealQCCheck</referencedby>
+        <referencedby refid="group___background_functions_1ga1dd2404b2f9c3c670b81804da9c5c58e" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="240" endline="285">IVS_finishInitAccessQCCheck</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_UpdateHoldCmdInTPStorage</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>TP_UpdateHoldCmdInTPStorage</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Save the amplifier holding command in the TPStorage wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1468" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1468" bodyend="1494"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1aa88481f4af14cde5362d73b01784098d" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1640" endline="1645">AI_GetHoldingCommand</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a4b75c440253625f0cfe91f0ac7a9c001" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_CreateTestPulseWave</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>TP_CreateTestPulseWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Create the testpulse wave with the current settings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1497" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1497" bodyend="1514"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e76889e4e27568b2c7b01193b935c33" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3422" endline="3435">GetTestPulse</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref TP_PrepareAnalysisDF</definition>
+        <argsstring>(string device, TPAnalysisInput *tpInput)</argsstring>
+        <name>TP_PrepareAnalysisDF</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_t_p_analysis_input" kindref="compound">TPAnalysisInput</ref> *</type>
+          <declname>tpInput</declname>
+        </param>
+        <briefdescription>
+<para>Prepares a TP data set data folder to the asynchroneous analysis function TP_TSAnalysis. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of panel that ran this test pulse </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tpInput</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>holds the parameters send to analysis </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>data folder that can be pushed for execution by the async frame work </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1521" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1521" bodyend="1537"/>
+        <references refid="struct_t_p_analysis_input_1a53c995a6d18b4850e88ee3be729eac5a" compoundref="_m_i_e_s___structures_8ipf" startline="305">TPAnalysisInput::activeADCs</references>
+        <references refid="_m_i_e_s___async_8ipf_1a4db78dbdee22abd609d1149fe9d8aef5" compoundref="_m_i_e_s___async_8ipf" startline="346" endline="388">ASYNC_AddParam</references>
+        <references refid="_m_i_e_s___async_8ipf_1ad0763d663832657d1a935ccb23d9b6ca" compoundref="_m_i_e_s___async_8ipf" startline="557" endline="588">ASYNC_PrepareDF</references>
+        <references refid="struct_t_p_analysis_input_1a9adc47178ca3c8c4c44d1f7a0ac14595" compoundref="_m_i_e_s___structures_8ipf" startline="299">TPAnalysisInput::baselineFrac</references>
+        <references refid="struct_t_p_analysis_input_1a7ba53732ea9f7a19e0ae49c83304adac" compoundref="_m_i_e_s___structures_8ipf" startline="296">TPAnalysisInput::clampAmp</references>
+        <references refid="struct_t_p_analysis_input_1a35655cf22cc7c20dfb980ce8c6c5d445" compoundref="_m_i_e_s___structures_8ipf" startline="297">TPAnalysisInput::clampMode</references>
+        <references refid="struct_t_p_analysis_input_1aed815b3c863342923e42de213d093c08" compoundref="_m_i_e_s___structures_8ipf" startline="294">TPAnalysisInput::data</references>
+        <references refid="struct_t_p_analysis_input_1a7938e056196188f3ca2836490e3ab038" compoundref="_m_i_e_s___structures_8ipf" startline="303">TPAnalysisInput::device</references>
+        <references refid="struct_t_p_analysis_input_1a0e23e2a81439a1356c0cbba819d3799a" compoundref="_m_i_e_s___structures_8ipf" startline="298">TPAnalysisInput::duration</references>
+        <references refid="struct_t_p_analysis_input_1aa05f4c873b524c5f81d792505acd3cda" compoundref="_m_i_e_s___structures_8ipf" startline="302">TPAnalysisInput::hsIndex</references>
+        <references refid="struct_t_p_analysis_input_1a347178700d548f9d4eafc2845dc0ebd2" compoundref="_m_i_e_s___structures_8ipf" startline="304">TPAnalysisInput::measurementMarker</references>
+        <references refid="struct_t_p_analysis_input_1aba93586bc9ee2f66e07c885c7ba77f75" compoundref="_m_i_e_s___structures_8ipf" startline="301">TPAnalysisInput::readTimeStamp</references>
+        <references refid="struct_t_p_analysis_input_1a28e5de7989c9947cd5e8e1eafd985b9d" compoundref="_m_i_e_s___structures_8ipf" startline="300">TPAnalysisInput::tpLengthPoints</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3250d3f674d56ca281c6c5a2f0a655ed" compoundref="_m_i_e_s___constants_8ipf" startline="1426">WORKLOADCLASS_TP</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1543" endline="1547">TP_SendToAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_SendToAnalysis</definition>
+        <argsstring>(string device, TPAnalysisInput *tpInput)</argsstring>
+        <name>TP_SendToAnalysis</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_t_p_analysis_input" kindref="compound">TPAnalysisInput</ref> *</type>
+          <declname>tpInput</declname>
+        </param>
+        <briefdescription>
+<para>Send a TP data set to the asynchroneous analysis function TP_TSAnalysis. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of panel that ran this test pulse </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tpInput</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>holds the parameters send to analysis </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1543" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1543" bodyend="1547"/>
+        <references refid="_m_i_e_s___async_8ipf_1aad3777dd6bb37e4a242b4d53bf1f722a" compoundref="_m_i_e_s___async_8ipf" startline="593" endline="639">ASYNC_Execute</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1ad37624addc6464a23456855a939b1b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_UpdateTPSettingsCalculated</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_UpdateTPSettingsCalculated</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1549" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1549" bodyend="1565"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aa9521c79fd3c4b6d0520eb3ab42fbe98" compoundref="_m_i_e_s___test_pulse_8ipf" startline="33" endline="38">TP_CalculateTestPulseLength</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3" compoundref="_m_i_e_s___data_configurator_8ipf" startline="14" endline="35">DC_UpdateGlobals</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a34b7a981fdd68d85e1738b83ecf596c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string TP_AutoTPLabelToLabnotebookName</definition>
+        <argsstring>(string lbl)</argsstring>
+        <name>TP_AutoTPLabelToLabnotebookName</name>
+        <param>
+          <type>string</type>
+          <declname>lbl</declname>
+        </param>
+        <briefdescription>
+<para>Convert from row names of <ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" kindref="member">GetTPSettings()</ref>/GetTPSettingsCalculated() to GetTPSettingsLBN() column names. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1568" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1568" bodyend="1588"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_UpdateTPLBNSettings</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_UpdateTPLBNSettings</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Update the Testpulse labnotebook wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>DAQ:<itemizedlist>
+<listitem><para>TPSettings holds the current GUI values</para>
+</listitem><listitem><para>TPSettingsLabnotebook holds the settings which were active when the sweep started</para>
+</listitem></itemizedlist>
+</para>
+<para>TP:<itemizedlist>
+<listitem><para>TPSettings holds the current GUI values</para>
+</listitem><listitem><para>TPSettingsLabnotebook is cleared when TP is started and filled from TPSettings when TP is stopped This means we only have the <emphasis>latest</emphasis> values for the TP settings which don&apos;t restart TP. For entries which do restart TP we always have the current values. See also the DAEPHYS_TP_CONTROLS_XXX constants.</para>
+</listitem></itemizedlist>
+</para>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___d_a_ephys_8ipf_1aac9d9c497923b511971d5d87dfe91846" kindref="member">DAP_TPGUISettingToWave()</ref> for the special auto TP entry handling. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1603" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1603" bodyend="1657"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1aeb762a758c6836b507296ac71f119964" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="628" endline="632">GetTestpulseCycleID</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a34b7a981fdd68d85e1738b83ecf596c8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1568" endline="1588">TP_AutoTPLabelToLabnotebookName</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3" compoundref="_m_i_e_s___data_configurator_8ipf" startline="14" endline="35">DC_UpdateGlobals</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1a1e8a31af68a3cb6a11dcc3a71fa79970" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TP_GetTPCycleID</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TP_GetTPCycleID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the TP cycle ID for the given device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Follower and leader will have the same TP cycle ID. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1662" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1662" bodyend="1673"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aa00ef9459287f8981cccd35151f806ef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4713" endline="4719">DAP_AbortIfUnlocked</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ada53aefe2e034d0e9cebe237a9b7bd87" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5500" endline="5510">DeviceIsFollower</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a88c0ce306cc93b048ad2db67d4165684" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6103" endline="6113">GetNextRandomNumberForDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7f0050c12fe6292dc0b610d4e36449ad" compoundref="_m_i_e_s___constants_8ipf" startline="32">ITC1600_FIRST_DEVICE</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a8524989cb8da8be4db48befa9c1c0d76" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1342" endline="1376">TP_SetupCommon</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse_8ipf_1af34112da898a78b2808eff374b1f0b5f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TP_GetPowerSpectrumLength</definition>
+        <argsstring>(variable tpLength)</argsstring>
+        <name>TP_GetPowerSpectrumLength</name>
+        <param>
+          <type>variable</type>
+          <declname>tpLength</declname>
+        </param>
+        <briefdescription>
+<para>Return the length in points of the power spectrum generated via FFT. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" line="1676" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf" bodystart="1676" bodyend="1678"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1652054de6929383783b08a520a0a3e8" compoundref="_m_i_e_s___utilities_8ipf" startline="3528" endline="3536">FindNextPower</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adeff8725bb08d05b254c184bf27987d6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="447" endline="456">DoFFT</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>TP</bold> Basic Testpulse related functionality </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse.ipf"/>
+  </compounddef>
+</doxygen>

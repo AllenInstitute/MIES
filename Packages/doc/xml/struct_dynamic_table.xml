@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_dynamic_table" kind="struct" language="C++" prot="public">
+    <compoundname>DynamicTable</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_dynamic_table_1a3980d211cbf2fbf6b0a7fa0c7679395d" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DynamicTable::colnames</definition>
+        <argsstring></argsstring>
+        <name>colnames</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="226" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="225" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1abd76ed452e3a3b42832127a99fc3401a" compoundref="_i_p_n_w_b___structures_8ipf" startline="231" endline="237">InitDynamicTable</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_dynamic_table_1a4570a063de72097b914a6eef137ddbf5" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DynamicTable::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="227" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="227" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1abd76ed452e3a3b42832127a99fc3401a" compoundref="_i_p_n_w_b___structures_8ipf" startline="231" endline="237">InitDynamicTable</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_dynamic_table_1a7bce79608a270f58166423c96fd87873" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string DynamicTable::data_type</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="228" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="228" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1abd76ed452e3a3b42832127a99fc3401a" compoundref="_i_p_n_w_b___structures_8ipf" startline="231" endline="237">InitDynamicTable</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="225" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="225" bodyend="229"/>
+    <listofallmembers>
+      <member refid="struct_dynamic_table_1a3980d211cbf2fbf6b0a7fa0c7679395d" prot="public" virt="non-virtual"><scope>DynamicTable</scope><name>colnames</name></member>
+      <member refid="struct_dynamic_table_1a7bce79608a270f58166423c96fd87873" prot="public" virt="non-virtual"><scope>DynamicTable</scope><name>data_type</name></member>
+      <member refid="struct_dynamic_table_1a4570a063de72097b914a6eef137ddbf5" prot="public" virt="non-virtual"><scope>DynamicTable</scope><name>description</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

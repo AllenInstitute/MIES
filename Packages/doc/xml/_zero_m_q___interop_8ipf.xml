@@ -1,0 +1,588 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_zero_m_q___interop_8ipf" kind="file" language="C++">
+    <compoundname>ZeroMQ_Interop.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Flags for zeromq_set()</header>
+      <description><para><anchor id="_zero_m_q___interop_8ipf_1ZeroMQSetFlags"/> Sets the default flags (no debug, no ipv6, busy wait on receive) </para>
+</description>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a3e30dbd3d26ea477e48c9f1f165c1aea" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_SET_FLAGS_DEFAULT</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_SET_FLAGS_DEFAULT</name>
+        <initializer>= 0x1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="11" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="11" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a807c88731d7e7219fb758c0ae464ff0e" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_SET_FLAGS_DEBUG</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_SET_FLAGS_DEBUG</name>
+        <initializer>= 0x2</initializer>
+        <briefdescription>
+<para>Enable debug output. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="13" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1acbab192dd4a9c9eb146f4f450a66ec55" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_SET_FLAGS_IPV6</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_SET_FLAGS_IPV6</name>
+        <initializer>= 0x4</initializer>
+        <briefdescription>
+<para>Enable ipv6 support. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="15" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1ad73f27c0dcb920b516381169158c0115" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_SET_FLAGS_NOBUSYWAITRECV</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_SET_FLAGS_NOBUSYWAITRECV</name>
+        <initializer>= 0x8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Don&apos;t do busy waiting on zeromq_server_recv() and zeromq_client_recv() instead immediately return if no messages are available. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="18" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a37b7fc35453436f1e860e9fe39aaafdf" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_SET_FLAGS_LOGGING</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_SET_FLAGS_LOGGING</name>
+        <initializer>= 0x10</initializer>
+        <briefdescription>
+<para>Log incoming and outgoing messages. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="20" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Error codes</header>
+      <description><para><anchor id="_zero_m_q___interop_8ipf_1ZeroMQErrorCodes"/></para>
+</description>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1abcf4ba43c2b261784462534317522caa" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_UNKNOWN_SET_FLAG</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_UNKNOWN_SET_FLAG</name>
+        <initializer>= 10003</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="29" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a6fda163fc3515ad69fd4eb8a8787ab10" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_INTERNAL_ERROR</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_INTERNAL_ERROR</name>
+        <initializer>= 10004</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="30" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a8375a079021865c9c9f21e855b167f81" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_INVALID_ARG</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_INVALID_ARG</name>
+        <initializer>= 10005</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="31" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1afb8d37dd6e7a53670844c275f176ec2a" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_HANDLER_ALREADY_RUNNING</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_HANDLER_ALREADY_RUNNING</name>
+        <initializer>= 10006</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="32" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="32" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1ab22a2523533a95fc1cec3baba992dccd" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_HANDLER_NO_CONNECTION</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_HANDLER_NO_CONNECTION</name>
+        <initializer>= 10007</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="33" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a84df881ae83eb8a87b11cd078fdcc074" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_MISSING_PROCEDURE_FILES</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_MISSING_PROCEDURE_FILES</name>
+        <initializer>= 10008</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="34" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a120e47e41499084ff165829c4d89f27e" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_INVALID_MESSAGE_FORMAT</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_INVALID_MESSAGE_FORMAT</name>
+        <initializer>= 10009</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="35" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a015052394b473e2d394d1cabab2894a5" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_INVALID_LOGGING_TEMPLATE</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_INVALID_LOGGING_TEMPLATE</name>
+        <initializer>= 10010</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="36" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a8a9bca2fc88599008bb51ada8bff3554" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_MESSAGE_FILTER_DUPLICATED</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_MESSAGE_FILTER_DUPLICATED</name>
+        <initializer>= 10011</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="37" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a2b840cc932425033dc790dbf6f719493" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ZeroMQ_MESSAGE_FILTER_MISSING</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_MESSAGE_FILTER_MISSING</name>
+        <initializer>= 10012</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="38" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Functions which might be useful for outside callers</header>
+      <description><para><anchor id="_zero_m_q___interop_8ipf_1ZeroMQInterfaceFunctions"/></para>
+</description>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1af522203097273295a6af6582df9fd7ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ZeroMQ_WaveExists</definition>
+        <argsstring>(string pathToWave)</argsstring>
+        <name>ZeroMQ_WaveExists</name>
+        <param>
+          <type>string</type>
+          <declname>pathToWave</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="62" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="62" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1a2e4e00248654f0d067f540eb9d7c053f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave ZeroMQ_GetWave</definition>
+        <argsstring>(string pathToWave)</argsstring>
+        <name>ZeroMQ_GetWave</name>
+        <param>
+          <type>string</type>
+          <declname>pathToWave</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="70" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="70" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1ac99cd8d2a74693349b3d402d651dec00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ZeroMQ_DataFolderExists</definition>
+        <argsstring>(string pathToDataFolder)</argsstring>
+        <name>ZeroMQ_DataFolderExists</name>
+        <param>
+          <type>string</type>
+          <declname>pathToDataFolder</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="78" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="78" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1ab052457ab10dd1ddeb158ab0355ad51a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ZeroMQ_FunctionList</definition>
+        <argsstring>(string matchStr)</argsstring>
+        <name>ZeroMQ_FunctionList</name>
+        <param>
+          <type>string</type>
+          <declname>matchStr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="84" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="84" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1a0fab220b133108b3e159c1352472a15f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ZeroMQ_FunctionInfo</definition>
+        <argsstring>(string functionNameStr)</argsstring>
+        <name>ZeroMQ_FunctionInfo</name>
+        <param>
+          <type>string</type>
+          <declname>functionNameStr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="90" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="90" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="_zero_m_q___interop_8ipf_1a2bde843f54a90e71f726ebecdc5e99e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ZeroMQ_ShowHelp</definition>
+        <argsstring>(string topic)</argsstring>
+        <name>ZeroMQ_ShowHelp</name>
+        <param>
+          <type>string</type>
+          <declname>topic</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="96" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="96" bodyend="100"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1acd96451869f5609ead784813e2b413cc" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string ZeroMQ_HEARTBEAT</definition>
+        <argsstring></argsstring>
+        <name>ZeroMQ_HEARTBEAT</name>
+        <initializer>= &quot;heartbeat&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="24" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___foreign_function_interface_8ipf_1a94b052bcf0ae3574a8e84e4d8865db9c" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="80" endline="89">FFI_GetAvailableMessageFilters</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a61d52a7e2affce828f94dd787bcc14a2" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_SUCCESS</definition>
+        <argsstring></argsstring>
+        <name>REQ_SUCCESS</name>
+        <initializer>=   0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="41" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a336f6fc9d4b0a886f0042959f8f6e75e" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_UNKNOWN_ERROR</definition>
+        <argsstring></argsstring>
+        <name>REQ_UNKNOWN_ERROR</name>
+        <initializer>=   1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="42" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a46341e289ff8166e400a78ebdc40c4e7" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_JSON_OBJECT</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_JSON_OBJECT</name>
+        <initializer>=   3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="43" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a6ee5dad2d56a096c6a2eddb331837135" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_VERSION</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_VERSION</name>
+        <initializer>=   4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="44" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a0fb87f4d4db8250d173e932ba50e8026" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_OPERATION</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_OPERATION</name>
+        <initializer>=   5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="45" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1aea35353f7645c4b89cc75814a358e38d" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_OPERATION_FORMAT</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_OPERATION_FORMAT</name>
+        <initializer>=   6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="46" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a3c1cb92d3df2b095eaceea6ce50c852b" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_MESSAGEID</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_MESSAGEID</name>
+        <initializer>=   7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="47" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a80ac9915df901dabc2bf796fa584a201" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_OUT_OF_MEMORY</definition>
+        <argsstring></argsstring>
+        <name>REQ_OUT_OF_MEMORY</name>
+        <initializer>=   8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="48" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a1bb615ad5bc04dede03174656c4b4790" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_PROC_NOT_COMPILED</definition>
+        <argsstring></argsstring>
+        <name>REQ_PROC_NOT_COMPILED</name>
+        <initializer>= 100</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="50" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1afdac8a243a8fe0ab25c68218062d4c84" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_NON_EXISTING_FUNCTION</definition>
+        <argsstring></argsstring>
+        <name>REQ_NON_EXISTING_FUNCTION</name>
+        <initializer>= 101</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="51" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a1647b26c5441a6df85ec85695f481459" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_TOO_FEW_FUNCTION_PARAMS</definition>
+        <argsstring></argsstring>
+        <name>REQ_TOO_FEW_FUNCTION_PARAMS</name>
+        <initializer>= 102</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="52" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a96f7375a0b5f2da3d8b3c90974e69790" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_TOO_MANY_FUNCTION_PARAMS</definition>
+        <argsstring></argsstring>
+        <name>REQ_TOO_MANY_FUNCTION_PARAMS</name>
+        <initializer>= 103</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="53" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a0ecc3c61405a57abff1e347fbcb511a8" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_UNSUPPORTED_FUNC_SIG</definition>
+        <argsstring></argsstring>
+        <name>REQ_UNSUPPORTED_FUNC_SIG</name>
+        <initializer>= 104</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="54" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a699516baa4dacc11b76d7d46330098bd" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_UNSUPPORTED_FUNC_RET</definition>
+        <argsstring></argsstring>
+        <name>REQ_UNSUPPORTED_FUNC_RET</name>
+        <initializer>= 105</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="55" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1ace6a065340d3684708676621ae47b048" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_INVALID_PARAM_FORMAT</definition>
+        <argsstring></argsstring>
+        <name>REQ_INVALID_PARAM_FORMAT</name>
+        <initializer>= 106</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="56" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_zero_m_q___interop_8ipf_1a874e9ba9323342979a4f0c8ac634b28d" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double REQ_FUNCTION_ABORTED</definition>
+        <argsstring></argsstring>
+        <name>REQ_FUNCTION_ABORTED</name>
+        <initializer>= 107</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" line="57" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/ZeroMQ_Interop.ipf"/>
+  </compounddef>
+</doxygen>

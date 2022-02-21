@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___labnotebook_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Labnotebook.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___labnotebook_8ipf_1a6e5cc77f25c2a578139cae9ecb59091a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LBN_SetDimensionLabels</definition>
+        <argsstring>(WaveText keys, wave values, variable start=defaultValue)</argsstring>
+        <name>LBN_SetDimensionLabels</name>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>start</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Set column dimension labels from the first row of the key wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Labnotebook.ipf" line="10" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Labnotebook.ipf" bodystart="10" bodyend="31"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" compoundref="_i_p_n_w_b___constants_8ipf" startline="98">MAX_OBJECT_NAME_LENGTH_IN_BYTES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a26b46f3942901010c129172fe199c6ff" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1130" endline="1151">AB_updateLabelsInLabNotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a5a8febbc0ff6c3bf1d916a3d9fe1a643" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="467" endline="614">ED_FindIndizesAndRedimension</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a61ba931d234702c472908f3166242cea" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1173" endline="1383">UpgradeLabNotebook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___labnotebook_8ipf_1a8661fa2197a26706cb6dfaf5135a0b99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, string, variable &gt;</type>
+        <definition>std::tuple&lt; variable, string, variable &gt; LBN_GetEntryProperties</definition>
+        <argsstring>(WaveTextOrNull keyWave, string key)</argsstring>
+        <name>LBN_GetEntryProperties</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>keyWave</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Queries the unit and column from the key wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>keyWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>labnotebook key wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key to look for</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="retval"><parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one on error, zero otherwise </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>unit of the result [empty if not found] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>col</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column of the result into the keyWave [NaN if not found] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Labnotebook.ipf" line="41" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Labnotebook.ipf" bodystart="41" bodyend="63"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a15b305c445079d493e74a32594d7e683" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="748" endline="760">LBV_GetPropertiesForLabnotebookEntry</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a100fe9405b34fdd131be180d98ffc382" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1844" endline="1880">NWB_AddSweepDataSets</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4631" endline="4657">PSQ_AddLabnotebookEntriesToJSON</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Labnotebook.ipf"/>
+  </compounddef>
+</doxygen>

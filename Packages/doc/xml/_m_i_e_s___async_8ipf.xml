@@ -1,0 +1,1507 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___async_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Async.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Common Constants</header>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1af473e90f88b6d5512af2908298c4daa0" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ROWS</definition>
+        <argsstring></argsstring>
+        <name>ROWS</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="24" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double COLS</definition>
+        <argsstring></argsstring>
+        <name>COLS</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="25" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="25" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a6069e1dc789c8febb8bcd8dfba75a923" compoundref="_m_i_e_s___async_8ipf" startline="988" endline="1003">GetWorkloadTracking</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double LAYERS</definition>
+        <argsstring></argsstring>
+        <name>LAYERS</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="26" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1ae39f67d188d5c5e8f5fc3d2c35f5bdad" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double CHUNKS</definition>
+        <argsstring></argsstring>
+        <name>CHUNKS</name>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="27" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Variable names for free data folder structure</header>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1afcab96212c9166d93ecd160f61da6b21" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_THREAD_MARKER_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_THREAD_MARKER_STR</name>
+        <initializer>= &quot;threadDFMarker&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="32" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a0e3776cf27e827fd212301374701f740" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_WORKERFUNC_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_WORKERFUNC_STR</name>
+        <initializer>= &quot;WorkerFunc&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="33" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a2f5ea56ed50965735a9e52a0332e13d8" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_READOUTFUNC_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_READOUTFUNC_STR</name>
+        <initializer>= &quot;ReadOutFunc&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="34" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1af8881a45d63c9511a2aa5cee16e0678a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_WORKLOADCLASS_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_WORKLOADCLASS_STR</name>
+        <initializer>= &quot;workloadClass&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="35" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a729c58570487126c118f6726a45820d5" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_PARAMCOUNT_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_PARAMCOUNT_STR</name>
+        <initializer>= &quot;paramCount&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="36" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a932f9c16859c39e37dbafd34881c41a2" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_INORDER_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_INORDER_STR</name>
+        <initializer>= &quot;inOrder&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="37" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1adab2aaf9982a7f8c5e80f1f588384dfd" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_ABORTFLAG_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_ABORTFLAG_STR</name>
+        <initializer>= &quot;abortFlag&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="38" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a04a2750bce7b40db213af975f1e5b751" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_ERROR_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_ERROR_STR</name>
+        <initializer>= &quot;err&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="39" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1ac06563d4c3616d8c1ec4bed54f49936f" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_ERRORMSG_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_ERRORMSG_STR</name>
+        <initializer>= &quot;errmsg&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="40" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1ab029325a1bb56bc53102abea5600f4dd" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_WLCOUNTER_STR</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_WLCOUNTER_STR</name>
+        <initializer>= &quot;workloadClassCounter&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="41" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a076566adbe17f2337117674ee2e2e72b" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string ASYNC_BACKGROUND</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_BACKGROUND</name>
+        <initializer>= &quot;AsyncFramework&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MAX_OBJECT_NAME_LENGTH_IN_BYTES</definition>
+        <argsstring></argsstring>
+        <name>MAX_OBJECT_NAME_LENGTH_IN_BYTES</name>
+        <initializer>= 255</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="17" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___async_8ipf_1ae9c6826b513482377ee158694d72a3ee" compoundref="_m_i_e_s___async_8ipf" startline="1088" endline="1092">IsValidObjectName</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1ae9f387dc6515018a9b692784ff8f6c19" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ASYNC_THREAD_MARKER</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_THREAD_MARKER</name>
+        <initializer>= 299792458</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="18" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___async_8ipf_1abc0fd23cd04bc821be55dbbf6d8a5444" compoundref="_m_i_e_s___async_8ipf" startline="938" endline="947">isThreadDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a9bf4061c963042eec53be64a4d8752e3" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ASYNC_MAX_THREADS</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_MAX_THREADS</name>
+        <initializer>= 64</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="19" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___async_8ipf_1a3c4e9548a6e19658e3e2c653e4c5ff08" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ASYNC_SLEEP_ON_WAIT</definition>
+        <argsstring></argsstring>
+        <name>ASYNC_SLEEP_ON_WAIT</name>
+        <initializer>= 0.01</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="20" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_Start</definition>
+        <argsstring>(variable numThreads, variable disableTask=defaultValue)</argsstring>
+        <name>ASYNC_Start</name>
+        <param>
+          <type>variable</type>
+          <declname>numThreads</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>disableTask</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Starts the Async Framework with numThreads parallel threads. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numThreads</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of threads to setup for processing data, must be &gt;= 1 and &lt;= ASYNC_MAX_THREADS</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>disableTask</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] when set to 1 the background task processing readouts is not started</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if ASYNC framework was started, 0 if ASYNC framework was already running, in this case the number of threads is not changed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="51" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="51" bodyend="85"/>
+        <references refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" compoundref="_m_i_e_s___async_8ipf" startline="752" endline="787">ASSERT</references>
+        <references refid="_m_i_e_s___async_8ipf_1a6aa559d1bd54409db4a16c037f9a1cb0" compoundref="_m_i_e_s___async_8ipf" startline="1024" endline="1038">ASYNC_IsASYNCRunning</references>
+        <references refid="_m_i_e_s___async_8ipf_1ac4c0b2326e40004bc854ac1aedcea7db" compoundref="_m_i_e_s___async_8ipf" startline="933" endline="935">GetAsyncHomeDF</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="285" endline="302">AfterCompiledHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a1a3843adf223fff23d467e32a1280c1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref ASYNC_Worker</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>ASYNC_Worker</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Prototype function for an async worker function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reference to thread data folder</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>data folder reference to output data folder </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="92" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="92" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a98d941082effa86dccdc44a5a4d33227" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_ReadOut</definition>
+        <argsstring>(dfref dfr, variable err, string errmsg)</argsstring>
+        <name>ASYNC_ReadOut</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>err</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errmsg</declname>
+        </param>
+        <briefdescription>
+<para>Prototype function for an async readout function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reference to returned data folder from thread </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error code, only set in the error case </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>errmsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error message, only set in the error case </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="101" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="101" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a310585f49183eaae2a26ede5acdbd214" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ASYNC_Thread</definition>
+        <argsstring>()</argsstring>
+        <name>ASYNC_Thread</name>
+        <briefdescription>
+<para>thread function that receives data folders from the thread input queue and calls the setup custom worker function. With :cpp:func:<computeroutput>ASYNC_Start</computeroutput> numThreads :cpp:func:<computeroutput>ASYNC_Thread</computeroutput> functions will be started in their own thread. Each will run until the framework is stopped. UTF_NOINSTRUMENTATION </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="112" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="112" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a2a1eb41d87478bc4b6c5a7daba4d3d85" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref ASYNC_Run_Worker</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>ASYNC_Run_Worker</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="136" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="136" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ab01ac3210d8b52b2f1bffbe8015ded95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_ThreadReadOut</definition>
+        <argsstring>()</argsstring>
+        <name>ASYNC_ThreadReadOut</name>
+        <briefdescription>
+<para>Receives data from finished workloads. Calls the user defined readout function. For in order readouts this function buffers pending result data folders until they can be processed in order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="175" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="175" bodyend="266"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a7eca8152b3a944a49757498ddf1271aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_IsWorkloadClassDone</definition>
+        <argsstring>(string workloadClass, variable removeClass=defaultValue)</argsstring>
+        <name>ASYNC_IsWorkloadClassDone</name>
+        <param>
+          <type>string</type>
+          <declname>workloadClass</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>removeClass</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Allows to check if all executed work loads of a specific work load class were read out. For that case, the work load class can optionally be removed from Async. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">workloadClass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>work load class string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">removeClass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] when set the specified work load class is removed from Async The parameter has no effect, if the work loads of the specified class are not done. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if work load class finished, 0 if work load class did not finish, NaN if work load class not known to ASYNC </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="274" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="274" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a418ad58c03d057974c2e71aa04ff6a75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_WaitForWLCToFinishAndRemove</definition>
+        <argsstring>(string workloadClass, variable timeout)</argsstring>
+        <name>ASYNC_WaitForWLCToFinishAndRemove</name>
+        <param>
+          <type>string</type>
+          <declname>workloadClass</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>timeout</declname>
+        </param>
+        <briefdescription>
+<para>Wait for TP analysis from specific panel to finish and remove it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">workloadClass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of work load class </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>time out in seconds </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 if work load class is unknown or has finished and was removed, 1 if timeout was encountered. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="302" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="302" bodyend="322"/>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a9b00415ce42933961dd4ec510bd87b99" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="676" endline="691">NWB_ASYNC_FinishWriting</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a63e3e87cf2883d1f43e8afcac9dad682" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_BackgroundReadOut</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>ASYNC_BackgroundReadOut</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background function that reads data folders from the thread output queue and calls the setup custom readout function The function takes care to buffer results if they should be processed in order. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>default structure for Igor background tasks </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="329" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="329" bodyend="333"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a4db78dbdee22abd609d1149fe9d8aef5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_AddParam</definition>
+        <argsstring>(dfref dfr, wave w=defaultValue, variable var=defaultValue, string str=defaultValue, variable move=defaultValue, string name=defaultValue)</argsstring>
+        <name>ASYNC_AddParam</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>w</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>move</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Adds one parameter to a data folder for a threaded worker execution. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The parameters are globals in the threads data folder and named param0, param1, param2... in order of adding them. Only one parameter can be added per call. move is only allowed in combination with a wave.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data folder reference to thread df, prepared by calling ASYNC_PrepareDF </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = null] wave reference of wave to be added as parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] variable to be added as parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] string to be added as parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>move</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = paramXXX] name of the added parameter </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="346" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="346" bodyend="388"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a595a3452d6f5457880088d9b51e6b37b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave ASYNC_FetchWave</definition>
+        <argsstring>(dfref dfr, string name)</argsstring>
+        <name>ASYNC_FetchWave</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Fetch a wave from the DFREF in the worker function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="391" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="391" bodyend="397"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" compoundref="_m_i_e_s___structures_8ipf" startline="411" endline="454">NWB_ASYNC_DeserializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a85651bc5fc822f7180c28b336a5e9520" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_FetchVariable</definition>
+        <argsstring>(dfref dfr, string name)</argsstring>
+        <name>ASYNC_FetchVariable</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Fetch a variable from the DFREF in the worker function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="400" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="400" bodyend="406"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" compoundref="_m_i_e_s___structures_8ipf" startline="411" endline="454">NWB_ASYNC_DeserializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1aafb64ac648892aecae5c61ed7e6f94ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ASYNC_FetchString</definition>
+        <argsstring>(dfref dfr, string name)</argsstring>
+        <name>ASYNC_FetchString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Fetch a string from the DFREF in the worker function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="409" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="409" bodyend="415"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" compoundref="_m_i_e_s___structures_8ipf" startline="411" endline="454">NWB_ASYNC_DeserializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ac952f31d6a066caa560f361bdd21cd26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_Stop</definition>
+        <argsstring>(variable timeout=defaultValue, variable fromAssert=defaultValue)</argsstring>
+        <name>ASYNC_Stop</name>
+        <param>
+          <type>variable</type>
+          <declname>timeout</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fromAssert</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Stops the Async Framework. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = Inf] time in s to wait for running threads, the function waits for pending threads and pending readouts within this time. After a timeout happened the readout processing is stopped and threads are stopped. Any pending data is lost. If the threads have to be stopped forcefully, an assertion is raised. Using a finite timeout is strongly recommended.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fromAssert</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] specified when called as cleanup function from ASSERT Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease are executed.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>2 if ASYNC framework was not running, 1 if a timeout was encountered, 0 otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="429" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="429" bodyend="542"/>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1ae44d37d110115372a6318b15bb15bbaa" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="271" endline="283">BeforeUncompiledHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ad0763d663832657d1a935ccb23d9b6ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>dfref ASYNC_PrepareDF</definition>
+        <argsstring>(string WorkerFunc, string ReadOutFunc, string workloadClass, variable inOrder=defaultValue)</argsstring>
+        <name>ASYNC_PrepareDF</name>
+        <param>
+          <type>string</type>
+          <declname>WorkerFunc</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ReadOutFunc</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>workloadClass</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>inOrder</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Prepares a thread data folder for use with the AsyncFramework This function should be called first when setting up a worker with parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>WorkerFunc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string naming a threadsafe worker function in the form of the ASYNC_Worker template</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ReadOutFunc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string naming a readout function in the form of the ASYNC_ReadOut template</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>workloadClass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string naming a work load class for work load attribution like &quot;TestPulse&quot; The string must follow strict object naming rules.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inOrder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 1] flag that allows to disable in order readout of results</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>data folder for thread, where parameters can be put to with :cpp:func:<computeroutput>ASYNC_AddParam</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="557" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="557" bodyend="588"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1aad3777dd6bb37e4a242b4d53bf1f722a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASYNC_Execute</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>ASYNC_Execute</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Puts a prepared thread data folder to parallel execution in another thread. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data folder that is setup for thread and is to be deployed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="593" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="593" bodyend="639"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1543" endline="1547">TP_SendToAnalysis</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a6f6b264152ed553065244c6adee09418" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsFinite</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>IsFinite</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if var is a finite/normal number, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>UTF_NOINSTRUMENTATION </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="646" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="646" bodyend="650"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a04f2fce56cb96b91a5df24ed3dc14277" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsEmpty</definition>
+        <argsstring>(string *str)</argsstring>
+        <name>IsEmpty</name>
+        <param>
+          <type>string *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Returns one if str is empty or null, zero otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>must not be a SVAR</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+UTF_NOINSTRUMENTATION </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="658" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="658" bodyend="663"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1afba0636f9a8c888217a5caa26997cf53" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsNaN</definition>
+        <argsstring>(variable var)</argsstring>
+        <name>IsNaN</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if var is a NaN, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>UTF_NOINSTRUMENTATION </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="670" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="670" bodyend="674"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DataFolderExistsDFR</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>DataFolderExistsDFR</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the datafolder referenced by dfr exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Unlike DataFolderExists() a dfref pointing to an empty (&quot;&quot;) dataFolder is considered non-existing here. <simplesect kind="return"><para>one if dfr is valid and references an existing or free datafolder, zero otherwise Taken from <ulink url="http://www.igorexchange.com/node/2055">http://www.igorexchange.com/node/2055</ulink> UTF_NOINSTRUMENTATION </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="682" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="682" bodyend="699"/>
+        <referencedby refid="_m_i_e_s___async_8ipf_1aaac024a5ed4722f9cc78b9c09b0cf0bb" compoundref="_m_i_e_s___async_8ipf" startline="969" endline="981">GetDFREFbuffer</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___async_8ipf" startline="846" endline="865">GetNVARAsString</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a3c345ee73258b93a34c704fd9910c3b2" compoundref="_m_i_e_s___async_8ipf" startline="1007" endline="1021">GetSerialExecutionBuffer</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1adda663266b20accc016fcca9afdb3a76" compoundref="_m_i_e_s___async_8ipf" startline="873" endline="892">GetSVARAsString</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a6069e1dc789c8febb8bcd8dfba75a923" compoundref="_m_i_e_s___async_8ipf" startline="988" endline="1003">GetWorkloadTracking</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a781cdd2ba4e2c36a410d14332d257c79" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetStackTrace</definition>
+        <argsstring>(string prefix=defaultValue)</argsstring>
+        <name>GetStackTrace</name>
+        <param>
+          <type>string</type>
+          <declname>prefix</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a nicely formatted multiline stacktrace. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="702" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="702" bodyend="733"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ASSERT</definition>
+        <argsstring>(variable var, string errorMsg)</argsstring>
+        <name>ASSERT</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errorMsg</declname>
+        </param>
+        <briefdescription>
+<para>Low overhead function to check assertions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if zero an error message is printed into the history and procedure execution is aborted, nothing is done otherwise. If the debugger is enabled, it also steps into it. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>errorMsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error message to output in failure case</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Example usage: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   ControlInfo/W = $device popup_MoreSettings_DeviceType
+*   ASSERT(V_flag &gt; 0, &quot;Non-existing control or window&quot;)
+*   do something with S_value
+*  </verbatim></para>
+<para>UTF_NOINSTRUMENTATION </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="752" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="752" bodyend="787"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ac9613ef0ca17669e69d6e17267f652b9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ASSERT_TS</definition>
+        <argsstring>(variable var, string errorMsg)</argsstring>
+        <name>ASSERT_TS</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errorMsg</declname>
+        </param>
+        <briefdescription>
+<para>Low overhead function to check assertions (threadsafe variant) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if zero an error message is printed into the history and procedure execution is aborted, nothing is done otherwise. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>errorMsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error message to output in failure case</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Example usage: <verbatim>embed:rst:leading-asterisk
+*   .. code-block:: igorpro
+* 
+*       ASSERT(DataFolderExistsDFR(dfr), &quot;MyFunc: dfr does not exist&quot;)
+*       do something with dfr
+*  </verbatim></para>
+<para>Unlike <ref refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" kindref="member">ASSERT()</ref> this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations. Therefore it is advised to prefix <computeroutput>errorMsg</computeroutput> with the current function name.</para>
+<para>UTF_NOINSTRUMENTATION </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="809" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="809" bodyend="819"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a6d7c46d547f1fa225fd5dfb6ba20593f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable FuncRefIsAssigned</definition>
+        <argsstring>(string funcInfo)</argsstring>
+        <name>FuncRefIsAssigned</name>
+        <param>
+          <type>string</type>
+          <declname>funcInfo</declname>
+        </param>
+        <briefdescription>
+<para>Check wether the function reference points to the prototype function or to an assigned function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Due to Igor Pro limitations you need to pass the function info from <computeroutput>FuncRefInfo</computeroutput> and not the function reference itself.</para>
+<para><simplesect kind="return"><para>1 if pointing to prototype function, 0 otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="828" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="828" bodyend="838"/>
+        <references refid="_m_i_e_s___async_8ipf_1ac9613ef0ca17669e69d6e17267f652b9" compoundref="_m_i_e_s___async_8ipf" startline="809" endline="819">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___async_8ipf_1a6f6b264152ed553065244c6adee09418" compoundref="_m_i_e_s___async_8ipf" startline="646" endline="650">IsFinite</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetNVARAsString</definition>
+        <argsstring>(dfref dfr, string globalVarName, variable initialValue=defaultValue)</argsstring>
+        <name>GetNVARAsString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>globalVarName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>initialValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the full path to a global variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>location of the global variable, must exist </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>globalVarName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the global variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>initial value of the variable. Will only be used if it is created. 0 by default. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="846" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="846" bodyend="865"/>
+        <references refid="_m_i_e_s___async_8ipf_1ac9613ef0ca17669e69d6e17267f652b9" compoundref="_m_i_e_s___async_8ipf" startline="809" endline="819">ASSERT_TS</references>
+        <references refid="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" compoundref="_m_i_e_s___async_8ipf" startline="682" endline="699">DataFolderExistsDFR</references>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a62abc33be193877664b8abc1f4b7c89e" compoundref="_m_i_e_s___async_8ipf" startline="955" endline="957">GetNumThreads</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a3360b24788c4f6d40dc59666c45d7194" compoundref="_m_i_e_s___async_8ipf" startline="960" endline="962">GetTaskDisableStatus</referencedby>
+        <referencedby refid="_m_i_e_s___async_8ipf_1a7b1f8863176787f7a8199e2fe43ae313" compoundref="_m_i_e_s___async_8ipf" startline="950" endline="952">GetThreadGroupID</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1adda663266b20accc016fcca9afdb3a76" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetSVARAsString</definition>
+        <argsstring>(dfref dfr, string globalStrName, string initialValue=defaultValue)</argsstring>
+        <name>GetSVARAsString</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>globalStrName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>initialValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the full path to a global string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dfr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>location of the global string, must exist </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>globalStrName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the global string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>initial value of the string. Will only be used if it is created. null by default. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="873" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="873" bodyend="892"/>
+        <references refid="_m_i_e_s___async_8ipf_1ac9613ef0ca17669e69d6e17267f652b9" compoundref="_m_i_e_s___async_8ipf" startline="809" endline="819">ASSERT_TS</references>
+        <references refid="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" compoundref="_m_i_e_s___async_8ipf" startline="682" endline="699">DataFolderExistsDFR</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a56ac1f5e4865f7a27faedbee02e5861e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref createDFWithAllParents</definition>
+        <argsstring>(string dataFolder)</argsstring>
+        <name>createDFWithAllParents</name>
+        <param>
+          <type>string</type>
+          <declname>dataFolder</declname>
+        </param>
+        <briefdescription>
+<para>Create a datafolder and all its parents,. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Includes fast handling of the common case that the datafolder exists. <simplesect kind="return"><para>reference to the datafolder </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="901" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="901" bodyend="925"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a12bcfeb05e62155b97ada7ac1b791a6c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetAsyncHomeStr</definition>
+        <argsstring>()</argsstring>
+        <name>GetAsyncHomeStr</name>
+        <briefdescription>
+<para>Returns string path to async framework home data folder. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="928" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="928" bodyend="930"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ac4c0b2326e40004bc854ac1aedcea7db" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref GetAsyncHomeDF</definition>
+        <argsstring>()</argsstring>
+        <name>GetAsyncHomeDF</name>
+        <briefdescription>
+<para>Returns reference to async framework home data folder. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="933" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="933" bodyend="935"/>
+        <references refid="_m_i_e_s___async_8ipf_1a56ac1f5e4865f7a27faedbee02e5861e" compoundref="_m_i_e_s___async_8ipf" startline="901" endline="925">createDFWithAllParents</references>
+        <referencedby refid="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0" compoundref="_m_i_e_s___async_8ipf" startline="51" endline="85">ASYNC_Start</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1abc0fd23cd04bc821be55dbbf6d8a5444" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable isThreadDF</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>isThreadDF</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>test if data folder is marked for thread usage </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="938" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="938" bodyend="947"/>
+        <references refid="_m_i_e_s___async_8ipf_1ae9f387dc6515018a9b692784ff8f6c19" compoundref="_m_i_e_s___async_8ipf" startline="18">ASYNC_THREAD_MARKER</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a7b1f8863176787f7a8199e2fe43ae313" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetThreadGroupID</definition>
+        <argsstring>()</argsstring>
+        <name>GetThreadGroupID</name>
+        <briefdescription>
+<para>Returns string path to the thread group id. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="950" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="950" bodyend="952"/>
+        <references refid="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___async_8ipf" startline="846" endline="865">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a62abc33be193877664b8abc1f4b7c89e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetNumThreads</definition>
+        <argsstring>()</argsstring>
+        <name>GetNumThreads</name>
+        <briefdescription>
+<para>Returns string path to the number of threads. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="955" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="955" bodyend="957"/>
+        <references refid="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___async_8ipf" startline="846" endline="865">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a3360b24788c4f6d40dc59666c45d7194" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string GetTaskDisableStatus</definition>
+        <argsstring>()</argsstring>
+        <name>GetTaskDisableStatus</name>
+        <briefdescription>
+<para>Returns string path to flag if background task was disabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="960" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="960" bodyend="962"/>
+        <references refid="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb" compoundref="_m_i_e_s___async_8ipf" startline="846" endline="865">GetNVARAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1aaac024a5ed4722f9cc78b9c09b0cf0bb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetDFREFbuffer</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>GetDFREFbuffer</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Return wave reference to wave with data folder reference buffer for delayed readouts 1d wave for data folder references, starts with size 0 when jobs should be read out in order, the waiting data folders are buffered in this wave e.g. if the next read out would be job 2, but a data folder from job 3 is returned the data folder is buffered until the one from job 2 appears from the output queue. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="969" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="969" bodyend="981"/>
+        <references refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" compoundref="_m_i_e_s___async_8ipf" startline="752" endline="787">ASSERT</references>
+        <references refid="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" compoundref="_m_i_e_s___async_8ipf" startline="682" endline="699">DataFolderExistsDFR</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a6069e1dc789c8febb8bcd8dfba75a923" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetWorkloadTracking</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>GetWorkloadTracking</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Returns wave ref for workload tracking 2d wave row stores work load classes named through dimension label column 0 stores how many work loads were pushed to Async column 1 stores how many work loads were read out from Async. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="988" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="988" bodyend="1003"/>
+        <references refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" compoundref="_m_i_e_s___async_8ipf" startline="752" endline="787">ASSERT</references>
+        <references refid="_m_i_e_s___async_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_m_i_e_s___async_8ipf" startline="25">COLS</references>
+        <references refid="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" compoundref="_m_i_e_s___async_8ipf" startline="682" endline="699">DataFolderExistsDFR</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a3c345ee73258b93a34c704fd9910c3b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetSerialExecutionBuffer</definition>
+        <argsstring>(dfref dfr)</argsstring>
+        <name>GetSerialExecutionBuffer</name>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Returns wave ref for buffering results when THREADING_DISABLED is defined 1D wave using NOTE_INDEX logic. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="1007" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="1007" bodyend="1021"/>
+        <references refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" compoundref="_m_i_e_s___async_8ipf" startline="752" endline="787">ASSERT</references>
+        <references refid="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519" compoundref="_m_i_e_s___async_8ipf" startline="682" endline="699">DataFolderExistsDFR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1a6aa559d1bd54409db4a16c037f9a1cb0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ASYNC_IsASYNCRunning</definition>
+        <argsstring>()</argsstring>
+        <name>ASYNC_IsASYNCRunning</name>
+        <briefdescription>
+<para>returns 1 if ASYNC framework is running, 0 otherwise </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="1024" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="1024" bodyend="1038"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___async_8ipf_1afba0636f9a8c888217a5caa26997cf53" compoundref="_m_i_e_s___async_8ipf" startline="670" endline="674">IsNaN</references>
+        <referencedby refid="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0" compoundref="_m_i_e_s___async_8ipf" startline="51" endline="85">ASYNC_Start</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ab6b1596916bb78f2015a223250e617b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DeleteWavePoint</definition>
+        <argsstring>(wave wv, variable dim, variable index)</argsstring>
+        <name>DeleteWavePoint</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Deletes one row, column, layer or chunk from a wave Advantages over DeletePoints: Keeps the dimensionality of the wave when deleting the last row, column, layer or chunk in a wave Implements range check Advantages over DeletePoints + KillWaves: The wave reference stays valid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave where the row, column, layer or chunk should be deleted</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimension 0 - rows, 1 - column, 2 - layer, 3 - chunk</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>index where one point in the given dimension is deleted </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="1052" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="1052" bodyend="1083"/>
+        <references refid="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49" compoundref="_m_i_e_s___async_8ipf" startline="752" endline="787">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___async_8ipf_1ae9c6826b513482377ee158694d72a3ee" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsValidObjectName</definition>
+        <argsstring>(string name)</argsstring>
+        <name>IsValidObjectName</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Check if a name for an object adheres to the strict naming rules. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><computeroutput>DisplayHelpTopic &quot;ObjectName&quot;</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" line="1088" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf" bodystart="1088" bodyend="1092"/>
+        <references refid="_m_i_e_s___async_8ipf_1af4ab7f2ba8962740ba8010d067a4672a" compoundref="_m_i_e_s___async_8ipf" startline="17">MAX_OBJECT_NAME_LENGTH_IN_BYTES</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>ASYNC</bold> This file holds the asynchronous execution framework </para>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>embed:rst:leading-asterisk
+*  See :ref:`async_framework_doc` for the full documentation.
+*  </verbatim> </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Async.ipf"/>
+  </compounddef>
+</doxygen>

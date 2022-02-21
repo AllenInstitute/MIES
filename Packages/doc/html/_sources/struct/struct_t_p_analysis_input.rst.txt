@@ -1,0 +1,4 @@
+Struct TPAnalysisInput
+======================
+
+.. doxygenstruct:: TPAnalysisInput

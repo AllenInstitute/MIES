@@ -1,0 +1,544 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___data_acquisition___multi_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DataAcquisition_Multi.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_FIFOMonitor</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQM_FIFOMonitor</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Fifo monitor for DAQ Multi Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="19" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="19" bodyend="124"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a269a3df6c5dd5dcceee108e70e4a3a37" compoundref="_m_i_e_s___constants_8ipf" startline="587">ANALYSIS_FUNC_RET_EARLY_STOP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02ec7a478feb7ddacfa5e2a0ede89b5d" compoundref="_m_i_e_s___constants_8ipf" startline="586">ANALYSIS_FUNC_RET_REPURP_TIME</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6def02b85e78c8469c6958f9893c2909" compoundref="_m_i_e_s___constants_8ipf" startline="1538">DQ_STOP_REASON_HW_ERROR</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="404" endline="414">DQM_RemoveDevice</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="357" endline="369">DQM_StopDataAcq</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad0ad23d804fe6d2c4de44fb74d8aba1d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6129" endline="6133">GetNIFIFOName</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a79398a1df6cf09e38737f9a143e5fd12" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="420" endline="427">GotTPChannelsOnADCs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8f7f7f86d07bc83ff9fd349c3d1c4e0a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5862" endline="5878">UpdateLeftOverSweepTime</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a2fe5a288f4c1f29520b7bf092caf3c63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_TerminateOngoingDAQHelper</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DQM_TerminateOngoingDAQHelper</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Stop ongoing multi device DAQ. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Follower handling for yoked devices is done by the caller. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="129" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="129" bodyend="148"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="404" endline="414">DQM_RemoveDevice</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa0791df077df40d58cfd0ca139578cfa" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="69" endline="79">TFH_StopFIFODaemon</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_StartDAQMultiDevice</definition>
+        <argsstring>(string device, variable initialSetupReq=defaultValue)</argsstring>
+        <name>DQM_StartDAQMultiDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>initialSetupReq</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles the calls to the data configurator (DC) functions and BackgroundMD it is required because of the special handling syncronous ITC1600s require</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initialSetupReq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] performs initialization routines at the very beginning of DAQ, turn off for RA </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="158" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="158" bodyend="265"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a8820a689ee7672afb875c75ab1073f7e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1562" endline="1578">DAP_UpdateITIAcrossSets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7a40e2d16220021ef2f31466fe6b463a" compoundref="_m_i_e_s___constants_8ipf" startline="1194">DAQ_ALLOWED_FUNCTIONS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa373091121765d1e94cf8311abbe5deb" compoundref="_m_i_e_s___constants_8ipf" startline="443">DAQ_BG_MULTI_DEVICE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1a2b78bf758a40efab7cf6a850f248bd78" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="132" endline="154">DQ_StartDAQDeviceTimer</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76229b24d946c3d679fdc6e3f84b142a" compoundref="_m_i_e_s___constants_8ipf" startline="1535">DQ_STOP_REASON_CONFIG_FAILED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1ae9c465e630313ea57c1bc3251ea29af1" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="157" endline="177">DQ_StopDAQDeviceTimer</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac4727b7129dce25d21a0594823982e9e" compoundref="_m_i_e_s___constants_8ipf" startline="627">HARDWARE_DAC_EXTERNAL_TRIGGER</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1afbdda24fc43afbe51431d548aaba7241" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1757" endline="1764">HW_ITC_PrepareAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a5be335d0759af2844df1eead0156a482" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="96" endline="111">HW_PrepareAcq</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a66223a10da726e697737951f429c708a" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="206" endline="233">DQ_RestartDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8f95c19795370be61ddb592d3dbd01f3" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="324" endline="361">RA_CounterMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_CallFuncForDevicesYoked</definition>
+        <argsstring>(string device, CALL_FUNCTION_LIST_PROTOTYPE func)</argsstring>
+        <name>DQM_CallFuncForDevicesYoked</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="_m_i_e_s___utilities_8ipf_1a59794f4f5f3cf0f754d941f854d77f72" kindref="member">CALL_FUNCTION_LIST_PROTOTYPE</ref></type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+<para>Call a function for a device and if this device is a leader with followers for all follower too. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles also non-yoked devices in multi device mode correctly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="271" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="271" bodyend="277"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8b1dacdf9e9c080a3f2e2b28e8bc9af5" compoundref="_m_i_e_s___utilities_8ipf" startline="1751" endline="1768">CallFunctionForEachListItem</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5b8c5714c062fa8e642d7d54248da817" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5536" endline="5545">GetListofLeaderAndPossFollower</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a8882c7a341e46800beb58e049a206d21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_StartBackgroundTimer</definition>
+        <argsstring>(string device, variable runTime, string funcList)</argsstring>
+        <name>DQM_StartBackgroundTimer</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>runTime</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>funcList</declname>
+        </param>
+        <briefdescription>
+<para>Start the background timer for the inter trial interval (ITI) </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Multi device variant</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>runTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>left over time to wait in seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>funcList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>list of functions to execute at the end of the ITI </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="286" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="286" bodyend="300"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="453" endline="497">DQM_MakeOrUpdateTimerParamWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2b9212df07b847c7a21ed240a043f30a" compoundref="_m_i_e_s___utilities_8ipf" startline="2386" endline="2391">IsBackgroundTaskRunning</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a21f3cf55d4f430c8b9f8d6d3bbe67064" compoundref="_m_i_e_s___constants_8ipf" startline="44">TASKNAME_TIMERMD</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a0080f2e57fff2a826140d55de7b588b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_StopBackgroundTimer</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DQM_StopBackgroundTimer</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Stop the background timer used for ITI tracking. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="303" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="303" bodyend="313"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="453" endline="497">DQM_MakeOrUpdateTimerParamWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7d0ddf7b740e95b0fdc81f298774a593" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="585" endline="588">GetActiveDAQDevicesTimerFolder</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1gad4c7bb1b11846190bd5407eeeef33ef5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_Timer</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>DQM_Timer</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background function for tracking ITI. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="318" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="318" bodyend="351"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="453" endline="497">DQM_MakeOrUpdateTimerParamWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1b1effca33001624bd9189f9c1bba794" compoundref="_m_i_e_s___utilities_8ipf" startline="4109" endline="4125">ExecuteListOfFunctions</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7d0ddf7b740e95b0fdc81f298774a593" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="585" endline="588">GetActiveDAQDevicesTimerFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdc6acfd230e0143c0f861379e0cec64" compoundref="_m_i_e_s___utilities_8ipf" startline="4280" endline="4282">RelativeNowHighPrec</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a9998f59d4e139bebda0e6a4b29c76cab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_StartBckrdFIFOMonitor</definition>
+        <argsstring>()</argsstring>
+        <name>DQM_StartBckrdFIFOMonitor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="353" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="353" bodyend="355"/>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_StopDataAcq</definition>
+        <argsstring>(string device, variable deviceID)</argsstring>
+        <name>DQM_StopDataAcq</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="357" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="357" bodyend="369"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1a730b2b4ab20c1adc2cd8e00642457c5a" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="616" endline="643">RA_ContinueOrStop</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa0791df077df40d58cfd0ca139578cfa" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="69" endline="79">TFH_StopFIFODaemon</references>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_BkrdDataAcq</definition>
+        <argsstring>(string device, variable triggerMode=defaultValue)</argsstring>
+        <name>DQM_BkrdDataAcq</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>triggerMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="371" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="371" bodyend="398"/>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa84fd04f1a51bae97865d237340103aa" compoundref="_m_i_e_s___constants_8ipf" startline="538">AS_MID_SWEEP</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1a2b78bf758a40efab7cf6a850f248bd78" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="132" endline="154">DQ_StartDAQDeviceTimer</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1ada01495c829f891afd7143552f7ed485" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="435" endline="451">DQM_AddDevice</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a9998f59d4e139bebda0e6a4b29c76cab" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="353" endline="355">DQM_StartBckrdFIFOMonitor</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2b9212df07b847c7a21ed240a043f30a" compoundref="_m_i_e_s___utilities_8ipf" startline="2386" endline="2391">IsBackgroundTaskRunning</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae4b8bdc8b67786981a77ea9c01a404a1" compoundref="_m_i_e_s___constants_8ipf" startline="46">TASKNAME_FIFOMONMD</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aecefd48c296beb0e1522b156aa1daef8" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="28" endline="32">TFH_StartFIFOStopDaemon</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="158" endline="265">DQM_StartDAQMultiDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_RemoveDevice</definition>
+        <argsstring>(string device, variable deviceID)</argsstring>
+        <name>DQM_RemoveDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+<para>Removes a device from the ActiveDeviceList. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>deviceID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of the device to be removed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="404" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="404" bodyend="414"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1abd232948e267fbf074efbc44f02c9352" compoundref="_m_i_e_s___utilities_8ipf" startline="4572" endline="4603">DeleteWavePoint</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1af6f4ac96a64b0135ed1cec86b11aa4dd" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="417" endline="430">DQM_GetActiveDeviceRow</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a2fe5a288f4c1f29520b7bf092caf3c63" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="129" endline="148">DQM_TerminateOngoingDAQHelper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1af6f4ac96a64b0135ed1cec86b11aa4dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DQM_GetActiveDeviceRow</definition>
+        <argsstring>(variable deviceID)</argsstring>
+        <name>DQM_GetActiveDeviceRow</name>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+<para>Return the row into <computeroutput>ActiveDeviceList</computeroutput> for the given deviceID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="417" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="417" bodyend="430"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="404" endline="414">DQM_RemoveDevice</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a327bebbd6ad9d6299fc1344a1d51c096" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="378" endline="403">RA_AreLeaderAndFollowerFinished</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1ada01495c829f891afd7143552f7ed485" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_AddDevice</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DQM_AddDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Adds a device to the ActiveDeviceList. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="435" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="435" bodyend="451"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a64224e64fea199483ea698bf6f325b61" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="972" endline="1005">GetDQMActiveDeviceList</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_MakeOrUpdateTimerParamWave</definition>
+        <argsstring>(string device, string listOfFunctions, variable startTime, variable RunTime, variable EndTime, variable addOrRemoveDevice)</argsstring>
+        <name>DQM_MakeOrUpdateTimerParamWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>listOfFunctions</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>RunTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>EndTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>addOrRemoveDevice</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="453" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="453" bodyend="497"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1a0dbb86d69f1e76e7dc6ba75557dc72f5" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="499" endline="525">DQM_MakeOrUpdtDevTimerTxtWv</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7d0ddf7b740e95b0fdc81f298774a593" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="585" endline="588">GetActiveDAQDevicesTimerFolder</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8882c7a341e46800beb58e049a206d21" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="286" endline="300">DQM_StartBackgroundTimer</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a0080f2e57fff2a826140d55de7b588b6" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="303" endline="313">DQM_StopBackgroundTimer</referencedby>
+        <referencedby refid="group___background_functions_1gad4c7bb1b11846190bd5407eeeef33ef5" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="318" endline="351">DQM_Timer</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_acquisition___multi_8ipf_1a0dbb86d69f1e76e7dc6ba75557dc72f5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DQM_MakeOrUpdtDevTimerTxtWv</definition>
+        <argsstring>(string device, string listOfFunctions, variable rowToRemove, variable addOrRemoveDevice)</argsstring>
+        <name>DQM_MakeOrUpdtDevTimerTxtWv</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>listOfFunctions</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>rowToRemove</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>addOrRemoveDevice</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" line="499" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf" bodystart="499" bodyend="525"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7d0ddf7b740e95b0fdc81f298774a593" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="585" endline="588">GetActiveDAQDevicesTimerFolder</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="453" endline="497">DQM_MakeOrUpdateTimerParamWave</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DQM</bold> Routines for Multi Device Data acquisition </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataAcquisition_Multi.ipf"/>
+  </compounddef>
+</doxygen>

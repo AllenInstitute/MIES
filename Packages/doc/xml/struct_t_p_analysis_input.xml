@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_t_p_analysis_input" kind="struct" language="C++" prot="public">
+    <compoundname>TPAnalysisInput</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1aed815b3c863342923e42de213d093c08" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE TPAnalysisInput::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="295" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="294" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a7ba53732ea9f7a19e0ae49c83304adac" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::clampAmp</definition>
+        <argsstring></argsstring>
+        <name>clampAmp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="296" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="296" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a35655cf22cc7c20dfb980ce8c6c5d445" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::clampMode</definition>
+        <argsstring></argsstring>
+        <name>clampMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="297" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="297" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a0e23e2a81439a1356c0cbba819d3799a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::duration</definition>
+        <argsstring></argsstring>
+        <name>duration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="298" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="298" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a9adc47178ca3c8c4c44d1f7a0ac14595" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::baselineFrac</definition>
+        <argsstring></argsstring>
+        <name>baselineFrac</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="299" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="299" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a28e5de7989c9947cd5e8e1eafd985b9d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::tpLengthPoints</definition>
+        <argsstring></argsstring>
+        <name>tpLengthPoints</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="300" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="300" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1aba93586bc9ee2f66e07c885c7ba77f75" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::readTimeStamp</definition>
+        <argsstring></argsstring>
+        <name>readTimeStamp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="301" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="301" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1aa05f4c873b524c5f81d792505acd3cda" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::hsIndex</definition>
+        <argsstring></argsstring>
+        <name>hsIndex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="302" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="302" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a7938e056196188f3ca2836490e3ab038" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string TPAnalysisInput::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="303" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="303" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a347178700d548f9d4eafc2845dc0ebd2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::measurementMarker</definition>
+        <argsstring></argsstring>
+        <name>measurementMarker</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="304" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="304" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_p_analysis_input_1a53c995a6d18b4850e88ee3be729eac5a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable TPAnalysisInput::activeADCs</definition>
+        <argsstring></argsstring>
+        <name>activeADCs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="305" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="305" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a17d8752b63477c0f13665f8bf029db3f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1521" endline="1537">TP_PrepareAnalysisDF</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for TP data transfer to analysis. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="294" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="294" bodyend="306"/>
+    <listofallmembers>
+      <member refid="struct_t_p_analysis_input_1a53c995a6d18b4850e88ee3be729eac5a" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>activeADCs</name></member>
+      <member refid="struct_t_p_analysis_input_1a9adc47178ca3c8c4c44d1f7a0ac14595" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>baselineFrac</name></member>
+      <member refid="struct_t_p_analysis_input_1a7ba53732ea9f7a19e0ae49c83304adac" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>clampAmp</name></member>
+      <member refid="struct_t_p_analysis_input_1a35655cf22cc7c20dfb980ce8c6c5d445" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>clampMode</name></member>
+      <member refid="struct_t_p_analysis_input_1aed815b3c863342923e42de213d093c08" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>data</name></member>
+      <member refid="struct_t_p_analysis_input_1a7938e056196188f3ca2836490e3ab038" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>device</name></member>
+      <member refid="struct_t_p_analysis_input_1a0e23e2a81439a1356c0cbba819d3799a" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>duration</name></member>
+      <member refid="struct_t_p_analysis_input_1aa05f4c873b524c5f81d792505acd3cda" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>hsIndex</name></member>
+      <member refid="struct_t_p_analysis_input_1a347178700d548f9d4eafc2845dc0ebd2" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>measurementMarker</name></member>
+      <member refid="struct_t_p_analysis_input_1aba93586bc9ee2f66e07c885c7ba77f75" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>readTimeStamp</name></member>
+      <member refid="struct_t_p_analysis_input_1a28e5de7989c9947cd5e8e1eafd985b9d" prot="public" virt="non-virtual"><scope>TPAnalysisInput</scope><name>tpLengthPoints</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___enhanced_w_m_routines_8ipf" kind="file" language="C++">
+    <compoundname>MIES_EnhancedWMRoutines.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Functions taken from &lt;tt&gt;Waves Average.ipf&lt;/tt&gt; from Igor Pro 6.3.6.4</header>
+      <memberdef kind="function" id="_m_i_e_s___enhanced_w_m_routines_8ipf_1a5d9e0a5028f7bc505a8cfe493190f7dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave MIES_fWaveAverage</definition>
+        <argsstring>(WaveOrNull yWaves, variable ignoreNaNs, variable averageWaveType, variable getComponents=defaultValue, WaveRefWave prevAvgData=defaultValue)</argsstring>
+        <name>MIES_fWaveAverage</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>yWaves</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ignoreNaNs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>averageWaveType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>getComponents</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>prevAvgData</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Average the given waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>yWaves</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Y waves </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ignoreNaNs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Ignoring NaNs means that the average does skip over NaNs. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>averageWaveType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave type of the average wave. Currently supported are <ref refid="_m_i_e_s___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" kindref="member">IGOR_TYPE_64BIT_FLOAT</ref> and <ref refid="_m_i_e_s___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897" kindref="member">IGOR_TYPE_32BIT_FLOAT</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>getComponents</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = 0] Return sum / count components as well </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>prevAvgData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = $&quot;&quot;] wave reference wave with data from previous averaging for incremental averaging. first entry refers to the sum per row wave and second to the counts per row wave.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>wave ref wave containing three free waves with the average per row, sums per row and counts per row. The latter two are only calculated when getComponents was set to 1. The latter two are undefined when getComponents is 0. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_EnhancedWMRoutines.ipf" line="25" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_EnhancedWMRoutines.ipf" bodystart="25" bodyend="270"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897" compoundref="_i_p_n_w_b___constants_8ipf" startline="65">IGOR_TYPE_32BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" compoundref="_i_p_n_w_b___constants_8ipf" startline="66">IGOR_TYPE_64BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___enhanced_w_m_routines_8ipf_1af06fbef2db9c84175a2c435436fab94b" compoundref="_m_i_e_s___enhanced_w_m_routines_8ipf" startline="274" endline="279">x2pntWithFrac</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a5e3c47f584fbd90b6da4b7c31176600f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4148" endline="4209">CalculateAverage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1acd38233671566e3b1caaf014c5329fe6" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2086" endline="2133">PA_CalculateAllAverages</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___enhanced_w_m_routines_8ipf_1af06fbef2db9c84175a2c435436fab94b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable x2pntWithFrac</definition>
+        <argsstring>(wave wv, variable scaledDim)</argsstring>
+        <name>x2pntWithFrac</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>scaledDim</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_EnhancedWMRoutines.ipf" line="274" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_EnhancedWMRoutines.ipf" bodystart="274" bodyend="279"/>
+        <referencedby refid="_m_i_e_s___enhanced_w_m_routines_8ipf_1a5d9e0a5028f7bc505a8cfe493190f7dd" compoundref="_m_i_e_s___enhanced_w_m_routines_8ipf" startline="25" endline="270">MIES_fWaveAverage</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Routines packaged with IGOR PRO but enhanced from us. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Everthing in this file is copyrighted by WaveMetrics Inc. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_EnhancedWMRoutines.ipf"/>
+  </compounddef>
+</doxygen>

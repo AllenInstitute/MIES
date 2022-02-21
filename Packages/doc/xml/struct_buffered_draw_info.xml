@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_buffered_draw_info" kind="struct" language="C++" prot="public">
+    <compoundname>BufferedDrawInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_buffered_draw_info_1a42bc43a36a3aee2aa45f1d70df6bbc34" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable BufferedDrawInfo::jsonID</definition>
+        <argsstring></argsstring>
+        <name>jsonID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="354" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="353" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a0dee5e6bd5faa704e772fe330f2b1008" compoundref="_m_i_e_s___structures_8ipf" startline="338" endline="348">InitBufferedDrawInfo</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a98a735cad98a7e8915931153ae23cb66" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3082" endline="3186">TiledGraphAccelerateDraw</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_buffered_draw_info_1ac3673d4a55ede635111ca6d91df8f143" prot="public" static="no" mutable="no">
+        <type>WaveRefWave</type>
+        <definition>WaveRefWave BufferedDrawInfo::traceWaves</definition>
+        <argsstring></argsstring>
+        <name>traceWaves</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="355" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="355" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a0dee5e6bd5faa704e772fe330f2b1008" compoundref="_m_i_e_s___structures_8ipf" startline="338" endline="348">InitBufferedDrawInfo</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a98a735cad98a7e8915931153ae23cb66" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3082" endline="3186">TiledGraphAccelerateDraw</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Stores information for buffered draw jsonID - stores information about traces and labels to draw/setup traceWaves - wave ref wave with references to the trace waves (which are always non-free) </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="353" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="353" bodyend="356"/>
+    <listofallmembers>
+      <member refid="struct_buffered_draw_info_1a42bc43a36a3aee2aa45f1d70df6bbc34" prot="public" virt="non-virtual"><scope>BufferedDrawInfo</scope><name>jsonID</name></member>
+      <member refid="struct_buffered_draw_info_1ac3673d4a55ede635111ca6d91df8f143" prot="public" virt="non-virtual"><scope>BufferedDrawInfo</scope><name>traceWaves</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_background_struct" kind="struct" language="C++" prot="public">
+    <compoundname>BackgroundStruct</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" prot="public" static="no" mutable="no">
+        <type>WMBackgroundStruct</type>
+        <definition>WMBackgroundStruct BackgroundStruct::wmbs</definition>
+        <argsstring></argsstring>
+        <name>wmbs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" compoundref="_m_i_e_s___blowout_8ipf" startline="145" endline="162">BWO_InitParaPipetteClear</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="35" endline="71">TPS_TestPulseFunc</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_background_struct_1a9581db220a0af538314cdd15a046804b" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 BackgroundStruct::count</definition>
+        <argsstring></argsstring>
+        <name>count</name>
+        <briefdescription>
+<para>Number of invocations of background function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="16" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="35" endline="71">TPS_TestPulseFunc</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_background_struct_1aeedeee092103e0a955fb37fb37e1299f" prot="public" static="no" mutable="no">
+        <type>int32</type>
+        <definition>int32 BackgroundStruct::threadDeadCount</definition>
+        <argsstring></argsstring>
+        <name>threadDeadCount</name>
+        <briefdescription>
+<para>TP-MD only: Number of successive tries to get data from the thread. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="17" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="14" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="14" bodyend="18"/>
+    <listofallmembers>
+      <member refid="struct_background_struct_1a9581db220a0af538314cdd15a046804b" prot="public" virt="non-virtual"><scope>BackgroundStruct</scope><name>count</name></member>
+      <member refid="struct_background_struct_1aeedeee092103e0a955fb37fb37e1299f" prot="public" virt="non-virtual"><scope>BackgroundStruct</scope><name>threadDeadCount</name></member>
+      <member refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" prot="public" virt="non-virtual"><scope>BackgroundStruct</scope><name>wmbs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_pulse_average_deconv_settings" kind="struct" language="C++" prot="public">
+    <compoundname>PulseAverageDeconvSettings</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_pulse_average_deconv_settings_1a5f26db45681d9555950d6d247149cacf" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageDeconvSettings::enable</definition>
+        <argsstring></argsstring>
+        <name>enable</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="95" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="94" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a0fbb544bcc59f0137f3455db46ae9ca2" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1260" endline="1270">PA_DeconvGatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ae25dbe957047e5578cf93ebf68878bf4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2249" endline="2312">PA_DrawScaleBars</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a2974c430ec3a4c23568c5e66e4b8c774" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3369" endline="3595">PA_ShowImage</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a35c67d3fa884412f0c50ecac07bca213" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1547" endline="1838">PA_ShowPulses</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_deconv_settings_1a58cabce52e83ec0d47c4d08b8b44c4e6" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageDeconvSettings::smth</definition>
+        <argsstring></argsstring>
+        <name>smth</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="95" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="95" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a0fbb544bcc59f0137f3455db46ae9ca2" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1260" endline="1270">PA_DeconvGatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2650" endline="2674">PA_SmoothDeconv</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_deconv_settings_1ab735b1632f7baba168f1c52e98fc7fb2" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageDeconvSettings::tau</definition>
+        <argsstring></argsstring>
+        <name>tau</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="95" column="22" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="95" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a0fbb544bcc59f0137f3455db46ae9ca2" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1260" endline="1270">PA_DeconvGatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a05a8f53e8af393873d044a2ae73ad796" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2676" endline="2707">PA_Deconvolution</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_pulse_average_deconv_settings_1a393a11c914b01571b9cd97fad95b8202" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PulseAverageDeconvSettings::range</definition>
+        <argsstring></argsstring>
+        <name>range</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="95" column="26" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="95" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a0fbb544bcc59f0137f3455db46ae9ca2" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1260" endline="1270">PA_DeconvGatherSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1afd4ac78daaa38c3a223bddbde6f48075" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3319" endline="3367">PA_DeserializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a6c97753053b4bdd22a32ac1962330ebc" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="1874" endline="1944">PA_DetermineConstantSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a9cb5e2af31b9bb2789bc962f064416ae" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="3267" endline="3312">PA_SerializeSettings</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a68c9fae97d0952aa07e24b78bbaaf7d4" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="2650" endline="2674">PA_SmoothDeconv</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="94" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="94" bodyend="96"/>
+    <listofallmembers>
+      <member refid="struct_pulse_average_deconv_settings_1a5f26db45681d9555950d6d247149cacf" prot="public" virt="non-virtual"><scope>PulseAverageDeconvSettings</scope><name>enable</name></member>
+      <member refid="struct_pulse_average_deconv_settings_1a393a11c914b01571b9cd97fad95b8202" prot="public" virt="non-virtual"><scope>PulseAverageDeconvSettings</scope><name>range</name></member>
+      <member refid="struct_pulse_average_deconv_settings_1a58cabce52e83ec0d47c4d08b8b44c4e6" prot="public" virt="non-virtual"><scope>PulseAverageDeconvSettings</scope><name>smth</name></member>
+      <member refid="struct_pulse_average_deconv_settings_1ab735b1632f7baba168f1c52e98fc7fb2" prot="public" virt="non-virtual"><scope>PulseAverageDeconvSettings</scope><name>tau</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

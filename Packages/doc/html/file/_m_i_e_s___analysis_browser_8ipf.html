@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_AnalysisBrowser.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AnalysisBrowser_SweepBrowser.ipf" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html" />
+    <link rel="prev" title="File MIES_AmplifierInteraction.ipf" href="_m_i_e_s___amplifier_interaction_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html" title="File MIES_AnalysisBrowser_SweepBrowser.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___amplifier_interaction_8ipf.html" title="File MIES_AmplifierInteraction.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisBrowser.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-analysisbrowser-ipf">
+<span id="id1"></span><h1>File MIES_AnalysisBrowser.ipf<a class="headerlink" href="#file-mies-analysisbrowser-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>AB</strong> Analysis browser </p>
+<p>Has no dependencies on any hardware related functions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_ResetListBoxWaves8variable">
+<span id="_CPPv320AB_ResetListBoxWaves8variable"></span><span id="_CPPv220AB_ResetListBoxWaves8variable"></span><span id="AB_ResetListBoxWaves__variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a65257933c65af995e97e69809ac8ae86"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ResetListBoxWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_ResetListBoxWaves8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_ClearAnalysisFolderv">
+<span id="_CPPv322AB_ClearAnalysisFolderv"></span><span id="_CPPv222AB_ClearAnalysisFolderv"></span><span id="AB_ClearAnalysisFolder"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a3dd716c98d22a4b2e4e2910b5333d144"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ClearAnalysisFolder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_ClearAnalysisFolderv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clear all waves of the main experiment browser and delete all folders inside <a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1aa001c500eac31cb4822058c863de8ff2"><span class="std std-ref">GetAnalysisFolder()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414AB_AddMapEntry6string6string">
+<span id="_CPPv314AB_AddMapEntry6string6string"></span><span id="_CPPv214AB_AddMapEntry6string6string"></span><span id="AB_AddMapEntry__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a14fbe2be8f069783a9991f88c091f5ca"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_AddMapEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414AB_AddMapEntry6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create relation (map) between file on disk and datafolder in current experiment. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>index into mapping wave of the newly added entry or -1 if the file is already in the map </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AB_RemoveMapEntry8variable">
+<span id="_CPPv317AB_RemoveMapEntry8variable"></span><span id="_CPPv217AB_RemoveMapEntry8variable"></span><span id="AB_RemoveMapEntry__variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a6b8ac34e62f04b2f14452933ac6c14ab"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_RemoveMapEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AB_RemoveMapEntry8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49AB_GetMap6string">
+<span id="_CPPv39AB_GetMap6string"></span><span id="_CPPv29AB_GetMap6string"></span><span id="AB_GetMap__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a4607bd8a46a5041da741efd10f947bf5"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetMap</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49AB_GetMap6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get single matching entry from GetAnalysisBrowserMap. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>discLocation</strong> – first column. Path to file on disc </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wave with 4 columns Columns: 0: DiscLocation: Path to Experiment on Disc 1: FileName: Name of File in experiment column in ExperimentBrowser 2: DataFolder Data folder inside current Igor experiment 3: FileType File Type identifier for routing to loader functions, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisBrowserFileTypes"><span class="std std-ref">AnalysisBrowserFileTypes</span></a> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AB_SaveDeviceList6string6string">
+<span id="_CPPv317AB_SaveDeviceList6string6string"></span><span id="_CPPv217AB_SaveDeviceList6string6string"></span><span id="AB_SaveDeviceList__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a2d036cb72dca0fcf3859e51abd8d98c6"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_SaveDeviceList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceList</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AB_SaveDeviceList6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>save deviceList to wave </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>created wave. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410AB_AddFile6string6string">
+<span id="_CPPv310AB_AddFile6string6string"></span><span id="_CPPv210AB_AddFile6string6string"></span><span id="AB_AddFile__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1af96df1c0ebadf6f737e2dbb6bc68007f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_AddFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">baseFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410AB_AddFile6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>general loader for pxp, uxp and nwb files </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>0 if the file was loaded, or 1 if not (usually due to an error or because it was already loaded) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411AB_LoadFile6string">
+<span id="_CPPv311AB_LoadFile6string"></span><span id="_CPPv211AB_LoadFile6string"></span><span id="AB_LoadFile__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a06a6764ac44dc1cf1135344cca43daa9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AB_LoadFile6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>function tries to load Data From discLocation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AB_HasCompatibleVersion6string">
+<span id="_CPPv323AB_HasCompatibleVersion6string"></span><span id="_CPPv223AB_HasCompatibleVersion6string"></span><span id="AB_HasCompatibleVersion__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a8aeb32f77809f739d7bc0143d263387e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_HasCompatibleVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AB_HasCompatibleVersion6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the given file has a compatible version which this version of the analysis browser can handle. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>discLocation</strong> – file to check, parameter to <a class="reference internal" href="#_m_i_e_s___analysis_browser_8ipf_1a4607bd8a46a5041da741efd10f947bf5"><span class="std std-ref">AB_GetMap()</span></a> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_GetSettingNumFiniteVals4wave6string8variable6string">
+<span id="_CPPv326AB_GetSettingNumFiniteVals4wave6string8variable6string"></span><span id="_CPPv226AB_GetSettingNumFiniteVals4wave6string8variable6string"></span><span id="AB_GetSettingNumFiniteVals__wave.string.variable.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a9cde47775897369ca6f1cf4e2e4a6219"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetSettingNumFiniteVals</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_GetSettingNumFiniteVals4wave6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_AddExperimentNameIfReq6string8WaveText6string8variable">
+<span id="_CPPv325AB_AddExperimentNameIfReq6string8WaveText6string8variable"></span><span id="_CPPv225AB_AddExperimentNameIfReq6string8WaveText6string8variable"></span><span id="AB_AddExperimentNameIfReq__string.WaveText.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a3de0f2f5545f60ab7499bead3001cbd3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_AddExperimentNameIfReq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expName</span></span>, <span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_AddExperimentNameIfReq6string8WaveText6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add an experiment entry into the list if there is none yet. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AB_FillListWave6string6string6string6string4wave">
+<span id="_CPPv315AB_FillListWave6string6string6string6string4wave"></span><span id="_CPPv215AB_FillListWave6string6string6string6string4wave"></span><span id="AB_FillListWave__string.string.string.string.wave"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1af5b6db63db3deeb78b8757989a7b6a84"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_FillListWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNums</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AB_FillListWave6string6string6string6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates list-view for AnalysisBrowser. </p>
+<p>Depends on LabNoteBook to be loaded prior to call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> – current Project’s filename </p></li>
+<li><p><strong>device</strong> – current device </p></li>
+<li><p><strong>dataFolder</strong> – current Project’s Lab Notebook DataFolder reference </p></li>
+<li><p><strong>fileType</strong> – current Project’s file type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisBrowserFileTypes"><span class="std std-ref">AnalysisBrowserFileTypes</span></a> </p></li>
+<li><p><strong>sweepNums</strong> – Wave containing all sweeps actually present for device </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AB_LoadDataWrapper5dfref6string6string6string8variable">
+<span id="_CPPv318AB_LoadDataWrapper5dfref6string6string6string8variable"></span><span id="_CPPv218AB_LoadDataWrapper5dfref6string6string6string8variable"></span><span id="AB_LoadDataWrapper__dfref.string.string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a8012766cd2b7f6921b4056f94953b5f9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadDataWrapper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpDFR</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">datafolderPath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listOfNames</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">typeFlags</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AB_LoadDataWrapper5dfref6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load waves from a packed/unpacked experiment file. </p>
+<p>This function is special as it does change the CDF!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpDFR</strong> – Temporary work folder, function returns with that folder as CDF </p></li>
+<li><p><strong>expFilePath</strong> – full path to the experiment file on disc </p></li>
+<li><p><strong>datafolderPath</strong> – igor datafolder to look for the waves inside the experiment </p></li>
+<li><p><strong>listOfNames</strong> – list of names of waves/strings/numbers to load </p></li>
+<li><p><strong>typeFlags</strong> – [optional, defaults to 1 (waves)] data types to load, valid values are the same as for <code class="docutils literal notranslate"><span class="pre">LoadData</span></code>, see also <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LoadDataConstants"><span class="std std-ref">LoadDataConstants</span></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of loaded items </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_GetSweepsFromLabNotebook6string6string8variable">
+<span id="_CPPv327AB_GetSweepsFromLabNotebook6string6string8variable"></span><span id="_CPPv227AB_GetSweepsFromLabNotebook6string6string8variable"></span><span id="AB_GetSweepsFromLabNotebook__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a512ffa6d51e666dd2c3e8b4e6e77e43f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetSweepsFromLabNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clean</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_GetSweepsFromLabNotebook6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a wave containing all present sweep numbers. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataFolder</strong> – DataFolder of HDF5 or Experiment File where LabNoteBook is saved </p></li>
+<li><p><strong>device</strong> – device for which to get sweeps. </p></li>
+<li><p><strong>clean</strong> – Variable indicating if ouput can contain duplicate values </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AB_GetHighestPossibleSweepNum6string6string">
+<span id="_CPPv329AB_GetHighestPossibleSweepNum6string6string"></span><span id="_CPPv229AB_GetHighestPossibleSweepNum6string6string"></span><span id="AB_GetHighestPossibleSweepNum__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1af1eebed193657c207c6918b6cad8daf6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetHighestPossibleSweepNum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AB_GetHighestPossibleSweepNum6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the highest referenced sweep number from the labnotebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_LoadSweepsFromExperiment6string6string">
+<span id="_CPPv327AB_LoadSweepsFromExperiment6string6string"></span><span id="_CPPv227AB_LoadSweepsFromExperiment6string6string"></span><span id="AB_LoadSweepsFromExperiment__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a6c0e59ae00830c4f3fe75af9a3283a69"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepsFromExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_LoadSweepsFromExperiment6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a wave containing all present sweep numbers. </p>
+<p>Function uses Config Waves from Igor Experiment to determine present sweeps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discLocation</strong> – location of Experiment File on Disc. ID in AnalysisBrowserMap </p></li>
+<li><p><strong>device</strong> – device for which to get sweeps. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_LoadSweepsFromNWB6string6string6string">
+<span id="_CPPv320AB_LoadSweepsFromNWB6string6string6string"></span><span id="_CPPv220AB_LoadSweepsFromNWB6string6string6string"></span><span id="AB_LoadSweepsFromNWB__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepsFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_LoadSweepsFromNWB6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Analyse data in NWB file and sort as sweeps. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000005"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>: Update this function for the use with SweepTable</p>
+</dd></dl>
+
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discLocation</strong> – location of NWB File on Disc. ID in AnalysisBrowserMap </p></li>
+<li><p><strong>dataFolder</strong> – datafolder of the project </p></li>
+<li><p><strong>device</strong> – device for which to get sweeps. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AB_StoreChannelsBySweep8variable8variable6string11WaveInteger8WaveText">
+<span id="_CPPv323AB_StoreChannelsBySweep8variable8variable6string11WaveInteger8WaveText"></span><span id="_CPPv223AB_StoreChannelsBySweep8variable8variable6string11WaveInteger8WaveText"></span><span id="AB_StoreChannelsBySweep__variable.variable.string.WaveInteger.WaveText"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_StoreChannelsBySweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupID</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbVersion</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelList</span></span>, <span class="n"><span class="pre">WaveInteger</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweeps</span></span>, <span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">storage</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AB_StoreChannelsBySweep8variable8variable6string11WaveInteger8WaveText" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store channelList in storage wave according to index in sweeps wave. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>Update this function for the use with SweepTable </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AB_LoadTPStorageFromIgor6string6string6string">
+<span id="_CPPv324AB_LoadTPStorageFromIgor6string6string6string"></span><span id="_CPPv224AB_LoadTPStorageFromIgor6string6string6string"></span><span id="AB_LoadTPStorageFromIgor__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a4f68926b2f2ac7245d45cb8bcdd32b8d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadTPStorageFromIgor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AB_LoadTPStorageFromIgor6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AB_LoadTPStorageFromNWB6string6string6string">
+<span id="_CPPv323AB_LoadTPStorageFromNWB6string6string6string"></span><span id="_CPPv223AB_LoadTPStorageFromNWB6string6string6string"></span><span id="AB_LoadTPStorageFromNWB__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a1a72d2274801e4540b46768a35d46645"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadTPStorageFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AB_LoadTPStorageFromNWB6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430AB_LoadStoredTestpulsesFromNWB6string6string6string">
+<span id="_CPPv330AB_LoadStoredTestpulsesFromNWB6string6string6string"></span><span id="_CPPv230AB_LoadStoredTestpulsesFromNWB6string6string6string"></span><span id="AB_LoadStoredTestpulsesFromNWB__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a21090a89adab1df3a24445b0b6536bb2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStoredTestpulsesFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AB_LoadStoredTestpulsesFromNWB6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_LoadResultsFromIgor6string6string">
+<span id="_CPPv322AB_LoadResultsFromIgor6string6string"></span><span id="_CPPv222AB_LoadResultsFromIgor6string6string"></span><span id="AB_LoadResultsFromIgor__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a361abc6dc39bf0f41cfdea123c87094f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadResultsFromIgor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_LoadResultsFromIgor6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421AB_LoadResultsFromNWB6string6string">
+<span id="_CPPv321AB_LoadResultsFromNWB6string6string"></span><span id="_CPPv221AB_LoadResultsFromNWB6string6string"></span><span id="AB_LoadResultsFromNWB__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aecb2c54d0033869341bc6074e6e33d64"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadResultsFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421AB_LoadResultsFromNWB6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_LoadUserCommentFromFile6string6string6string">
+<span id="_CPPv326AB_LoadUserCommentFromFile6string6string6string"></span><span id="_CPPv226AB_LoadUserCommentFromFile6string6string6string"></span><span id="AB_LoadUserCommentFromFile__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a3cb1adbbe7b7c7e389a5b8fb1dfa45e4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadUserCommentFromFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_LoadUserCommentFromFile6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv435AB_LoadUserCommentAndHistoryFromNWB6string6string6string">
+<span id="_CPPv335AB_LoadUserCommentAndHistoryFromNWB6string6string6string"></span><span id="_CPPv235AB_LoadUserCommentAndHistoryFromNWB6string6string6string"></span><span id="AB_LoadUserCommentAndHistoryFromNWB__string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1acbe7b17afebf725c407a03e14ad59c99"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadUserCommentAndHistoryFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv435AB_LoadUserCommentAndHistoryFromNWB6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AB_LoadLabNotebook6string">
+<span id="_CPPv318AB_LoadLabNotebook6string"></span><span id="_CPPv218AB_LoadLabNotebook6string"></span><span id="AB_LoadLabNotebook__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a52dcb1922844e66ae7f5a27411999cd2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadLabNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AB_LoadLabNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_LoadLabNotebookFromFile6string">
+<span id="_CPPv326AB_LoadLabNotebookFromFile6string"></span><span id="_CPPv226AB_LoadLabNotebookFromFile6string"></span><span id="AB_LoadLabNotebookFromFile__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aea6a25c1e75490254c18e412d5e2be60"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadLabNotebookFromFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_LoadLabNotebookFromFile6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_LoadLabNotebookFromIgor6string">
+<span id="_CPPv326AB_LoadLabNotebookFromIgor6string"></span><span id="_CPPv226AB_LoadLabNotebookFromIgor6string"></span><span id="AB_LoadLabNotebookFromIgor__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a147842e07346c40009be850613cb5458"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadLabNotebookFromIgor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_LoadLabNotebookFromIgor6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AB_LoadLabNotebookFromIgorLow6string6string6stringP6string">
+<span id="_CPPv329AB_LoadLabNotebookFromIgorLow6string6string6stringP6string"></span><span id="_CPPv229AB_LoadLabNotebookFromIgorLow6string6string6stringP6string"></span><span id="AB_LoadLabNotebookFromIgorLow__string.string.string.stringP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ad1e9461a7f8c2e785fc0113c51664703"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadLabNotebookFromIgorLow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">deviceList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AB_LoadLabNotebookFromIgorLow6string6string6stringP6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Try loading the four labnotebooks from path. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discLocation</strong> – <strong>[in]</strong> experiment location on disc </p></li>
+<li><p><strong>path</strong> – <strong>[in]</strong> datafolder path which holds the labnotebooks (might not exist) </p></li>
+<li><p><strong>device</strong> – <strong>[in]</strong> name of the device </p></li>
+<li><p><strong>deviceList</strong> – <strong>[inout]</strong> list of loaded devices, for successful loads we add to that list </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_LoadLabNotebookFromNWB6string">
+<span id="_CPPv325AB_LoadLabNotebookFromNWB6string"></span><span id="_CPPv225AB_LoadLabNotebookFromNWB6string"></span><span id="AB_LoadLabNotebookFromNWB__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadLabNotebookFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_LoadLabNotebookFromNWB6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AB_checkLabNotebook5dfref">
+<span id="_CPPv319AB_checkLabNotebook5dfref"></span><span id="_CPPv219AB_checkLabNotebook5dfref"></span><span id="AB_checkLabNotebook__dfref"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a92583633ba580e6f5e5f45360045b43a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_checkLabNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AB_checkLabNotebook5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>function checks if LabNoteBook Waves do exist. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dfr</strong> – path to labNoteBook dataFolder reference. </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>0 labNotebook does not exist. 1 labNoteBook exists. also update dimension lables </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AB_updateLabelsInLabNotebook5dfref">
+<span id="_CPPv328AB_updateLabelsInLabNotebook5dfref"></span><span id="_CPPv228AB_updateLabelsInLabNotebook5dfref"></span><span id="AB_updateLabelsInLabNotebook__dfref"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a26b46f3942901010c129172fe199c6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_updateLabelsInLabNotebook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AB_updateLabelsInLabNotebook5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add dimension labels in older versions of igor-MIES and hdf5-loaded data overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416AB_TranslatePath6string6string">
+<span id="_CPPv316AB_TranslatePath6string6string"></span><span id="_CPPv216AB_TranslatePath6string6string"></span><span id="AB_TranslatePath__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a0a15d1bbf8163eb57af9c241cd4c7888"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_TranslatePath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AB_TranslatePath6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_LoadSweepConfigData6string6string6string8variable">
+<span id="_CPPv322AB_LoadSweepConfigData6string6string6string8variable"></span><span id="_CPPv222AB_LoadSweepConfigData6string6string6string8variable"></span><span id="AB_LoadSweepConfigData__string.string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a4b2cc31b8596f697eb35c7110b8ef7d4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepConfigData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">highestSweepNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_LoadSweepConfigData6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load all <code class="docutils literal notranslate"><span class="pre">Config_Sweep_*</span></code> waves from the given experiment file or folder and the given device. </p>
+<p>The implementation here tries to load <code class="docutils literal notranslate"><span class="pre">LOAD_CONFIG_CHUNK_SIZE</span></code> number of config sweep waves at a time until there could not be loaded at least one config sweep wave and we have reached highestSweepNumber.</p>
+<p>The size of <code class="docutils literal notranslate"><span class="pre">LOAD_CONFIG_CHUNK_SIZE</span></code> is limited by a limitation of LoadData as this operations accepts only a stringlist of waves shorter than 400 characters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AB_ExpandListColumn8variable">
+<span id="_CPPv319AB_ExpandListColumn8variable"></span><span id="_CPPv219AB_ExpandListColumn8variable"></span><span id="AB_ExpandListColumn__variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a5cf0ef3f53397aafc856190dd91084d7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ExpandListColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AB_ExpandListColumn8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Expand all tree views in the given column. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421AB_CollapseListColumn8variable">
+<span id="_CPPv321AB_CollapseListColumn8variable"></span><span id="_CPPv221AB_CollapseListColumn8variable"></span><span id="AB_CollapseListColumn__variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1acdb4af3ece53000af62f9d9b3c7e9a76"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_CollapseListColumn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421AB_CollapseListColumn8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Collapse all tree views in the given column. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416AB_SetGUISelBits4wave">
+<span id="_CPPv316AB_SetGUISelBits4wave"></span><span id="_CPPv216AB_SetGUISelBits4wave"></span><span id="AB_SetGUISelBits__wave"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ae212e5f095e1aaf07e613717c3835010"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_SetGUISelBits</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selBits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AB_SetGUISelBits4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the selection bits of the experiment browser ListBox selection wave. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>selBits</strong> – wave returned by AB_ReturnAndClearGUISelBits </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_ReturnAndClearGUISelBitsv">
+<span id="_CPPv327AB_ReturnAndClearGUISelBitsv"></span><span id="_CPPv227AB_ReturnAndClearGUISelBitsv"></span><span id="AB_ReturnAndClearGUISelBits"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a187a3685b77a66abc573e7a40ded8370"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ReturnAndClearGUISelBits</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_ReturnAndClearGUISelBitsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the selection bits from the experiment browser ListBox selection wave and clear them. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_CollapseListEntry8variable8variable">
+<span id="_CPPv320AB_CollapseListEntry8variable8variable"></span><span id="_CPPv220AB_CollapseListEntry8variable8variable"></span><span id="AB_CollapseListEntry__variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a96590ccfc6d3ca399a35ee37838b56c9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_CollapseListEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_CollapseListEntry8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Collapse the given treeview. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AB_ExpandListEntry8variable8variable">
+<span id="_CPPv318AB_ExpandListEntry8variable8variable"></span><span id="_CPPv218AB_ExpandListEntry8variable8variable"></span><span id="AB_ExpandListEntry__variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a8811e1278db68a138de6f10b1993a7c1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ExpandListEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AB_ExpandListEntry8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Expand the given treeview. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_ExpandIfCollapsed8variable8variable">
+<span id="_CPPv320AB_ExpandIfCollapsed8variable8variable"></span><span id="_CPPv220AB_ExpandIfCollapsed8variable8variable"></span><span id="AB_ExpandIfCollapsed__variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1adf3a65b9e4ef572c937241f0a31be2da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ExpandIfCollapsed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subSectionColumn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_ExpandIfCollapsed8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>0 if the treeview could be expanded, zero otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421AB_GetExpandedIndicesv">
+<span id="_CPPv321AB_GetExpandedIndicesv"></span><span id="_CPPv221AB_GetExpandedIndicesv"></span><span id="AB_GetExpandedIndices"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aa694fb98ec74de1036ca2811ed459d0d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetExpandedIndices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421AB_GetExpandedIndicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>get indizes from AB window while successive expanding all columns </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>valid indizes wave on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AB_LoadFromExpandedRange8variable8variable8variable8variable5dfref">
+<span id="_CPPv324AB_LoadFromExpandedRange8variable8variable8variable8variable5dfref"></span><span id="_CPPv224AB_LoadFromExpandedRange8variable8variable8variable8variable5dfref"></span><span id="AB_LoadFromExpandedRange__variable.variable.variable.variable.dfref"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a7bbc2de0d4cd8f369de25eed88a26823"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadFromExpandedRange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subSectionColumn</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">AB_LoadType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepBrowserDFR</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AB_LoadFromExpandedRange8variable8variable8variable8variable5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>0 if at least one sweep or stimset could be loaded, 1 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_GetRowWithNextTreeView4wave8variable8variable">
+<span id="_CPPv325AB_GetRowWithNextTreeView4wave8variable8variable"></span><span id="_CPPv225AB_GetRowWithNextTreeView4wave8variable8variable"></span><span id="AB_GetRowWithNextTreeView__wave.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a96e86e9b99355eee25453e4092427a79"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetRowWithNextTreeView</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selWave</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startRow</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_GetRowWithNextTreeView4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the row with treeview in the column col starting from startRow. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AB_LoadFromFile8variable5dfref">
+<span id="_CPPv315AB_LoadFromFile8variable5dfref"></span><span id="_CPPv215AB_LoadFromFile8variable5dfref"></span><span id="AB_LoadFromFile__variable.dfref"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a4081a826d26d529875e33de8c55cd2a5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadFromFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">AB_LoadType</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepBrowserDFR</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AB_LoadFromFile8variable5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_LoadStimsetForSweep6string8variable8variable">
+<span id="_CPPv322AB_LoadStimsetForSweep6string8variable8variable"></span><span id="_CPPv222AB_LoadStimsetForSweep6string8variable8variable"></span><span id="AB_LoadStimsetForSweep__string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ac088b6a105e5ca78b90c5ab1c89e4d12"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsetForSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_LoadStimsetForSweep6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421AB_LoadFromFileASSERT6string6string6string6string8variable8variable">
+<span id="_CPPv321AB_LoadFromFileASSERT6string6string6string6string8variable8variable"></span><span id="_CPPv221AB_LoadFromFileASSERT6string6string6string6string8variable8variable"></span><span id="AB_LoadFromFileASSERT__string.string.string.string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1acd8c9a6dfcdf30cb5f857ce098b24f14"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadFromFileASSERT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421AB_LoadFromFileASSERT6string6string6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_LoadSweepFromFile6string6string6string6string8variable8variable">
+<span id="_CPPv320AB_LoadSweepFromFile6string6string6string6string8variable8variable"></span><span id="_CPPv220AB_LoadSweepFromFile6string6string6string6string8variable8variable"></span><span id="AB_LoadSweepFromFile__string.string.string.string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a6eec2bafd0567a3b0f14dbd6a3090313"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepFromFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_LoadSweepFromFile6string6string6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>0 if the sweeps could be loaded, or already exists, and 1 on error </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_LoadStimsetFromFile6string6string6string6string8variable8variable">
+<span id="_CPPv322AB_LoadStimsetFromFile6string6string6string6string8variable8variable"></span><span id="_CPPv222AB_LoadStimsetFromFile6string6string6string6string8variable8variable"></span><span id="AB_LoadStimsetFromFile__string.string.string.string.variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsetFromFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_LoadStimsetFromFile6string6string6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AB_LoadSweepFromNWB6string5dfref6string8variable">
+<span id="_CPPv319AB_LoadSweepFromNWB6string5dfref6string8variable"></span><span id="_CPPv219AB_LoadSweepFromNWB6string5dfref6string8variable"></span><span id="AB_LoadSweepFromNWB__string.dfref.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepFromNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AB_LoadSweepFromNWB6string5dfref6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_LoadSweepFromNWBgeneric8variable8variable6string5dfref11WaveInteger">
+<span id="_CPPv326AB_LoadSweepFromNWBgeneric8variable8variable6string5dfref11WaveInteger"></span><span id="_CPPv226AB_LoadSweepFromNWBgeneric8variable8variable6string5dfref11WaveInteger"></span><span id="AB_LoadSweepFromNWBgeneric__variable.variable.string.dfref.WaveInteger"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a885581fbf4cb2c86ccfb3754fe6b4e59"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepFromNWBgeneric</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h5_groupID</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nwbVersion</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">channelList</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">WaveInteger</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">configSweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_LoadSweepFromNWBgeneric8variable8variable6string5dfref11WaveInteger" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419AB_SortConfigSweeps11WaveInteger">
+<span id="_CPPv319AB_SortConfigSweeps11WaveInteger"></span><span id="_CPPv219AB_SortConfigSweeps11WaveInteger"></span><span id="AB_SortConfigSweeps__WaveInteger"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1af11c3c7d507644e9925ef3eaa782031b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_SortConfigSweeps</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveInteger</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AB_SortConfigSweeps11WaveInteger" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser. </p>
+<p>function is oriented at MDSort() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_LoadSweepFromIgor6string6string5dfref6string8variable">
+<span id="_CPPv320AB_LoadSweepFromIgor6string6string5dfref6string8variable"></span><span id="_CPPv220AB_LoadSweepFromIgor6string6string5dfref6string8variable"></span><span id="AB_LoadSweepFromIgor__string.string.dfref.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a82877003dfb717d5eb9f79f6fb7ed7e5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadSweepFromIgor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepDFR</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_LoadSweepFromIgor6string6string5dfref6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified device/sweep combination from Igor experiment file to sweepDFR. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>name of loaded sweep </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AB_LoadStimsetsRAW6string6string8variable">
+<span id="_CPPv318AB_LoadStimsetsRAW6string6string8variable"></span><span id="_CPPv218AB_LoadStimsetsRAW6string6string8variable"></span><span id="AB_LoadStimsetsRAW__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a3a0d7e7fe0550f4260c2fd687491fb15"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsetsRAW</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimsets</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AB_LoadStimsetsRAW6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a failsave alternative for <a class="reference internal" href="#_m_i_e_s___analysis_browser_8ipf_1a7747398a68545383fab9850a84b364ce"><span class="std std-ref">AB_LoadStimsets()</span></a> to load RAW stimsets </p>
+<p>If a stimset could not get loaded using <a class="reference internal" href="#_m_i_e_s___analysis_browser_8ipf_1a7747398a68545383fab9850a84b364ce"><span class="std std-ref">AB_LoadStimsets()</span></a> this function is used in addition to try to load the stimset without its corresponding Parameter Waves. overwrite is not supported</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expFilePath</strong> – Path on disc to igor experiment </p></li>
+<li><p><strong>stimsets</strong> – “;” separated list of all stimsets </p></li>
+<li><p><strong>overwrite</strong> – overwrite flag</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AB_LoadStimsets6string6string8variable6string">
+<span id="_CPPv315AB_LoadStimsets6string6string8variable6string"></span><span id="_CPPv215AB_LoadStimsets6string6string8variable6string"></span><span id="AB_LoadStimsets__string.string.variable.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a7747398a68545383fab9850a84b364ce"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsets</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimsets</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">processedStimsets</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AB_LoadStimsets6string6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified stimsets from Igor experiment file. </p>
+<p>recurses into all dependent stimsets as soon as they have been loaded. the list of stimsets is extended “on the left side”: new items are added left. use numEnd to indicate unto which item the list was already processed. see StimsetRecursion() for a similar structure</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expFilePath</strong> – Path on disc to igor experiment </p></li>
+<li><p><strong>stimsets</strong> – “;” separated list of all stimsets of the current sweep. </p></li>
+<li><p><strong>processedStimsets</strong> – [optional] input a list of already processed stimsets </p></li>
+<li><p><strong>overwrite</strong> – overwrite flag</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414AB_LoadStimset6string6string8variable">
+<span id="_CPPv314AB_LoadStimset6string6string8variable"></span><span id="_CPPv214AB_LoadStimset6string6string8variable"></span><span id="AB_LoadStimset__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a70da3df304526bf2f6cbd027cfea1cf9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414AB_LoadStimset6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified stimset from Igor experiment file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AB_LoadStimsetRAW6string6string8variable">
+<span id="_CPPv317AB_LoadStimsetRAW6string6string8variable"></span><span id="_CPPv217AB_LoadStimsetRAW6string6string8variable"></span><span id="AB_LoadStimsetRAW__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a57f92f53a91c97c782d3995ebcf77108"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsetRAW</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimset</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AB_LoadStimsetRAW6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_LoadStimsetTemplateWaves6string6string">
+<span id="_CPPv327AB_LoadStimsetTemplateWaves6string6string"></span><span id="_CPPv227AB_LoadStimsetTemplateWaves6string6string"></span><span id="AB_LoadStimsetTemplateWaves__string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a50caece7af3a95dc609c0c8582d1ee5a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadStimsetTemplateWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_LoadStimsetTemplateWaves6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load template waves for a specific stimset from Igor experiment file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418AB_LoadCustomWaves6string6string8variable">
+<span id="_CPPv318AB_LoadCustomWaves6string6string8variable"></span><span id="_CPPv218AB_LoadCustomWaves6string6string8variable"></span><span id="AB_LoadCustomWaves__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a6edc7cc7fd3b09b213848dc2893ae590"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadCustomWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stimsets</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AB_LoadCustomWaves6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load custom waves for specified stimset from Igor experiment file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411AB_LoadWave6string6string8variable">
+<span id="_CPPv311AB_LoadWave6string6string8variable"></span><span id="_CPPv211AB_LoadWave6string6string8variable"></span><span id="AB_LoadWave__string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1afd3c1478ceb716778670655726747ca5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFilePath</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fullPath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AB_LoadWave6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified wave from Igor Experiment file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_SplitSweepIntoComponents6string6string8variable4wave">
+<span id="_CPPv327AB_SplitSweepIntoComponents6string6string8variable4wave"></span><span id="_CPPv227AB_SplitSweepIntoComponents6string6string8variable4wave"></span><span id="AB_SplitSweepIntoComponents__string.string.variable.wave"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a4195c471aaaf1470c5e297b120b9ca80"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_SplitSweepIntoComponents</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweep</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepWave</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_SplitSweepIntoComponents6string6string8variable4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413AB_ScanFolder6string">
+<span id="_CPPv313AB_ScanFolder6string"></span><span id="_CPPv213AB_ScanFolder6string"></span><span id="AB_ScanFolder__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a984517a408afb32d11abe6a5b5525014"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ScanFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413AB_ScanFolder6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AB_GetPanelNamev">
+<span id="_CPPv315AB_GetPanelNamev"></span><span id="_CPPv215AB_GetPanelNamev"></span><span id="AB_GetPanelName"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a200ceab7e4893f0d1e4688d8f7c49dab"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetPanelName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AB_GetPanelNamev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422AB_OpenAnalysisBrowserv">
+<span id="_CPPv322AB_OpenAnalysisBrowserv"></span><span id="_CPPv222AB_OpenAnalysisBrowserv"></span><span id="AB_OpenAnalysisBrowser"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aa57bf494513fec75fd3bb98efd42845d"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_OpenAnalysisBrowser</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AB_OpenAnalysisBrowserv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_CheckPanelVersion6string">
+<span id="_CPPv320AB_CheckPanelVersion6string"></span><span id="_CPPv220AB_CheckPanelVersion6string"></span><span id="AB_CheckPanelVersion__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a8c69604af3abe2932ae64f813a5e0bb5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_CheckPanelVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">panel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_CheckPanelVersion6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415AnalysisBrowserv">
+<span id="_CPPv315AnalysisBrowserv"></span><span id="_CPPv215AnalysisBrowserv"></span><span id="AnalysisBrowser"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a83275323c51d6a4b14cb3663509a0ff3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AnalysisBrowser</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AnalysisBrowserv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_BrowserStartupSettingsv">
+<span id="_CPPv325AB_BrowserStartupSettingsv"></span><span id="_CPPv225AB_BrowserStartupSettingsv"></span><span id="AB_BrowserStartupSettings"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1af62052db006407812b25ae23ba7458df"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_BrowserStartupSettings</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_BrowserStartupSettingsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423AB_ButtonProc_ExpandAllP14WMButtonAction">
+<span id="_CPPv323AB_ButtonProc_ExpandAllP14WMButtonAction"></span><span id="_CPPv223AB_ButtonProc_ExpandAllP14WMButtonAction"></span><span id="AB_ButtonProc_ExpandAll__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a15e89c59f7b1454fb263d09a451d7cd6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_ExpandAll</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423AB_ButtonProc_ExpandAllP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Expand all”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_ButtonProc_CollapseAllP14WMButtonAction">
+<span id="_CPPv325AB_ButtonProc_CollapseAllP14WMButtonAction"></span><span id="_CPPv225AB_ButtonProc_CollapseAllP14WMButtonAction"></span><span id="AB_ButtonProc_CollapseAll__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1abb0b9f4922428caa4448826e4ac4de0b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_CollapseAll</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_ButtonProc_CollapseAllP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Collapse all”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AB_ButtonProc_LoadSweepsP14WMButtonAction">
+<span id="_CPPv324AB_ButtonProc_LoadSweepsP14WMButtonAction"></span><span id="_CPPv224AB_ButtonProc_LoadSweepsP14WMButtonAction"></span><span id="AB_ButtonProc_LoadSweeps__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1acfb0db7b33d86deb61e12449d4af31af"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_LoadSweeps</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AB_ButtonProc_LoadSweepsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Load Sweeps”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426AB_ButtonProc_LoadStimsetsP14WMButtonAction">
+<span id="_CPPv326AB_ButtonProc_LoadStimsetsP14WMButtonAction"></span><span id="_CPPv226AB_ButtonProc_LoadStimsetsP14WMButtonAction"></span><span id="AB_ButtonProc_LoadStimsets__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a9902a90694281f9f87f818731364751e"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_LoadStimsets</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AB_ButtonProc_LoadStimsetsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Load Stimsets”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424AB_ButtonProc_ScanFolderP14WMButtonAction">
+<span id="_CPPv324AB_ButtonProc_ScanFolderP14WMButtonAction"></span><span id="_CPPv224AB_ButtonProc_ScanFolderP14WMButtonAction"></span><span id="AB_ButtonProc_ScanFolder__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a53a67638a4a8a66de966b004dadec6f5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_ScanFolder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AB_ButtonProc_ScanFolderP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Scan folder”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AB_ButtonProc_SelectDirectoryP14WMButtonAction">
+<span id="_CPPv329AB_ButtonProc_SelectDirectoryP14WMButtonAction"></span><span id="_CPPv229AB_ButtonProc_SelectDirectoryP14WMButtonAction"></span><span id="AB_ButtonProc_SelectDirectory__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a0bc413d414b2ac05c5b75889b8fa046b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_SelectDirectory</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AB_ButtonProc_SelectDirectoryP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Select directory” Display dialog box for choosing a folder and call <a class="reference internal" href="#_m_i_e_s___analysis_browser_8ipf_1a984517a408afb32d11abe6a5b5525014"><span class="std std-ref">AB_ScanFolder()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv428AB_ButtonProc_SelectStimSetsP14WMButtonAction">
+<span id="_CPPv328AB_ButtonProc_SelectStimSetsP14WMButtonAction"></span><span id="_CPPv228AB_ButtonProc_SelectStimSetsP14WMButtonAction"></span><span id="AB_ButtonProc_SelectStimSets__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a5dc922d117303c77f1cae881d054786d"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_SelectStimSets</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428AB_ButtonProc_SelectStimSetsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Select same stim set sweeps”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_ListBoxProc_ExpBrowserP15WMListboxAction">
+<span id="_CPPv325AB_ListBoxProc_ExpBrowserP15WMListboxAction"></span><span id="_CPPv225AB_ListBoxProc_ExpBrowserP15WMListboxAction"></span><span id="AB_ListBoxProc_ExpBrowser__WMListboxActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a8611ac5cca42a718ec691c8edaac517f"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ListBoxProc_ExpBrowser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMListboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_ListBoxProc_ExpBrowserP15WMListboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>main ListBox list_experiment_contents </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_ButtonProc_OpenCommentNBP14WMButtonAction">
+<span id="_CPPv327AB_ButtonProc_OpenCommentNBP14WMButtonAction"></span><span id="_CPPv227AB_ButtonProc_OpenCommentNBP14WMButtonAction"></span><span id="AB_ButtonProc_OpenCommentNB__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a5ae091541c38b827ca08ebc35afcd041"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_OpenCommentNB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_ButtonProc_OpenCommentNBP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Button “Open comment NB”. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425AB_ButtonProc_ResaveAsNWBP14WMButtonAction">
+<span id="_CPPv325AB_ButtonProc_ResaveAsNWBP14WMButtonAction"></span><span id="_CPPv225AB_ButtonProc_ResaveAsNWBP14WMButtonAction"></span><span id="AB_ButtonProc_ResaveAsNWB__WMButtonActionP"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aa60ce0c4c959b75b597c75b100fb9286"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ButtonProc_ResaveAsNWB</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425AB_ButtonProc_ResaveAsNWBP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427AB_LoadAllSweepsAndStimsets6string6string6string6string">
+<span id="_CPPv327AB_LoadAllSweepsAndStimsets6string6string6string6string"></span><span id="_CPPv227AB_LoadAllSweepsAndStimsets6string6string6string6string"></span><span id="AB_LoadAllSweepsAndStimsets__string.string.string.string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a564b1d89dca0f70e3a0fbdb2a46ae19d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LoadAllSweepsAndStimsets</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">discLocation</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AB_LoadAllSweepsAndStimsets6string6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411AB_ReExport8variable8variable">
+<span id="_CPPv311AB_ReExport8variable8variable"></span><span id="_CPPv211AB_ReExport8variable8variable"></span><span id="AB_ReExport__variable.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ae427e4db0337ab3df4a0d4206d6f0c8c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_ReExport</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AB_ReExport8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418BeforeFileOpenHook8variable6string6string6string6string8variable">
+<span id="_CPPv318BeforeFileOpenHook8variable6string6string6string6string8variable"></span><span id="_CPPv218BeforeFileOpenHook8variable6string6string6string6string8variable"></span><span id="BeforeFileOpenHook__variable.string.string.string.string.variable"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a2209db930184c30ed4eeb01015561768"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BeforeFileOpenHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">refNum</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pathName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">creator</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kind</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418BeforeFileOpenHook8variable6string6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load dropped NWB files into the analysis browser. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429AB_GetAllDevicesForExperiment6string">
+<span id="_CPPv329AB_GetAllDevicesForExperiment6string"></span><span id="_CPPv229AB_GetAllDevicesForExperiment6string"></span><span id="AB_GetAllDevicesForExperiment__string"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1add40d7012d120552e0a5439441c7480e"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetAllDevicesForExperiment</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429AB_GetAllDevicesForExperiment6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420AB_GetAllExperimentsv">
+<span id="_CPPv320AB_GetAllExperimentsv"></span><span id="_CPPv220AB_GetAllExperimentsv"></span><span id="AB_GetAllExperiments"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ae58cef04d16b82d4c7c2aa68464267c2"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_GetAllExperiments</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AB_GetAllExperimentsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return all experiments the analysis browser knows about. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426EXPERIMENT_TREEVIEW_COLUMN">
+<span id="_CPPv326EXPERIMENT_TREEVIEW_COLUMN"></span><span id="_CPPv226EXPERIMENT_TREEVIEW_COLUMN"></span><span id="EXPERIMENT_TREEVIEW_COLUMN__doubleC"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1a404bd134fa43fddaddb632c73ba1d305"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXPERIMENT_TREEVIEW_COLUMN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv426EXPERIMENT_TREEVIEW_COLUMN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422DEVICE_TREEVIEW_COLUMN">
+<span id="_CPPv322DEVICE_TREEVIEW_COLUMN"></span><span id="_CPPv222DEVICE_TREEVIEW_COLUMN"></span><span id="DEVICE_TREEVIEW_COLUMN__doubleC"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1adc7f675971b104b92a613dd74b070982"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEVICE_TREEVIEW_COLUMN</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv422DEVICE_TREEVIEW_COLUMN" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413AB_LOAD_SWEEP">
+<span id="_CPPv313AB_LOAD_SWEEP"></span><span id="_CPPv213AB_LOAD_SWEEP"></span><span id="AB_LOAD_SWEEP__doubleC"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1ac19f44409105da52dbdf63f5bb020456"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LOAD_SWEEP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv413AB_LOAD_SWEEP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415AB_LOAD_STIMSET">
+<span id="_CPPv315AB_LOAD_STIMSET"></span><span id="_CPPv215AB_LOAD_STIMSET"></span><span id="AB_LOAD_STIMSET__doubleC"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1aacedeef084f70c175feb27ced021471d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AB_LOAD_STIMSET</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv415AB_LOAD_STIMSET" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422LOAD_CONFIG_CHUNK_SIZE">
+<span id="_CPPv322LOAD_CONFIG_CHUNK_SIZE"></span><span id="_CPPv222LOAD_CONFIG_CHUNK_SIZE"></span><span id="LOAD_CONFIG_CHUNK_SIZE__doubleC"></span><span class="target" id="_m_i_e_s___analysis_browser_8ipf_1abddd7e2aadfb5dd07edc65007b39a015"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOAD_CONFIG_CHUNK_SIZE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">50</span></span><a class="headerlink" href="#_CPPv422LOAD_CONFIG_CHUNK_SIZE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___amplifier_interaction_8ipf.html"
+                          title="previous chapter">File MIES_AmplifierInteraction.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html"
+                          title="next chapter">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html" title="File MIES_AnalysisBrowser_SweepBrowser.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___amplifier_interaction_8ipf.html" title="File MIES_AmplifierInteraction.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AnalysisBrowser.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

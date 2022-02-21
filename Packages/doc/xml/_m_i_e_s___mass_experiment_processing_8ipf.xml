@@ -1,0 +1,407 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___mass_experiment_processing_8ipf" kind="file" language="C++">
+    <compoundname>MIES_MassExperimentProcessing.ipf</compoundname>
+    <innerclass refid="struct_multi_experiment_process_prefs" prot="public">MultiExperimentProcessPrefs</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a21a35036409bb978e8988f8d2f72dbcd" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string INPUT_FOLDER</definition>
+        <argsstring></argsstring>
+        <name>INPUT_FOLDER</name>
+        <initializer>= &quot;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="32" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="32" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a410a2e375802f86de47466e80292a102" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string OUTPUT_FOLDER</definition>
+        <argsstring></argsstring>
+        <name>OUTPUT_FOLDER</name>
+        <initializer>= &quot;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="33" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="33" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3cadbf173cf62142fa3ad2c736f5c814" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string kPackageName</definition>
+        <argsstring></argsstring>
+        <name>kPackageName</name>
+        <initializer>= &quot;MIES PXP to NWBv2&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="41" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="41" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4224140433ed0ecac04ad78bc031707c" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string kPreferencesFileName</definition>
+        <argsstring></argsstring>
+        <name>kPreferencesFileName</name>
+        <initializer>= &quot;ProcessPrefsMIESNWBv2.bin&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="42" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="42" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2eb4c303b9cb8a11f173668f43ab8726" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double kPrefsRecordID</definition>
+        <argsstring></argsstring>
+        <name>kPrefsRecordID</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="43" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="43" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___mass_experiment_processing_8ipf_1a4837f42c81ca26404e4b575b4df1a67a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double kPrefsVersionNumber</definition>
+        <argsstring></argsstring>
+        <name>kPrefsVersionNumber</name>
+        <initializer>= 102</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="52" column="21" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="52" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LoadPackagePrefs</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs)</argsstring>
+        <name>LoadPackagePrefs</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="55" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="55" bodyend="73"/>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3cadbf173cf62142fa3ad2c736f5c814" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="41">kPackageName</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a4224140433ed0ecac04ad78bc031707c" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="42">kPreferencesFileName</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a2eb4c303b9cb8a11f173668f43ab8726" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="43">kPrefsRecordID</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a4837f42c81ca26404e4b575b4df1a67a" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="52">kPrefsVersionNumber</references>
+        <references refid="struct_multi_experiment_process_prefs_1a1049252c562c363b3ff6e348864af0e3" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="47">MultiExperimentProcessPrefs::processRunning</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</references>
+        <references refid="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="48">MultiExperimentProcessPrefs::settingsFile</references>
+        <references refid="struct_multi_experiment_process_prefs_1a584eb068918113d4382a658d2eed937c" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="45">MultiExperimentProcessPrefs::version</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="222" endline="255">AfterFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SavePackagePrefs</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs)</argsstring>
+        <name>SavePackagePrefs</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="76" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="76" bodyend="80"/>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3cadbf173cf62142fa3ad2c736f5c814" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="41">kPackageName</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a4224140433ed0ecac04ad78bc031707c" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="42">kPreferencesFileName</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a2eb4c303b9cb8a11f173668f43ab8726" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="43">kPrefsRecordID</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="222" endline="255">AfterFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ProcessCurrentExperiment</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs)</argsstring>
+        <name>ProcessCurrentExperiment</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="82" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="82" bodyend="128"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="180" endline="188">GetJSON</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a83e077e416b4cd4c9eb6f12a0d679b7d" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="155" endline="158">IsAppropriateExperiment</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="130" endline="153">PerformMiesTasks</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="191" endline="200">StoreJSON</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="222" endline="255">AfterFileOpenHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a412b20f1d782daeb9abd3c2468578a1b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable PerformMiesTasks</definition>
+        <argsstring>(string outputFilePath)</argsstring>
+        <name>PerformMiesTasks</name>
+        <param>
+          <type>string</type>
+          <declname>outputFilePath</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="130" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="130" bodyend="153"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac5fe706b4bf6afd4e77df63b12dd437e" compoundref="_m_i_e_s___utilities_8ipf" startline="1817" endline="1842">CreateFolderOnDisk</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a2d3e2b05a6ee62a27968d683de6dd153" compoundref="_i_p_n_w_b___utils_8ipf" startline="489" endline="496">FolderExists</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aca6dce2200aff5ccadabd60d2b966164" compoundref="_i_p_n_w_b___utils_8ipf" startline="353" endline="361">GetFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a3f7d8bef223395d9a2d3817d58ceb615" compoundref="_m_i_e_s___utilities_8ipf" startline="2131" endline="2141">GetFreeMemory</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a83e077e416b4cd4c9eb6f12a0d679b7d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IsAppropriateExperiment</definition>
+        <argsstring>()</argsstring>
+        <name>IsAppropriateExperiment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="155" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="155" bodyend="158"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afb2222dc632722e0575ede5de2f65675" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1953" endline="1994">GetAllDevicesWithContent</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string FindNextExperiment</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs)</argsstring>
+        <name>FindNextExperiment</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="161" column="15" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="161" bodyend="177"/>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="180" endline="188">GetJSON</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="222" endline="255">AfterFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable GetJSON</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs)</argsstring>
+        <name>GetJSON</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="180" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="180" bodyend="188"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a4ae183ac785c31444a5a2ffe3c7a5bf6" compoundref="_m_i_e_s___utilities_8ipf" startline="4950" endline="4977">LoadTextFile</references>
+        <references refid="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="48">MultiExperimentProcessPrefs::settingsFile</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="161" endline="177">FindNextExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable StoreJSON</definition>
+        <argsstring>(MultiExperimentProcessPrefs *prefs, variable jsonID)</argsstring>
+        <name>StoreJSON</name>
+        <param>
+          <type><ref refid="struct_multi_experiment_process_prefs" kindref="compound">MultiExperimentProcessPrefs</ref> *</type>
+          <declname>prefs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>jsonID</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="191" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="191" bodyend="200"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab653d215f8a41ca6a67e5ccaa497e209" compoundref="_m_i_e_s___utilities_8ipf" startline="4916" endline="4942">SaveTextFile</references>
+        <references refid="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="48">MultiExperimentProcessPrefs::settingsFile</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable PostLoadNextExperiment</definition>
+        <argsstring>(string nextExperimentFullPath)</argsstring>
+        <name>PostLoadNextExperiment</name>
+        <param>
+          <type>string</type>
+          <declname>nextExperimentFullPath</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="205" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="205" bodyend="218"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="222" endline="255">AfterFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="266" endline="338">StartMultiExperimentProcessWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3f524f5190341d2accc8cb8c3ed2ceb5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AfterFileOpenHook</definition>
+        <argsstring>(variable refNum, string file, string pathName, string type, string creator, variable kind)</argsstring>
+        <name>AfterFileOpenHook</name>
+        <param>
+          <type>variable</type>
+          <declname>refNum</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>pathName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>creator</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="222" column="17" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="222" bodyend="255"/>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="161" endline="177">FindNextExperiment</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="205" endline="218">PostLoadNextExperiment</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a13a6e6b730d37e94b8893fbe65f17f25" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="82" endline="128">ProcessCurrentExperiment</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1ad8d3f09f223ab74d90ce9e92d2aa4094" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable StartMultiExperimentProcess</definition>
+        <argsstring>()</argsstring>
+        <name>StartMultiExperimentProcess</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="258" column="10" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="258" bodyend="263"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___mass_experiment_processing_8ipf_1a3321c792ec71d6785e785c6fc64dd013" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable StartMultiExperimentProcessWrapper</definition>
+        <argsstring>()</argsstring>
+        <name>StartMultiExperimentProcessWrapper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="266" column="10" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="266" bodyend="338"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1aaa50f1b5fd5e81ebf2a3f5c6db48a3e8" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="161" endline="177">FindNextExperiment</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2bf90f6830e37603aa197e07c14235a" compoundref="_m_i_e_s___utilities_8ipf" startline="2872" endline="2943">GetAllFilesRecursivelyFromPath</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a21a35036409bb978e8988f8d2f72dbcd" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="32">INPUT_FOLDER</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a410a2e375802f86de47466e80292a102" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="33">OUTPUT_FOLDER</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1aa0d27caeba2db8e00bd18ba8115834ae" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="205" endline="218">PostLoadNextExperiment</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a0fcda65fa64e6bce9dc454eab1409877" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="76" endline="80">SavePackagePrefs</references>
+        <references refid="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="191" endline="200">StoreJSON</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>MEP</bold> Process multiple MIES pxps to convert data into NWBv2 </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Installation:<itemizedlist>
+<listitem><para>Stop Igor Pro</para>
+</listitem><listitem><para>Install MIES from the installer</para>
+</listitem><listitem><para>Create a shortcut to this file and place it in the <computeroutput>Igor Procedures</computeroutput> folder</para>
+</listitem><listitem><para>Ensure that only MIES is installed and no other Igor Pro packages</para>
+</listitem><listitem><para>In the MIES installation folder (All Users: <computeroutput>C:\Program Files\MIES</computeroutput>, User: <computeroutput>C:\Users\$User\Documents\MIES</computeroutput>) create an empty file named <computeroutput>UserConfig.txt</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+<para>Running:<itemizedlist>
+<listitem><para>Start Igor Pro</para>
+</listitem><listitem><para>Select &quot;Macros&quot; -&gt; &quot;Mass convert PXPs to NWBv2&quot;</para>
+</listitem><listitem><para>Enter an input and output folder for the conversion</para>
+</listitem><listitem><para>Wait until it&apos;s done</para>
+</listitem></itemizedlist>
+</para>
+<para>In the output folder there will be a <computeroutput>conversion.json</computeroutput> file with results of the conversion process. Search for the <computeroutput>error</computeroutput> key for failed conversions. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf"/>
+  </compounddef>
+</doxygen>

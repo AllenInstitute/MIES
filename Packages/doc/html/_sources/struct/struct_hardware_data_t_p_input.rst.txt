@@ -1,0 +1,4 @@
+Struct HardwareDataTPInput
+==========================
+
+.. doxygenstruct:: HardwareDataTPInput

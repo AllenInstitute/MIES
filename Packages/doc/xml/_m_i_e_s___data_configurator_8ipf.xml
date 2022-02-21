@@ -1,0 +1,2280 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___data_configurator_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DataConfigurator.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_UpdateGlobals</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_UpdateGlobals</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Update global variables used by the Testpulse or DAQ. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="14" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="14" bodyend="35"/>
+        <references refid="_m_i_e_s___analysis_function_management_8ipf_1a0adb90455a369fd191b080a3100a7fbe" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="173" endline="220">AFM_UpdateAnalysisFunctionWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3ccf1fd781a68993451710abe843db28" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7320" endline="7347">GetTPSettingsLabnotebook</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a50efcbb37be7a670410b7ad8a0ce547e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7233" endline="7315">GetTPSettingsLabnotebookKeyWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1adf3f4a5cdbba8416a7ecd9cbff254080" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1603" endline="1657">TP_UpdateTPLBNSettings</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ad37624addc6464a23456855a939b1b9c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1549" endline="1565">TP_UpdateTPSettingsCalculated</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DC_Configure</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable multiDevice=defaultValue)</argsstring>
+        <name>DC_Configure</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>multiDevice</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Prepare test pulse/data acquisition. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>multiDevice</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Abort</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>configuration failure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="44" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="44" bodyend="118"/>
+        <references refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9980b7eeddfa07e37466038494a5b537" compoundref="_m_i_e_s___constants_8ipf" startline="537">AS_PRE_SWEEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae0445e2c7f302e3370cd381bcdce83ee" compoundref="_m_i_e_s___constants_8ipf" startline="542">AS_PRE_SWEEP_CONFIG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="159" endline="203">DC_ChannelCalcForDAQConfigWave</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a7a27ce45cd60fb23f0dc33e824160433" compoundref="_m_i_e_s___data_configurator_8ipf" startline="310" endline="320">DC_MakeDAQConfigWave</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3" compoundref="_m_i_e_s___data_configurator_8ipf" startline="14" endline="35">DC_UpdateGlobals</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="120" endline="145">DC_UpdateHSProperties</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a177daba53fe91fe9c471ab765193237f" compoundref="_m_i_e_s___epochs_8ipf" startline="44" endline="48">EP_ClearEpochs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a211206154b9ba3b1e445154a9f18627e" compoundref="_m_i_e_s___constants_8ipf" startline="65">FREE_MEMORY_LOWER_LIMIT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a3f7d8bef223395d9a2d3817d58ceb615" compoundref="_m_i_e_s___utilities_8ipf" startline="2131" endline="2141">GetFreeMemory</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad160e64624a55553a590d272ed91df9e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2891" endline="2917">GetTPResultsBuffer</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9f3e189b24ff66bea00a2836828d5568" compoundref="_m_i_e_s___constants_8ipf" startline="667">HARDWARE_PREVENT_ERROR_POPUP</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1aa84ff338c72c60b071848ba55245ad71" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="395" endline="411">HW_IsRunning</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af359cb8004bf03ea7429e95e773da6b0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6083" endline="6100">IsValidSweepAndConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a69c01a331f1e718e755a0d4be761e3b8" compoundref="_m_i_e_s___constants_8ipf" startline="266">SAVE_AND_SPLIT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ab3a93ef755ff17e507633dfc14c03648" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3389" endline="3520">SaveExperimentSpecial</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a4b75c440253625f0cfe91f0ac7a9c001" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1497" endline="1514">TP_CreateTestPulseWave</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="158" endline="265">DQM_StartDAQMultiDevice</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1ac943ce95b47035d99ac1425ab74867c4" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="19" endline="49">DQS_StartDAQSingleDevice</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ae51d5cd281169c71d0e01573ed3d1fca" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="204" endline="253">RA_Counter</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1297" endline="1339">TP_Setup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_UpdateHSProperties</definition>
+        <argsstring>(string device, wave ADCs)</argsstring>
+        <name>DC_UpdateHSProperties</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>ADCs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="120" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="120" bodyend="145"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_NoOfChannelsSelected</definition>
+        <argsstring>(string device, variable type)</argsstring>
+        <name>DC_NoOfChannelsSelected</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of selected checkboxes for the given type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="148" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="148" bodyend="153"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="159" endline="203">DC_ChannelCalcForDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2044" endline="2076">DC_GetStopCollectionPoint</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2004" endline="2041">DC_ReturnTotalLengthIncrease</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_ChannelCalcForDAQConfigWave</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_ChannelCalcForDAQConfigWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>acquisition mode, one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="159" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="159" bodyend="203"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53" compoundref="_m_i_e_s___data_configurator_8ipf" startline="209" endline="219">DC_AreTTLsInRackChecked</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="148" endline="153">DC_NoOfChannelsSelected</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5df99c37594c02256c0bea552625ac6b" compoundref="_m_i_e_s___constants_8ipf" startline="499">RACK_ONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aadd83e4e7d72a07edf88bceb5ee8cb88" compoundref="_m_i_e_s___constants_8ipf" startline="498">RACK_ZERO</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_AreTTLsInRackChecked</definition>
+        <argsstring>(string device, variable rackNo)</argsstring>
+        <name>DC_AreTTLsInRackChecked</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>rackNo</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ON/OFF status of the front TTLs on a specified rack. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rackNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="209" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="209" bodyend="219"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a0ff9ab0318f135a01b0b0548f2a363d2" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1841" endline="1854">HW_ITC_GetRackRange</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="159" endline="203">DC_ChannelCalcForDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_LongestOutputWave</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable channelType)</argsstring>
+        <name>DC_LongestOutputWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of points in the longest stimset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>acquisition mode, one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel type, one of <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="226" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="226" bodyend="270"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e76889e4e27568b2c7b01193b935c33" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3422" endline="3435">GetTestPulse</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a941def6234736e116a3f243bf302751e" compoundref="_m_i_e_s___constants_8ipf" startline="508">MINIMUM_ITCDATAWAVE_EXPONENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a38a88f5050ef2b6741f92c45b6419780" compoundref="_m_i_e_s___data_configurator_8ipf" startline="734" endline="740">DC_CalculateLongestSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1aeb00707d80b1021cd2a05a22a2976fb6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_CalculateDAQDataWaveLength</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_CalculateDAQDataWaveLength</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the required length of the DAQDataWave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>ITC Hardware:<itemizedlist>
+<listitem><para>The DAQDataWave length = 2^x where is the first integer large enough to contain the longest output wave plus one. X also has a minimum value of 17 to ensure sufficient time for communication with the ITC device to prevent FIFO overflow or underrun.</para>
+</listitem></itemizedlist>
+</para>
+<para>NI Hardware:<itemizedlist>
+<listitem><para>Returns stopCollectionPoint</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>acquisition mode, one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="283" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="283" bodyend="304"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1652054de6929383783b08a520a0a3e8" compoundref="_m_i_e_s___utilities_8ipf" startline="3528" endline="3536">FindNextPower</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a941def6234736e116a3f243bf302751e" compoundref="_m_i_e_s___constants_8ipf" startline="508">MINIMUM_ITCDATAWAVE_EXPONENT</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="331" endline="360">DC_MakeAndGetDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a7a27ce45cd60fb23f0dc33e824160433" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_MakeDAQConfigWave</definition>
+        <argsstring>(string device, variable numActiveChannels)</argsstring>
+        <name>DC_MakeDAQConfigWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numActiveChannels</declname>
+        </param>
+        <briefdescription>
+<para>Create the DAQConfigWave used to configure the DAQ device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numActiveChannels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of active channels as returned by <ref refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" kindref="member">DC_ChannelCalcForDAQConfigWave()</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="310" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="310" bodyend="320"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ab9782bb9eaa585669198f9dfa56d6d9c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6032" endline="6058">IsValidConfigWave</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveOrNull, WaveRefWave &gt;</type>
+        <definition>static std::tuple&lt; WaveOrNull, WaveRefWave &gt; DC_MakeAndGetDAQDataWave</definition>
+        <argsstring>(string device, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)</argsstring>
+        <name>DC_MakeAndGetDAQDataWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>hardwareType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numActiveChannels</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>samplingInterval</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Creates DAQDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Config all refers to configuring all the channels at once</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>hardwareType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>hardware type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numActiveChannels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of active channels as returned by <ref refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" kindref="member">DC_ChannelCalcForDAQConfigWave()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>samplingInterval</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sampling interval as returned by <ref refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" kindref="member">DAP_GetSampInt()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="331" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="331" bodyend="360"/>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aeb00707d80b1021cd2a05a22a2976fb6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="283" endline="304">DC_CalculateDAQDataWaveLength</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa85fbe112d46ec1ed19c87f565e5bbd1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="373" endline="383">DC_MakeNIChannelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1acf8f3676485a39001a65c53db625cfac" compoundref="_i_p_n_w_b___constants_8ipf" startline="67">IGOR_TYPE_8BIT_INT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a17d6bcaff1e1e59a22b107171f7f4404" compoundref="_i_p_n_w_b___constants_8ipf" startline="70">IGOR_TYPE_UNSIGNED</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1aef783d5c066f35312e2cd85e40ce0dd3" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="272" endline="276">SWS_GetRawDataFPType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4933ebaafde644c8cf8d1d2b30eab861" compoundref="_m_i_e_s___constants_8ipf" startline="90">XOP_CHANNEL_TYPE_TTL</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1aa85fbe112d46ec1ed19c87f565e5bbd1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave DC_MakeNIChannelWave</definition>
+        <argsstring>(string device, variable numRows, variable samplingInterval, variable index, variable type)</argsstring>
+        <name>DC_MakeNIChannelWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>samplingInterval</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Creates a single NIChannel wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Config all refers to configuring all the channels at once</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numRows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of the 1D channel wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>samplingInterval</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>minimum sample intervall in microseconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of NI channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numeric data type of NI channel</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Wave Reference to NI Channel wave </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="373" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="373" bodyend="383"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15451454d510515801126e2225b42e0f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="785" endline="804">GetNIDAQChannelWave</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="331" endline="360">DC_MakeAndGetDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_MakeHelperWaves</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_MakeHelperWaves</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the waves used for displaying DAQ/TP results in the oscilloscope window and the scaled data wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="390" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="390" bodyend="492"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ab78812e72045c498cbf32f8f2908edbf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="495" endline="530">DC_InitDataHoldingWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7134875f4018a2b77af011b836a29f3f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6248">DECIMATION_NONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3b1b7d9052804d34b81bdd6c5440f30f" compoundref="_m_i_e_s___constants_8ipf" startline="146">DEFAULT_DECIMATION_FACTOR</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1c5517eac052891a0cac602a32c24010" compoundref="_m_i_e_s___utilities_8ipf" startline="3543" endline="3551">FindPreviousPower</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af9ca40e4253085d18ac139155aaeef2a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6259" endline="6278">GetDecimatedWaveSize</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a42cd91a9a66c26f756b13996326d9f24" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2804" endline="2817">GetTPOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa602a1bd3abd7b6c95d4e393d7c35ee2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="306" endline="310">GetTTLListFromConfig</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1aef783d5c066f35312e2cd85e40ce0dd3" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="272" endline="276">SWS_GetRawDataFPType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1af34112da898a78b2808eff374b1f0b5f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1676" endline="1678">TP_GetPowerSpectrumLength</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ab78812e72045c498cbf32f8f2908edbf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_InitDataHoldingWave</definition>
+        <argsstring>(wave wv, variable numRows, variable sampleInterval, variable numDACs, variable numADCs, variable numTTLs, variable type=defaultValue, variable isFourierTransform=defaultValue)</argsstring>
+        <name>DC_InitDataHoldingWave</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sampleInterval</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numDACs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numADCs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numTTLs</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>isFourierTransform</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Initialize data holding waves to NaN. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="495" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="495" bodyend="530"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0963283a75a5eb42369e6b9d553f4e8e" compoundref="_m_i_e_s___utilities_8ipf" startline="4534" endline="4558">ChangeWaveLock</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1adcf121ee94f2b5c102903885b30bd16e" compoundref="_m_i_e_s___utilities_8ipf" startline="670" endline="675">GetLockState</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad487ff74aa64a76d6a6288d2352126ab" compoundref="_m_i_e_s___utilities_8ipf" startline="3650" endline="3656">IsFloatingPointWave</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DC_GetFilteredChannelState</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable channelType, variable DAQChannelType=defaultValue)</argsstring>
+        <name>DC_GetFilteredChannelState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>DAQChannelType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the list of active channels, filtered for various special cases. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the channel type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DAQChannelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>only return channels as active if they have the desired DAQChannel type (only respected for DA channel) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="538" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="538" bodyend="601"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="48" endline="55">AFH_GetHeadstageFromDAC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad459ac2cb8d27a9cf3ddf14c51edd2c7" compoundref="_m_i_e_s___constants_8ipf" startline="96">DAQ_CHANNEL_TYPE_UNKOWN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aea93bf89e525dc49202692d5d48b3fc7" compoundref="_m_i_e_s___constants_8ipf" startline="19">NUM_AD_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac6c5a7d64273ee109ec3a50522844b45" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2080" endline="2101">DC_GotTPChannelWhileDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a96ff77a6b4b4ad061dbc7075dcbcca18" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1744" endline="1843">DC_ITC_MakeTTLWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936" compoundref="_m_i_e_s___data_configurator_8ipf" startline="226" endline="270">DC_LongestOutputWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a9e4724819a2df3a6e4e5db830232b755" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1845" endline="1909">DC_NI_MakeTTLWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a5cbcfad29dc3c23062abfbaf892b26a2" compoundref="_m_i_e_s___indexing_8ipf" startline="407" endline="445">IDX_ApplyUnLockedIndexing</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a9b939976bd847ba6c4d69ccaec5e40a0" compoundref="_m_i_e_s___indexing_8ipf" startline="59" endline="92">IDX_IndexingDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a161a621959a4ee37091a6410121462bc" compoundref="_m_i_e_s___indexing_8ipf" startline="237" endline="287">IDX_MaxNoOfSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___indexing_8ipf_1a3f9ef5f9d3900eadadc369bf89e9107c" compoundref="_m_i_e_s___indexing_8ipf" startline="292" endline="321">IDX_MinNoOfSweeps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_PlaceDataInDAQConfigWave</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_PlaceDataInDAQConfigWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Places channel (DA, AD, and TTL) settings data into DAQConfigWave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="607" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="607" bodyend="711"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a86a8498dd801874d10236dc2c4994efc" compoundref="_m_i_e_s___utilities_8ipf" startline="1265" endline="1307">AddEntryIntoWaveNoteAsList</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4d762a7112dbc3f0a31addfe65d073a0" compoundref="_m_i_e_s___constants_8ipf" startline="212">CHANNEL_CONTROL_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a47e10950cdb6aa7653fe774b4d66e738" compoundref="_m_i_e_s___constants_8ipf" startline="1198">CHANNEL_UNIT_KEY</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53" compoundref="_m_i_e_s___data_configurator_8ipf" startline="209" endline="219">DC_AreTTLsInRackChecked</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2109" endline="2125">DC_GetChannelTypefromHS</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1aebb470b33a1314a0990102312d1ebb0e" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1891" endline="1907">HW_ITC_GetITCXOPChannelForRack</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5df99c37594c02256c0bea552625ac6b" compoundref="_m_i_e_s___constants_8ipf" startline="499">RACK_ONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aadd83e4e7d72a07edf88bceb5ee8cb88" compoundref="_m_i_e_s___constants_8ipf" startline="498">RACK_ZERO</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4933ebaafde644c8cf8d1d2b30eab861" compoundref="_m_i_e_s___constants_8ipf" startline="90">XOP_CHANNEL_TYPE_TTL</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1aa138c088925a9c62e68b90b6e53b6154" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_GetDecimationFactor</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_GetDecimationFactor</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Get the decimation factor for the current channel configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the factor between the minimum sampling interval and the real. If the multiplier is taken into account depends on <computeroutput>dataAcqOrTP</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="720" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="720" bodyend="725"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4f3e6b5f198de9f2b14c00cff7d70d22" compoundref="_m_i_e_s___constants_8ipf" startline="704">WAVEBUILDER_MIN_SAMPINT</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a3c0ef533e9c270f3b19f7ba72a18616a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="760" endline="777">DC_CalculateGeneratedDataSize</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a38a88f5050ef2b6741f92c45b6419780" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_CalculateLongestSweep</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable channelType)</argsstring>
+        <name>DC_CalculateLongestSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Returns the longest sweep in a stimulus set across the given channel type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>mode, either <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of data points, <emphasis>not</emphasis> time </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="734" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="734" bodyend="740"/>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a3c0ef533e9c270f3b19f7ba72a18616a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="760" endline="777">DC_CalculateGeneratedDataSize</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1afa513abcf3e090330d1d10dfaf303936" compoundref="_m_i_e_s___data_configurator_8ipf" startline="226" endline="270">DC_LongestOutputWave</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2044" endline="2076">DC_GetStopCollectionPoint</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a9fdfa23aa8994da3bba963a2d84fa39a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_CalculateStimsetLength</definition>
+        <argsstring>(wave stimSet, string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_CalculateStimsetLength</name>
+        <param>
+          <type>wave</type>
+          <declname>stimSet</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Get the stimset length for the real sampling interval. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stimSet</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stimset wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="747" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="747" bodyend="753"/>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a3c0ef533e9c270f3b19f7ba72a18616a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="760" endline="777">DC_CalculateGeneratedDataSize</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a3c0ef533e9c270f3b19f7ba72a18616a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_CalculateGeneratedDataSize</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable genLength)</argsstring>
+        <name>DC_CalculateGeneratedDataSize</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>genLength</declname>
+        </param>
+        <briefdescription>
+<para>Get the length for the real sampling interval from a generated wave with length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>genLength</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>length of a generated data wave </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="760" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="760" bodyend="777"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa138c088925a9c62e68b90b6e53b6154" compoundref="_m_i_e_s___data_configurator_8ipf" startline="720" endline="725">DC_GetDecimationFactor</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a38a88f5050ef2b6741f92c45b6419780" compoundref="_m_i_e_s___data_configurator_8ipf" startline="734" endline="740">DC_CalculateLongestSweep</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a9fdfa23aa8994da3bba963a2d84fa39a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="747" endline="753">DC_CalculateStimsetLength</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_PlaceDataInDAQDataWave</definition>
+        <argsstring>(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)</argsstring>
+        <name>DC_PlaceDataInDAQDataWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numActiveChannels</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>multiDevice</declname>
+        </param>
+        <briefdescription>
+<para>Places data from appropriate DA and TTL stimulus set(s) into DAQDataWave. Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>numActiveChannels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of active channels as returned by <ref refid="_m_i_e_s___data_configurator_8ipf_1ae6b9627557eeb66fe7a96f2068b04c0d" kindref="member">DC_ChannelCalcForDAQConfigWave()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>multiDevice</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Fine tune data handling for single device (false) or multi device (true)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Abort</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>configuration failure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="787" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="787" bodyend="822"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a6ea61cf897b46890249f1334d2c7b083" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1605" endline="1652">DC_CheckIfDataWaveHasBorderVals</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1184" endline="1280">DC_FillDAQDataWaveForDAQ</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1075" endline="1182">DC_FillDAQDataWaveForTP</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1058" endline="1073">DC_FillSetEventFlag</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2044" endline="2076">DC_GetStopCollectionPoint</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_WriteTTLIntoDAQDataWave</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>DC_WriteTTLIntoDAQDataWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="824" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="824" bodyend="878"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="struct_data_configuration_result_1ac39cc10b0ef54a1802507f82616836f9" compoundref="_m_i_e_s___structures_8ipf" startline="475">DataConfigurationResult::dataAcqOrTP</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a8cd9b4b35b374d51e213b9794c45fa53" compoundref="_m_i_e_s___data_configurator_8ipf" startline="209" endline="219">DC_AreTTLsInRackChecked</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a9fdfa23aa8994da3bba963a2d84fa39a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="747" endline="753">DC_CalculateStimsetLength</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a96ff77a6b4b4ad061dbc7075dcbcca18" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1744" endline="1843">DC_ITC_MakeTTLWave</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a9e4724819a2df3a6e4e5db830232b755" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1845" endline="1909">DC_NI_MakeTTLWave</references>
+        <references refid="struct_data_configuration_result_1aed7d8be1f97186cda1c117ab17d4c8cd" compoundref="_m_i_e_s___structures_8ipf" startline="482">DataConfigurationResult::decimationFactor</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2f3c64d51376f0a6832984d10aa43f1f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1008" endline="1040">GetTTLWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" compoundref="_m_i_e_s___structures_8ipf" startline="497">DataConfigurationResult::hardwareType</references>
+        <references refid="struct_data_configuration_result_1ae02f680f3808e6c775e99b5c03f5728f" compoundref="_m_i_e_s___structures_8ipf" startline="488">DataConfigurationResult::numADCEntries</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="struct_data_configuration_result_1a4685f99541532b3e1aba545ef4accb3d" compoundref="_m_i_e_s___structures_8ipf" startline="491">DataConfigurationResult::numTTLEntries</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5df99c37594c02256c0bea552625ac6b" compoundref="_m_i_e_s___constants_8ipf" startline="499">RACK_ONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aadd83e4e7d72a07edf88bceb5ee8cb88" compoundref="_m_i_e_s___constants_8ipf" startline="498">RACK_ZERO</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab42b660216fbe8af2517cd80c954a6ac" compoundref="_m_i_e_s___constants_8ipf" startline="895">SIGNED_INT_16BIT_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8f219b89f36a136001f6e1f86b551dc1" compoundref="_m_i_e_s___constants_8ipf" startline="894">SIGNED_INT_16BIT_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4933ebaafde644c8cf8d1d2b30eab861" compoundref="_m_i_e_s___constants_8ipf" startline="90">XOP_CHANNEL_TYPE_TTL</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_PrepareLBNEntries</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>DC_PrepareLBNEntries</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="880" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="880" bodyend="1056"/>
+        <references refid="struct_data_configuration_result_1a4c0797e671a996ba71be609f4fcb3b36" compoundref="_m_i_e_s___structures_8ipf" startline="530">DataConfigurationResult::ADCList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a995937d9303dc63e6dc964d7cbfa4037" compoundref="_m_i_e_s___constants_8ipf" startline="566">ANALYSIS_FUNCTION_PARAMS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af091afe52d2674c8d264e35ad7625d50" compoundref="_m_i_e_s___constants_8ipf" startline="568">ANALYSIS_FUNCTION_PARAMS_LBN</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a423cc2db7127dce04d22ac0910f01894" compoundref="_m_i_e_s___constants_8ipf" startline="213">CHANNEL_CONTROL_GAIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4d762a7112dbc3f0a31addfe65d073a0" compoundref="_m_i_e_s___constants_8ipf" startline="212">CHANNEL_CONTROL_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8dd1cf2cd45eca5c2152b02b60df1422" compoundref="_m_i_e_s___constants_8ipf" startline="861">CLAMPMODE_ENTRY_KEY</references>
+        <references refid="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" compoundref="_m_i_e_s___structures_8ipf" startline="538">DataConfigurationResult::DACAmp</references>
+        <references refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" compoundref="_m_i_e_s___structures_8ipf" startline="529">DataConfigurationResult::DACList</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="struct_data_configuration_result_1ac39cc10b0ef54a1802507f82616836f9" compoundref="_m_i_e_s___structures_8ipf" startline="475">DataConfigurationResult::dataAcqOrTP</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a63b2b2b8ad7145aa0733ec574f91f477" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1666" endline="1736">DC_DocumentChannelProperty</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1adb592272f562af730084cb0964622a1a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1581" endline="1603">DC_GenerateStimsetFingerprint</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a935ac93d1d57d33048db268ee1bbd7af" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1549" endline="1567">DC_GetStimsetAcqCycleID</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1abc866670ac8a12cea4da8fd7701aa4b0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5513" endline="5517">DeviceCanLead</references>
+        <references refid="struct_data_configuration_result_1a0c53d5c7db359178c0a970393ddcfb2d" compoundref="_m_i_e_s___structures_8ipf" startline="464">DataConfigurationResult::distributedDAQ</references>
+        <references refid="struct_data_configuration_result_1a4c19323b062129ecfb40939b0582834f" compoundref="_m_i_e_s___structures_8ipf" startline="465">DataConfigurationResult::distributedDAQOptOv</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac45439ba5d21067d6d6197f775057811" compoundref="_m_i_e_s___constants_8ipf" startline="575">EVENT_NAME_LIST_LBN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9fec49da60d6a059b70bbed4d1ddb0e4" compoundref="_m_i_e_s___constants_8ipf" startline="1349">EXPCONFIG_UDATA_SOURCEFILE_HASH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aac42eb9690f2de65f4de5743c3292b6d" compoundref="_m_i_e_s___constants_8ipf" startline="1348">EXPCONFIG_UDATA_SOURCEFILE_PATH</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a312af3b5e501a22476d7c6d9191879d9" compoundref="_m_i_e_s___constants_8ipf" startline="1350">EXPCONFIG_UDATA_STIMSET_NWB_PATH</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe70457faa70d9f0d34f4be7711f808a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6427" endline="6446">GetAnalysisFunctionStorage</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1d83dd0074789e90293e5b7bc33be609" compoundref="_m_i_e_s___utilities_8ipf" startline="2820" endline="2827">GetArchitectureBits</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a183c486b4d10bca9cb81a0f0e43798c5" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5589" endline="5606">GetCellElectrodeNames</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3757e1cc55dc87c63381fe8c346a789a" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="271" endline="275">GetFollowerList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac27c800c64d7427959ecfa7ddd556fae" compoundref="_m_i_e_s___utilities_8ipf" startline="2838" endline="2840">GetIgorProBuildVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a6131be46d04acfb6cb9dc55ff539acf5" compoundref="_i_p_n_w_b___utils_8ipf" startline="879" endline="881">GetIgorProVersion</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a161c46a0f11035c43bef15e80c04b431" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6189" endline="6193">GetMIESVersionAsString</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <references refid="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" compoundref="_m_i_e_s___structures_8ipf" startline="497">DataConfigurationResult::hardwareType</references>
+        <references refid="struct_data_configuration_result_1ad40fa9b1e359e903ba29078603cddf3e" compoundref="_m_i_e_s___structures_8ipf" startline="564">DataConfigurationResult::headstageADC</references>
+        <references refid="struct_data_configuration_result_1ae4a27142e528cf8391a12169750feaa2" compoundref="_m_i_e_s___structures_8ipf" startline="550">DataConfigurationResult::headstageDAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a55022802c4ff371d9ba636f540e5a8b2" compoundref="_m_i_e_s___utilities_8ipf" startline="5830" endline="5865">IsConstant</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_data_configuration_result_1ae02f680f3808e6c775e99b5c03f5728f" compoundref="_m_i_e_s___structures_8ipf" startline="488">DataConfigurationResult::numADCEntries</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="struct_data_configuration_result_1adf89c655dd287c35dbf5c98edd794ee6" compoundref="_m_i_e_s___structures_8ipf" startline="520">DataConfigurationResult::offsets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a25a79be59dd43aa08b97f861e11becb9" compoundref="_m_i_e_s___constants_8ipf" startline="920">RA_ACQ_CYCLE_ID_KEY</references>
+        <references refid="struct_data_configuration_result_1a95201b77a12aad3e9fb1cece8ffd3b6c" compoundref="_m_i_e_s___structures_8ipf" startline="521">DataConfigurationResult::regions</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <references refid="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" compoundref="_m_i_e_s___structures_8ipf" startline="500">DataConfigurationResult::samplingInterval</references>
+        <references refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" compoundref="_m_i_e_s___structures_8ipf" startline="554">DataConfigurationResult::setColumn</references>
+        <references refid="struct_data_configuration_result_1a057ccbe8edeac3468b9c16e3a359933f" compoundref="_m_i_e_s___structures_8ipf" startline="555">DataConfigurationResult::setCycleCount</references>
+        <references refid="struct_data_configuration_result_1a1f887229150d9f3f3fee23bf65a36d2e" compoundref="_m_i_e_s___structures_8ipf" startline="547">DataConfigurationResult::setLength</references>
+        <references refid="struct_data_configuration_result_1a7688f619919cd315766b0b830a432518" compoundref="_m_i_e_s___structures_8ipf" startline="541">DataConfigurationResult::setName</references>
+        <references refid="struct_data_configuration_result_1a0fc7701351170ac9c31cafdcfaf041d8" compoundref="_m_i_e_s___structures_8ipf" startline="470">DataConfigurationResult::statusHS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaca6cec3ac96fcc6848c56afbd6e454c" compoundref="_m_i_e_s___constants_8ipf" startline="502">STIM_WAVE_NAME_KEY</references>
+        <references refid="struct_data_configuration_result_1ac0b82ee485e079b5fdb3edcbd02d4b72" compoundref="_m_i_e_s___structures_8ipf" startline="544">DataConfigurationResult::stimSet</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af53360d13dc4251fd2fa82a32dc88f6b" compoundref="_m_i_e_s___constants_8ipf" startline="921">STIMSET_ACQ_CYCLE_ID_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adaeef1da64f41b086024acabf9847e59" compoundref="_m_i_e_s___constants_8ipf" startline="858">STIMSET_SCALE_FACTOR_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa88502418f08617f6a16f1807b42e856" compoundref="_m_i_e_s___constants_8ipf" startline="859">STIMSET_WAVE_NOTE_KEY</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2af68f9516aa38313fb30e39e6906d54" compoundref="_m_i_e_s___utilities_8ipf" startline="3953" endline="3961">str2numSafe</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2abbe37fe8586b53a19d4a3bbdd9c1bf" compoundref="_m_i_e_s___constants_8ipf" startline="562">TOTAL_NUM_EVENTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4f3e6b5f198de9f2b14c00cff7d70d22" compoundref="_m_i_e_s___constants_8ipf" startline="704">WAVEBUILDER_MIN_SAMPINT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a2b24c06f82638314f8f6db248976e212" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1086" endline="1108">WB_GetITI</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa99f7efe03b889d08e791563cd4ae026" compoundref="_m_i_e_s___wave_builder_8ipf" startline="319" endline="338">WB_GetStimsetChecksum</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a17020c20eb35b681b7e958f2196ba2ee" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_FillSetEventFlag</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>DC_FillSetEventFlag</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1058" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1058" bodyend="1073"/>
+        <references refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" compoundref="_m_i_e_s___structures_8ipf" startline="529">DataConfigurationResult::DACList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" compoundref="_m_i_e_s___structures_8ipf" startline="554">DataConfigurationResult::setColumn</references>
+        <references refid="struct_data_configuration_result_1a7688f619919cd315766b0b830a432518" compoundref="_m_i_e_s___structures_8ipf" startline="541">DataConfigurationResult::setName</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a27c5de341d0dea6676f953aa221706bf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_FillDAQDataWaveForTP</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>DC_FillDAQDataWaveForTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1075" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1075" bodyend="1182"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="struct_data_configuration_result_1a093b069cbbf09c1709aa4bd9c9e03491" compoundref="_m_i_e_s___structures_8ipf" startline="479">DataConfigurationResult::baselineFrac</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a0145f1d317c754307839019251d9bbd1" compoundref="_m_i_e_s___cache_8ipf" startline="362" endline="378">CA_HardwareDataTPKey</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" compoundref="_m_i_e_s___structures_8ipf" startline="538">DataConfigurationResult::DACAmp</references>
+        <references refid="struct_hardware_data_t_p_input_1aac9a5b9494197810e70871004872506c" compoundref="_m_i_e_s___structures_8ipf" startline="331">HardwareDataTPInput::DACAmpTP</references>
+        <references refid="struct_hardware_data_t_p_input_1a73bd7a34597a7b5acdaa2622f349de77" compoundref="_m_i_e_s___structures_8ipf" startline="331">HardwareDataTPInput::DAGain</references>
+        <references refid="struct_data_configuration_result_1adf95a6c6917eaeca51fcd0d8d4bf20e1" compoundref="_m_i_e_s___structures_8ipf" startline="525">DataConfigurationResult::DAGain</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aeb00707d80b1021cd2a05a22a2976fb6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="283" endline="304">DC_CalculateDAQDataWaveLength</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="331" endline="360">DC_MakeAndGetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15451454d510515801126e2225b42e0f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="785" endline="804">GetNIDAQChannelWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" compoundref="_m_i_e_s___structures_8ipf" startline="326">HardwareDataTPInput::hardwareType</references>
+        <references refid="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" compoundref="_m_i_e_s___structures_8ipf" startline="497">DataConfigurationResult::hardwareType</references>
+        <references refid="struct_data_configuration_result_1a06a3f1639bb2656f7bdaa5970ae0656a" compoundref="_m_i_e_s___structures_8ipf" startline="559">DataConfigurationResult::insertStart</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a54fa165a2a7518d5f462b331eb09b79f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5993" endline="6020">MoveWaveWithOverwrite</references>
+        <references refid="struct_data_configuration_result_1a4abc650f19993130f65b226b7ce96cb7" compoundref="_m_i_e_s___structures_8ipf" startline="468">DataConfigurationResult::multiDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbf27b71731aaf723bdc81a86dd6270b" compoundref="_m_i_e_s___constants_8ipf" startline="903">NI_DAC_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1849a90ca3c0dd55f35ed6318d2e2f6b" compoundref="_m_i_e_s___constants_8ipf" startline="902">NI_DAC_MIN</references>
+        <references refid="struct_hardware_data_t_p_input_1a94e9df2c99dab7afcc5f4569aa500ddb" compoundref="_m_i_e_s___structures_8ipf" startline="328">HardwareDataTPInput::numActiveChannels</references>
+        <references refid="struct_data_configuration_result_1a1d73072716d68aafe167aa8bff43fef0" compoundref="_m_i_e_s___structures_8ipf" startline="494">DataConfigurationResult::numActiveChannels</references>
+        <references refid="struct_data_configuration_result_1ae02f680f3808e6c775e99b5c03f5728f" compoundref="_m_i_e_s___structures_8ipf" startline="488">DataConfigurationResult::numADCEntries</references>
+        <references refid="struct_hardware_data_t_p_input_1a22b2f85dc7670f7797632bb15ad20793" compoundref="_m_i_e_s___structures_8ipf" startline="329">HardwareDataTPInput::numberOfRows</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="struct_hardware_data_t_p_input_1acf90de23632d9c1dfd2eb04252b70945" compoundref="_m_i_e_s___structures_8ipf" startline="328">HardwareDataTPInput::numDACs</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_hardware_data_t_p_input_1ae7b9c044081637bcbba877ba389ccb82" compoundref="_m_i_e_s___structures_8ipf" startline="330">HardwareDataTPInput::samplingInterval</references>
+        <references refid="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" compoundref="_m_i_e_s___structures_8ipf" startline="500">DataConfigurationResult::samplingInterval</references>
+        <references refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" compoundref="_m_i_e_s___structures_8ipf" startline="554">DataConfigurationResult::setColumn</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab42b660216fbe8af2517cd80c954a6ac" compoundref="_m_i_e_s___constants_8ipf" startline="895">SIGNED_INT_16BIT_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8f219b89f36a136001f6e1f86b551dc1" compoundref="_m_i_e_s___constants_8ipf" startline="894">SIGNED_INT_16BIT_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="struct_data_configuration_result_1af031293d0bfc0b5ea1d58ce02939fe15" compoundref="_m_i_e_s___structures_8ipf" startline="513">DataConfigurationResult::testPulse</references>
+        <references refid="struct_hardware_data_t_p_input_1a3028ec7b9a930708a454d44c30e9e838" compoundref="_m_i_e_s___structures_8ipf" startline="332">HardwareDataTPInput::testPulseLength</references>
+        <references refid="struct_data_configuration_result_1a164e98355dcd58ebfed2db25c7f72b91" compoundref="_m_i_e_s___structures_8ipf" startline="516">DataConfigurationResult::testPulseLength</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9fbc0c93b547a1aeaf41a78ddf1cd679" compoundref="_m_i_e_s___constants_8ipf" startline="1503">TP_PROPERTIES_HASH</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a4cff93761f5ca7e2a1943579f37dcbce" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_FillDAQDataWaveForDAQ</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>DC_FillDAQDataWaveForDAQ</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1184" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1184" bodyend="1280"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" compoundref="_m_i_e_s___structures_8ipf" startline="538">DataConfigurationResult::DACAmp</references>
+        <references refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" compoundref="_m_i_e_s___structures_8ipf" startline="529">DataConfigurationResult::DACList</references>
+        <references refid="struct_data_configuration_result_1adf95a6c6917eaeca51fcd0d8d4bf20e1" compoundref="_m_i_e_s___structures_8ipf" startline="525">DataConfigurationResult::DAGain</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="331" endline="360">DC_MakeAndGetDAQDataWave</references>
+        <references refid="struct_data_configuration_result_1aed7d8be1f97186cda1c117ab17d4c8cd" compoundref="_m_i_e_s___structures_8ipf" startline="482">DataConfigurationResult::decimationFactor</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="struct_data_configuration_result_1a01f96fc46be36cb803d3fd788a34c3e4" compoundref="_m_i_e_s___structures_8ipf" startline="457">DataConfigurationResult::globalTPInsert</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="struct_data_configuration_result_1a6a8b1031adc8839fa208c100ecaba4bf" compoundref="_m_i_e_s___structures_8ipf" startline="497">DataConfigurationResult::hardwareType</references>
+        <references refid="struct_data_configuration_result_1ae4a27142e528cf8391a12169750feaa2" compoundref="_m_i_e_s___structures_8ipf" startline="550">DataConfigurationResult::headstageDAC</references>
+        <references refid="struct_data_configuration_result_1a06a3f1639bb2656f7bdaa5970ae0656a" compoundref="_m_i_e_s___structures_8ipf" startline="559">DataConfigurationResult::insertStart</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbf27b71731aaf723bdc81a86dd6270b" compoundref="_m_i_e_s___constants_8ipf" startline="903">NI_DAC_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1849a90ca3c0dd55f35ed6318d2e2f6b" compoundref="_m_i_e_s___constants_8ipf" startline="902">NI_DAC_MIN</references>
+        <references refid="struct_data_configuration_result_1a1d73072716d68aafe167aa8bff43fef0" compoundref="_m_i_e_s___structures_8ipf" startline="494">DataConfigurationResult::numActiveChannels</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" compoundref="_m_i_e_s___structures_8ipf" startline="500">DataConfigurationResult::samplingInterval</references>
+        <references refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" compoundref="_m_i_e_s___structures_8ipf" startline="554">DataConfigurationResult::setColumn</references>
+        <references refid="struct_data_configuration_result_1a1f887229150d9f3f3fee23bf65a36d2e" compoundref="_m_i_e_s___structures_8ipf" startline="547">DataConfigurationResult::setLength</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab42b660216fbe8af2517cd80c954a6ac" compoundref="_m_i_e_s___constants_8ipf" startline="895">SIGNED_INT_16BIT_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8f219b89f36a136001f6e1f86b551dc1" compoundref="_m_i_e_s___constants_8ipf" startline="894">SIGNED_INT_16BIT_MIN</references>
+        <references refid="struct_data_configuration_result_1ac0b82ee485e079b5fdb3edcbd02d4b72" compoundref="_m_i_e_s___structures_8ipf" startline="544">DataConfigurationResult::stimSet</references>
+        <references refid="struct_data_configuration_result_1af031293d0bfc0b5ea1d58ce02939fe15" compoundref="_m_i_e_s___structures_8ipf" startline="513">DataConfigurationResult::testPulse</references>
+        <references refid="struct_data_configuration_result_1a164e98355dcd58ebfed2db25c7f72b91" compoundref="_m_i_e_s___structures_8ipf" startline="516">DataConfigurationResult::testPulseLength</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; <ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> &gt;</type>
+        <definition>static std::tuple&lt; DataConfigurationResult &gt; DC_GetConfiguration</definition>
+        <argsstring>(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)</argsstring>
+        <name>DC_GetConfiguration</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numActiveChannels</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>multiDevice</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1282" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1282" bodyend="1505"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="struct_hardware_data_t_p_input_1a115a445b8e28f3aa1d0875267004b48b" compoundref="_m_i_e_s___structures_8ipf" startline="332">HardwareDataTPInput::baselineFrac</references>
+        <references refid="_m_i_e_s___constants_8ipf_1addc24577cddf76afdcbce0479aa7478f" compoundref="_m_i_e_s___constants_8ipf" startline="214">CHANNEL_CONTROL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a9fdfa23aa8994da3bba963a2d84fa39a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="747" endline="753">DC_CalculateStimsetLength</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa138c088925a9c62e68b90b6e53b6154" compoundref="_m_i_e_s___data_configurator_8ipf" startline="720" endline="725">DC_GetDecimationFactor</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2004" endline="2041">DC_ReturnTotalLengthIncrease</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a93abd208f9548ec67bbeca50db8a1379" compoundref="_m_i_e_s___constants_8ipf" startline="1291">GAIN_BEFORE_DAQ</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6a79aff1627fced5be033a9d86be2b75" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="509" endline="539">GetChannelClampMode</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab30412d2462bf58093e939a6e7ac28c7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7079" endline="7087">GetDACAmplitudes</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa24cc12236b10d78bd53cd1d3aeecff1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="430" endline="434">GetSpecialControlLabel</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e76889e4e27568b2c7b01193b935c33" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3422" endline="3435">GetTestPulse</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa602a1bd3abd7b6c95d4e393d7c35ee2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="306" endline="310">GetTTLListFromConfig</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_m_i_e_s___structures_8ipf_1ac0c0cd9386e404a4b74732c06dd8adf6" compoundref="_m_i_e_s___structures_8ipf" startline="191" endline="210">InitOOdDAQParams</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_hardware_data_t_p_input_1a94e9df2c99dab7afcc5f4569aa500ddb" compoundref="_m_i_e_s___structures_8ipf" startline="328">HardwareDataTPInput::numActiveChannels</references>
+        <references refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abf203d7571a156287c917d3e378e36be" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="368" endline="399">OOD_GetResultWaves</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1a4dad46a54274e70a3f0590d43d98d727" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="135" endline="199">SWS_GetChannelGains</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4f3e6b5f198de9f2b14c00cff7d70d22" compoundref="_m_i_e_s___constants_8ipf" startline="704">WAVEBUILDER_MIN_SAMPINT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_DocumentHardwareProperties</definition>
+        <argsstring>(string device, variable hardwareType)</argsstring>
+        <name>DC_DocumentHardwareProperties</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>hardwareType</declname>
+        </param>
+        <briefdescription>
+<para>Document hardware type/name/serial number into the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1508" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1508" bodyend="1542"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___cache_8ipf_1aaf0df7bce7ca22ca2703175f99a80456" compoundref="_m_i_e_s___cache_8ipf" startline="338" endline="349">CA_HWDeviceInfoKey</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a4765bad04ec6d55e60b32d81b031ac81" compoundref="_m_i_e_s___cache_8ipf" startline="417" endline="460">CA_StoreEntryIntoCache</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a647d0bbb41e2d3e699c682f03beb15e6" compoundref="_m_i_e_s___cache_8ipf" startline="484" endline="539">CA_TryFetchingEntryFromCache</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a63b2b2b8ad7145aa0733ec574f91f477" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1666" endline="1736">DC_DocumentChannelProperty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a26d8d38984ce53a1421152056e52dabd" compoundref="_m_i_e_s___constants_8ipf" startline="29">DEVICE_TYPES_ITC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9f3e189b24ff66bea00a2836828d5568" compoundref="_m_i_e_s___constants_8ipf" startline="667">HARDWARE_PREVENT_ERROR_POPUP</references>
+        <references refid="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" compoundref="_m_i_e_s___structures_8ipf" startline="326">HardwareDataTPInput::hardwareType</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a8fba4ca37d9f5918a5d65a54e2dad314" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="420" endline="436">HW_GetDeviceInfo</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a935ac93d1d57d33048db268ee1bbd7af" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_GetStimsetAcqCycleID</definition>
+        <argsstring>(string device, variable fingerprint, variable DAC)</argsstring>
+        <name>DC_GetStimsetAcqCycleID</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fingerprint</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>DAC</declname>
+        </param>
+        <briefdescription>
+<para>Return the stimset acquisition cycle ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fingerprint</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>fingerprint as returned by <ref refid="_m_i_e_s___data_configurator_8ipf_1adb592272f562af730084cb0964622a1a" kindref="member">DC_GenerateStimsetFingerprint()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DAC</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DA channel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1549" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1549" bodyend="1567"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a88c0ce306cc93b048ad2db67d4165684" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6103" endline="6113">GetNextRandomNumberForDevice</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af62149fe14a85c3e8f08201b488cbea1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1052" endline="1069">GetStimsetAcqIDHelperWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1adb592272f562af730084cb0964622a1a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_GenerateStimsetFingerprint</definition>
+        <argsstring>(variable raCycleID, string setName, variable setCycleCount, variable setChecksum, variable dataAcqOrTP)</argsstring>
+        <name>DC_GenerateStimsetFingerprint</name>
+        <param>
+          <type>variable</type>
+          <declname>raCycleID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>setCycleCount</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>setChecksum</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+<para>Generate the stimset fingerprint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This fingerprint is unique for the combination of the following properties:<itemizedlist>
+<listitem><para>Repeated acquisition cycle ID</para>
+</listitem><listitem><para>stimset name</para>
+</listitem><listitem><para>stimset checksum</para>
+</listitem><listitem><para>set cycle count</para>
+</listitem></itemizedlist>
+</para>
+<para>Always then this fingerprint changes, a new stimset acquisition cycle ID has to be generated.</para>
+<para>Returns NaN for the testpulse. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1581" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1581" bodyend="1603"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a6ea61cf897b46890249f1334d2c7b083" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable, variable &gt; DC_CheckIfDataWaveHasBorderVals</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>DC_CheckIfDataWaveHasBorderVals</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1605" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1605" bodyend="1652"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="struct_hardware_data_t_p_input_1a4c7b0766a741cf55be3bf80e0bc30d2a" compoundref="_m_i_e_s___structures_8ipf" startline="326">HardwareDataTPInput::hardwareType</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a1152f3ebfa84b4f34a152b2e782e7d31" compoundref="_i_p_n_w_b___constants_8ipf" startline="68">IGOR_TYPE_16BIT_INT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a461bad6d5e26e867fe2c468e5d1adb66" compoundref="_m_i_e_s___utilities_8ipf" startline="3642" endline="3646">IsWaveRefWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbf27b71731aaf723bdc81a86dd6270b" compoundref="_m_i_e_s___constants_8ipf" startline="903">NI_DAC_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1849a90ca3c0dd55f35ed6318d2e2f6b" compoundref="_m_i_e_s___constants_8ipf" startline="902">NI_DAC_MIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab42b660216fbe8af2517cd80c954a6ac" compoundref="_m_i_e_s___constants_8ipf" startline="895">SIGNED_INT_16BIT_MAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8f219b89f36a136001f6e1f86b551dc1" compoundref="_m_i_e_s___constants_8ipf" startline="894">SIGNED_INT_16BIT_MIN</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a63b2b2b8ad7145aa0733ec574f91f477" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DC_DocumentChannelProperty</definition>
+        <argsstring>(string device, string entry, variable headstage, variable channelNumber, variable channelType, variable var=defaultValue, string str=defaultValue)</argsstring>
+        <name>DC_DocumentChannelProperty</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Document channel properties of DA and AD channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Knows about unassociated channels and creates the special key returned by <ref refid="_m_i_e_s___mies_utilities_8ipf_1ae108771ac43b05625f852e6cdc84c0d9" kindref="member">CreateLBNUnassocKey()</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the property </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of headstage, must be <computeroutput>NaN</computeroutput> for unassociated channels </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of the channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] numeric value </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] string value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1666" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1666" bodyend="1736"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae108771ac43b05625f852e6cdc84c0d9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5579" endline="5597">CreateLBNUnassocKey</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ad9582c9c6bc12f0ff274c6ed7117df5d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1508" endline="1542">DC_DocumentHardwareProperties</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a57c5bb009038c487d4f3ae5e1ba772e5" compoundref="_m_i_e_s___data_configurator_8ipf" startline="880" endline="1056">DC_PrepareLBNEntries</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a96ff77a6b4b4ad061dbc7075dcbcca18" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_ITC_MakeTTLWave</definition>
+        <argsstring>(string device, variable rackNo)</argsstring>
+        <name>DC_ITC_MakeTTLWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>rackNo</declname>
+        </param>
+        <briefdescription>
+<para>Combines the TTL stimulus sweeps across different TTL channels into a single wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rackNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Front TTL rack aka number of ITC devices. Only the ITC1600 has two racks, see <ref refid="_m_i_e_s___constants_8ipf_1RackConstants" kindref="member">RackConstants</ref>. Rack number for all other devices is <ref refid="_m_i_e_s___constants_8ipf_1aadd83e4e7d72a07edf88bceb5ee8cb88" kindref="member">RACK_ZERO</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1744" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1744" bodyend="1843"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2f3c64d51376f0a6832984d10aa43f1f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1008" endline="1040">GetTTLWave</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a0ff9ab0318f135a01b0b0548f2a363d2" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1841" endline="1854">HW_ITC_GetRackRange</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aadd83e4e7d72a07edf88bceb5ee8cb88" compoundref="_m_i_e_s___constants_8ipf" startline="498">RACK_ZERO</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa99f7efe03b889d08e791563cd4ae026" compoundref="_m_i_e_s___wave_builder_8ipf" startline="319" endline="338">WB_GetStimsetChecksum</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a9e4724819a2df3a6e4e5db830232b755" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_NI_MakeTTLWave</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DC_NI_MakeTTLWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1845" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1845" bodyend="1909"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a3d8eed726eb6ba85adb534c0945936fe" compoundref="_m_i_e_s___constants_8ipf" startline="211">CHANNEL_CONTROL_INDEX_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1921" endline="1992">DC_CalculateChannelColumnNo</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2f3c64d51376f0a6832984d10aa43f1f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1008" endline="1040">GetTTLWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa99f7efe03b889d08e791563cd4ae026" compoundref="_m_i_e_s___wave_builder_8ipf" startline="319" endline="338">WB_GetStimsetChecksum</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a52f6919b8816decca79171e2a802c7fb" compoundref="_m_i_e_s___data_configurator_8ipf" startline="824" endline="878">DC_WriteTTLIntoDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a4da424534b92d0fdd58b1fdcb704f21f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable &gt; DC_CalculateChannelColumnNo</definition>
+        <argsstring>(string device, string setName, variable channelNo, variable channelType)</argsstring>
+        <name>DC_CalculateChannelColumnNo</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Returns column number/step of the stimulus set, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the stimulus set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel type, one of <ref refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" kindref="member">CHANNEL_TYPE_DAC</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" kindref="member">CHANNEL_TYPE_TTL</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="retval"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stimset column </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setCycleCount</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>set cycle count </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+<para><xrefsect id="todo_1_todo000016"><xreftitle>Todo</xreftitle><xrefdescription><para>this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do </para>
+</xrefdescription></xrefsect></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="1921" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="1921" bodyend="1992"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1afeface7a3ca1638cef863c0afafcf650" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5432" endline="5436">DAP_GetskipAhead</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1ab55482060f9c76163fc1dac319939bae" compoundref="_m_i_e_s___indexing_8ipf" startline="528" endline="537">IDX_CalculcateActiveSetCount</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1a5dc733e7adaa5d0564f25abd53619960" compoundref="_m_i_e_s___indexing_8ipf" startline="470" endline="495">IDX_UnlockedIndexingStepNo</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aacbb6f5908d389cd22e3e0570bcb51c8" compoundref="_m_i_e_s___utilities_8ipf" startline="2290" endline="2309">InPlaceRandomShuffle</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1aa512cabd317ba10c0b244c6c03602360" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="436" endline="441">RA_IsFirstSweep</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1ae2dd2d546bb2a59ad3f354cf797b9e07" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="170" endline="181">RA_StepSweepsRemaining</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a96ff77a6b4b4ad061dbc7075dcbcca18" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1744" endline="1843">DC_ITC_MakeTTLWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a9e4724819a2df3a6e4e5db830232b755" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1845" endline="1909">DC_NI_MakeTTLWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_ReturnTotalLengthIncrease</definition>
+        <argsstring>(string device, variable *onsetDelayUser=defaultValue, variable *onsetDelayAuto=defaultValue, variable *terminationDelay=defaultValue, variable *distributedDAQDelay=defaultValue)</argsstring>
+        <name>DC_ReturnTotalLengthIncrease</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>onsetDelayUser</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>onsetDelayAuto</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>terminationDelay</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>distributedDAQDelay</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns the length increase of the DAQDataWave following onset/termination delay insertion and distributed data aquisition. Does not incorporate adaptations for oodDAQ. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All returned values are in number of points, <emphasis>not</emphasis> in time.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">onsetDelayUser</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] onset delay set by the user </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">onsetDelayAuto</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] onset delay required by other settings </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">terminationDelay</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] termination delay </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">distributedDAQDelay</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] distributed DAQ delay </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="2004" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="2004" bodyend="2041"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="148" endline="153">DC_NoOfChannelsSelected</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <references refid="struct_hardware_data_t_p_input_1ae7b9c044081637bcbba877ba389ccb82" compoundref="_m_i_e_s___structures_8ipf" startline="330">HardwareDataTPInput::samplingInterval</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2044" endline="2076">DC_GetStopCollectionPoint</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a878d710155f7a723c016b5d5eb38a281" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DC_GetStopCollectionPoint</definition>
+        <argsstring>(string device, variable dataAcqOrTP, wave setLengths)</argsstring>
+        <name>DC_GetStopCollectionPoint</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>setLengths</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the stop collection point, includes all required global adjustments. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="2044" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="2044" bodyend="2076"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a38a88f5050ef2b6741f92c45b6419780" compoundref="_m_i_e_s___data_configurator_8ipf" startline="734" endline="740">DC_CalculateLongestSweep</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1aa3de43922174fb3a7441863c75ce00cf" compoundref="_m_i_e_s___data_configurator_8ipf" startline="148" endline="153">DC_NoOfChannelsSelected</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1ad815d669ce9a7295f9c754dcc67121ad" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2004" endline="2041">DC_ReturnTotalLengthIncrease</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a324d625ae8646f29145ad98ababb3257" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="380" endline="384">GetDACTypesFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3067f859105dd1ab4b59f65050bd99b5" compoundref="_m_i_e_s___constants_8ipf" startline="104">TIME_TP_ONLY_ON_DAQ</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1ac6c5a7d64273ee109ec3a50522844b45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DC_GotTPChannelWhileDAQ</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DC_GotTPChannelWhileDAQ</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if a channel is set to TP, the check is through the stimset name from the GUI. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="2080" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="2080" bodyend="2101"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DC_GetChannelTypefromHS</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>DC_GetChannelTypefromHS</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Get the channel type of given headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>head stage</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>One of <ref refid="_m_i_e_s___constants_8ipf_1DaqChannelTypeConstants" kindref="member">DaqChannelTypeConstants</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" line="2109" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf" bodystart="2109" bodyend="2125"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="108" endline="135">AFH_GetDAQDataColumn</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad459ac2cb8d27a9cf3ddf14c51edd2c7" compoundref="_m_i_e_s___constants_8ipf" startline="96">DAQ_CHANNEL_TYPE_UNKOWN</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a75bfb9e2d185fec19aa5a70d234c862b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1960" endline="1969">P_PressureMethodPossible</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a21b4ba3e4b8bedf72e0655948656f70c" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1177" endline="1204">TP_AnalyzeTP</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DC</bold> Handle preparations before data acquisition or test pulse related to the DAQ data and config waves </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataConfigurator.ipf"/>
+  </compounddef>
+</doxygen>

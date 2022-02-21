@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_write_channel_params" kind="struct" language="C++" prot="public">
+    <compoundname>WriteChannelParams</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_write_channel_params_1ad8a8913b309be9629fad45a6f3d941f9" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WriteChannelParams::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+<para>name of the measure device, e.g. &quot;ITC18USB_Dev_0&quot; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="14" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1abf032adb36c83b63108b5305a605d49b" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WriteChannelParams::stimSet</definition>
+        <argsstring></argsstring>
+        <name>stimSet</name>
+        <briefdescription>
+<para>name of the template simulus set </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="15" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a09aac8b8b63a8c7ebf689a8ec8ef52ec" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WriteChannelParams::channelSuffix</definition>
+        <argsstring></argsstring>
+        <name>channelSuffix</name>
+        <briefdescription>
+<para>custom channel suffix, in case the channel number is ambiguous </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="16" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a311c363ac47c8d4dbd14c330da6cbfa5" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WriteChannelParams::channelSuffixDesc</definition>
+        <argsstring></argsstring>
+        <name>channelSuffixDesc</name>
+        <briefdescription>
+<para>description of the channel suffix, will be added to the <computeroutput>source</computeroutput> attribute </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="17" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a767687b67129f64a42465c537151aa71" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::samplingRate</definition>
+        <argsstring></argsstring>
+        <name>samplingRate</name>
+        <briefdescription>
+<para>sampling rate in Hz </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="18" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a9a83fabae6dbae9d791e680341e625ba" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::startingTime</definition>
+        <argsstring></argsstring>
+        <name>startingTime</name>
+        <briefdescription>
+<para>timestamp since Igor Pro epoch in UTC of the start of this measurement </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="19" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a0e5dbafcf650c1fa01257868ca909f85" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::sweep</definition>
+        <argsstring></argsstring>
+        <name>sweep</name>
+        <briefdescription>
+<para>running number for each measurement </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="20" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a38f7d38162427221d630d5f9df57aafe" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::channelType</definition>
+        <argsstring></argsstring>
+        <name>channelType</name>
+        <briefdescription>
+<para>channel type, one of <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWBChannelTypes" kindref="member">IPNWBChannelTypes</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="21" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a3d76a05a426c05abc9e0fd82a2ef5ad7" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::channelNumber</definition>
+        <argsstring></argsstring>
+        <name>channelNumber</name>
+        <briefdescription>
+<para>running number of the channel </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="22" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="22" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a37cdc51087a57cb7413402854fe367bb" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::electrodeNumber</definition>
+        <argsstring></argsstring>
+        <name>electrodeNumber</name>
+        <briefdescription>
+<para>electrode identifier the channel was acquired with </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="23" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1aa9f11e6a8ecd6b8c8739e3418d49fcd1" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WriteChannelParams::electrodeName</definition>
+        <argsstring></argsstring>
+        <name>electrodeName</name>
+        <briefdescription>
+<para>electrode identifier the channel was acquired with (string version) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="24" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a1f08154490152e4929a8d2d050080613" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::clampMode</definition>
+        <argsstring></argsstring>
+        <name>clampMode</name>
+        <briefdescription>
+<para>clamp mode, one of <ref refid="_i_p_n_w_b___constants_8ipf_1IPNWB_ClampModes" kindref="member">IPNWB_ClampModes</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="25" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="25" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a412ee394bef25abf535f7ada1e2c8aaa" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable WriteChannelParams::groupIndex</definition>
+        <argsstring></argsstring>
+        <name>groupIndex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="26" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="26" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1af7c01467b2116e9254b5944ce5fb5e9d" compoundref="_i_p_n_w_b___structures_8ipf" startline="41" endline="47">InitWriteChannelParams</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a413675c9764f36490fad8ee2fd841ee8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1355" endline="1382">NWB_ClearWriteChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1a274953009c86f8bbdb613d87da3d4bb8" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE WriteChannelParams::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+<para>channel data </para>
+        </briefdescription>
+        <detaileddescription>
+<para>the first call and must stay constant for all channels for this measurement. If <computeroutput>NaN</computeroutput> an automatic solution is provided. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="29" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="29" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_write_channel_params_1ada03467c405c04a8f4a54eed4951435b" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText WriteChannelParams::epochs</definition>
+        <argsstring></argsstring>
+        <name>epochs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>epoch information (optional) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="30" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="30" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1af7c01467b2116e9254b5944ce5fb5e9d" compoundref="_i_p_n_w_b___structures_8ipf" startline="41" endline="47">InitWriteChannelParams</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" kindref="member">WriteSingleChannel()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="13" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="13" bodyend="38"/>
+    <listofallmembers>
+      <member refid="struct_write_channel_params_1a3d76a05a426c05abc9e0fd82a2ef5ad7" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>channelNumber</name></member>
+      <member refid="struct_write_channel_params_1a09aac8b8b63a8c7ebf689a8ec8ef52ec" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>channelSuffix</name></member>
+      <member refid="struct_write_channel_params_1a311c363ac47c8d4dbd14c330da6cbfa5" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>channelSuffixDesc</name></member>
+      <member refid="struct_write_channel_params_1a38f7d38162427221d630d5f9df57aafe" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>channelType</name></member>
+      <member refid="struct_write_channel_params_1a1f08154490152e4929a8d2d050080613" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>clampMode</name></member>
+      <member refid="struct_write_channel_params_1a274953009c86f8bbdb613d87da3d4bb8" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>data</name></member>
+      <member refid="struct_write_channel_params_1ad8a8913b309be9629fad45a6f3d941f9" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>device</name></member>
+      <member refid="struct_write_channel_params_1aa9f11e6a8ecd6b8c8739e3418d49fcd1" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>electrodeName</name></member>
+      <member refid="struct_write_channel_params_1a37cdc51087a57cb7413402854fe367bb" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>electrodeNumber</name></member>
+      <member refid="struct_write_channel_params_1ada03467c405c04a8f4a54eed4951435b" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>epochs</name></member>
+      <member refid="struct_write_channel_params_1a412ee394bef25abf535f7ada1e2c8aaa" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>groupIndex</name></member>
+      <member refid="struct_write_channel_params_1a767687b67129f64a42465c537151aa71" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>samplingRate</name></member>
+      <member refid="struct_write_channel_params_1a9a83fabae6dbae9d791e680341e625ba" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>startingTime</name></member>
+      <member refid="struct_write_channel_params_1abf032adb36c83b63108b5305a605d49b" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>stimSet</name></member>
+      <member refid="struct_write_channel_params_1a0e5dbafcf650c1fa01257868ca909f85" prot="public" virt="non-virtual"><scope>WriteChannelParams</scope><name>sweep</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

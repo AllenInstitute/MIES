@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_general_info" kind="struct" language="C++" prot="public">
+    <compoundname>GeneralInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_general_info_1ad6c0d9c91548fa4fef2e75086b24ab5f" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::session_id</definition>
+        <argsstring></argsstring>
+        <name>session_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="77" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="76" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1ac6a02c5e0227a46af88e8fe1ce0b319d" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::experimenter</definition>
+        <argsstring></argsstring>
+        <name>experimenter</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="78" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="78" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1abb3a3c3fe7536072d3d0ff16c9a21d51" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::institution</definition>
+        <argsstring></argsstring>
+        <name>institution</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="79" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="79" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1ab9f43f8376849d0e57e5843d928849cb" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::lab</definition>
+        <argsstring></argsstring>
+        <name>lab</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="80" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="80" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a1ae50fd6a75e40a5f4c09287831874ab" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::related_publications</definition>
+        <argsstring></argsstring>
+        <name>related_publications</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="81" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="81" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a62bc13da93c3a4a803d7eb07738c5d03" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::notes</definition>
+        <argsstring></argsstring>
+        <name>notes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="82" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="82" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a8917cb1f6734f951fc89cb8b3a5ea726" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::experiment_description</definition>
+        <argsstring></argsstring>
+        <name>experiment_description</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="83" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="83" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a8f368dde1d101bc557d551d315810fc6" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::data_collection</definition>
+        <argsstring></argsstring>
+        <name>data_collection</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="84" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="84" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1ac68e4fffc78ecbfd65436f96ad779fab" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::stimulus</definition>
+        <argsstring></argsstring>
+        <name>stimulus</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="85" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="85" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a242aead5bfcfea6497ef7fef523cf5e0" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::pharmacology</definition>
+        <argsstring></argsstring>
+        <name>pharmacology</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="86" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="86" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a6431e649fbd9007ef241552730784149" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::surgery</definition>
+        <argsstring></argsstring>
+        <name>surgery</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="87" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="87" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1aad97522abcf1eb91889be55817f3494f" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::protocol</definition>
+        <argsstring></argsstring>
+        <name>protocol</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="88" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="88" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1aa304d695201bd4df98643210e8a727b9" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::virus</definition>
+        <argsstring></argsstring>
+        <name>virus</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="89" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="89" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_general_info_1a04e86608c362a650ba28110f01230283" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string GeneralInfo::slices</definition>
+        <argsstring></argsstring>
+        <name>slices</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="90" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="90" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Structure to hold all properties of the NWB file directly below <computeroutput>/general</computeroutput> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="76" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="76" bodyend="91"/>
+    <listofallmembers>
+      <member refid="struct_general_info_1a8f368dde1d101bc557d551d315810fc6" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>data_collection</name></member>
+      <member refid="struct_general_info_1a8917cb1f6734f951fc89cb8b3a5ea726" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>experiment_description</name></member>
+      <member refid="struct_general_info_1ac6a02c5e0227a46af88e8fe1ce0b319d" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>experimenter</name></member>
+      <member refid="struct_general_info_1abb3a3c3fe7536072d3d0ff16c9a21d51" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>institution</name></member>
+      <member refid="struct_general_info_1ab9f43f8376849d0e57e5843d928849cb" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>lab</name></member>
+      <member refid="struct_general_info_1a62bc13da93c3a4a803d7eb07738c5d03" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>notes</name></member>
+      <member refid="struct_general_info_1a242aead5bfcfea6497ef7fef523cf5e0" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>pharmacology</name></member>
+      <member refid="struct_general_info_1aad97522abcf1eb91889be55817f3494f" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>protocol</name></member>
+      <member refid="struct_general_info_1a1ae50fd6a75e40a5f4c09287831874ab" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>related_publications</name></member>
+      <member refid="struct_general_info_1ad6c0d9c91548fa4fef2e75086b24ab5f" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>session_id</name></member>
+      <member refid="struct_general_info_1a04e86608c362a650ba28110f01230283" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>slices</name></member>
+      <member refid="struct_general_info_1ac68e4fffc78ecbfd65436f96ad779fab" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>stimulus</name></member>
+      <member refid="struct_general_info_1a6431e649fbd9007ef241552730784149" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>surgery</name></member>
+      <member refid="struct_general_info_1aa304d695201bd4df98643210e8a727b9" prot="public" virt="non-virtual"><scope>GeneralInfo</scope><name>virus</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

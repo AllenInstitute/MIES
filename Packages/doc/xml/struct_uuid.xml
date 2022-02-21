@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_uuid" kind="struct" language="C++" prot="public">
+    <compoundname>Uuid</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_uuid_1aa69441777ac89713ac981fbf9d206124" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 Uuid::time_low</definition>
+        <argsstring></argsstring>
+        <name>time_low</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="551" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="550" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1a7dd6dd9ddc012574af2031b658e152f9" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::time_mid</definition>
+        <argsstring></argsstring>
+        <name>time_mid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="552" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="552" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1a73098e5fc047e075e55c9c572432449d" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::time_hi_and_version</definition>
+        <argsstring></argsstring>
+        <name>time_hi_and_version</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="553" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="553" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1aa9bc2246baab526384bbc493bda8d5a4" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::clock_seq</definition>
+        <argsstring></argsstring>
+        <name>clock_seq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="554" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="554" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1ad054832d82d7c56c1be2c69b831ef4b7" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::node0</definition>
+        <argsstring></argsstring>
+        <name>node0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="555" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="555" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1a3d15d29de74d78cefb60aa5b7d1b2310" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::node1</definition>
+        <argsstring></argsstring>
+        <name>node1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="556" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="556" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_uuid_1a556a660d2e62fbf453f725da21b23c06" prot="public" static="no" mutable="no">
+        <type>uint16</type>
+        <definition>uint16 Uuid::node2</definition>
+        <argsstring></argsstring>
+        <name>node2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="557" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="557" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" kindref="member">GenerateRFC4122UUID()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" line="550" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Utils.ipf" bodystart="550" bodyend="558"/>
+    <listofallmembers>
+      <member refid="struct_uuid_1aa9bc2246baab526384bbc493bda8d5a4" prot="public" virt="non-virtual"><scope>Uuid</scope><name>clock_seq</name></member>
+      <member refid="struct_uuid_1ad054832d82d7c56c1be2c69b831ef4b7" prot="public" virt="non-virtual"><scope>Uuid</scope><name>node0</name></member>
+      <member refid="struct_uuid_1a3d15d29de74d78cefb60aa5b7d1b2310" prot="public" virt="non-virtual"><scope>Uuid</scope><name>node1</name></member>
+      <member refid="struct_uuid_1a556a660d2e62fbf453f725da21b23c06" prot="public" virt="non-virtual"><scope>Uuid</scope><name>node2</name></member>
+      <member refid="struct_uuid_1a73098e5fc047e075e55c9c572432449d" prot="public" virt="non-virtual"><scope>Uuid</scope><name>time_hi_and_version</name></member>
+      <member refid="struct_uuid_1aa69441777ac89713ac981fbf9d206124" prot="public" virt="non-virtual"><scope>Uuid</scope><name>time_low</name></member>
+      <member refid="struct_uuid_1a7dd6dd9ddc012574af2031b658e152f9" prot="public" virt="non-virtual"><scope>Uuid</scope><name>time_mid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,344 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___programmatic_g_u_i_control_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ProgrammaticGUIControl.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Prototype functions for #PGC_SetAndActivateControl</header>
+      <description><para><anchor id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1PGC_SetAndActivateControlPrototypeFunctions"/></para>
+</description>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a0ef20cc08713be560fcc86a0ecabf6a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_ButtonControlProcedure</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>PGC_ButtonControlProcedure</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="79" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="79" bodyend="83"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1adf3e599a8ffdae45c8053ef02ad94ec4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_PopupActionControlProcedure</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>PGC_PopupActionControlProcedure</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="85" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="85" bodyend="89"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a7459a5b4cc715d0c1953a9bf3f7bbc55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_CheckboxControlProcedure</definition>
+        <argsstring>(WMCheckBoxAction *cba)</argsstring>
+        <name>PGC_CheckboxControlProcedure</name>
+        <param>
+          <type>WMCheckBoxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="91" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="91" bodyend="95"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a85f19c7fb8cbcae21aae23d3b1360b12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_TabControlProcedure</definition>
+        <argsstring>(WMTabControlAction *tca)</argsstring>
+        <name>PGC_TabControlProcedure</name>
+        <param>
+          <type>WMTabControlAction *</type>
+          <declname>tca</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="97" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="97" bodyend="101"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a2d2dbeff47d3ba04379f63bee20322a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_SetVariableControlProcedure</definition>
+        <argsstring>(WMSetVariableAction *tca)</argsstring>
+        <name>PGC_SetVariableControlProcedure</name>
+        <param>
+          <type>WMSetVariableAction *</type>
+          <declname>tca</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="103" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="103" bodyend="107"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a1e682af81005101bbf14a44812d56730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_SliderControlProcedure</definition>
+        <argsstring>(WMSliderAction *sla)</argsstring>
+        <name>PGC_SliderControlProcedure</name>
+        <param>
+          <type>WMSliderAction *</type>
+          <declname>sla</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="109" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="109" bodyend="113"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a4a39ca1809e9da618bfe1144c88baaea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable PGC_ShowControlInTab</definition>
+        <argsstring>(string win, string control)</argsstring>
+        <name>PGC_ShowControlInTab</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <briefdescription>
+<para>Bring all tabs which hold the control to the front (recursively). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Requires that these are managed by <computeroutput>ACL_TabUtilities.ipf</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="15" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="15" bodyend="57"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4232b730cf2ea786c61194d5fb6ae646" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="657" endline="664">GetTabID</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a2be37c195cfc873b9c63a38e52f1a2e7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string PGC_GetProcAndCheckParamType</definition>
+        <argsstring>(string recMacro)</argsstring>
+        <name>PGC_GetProcAndCheckParamType</name>
+        <param>
+          <type>string</type>
+          <declname>recMacro</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="59" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="59" bodyend="74"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a51ea3823e85cfe1a92537c15b81bf8e8" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1331" endline="1344">GetFunctionParameterType</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a28ef19e2b2912f9681b9344a10d79b72" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1360" endline="1393">GetValueFromRecMacro</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a8d3961ea804eb6292c38a645be11e8a1" compoundref="_i_p_n_w_b___constants_8ipf" startline="71">IGOR_TYPE_STRUCT_PARAMETER</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae9ff6a4a38ac41c4a1970c5462c13093" compoundref="_m_i_e_s___constants_8ipf" startline="1203">REC_MACRO_PROCEDURE</references>
+        <referencedby refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1a1751e6447f6702f91fb6cb0defb2718b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_SetAndActivateControlStr</definition>
+        <argsstring>(string win, string control, string str)</argsstring>
+        <name>PGC_SetAndActivateControlStr</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for <ref refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" kindref="member">PGC_SetAndActivateControl()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="117" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="117" bodyend="121"/>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aeffebd34a3ab812f282aa147ee5d0104" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_SetAndActivateControlVar</definition>
+        <argsstring>(string win, string control, variable var)</argsstring>
+        <name>PGC_SetAndActivateControlVar</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for <ref refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" kindref="member">PGC_SetAndActivateControl()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="124" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="124" bodyend="129"/>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PGC_SetAndActivateControl</definition>
+        <argsstring>(string win, string control, variable val=defaultValue, string str=defaultValue, variable switchTab=defaultValue, variable mode=defaultValue)</argsstring>
+        <name>PGC_SetAndActivateControl</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>val</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>switchTab</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Set the control&apos;s value and execute the control procedure of the given control (if it exists). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function tries to mimick interactive operation as closely as possible. Therefore interacting with disabled controls results in an assertion. See <computeroutput>ignoreDisabledState</computeroutput> for a way to avoid that.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Window </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>control</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>GUI control </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optionality depends on control type] Numeric value to set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optionality depends on control type] String value to set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>switchTab</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] Switches tabs so that the control is shown </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <ref refid="_m_i_e_s___constants_8ipf_1a690bad1e6b5cfecf8c4fde971929d732" kindref="member">PGC_MODE_ASSERT_ON_DISABLED</ref>] One of <ref refid="_m_i_e_s___constants_8ipf_1PGC_MODES" kindref="member">PGC_MODES</ref>. Allows to fine tune the behaviour for disabled controls.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+PopupMenus:<itemizedlist>
+<listitem><para>Only one of <computeroutput>val</computeroutput> or <computeroutput>str</computeroutput> can be supplied</para>
+</listitem><listitem><para><computeroutput>val</computeroutput> is 0-based</para>
+</listitem><listitem><para><computeroutput>str</computeroutput> must be the name of an entry, can include <computeroutput>*</computeroutput> using wildcard syntax.</para>
+</listitem></itemizedlist>
+</para>
+<para>ValDisp:<itemizedlist>
+<listitem><para>Setting this control always changes its mode from &apos;internal number&apos; to &apos;global expression&apos;</para>
+</listitem></itemizedlist>
+</para>
+<para>SetVariable:<itemizedlist>
+<listitem><para>Both <computeroutput>str</computeroutput> and <computeroutput>val</computeroutput> are accepted and converted to the target type</para>
+</listitem></itemizedlist>
+</para>
+<para><simplesect kind="return"><para>1 if the numeric value was modified by control limits, 0 if not (only relevant for SetVariable controls) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" line="161" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf" bodystart="161" bodyend="386"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>PGC</bold> Control GUI controls from code </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ProgrammaticGUIControl.ipf"/>
+  </compounddef>
+</doxygen>

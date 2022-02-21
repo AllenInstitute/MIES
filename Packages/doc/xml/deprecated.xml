@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="deprecated" kind="page">
+    <compoundname>deprecated</compoundname>
+    <title>Deprecated List</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><variablelist>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a3aea15648a8f41b97ebcda0fdf8a3acc" kindref="member">AF_PROTO_ANALYSIS_FUNC_V1</ref>  (string device, variable eventType, wave DAQDataWave, variable headStage)</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000001"/>Use <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a78dc389f009803ae3a77989b6caca05e" kindref="member">AF_PROTO_ANALYSIS_FUNC_V3()</ref> instead </para>
+</listitem>
+<varlistentry><term>Member <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a2fc942ef7859be14a68a6451e6ffadcb" kindref="member">AF_PROTO_ANALYSIS_FUNC_V2</ref>  (string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000002"/>Use <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a78dc389f009803ae3a77989b6caca05e" kindref="member">AF_PROTO_ANALYSIS_FUNC_V3()</ref> instead</para>
+</listitem>
+</variablelist>
+</para>
+    </detaileddescription>
+    <location file="deprecated"/>
+  </compounddef>
+</doxygen>

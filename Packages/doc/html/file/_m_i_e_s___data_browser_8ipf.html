@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_DataBrowser.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_DataBrowser_Macro.ipf" href="_m_i_e_s___data_browser___macro_8ipf.html" />
+    <link rel="prev" title="File MIES_DataAcquisition_Single.ipf" href="_m_i_e_s___data_acquisition___single_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_browser___macro_8ipf.html" title="File MIES_DataBrowser_Macro.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___single_8ipf.html" title="File MIES_DataAcquisition_Single.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataBrowser.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-databrowser-ipf">
+<span id="id1"></span><h1>File MIES_DataBrowser.ipf<a class="headerlink" href="#file-mies-databrowser-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>DB</strong> Panel for browsing acquired data during acquisition </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DB_OpenDataBrowserv">
+<span id="_CPPv318DB_OpenDataBrowserv"></span><span id="_CPPv218DB_OpenDataBrowserv"></span><span id="DB_OpenDataBrowser"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1acbc72304ac3c399129ef21c3f5772af9"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_OpenDataBrowser</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DB_OpenDataBrowserv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430DB_ResetAndStoreCurrentDBPanelv">
+<span id="_CPPv330DB_ResetAndStoreCurrentDBPanelv"></span><span id="_CPPv230DB_ResetAndStoreCurrentDBPanelv"></span><span id="DB_ResetAndStoreCurrentDBPanel"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_ResetAndStoreCurrentDBPanel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DB_ResetAndStoreCurrentDBPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser) after GUI editor adapted controls in development process. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DB_GetMainGraph6string">
+<span id="_CPPv315DB_GetMainGraph6string"></span><span id="_CPPv215DB_GetMainGraph6string"></span><span id="DB_GetMainGraph__string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a9cb80b402b771e3af61066a10931f811"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_GetMainGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DB_GetMainGraph6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417DB_ClearAllGraphsv">
+<span id="_CPPv317DB_ClearAllGraphsv"></span><span id="_CPPv217DB_ClearAllGraphsv"></span><span id="DB_ClearAllGraphs"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1af47dca84e84d79d25de5be62310e68dd"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_ClearAllGraphs</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417DB_ClearAllGraphsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DB_LockToDevice6string6string">
+<span id="_CPPv315DB_LockToDevice6string6string"></span><span id="_CPPv215DB_LockToDevice6string6string"></span><span id="DB_LockToDevice__string.string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1ad05f4bbf0381ac2d0047f07d1cbcc476"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_LockToDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DB_LockToDevice6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414DB_SetUserData6string6string">
+<span id="_CPPv314DB_SetUserData6string6string"></span><span id="_CPPv214DB_SetUserData6string6string"></span><span id="DB_SetUserData__string.string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1ad6a9b04b54a9f1a720412c4168bf8b59"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_SetUserData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414DB_SetUserData6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DB_GetPlainSweepList6string">
+<span id="_CPPv320DB_GetPlainSweepList6string"></span><span id="_CPPv220DB_GetPlainSweepList6string"></span><span id="DB_GetPlainSweepList__string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a705e179ed50b62022aaa4391d1850bba"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_GetPlainSweepList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DB_GetPlainSweepList6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426DB_UpdateLastSweepControls6string8variable8variable">
+<span id="_CPPv326DB_UpdateLastSweepControls6string8variable8variable"></span><span id="_CPPv226DB_UpdateLastSweepControls6string8variable8variable"></span><span id="DB_UpdateLastSweepControls__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_UpdateLastSweepControls</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DB_UpdateLastSweepControls6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DB_UpdateSweepPlot6string">
+<span id="_CPPv318DB_UpdateSweepPlot6string"></span><span id="_CPPv218DB_UpdateSweepPlot6string"></span><span id="DB_UpdateSweepPlot__string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_UpdateSweepPlot</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DB_UpdateSweepPlot6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the sweep plotting facility. </p>
+<p>Only outside callers are generic external panels which must update the graph. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>win</strong> – locked databrowser </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413DB_GetLBNWave6string8variable">
+<span id="_CPPv313DB_GetLBNWave6string8variable"></span><span id="_CPPv213DB_GetLBNWave6string8variable"></span><span id="DB_GetLBNWave__string.variable"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_GetLBNWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413DB_GetLBNWave6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the labnotebook waves. </p>
+<p>The databrowser only knows about one experiment/device at a time so we don’t need to specify what we return further.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – panel </p></li>
+<li><p><strong>type</strong> – One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1LabnotebookWaveTypes"><span class="std std-ref">LabnotebookWaveTypes</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DB_UpdateToLastSweep6string">
+<span id="_CPPv320DB_UpdateToLastSweep6string"></span><span id="_CPPv220DB_UpdateToLastSweep6string"></span><span id="DB_UpdateToLastSweep__string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_UpdateToLastSweep</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DB_UpdateToLastSweep6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DB_ButtonProc_PanelP14WMButtonAction">
+<span id="_CPPv319DB_ButtonProc_PanelP14WMButtonAction"></span><span id="_CPPv219DB_ButtonProc_PanelP14WMButtonAction"></span><span id="DB_ButtonProc_Panel__WMButtonActionP"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a12227fbc2f4decaa01d5033263345f85"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_ButtonProc_Panel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DB_ButtonProc_PanelP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>procedure for the open button of the side panel </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DB_PopMenuProc_LockDBtoDeviceP13WMPopupAction">
+<span id="_CPPv329DB_PopMenuProc_LockDBtoDeviceP13WMPopupAction"></span><span id="_CPPv229DB_PopMenuProc_LockDBtoDeviceP13WMPopupAction"></span><span id="DB_PopMenuProc_LockDBtoDevice__WMPopupActionP"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a3103b5420e9c3fa46ba4edfea6de5652"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_PopMenuProc_LockDBtoDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DB_PopMenuProc_LockDBtoDeviceP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421DB_SetVarProc_SweepNoP19WMSetVariableAction">
+<span id="_CPPv321DB_SetVarProc_SweepNoP19WMSetVariableAction"></span><span id="_CPPv221DB_SetVarProc_SweepNoP19WMSetVariableAction"></span><span id="DB_SetVarProc_SweepNo__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1ad35722387426fcb200c458dc20c73c16"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_SetVarProc_SweepNo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMSetVariableAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sva</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DB_SetVarProc_SweepNoP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DB_GetAllDevicesWithDatav">
+<span id="_CPPv324DB_GetAllDevicesWithDatav"></span><span id="_CPPv224DB_GetAllDevicesWithDatav"></span><span id="DB_GetAllDevicesWithData"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1aee11810f932eef5d7d7f2152f7400ece"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_GetAllDevicesWithData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DB_GetAllDevicesWithDatav" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DB_AddSweepToGraph6string8variableP16BufferedDrawInfo">
+<span id="_CPPv318DB_AddSweepToGraph6string8variableP16BufferedDrawInfo"></span><span id="_CPPv218DB_AddSweepToGraph6string8variableP16BufferedDrawInfo"></span><span id="DB_AddSweepToGraph__string.variable.BufferedDrawInfoP"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_AddSweepToGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv416BufferedDrawInfo" title="BufferedDrawInfo"><span class="n"><span class="pre">BufferedDrawInfo</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bdi</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DB_AddSweepToGraph6string8variableP16BufferedDrawInfo" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adds traces of a sweep to the databrowser graph. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – Name of the DataBrowser </p></li>
+<li><p><strong>index</strong> – Index of the sweep </p></li>
+<li><p><strong>bdi</strong> – [optional, default = n/a] <a class="reference internal" href="../struct/struct_buffered_draw_info.html#struct_buffered_draw_info"><span class="std std-ref">BufferedDrawInfo</span></a> structure, when given buffered draw is used. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DB_SplitSweepsIfReq6string8variable">
+<span id="_CPPv319DB_SplitSweepsIfReq6string8variable"></span><span id="_CPPv219DB_SplitSweepsIfReq6string8variable"></span><span id="DB_SplitSweepsIfReq__string.variable"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a2397109e9b43838da390fe528c725570"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_SplitSweepsIfReq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sweepNo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DB_SplitSweepsIfReq6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418DB_FindDataBrowser6string">
+<span id="_CPPv318DB_FindDataBrowser6string"></span><span id="_CPPv218DB_FindDataBrowser6string"></span><span id="DB_FindDataBrowser__string"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_FindDataBrowser</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DB_FindDataBrowser6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find a Databrowser which is locked to the given DAEphys panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413DB_WindowHookP15WMWinHookStruct">
+<span id="_CPPv313DB_WindowHookP15WMWinHookStruct"></span><span id="_CPPv213DB_WindowHookP15WMWinHookStruct"></span><span id="DB_WindowHook__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___data_browser_8ipf_1a4e12f2b2d06bdf99f2b312270a092364"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DB_WindowHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMWinHookStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413DB_WindowHookP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_acquisition___single_8ipf.html"
+                          title="previous chapter">File MIES_DataAcquisition_Single.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_browser___macro_8ipf.html"
+                          title="next chapter">File MIES_DataBrowser_Macro.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_browser___macro_8ipf.html" title="File MIES_DataBrowser_Macro.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___single_8ipf.html" title="File MIES_DataAcquisition_Single.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataBrowser.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___writer_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_Writer.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CreateCommonGroups</definition>
+        <argsstring>(variable locationID, ToplevelInfo *toplevelInfo, GeneralInfo *generalInfo=defaultValue, string subjectInfo=defaultValue)</argsstring>
+        <name>CreateCommonGroups</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_toplevel_info" kindref="compound">ToplevelInfo</ref> *</type>
+          <declname>toplevelInfo</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_general_info" kindref="compound">GeneralInfo</ref> *</type>
+          <declname>generalInfo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>subjectInfo</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Create and fill common HDF5 groups and datasets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>toplevelInfo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, see <ref refid="struct_toplevel_info" kindref="compound">ToplevelInfo()</ref> for defaults] datasets directly below <computeroutput>/</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>generalInfo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, see <ref refid="struct_general_info" kindref="compound">GeneralInfo()</ref> for defaults] datasets directly below <computeroutput>/general</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>subjectInfo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, see <ref refid="struct_subject_info" kindref="compound">SubjectInfo()</ref> for defaults] datasets below <computeroutput>/general/subject</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="20" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="20" bodyend="118"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" compoundref="_i_p_n_w_b___writer_8ipf" startline="209" endline="222">AddModificationTimeEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a5c62c6fb8f889fde89727644821863d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="94" endline="111">InitGeneralInfo</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a8d1d90e48b8704e91b8694b62088bd69" compoundref="_i_p_n_w_b___structures_8ipf" startline="126" endline="137">InitSubjectInfo</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1aeb9998560683bafa9ae6b551b9afd762" compoundref="_i_p_n_w_b___constants_8ipf" startline="35">NWB_ANALYSIS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a2b0666d83f5bab30e34588623d171828" compoundref="_i_p_n_w_b___constants_8ipf" startline="25">NWB_DEVICES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a73e86423b9e96a40d08a10b9b7054301" compoundref="_i_p_n_w_b___constants_8ipf" startline="33">NWB_EPOCHS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9bac236faee6b1c06228d435fd5dcf6e" compoundref="_i_p_n_w_b___constants_8ipf" startline="23">NWB_GENERAL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a6aa8a2825b0a68ac6d8e3c5168f002d0" compoundref="_i_p_n_w_b___constants_8ipf" startline="34">NWB_PROCESSING</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ae7c0821d84755380c69f752be9044f28" compoundref="_i_p_n_w_b___constants_8ipf" startline="22">NWB_ROOT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a80e46d37050f48522575dc3caef15f68" compoundref="_i_p_n_w_b___constants_8ipf" startline="26">NWB_STIMULUS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a6f76073b81942c20d381417e82adf8d1" compoundref="_i_p_n_w_b___constants_8ipf" startline="31">NWB_STIMULUS_PRESENTATION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a3d7003207d1d79357829904261dcf9ca" compoundref="_i_p_n_w_b___constants_8ipf" startline="30">NWB_STIMULUS_TEMPLATES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac27abdcc590a33b4e82f63c03c1ab432" compoundref="_i_p_n_w_b___constants_8ipf" startline="24">NWB_SUBJECT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9774586836cd2512087b2d08fbfc1f97" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="519" endline="533">WriteTextDatasetIfSet</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1afdd7055731715283568cb47503b6e2f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CreateIntraCellularEphys</definition>
+        <argsstring>(variable locationID, string filtering=defaultValue)</argsstring>
+        <name>CreateIntraCellularEphys</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>filtering</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Create the HDF5 group for intracellular ephys. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filtering</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to PLACEHOLDER] filtering information </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="124" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="124" bodyend="138"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1cc5589b3280d3934362433e6a23979e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="111" endline="219">NWB_GetFileForExport</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddDevice</definition>
+        <argsstring>(variable locationID, string name, variable version, string description)</argsstring>
+        <name>AddDevice</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>description</declname>
+        </param>
+        <briefdescription>
+<para>Add an entry for the device <computeroutput>name</computeroutput> in the nwb file specified by <computeroutput>locationID</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of device to create </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>description</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a string describing the created device </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if a new device was created and 0 if it already existed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="147" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="147" bodyend="171"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a2b0666d83f5bab30e34588623d171828" compoundref="_i_p_n_w_b___constants_8ipf" startline="25">NWB_DEVICES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddElectrode</definition>
+        <argsstring>(variable locationID, string name, variable version, string data, string device)</argsstring>
+        <name>AddElectrode</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Add an entry for the electrode <computeroutput>name</computeroutput> with contents <computeroutput>data</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="174" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="174" bodyend="206"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a696d6a1f4ac46aa537f87924260e5b09" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="288" endline="299">H5_CreateSoftLink</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a72b08ce99c20dd0a6d992f39d9a9189e" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="633" endline="637">H5_IsValidIdentifier</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a2b0666d83f5bab30e34588623d171828" compoundref="_i_p_n_w_b___constants_8ipf" startline="25">NWB_DEVICES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac227eec0e6b466b0c125e0b08c090fcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="44">NWB_ELECTRODE_PREFIX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1ae48e5a57f65679716d0effed07ddad45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddModificationTimeEntry</definition>
+        <argsstring>(variable locationID, variable version)</argsstring>
+        <name>AddModificationTimeEntry</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Add a modification timestamp to the NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="209" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="209" bodyend="222"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="876" endline="903">NWB_AppendStimset</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1976ff74b6f4ff665e82376544ca5b7f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="329" endline="349">NWB_ASYNC_Worker</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MarkAsCustomEntry</definition>
+        <argsstring>(variable locationID, string name)</argsstring>
+        <name>MarkAsCustomEntry</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Mark a dataset/group as custom. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>According to the NWB spec everything not required should be specifically marked. In NWBv2, schema extensions can be used to accomplish this.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dataset or group name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="231" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="231" bodyend="236"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddTimeSeriesUnitAndRes</definition>
+        <argsstring>(variable locationID, string fullAbsPath, string unitWithPrefix, variable resolution=defaultValue, variable overwrite=defaultValue)</argsstring>
+        <name>AddTimeSeriesUnitAndRes</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fullAbsPath</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>unitWithPrefix</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>resolution</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>overwrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add unit and resolution to TimeSeries dataset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fullAbsPath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>absolute path to the TimeSeries dataset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unitWithPrefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>unit with optional prefix of the data in the TimeSeries, </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___utilities_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26" kindref="member">ParseUnit</ref> </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>resolution</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <computeroutput>NaN</computeroutput> for unknown] experimental resolution </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] should existing attributes be overwritten </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="245" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="245" bodyend="283"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf5f210ef163ad8cace9140400010b24" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="260" endline="281">H5_WriteAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897" compoundref="_i_p_n_w_b___constants_8ipf" startline="65">IGOR_TYPE_32BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a2a183c21c3a75a0e517c7f7e46908e26" compoundref="_i_p_n_w_b___utils_8ipf" startline="157" endline="177">ParseUnit</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddProperty</definition>
+        <argsstring>(TimeSeriesProperties *tsp, string nwbProp, variable value, string unit=defaultValue)</argsstring>
+        <name>AddProperty</name>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>nwbProp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>unit</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add a TimeSeries property to the <computeroutput>tsp</computeroutput> structure. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="286" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="286" bodyend="308"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" compoundref="_i_p_n_w_b___structures_8ipf" startline="190">TimeSeriesProperties::data</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" compoundref="_i_p_n_w_b___structures_8ipf" startline="193">TimeSeriesProperties::missing_fields</references>
+        <references refid="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" compoundref="_i_p_n_w_b___structures_8ipf" startline="188">TimeSeriesProperties::names</references>
+        <references refid="struct_time_series_properties_1a45dade7abd5887a478b7bce50f1f48a2" compoundref="_i_p_n_w_b___structures_8ipf" startline="194">TimeSeriesProperties::neurodata_type</references>
+        <references refid="struct_time_series_properties_1a9e9fd3b46e294c03fffeb15814021112" compoundref="_i_p_n_w_b___structures_8ipf" startline="191">TimeSeriesProperties::unit</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a100fe9405b34fdd131be180d98ffc382" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1844" endline="1880">NWB_AddSweepDataSets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AddCustomProperty</definition>
+        <argsstring>(TimeSeriesProperties *tsp, string nwbProp, variable value)</argsstring>
+        <name>AddCustomProperty</name>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>nwbProp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Add a custom TimeSeries property to the <computeroutput>names</computeroutput> and <computeroutput>data</computeroutput> waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" kindref="member">MarkAsCustomEntry</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="313" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="313" bodyend="329"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" compoundref="_i_p_n_w_b___structures_8ipf" startline="190">TimeSeriesProperties::data</references>
+        <references refid="struct_time_series_properties_1a887273c24eb25544ccc4a7c556ad8ae3" compoundref="_i_p_n_w_b___structures_8ipf" startline="192">TimeSeriesProperties::isCustom</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" compoundref="_i_p_n_w_b___structures_8ipf" startline="188">TimeSeriesProperties::names</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a15ed5fbb86a4c8d28f5928d33a8e4d4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetNextFreeGroupIndex</definition>
+        <argsstring>(variable locationID, string path)</argsstring>
+        <name>GetNextFreeGroupIndex</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Return the next free group index of the format <computeroutput>data_$NUM</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="332" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="332" bodyend="363"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable WriteSingleChannel</definition>
+        <argsstring>(variable locationID, string path, variable version, WriteChannelParams *p, TimeSeriesProperties *tsp, variable compressionMode=defaultValue, string nwbFilePath=defaultValue)</argsstring>
+        <name>WriteSingleChannel</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_write_channel_params" kindref="compound">WriteChannelParams</ref> *</type>
+          <declname>p</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>compressionMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>nwbFilePath</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Write the data of a single channel to the NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 file identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Absolute path in the HDF5 file where the data should be stored </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Filled <ref refid="struct_write_channel_params" kindref="compound">WriteChannelParams</ref> structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tsp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Filled <ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compressionMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to NO_COMPRESSION] Type of compression to use, one of <ref refid="_i_p_n_w_b___constants_8ipf_1CompressionMode" kindref="member">CompressionMode</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nwbFilePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, required only for epoch writing] disc location of the NWB file</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>locationID, this is different from the parameter if epoch information was written </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="378" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="378" bodyend="522"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a20cadcd05da04b40bbdcf3e6cddd5e9e" compoundref="_i_p_n_w_b___writer_8ipf" startline="245" endline="283">AddTimeSeriesUnitAndRes</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5e582ca8f06259e711253b658f3291f0" compoundref="_i_p_n_w_b___constants_8ipf" startline="56">CHANNEL_NAMES</references>
+        <references refid="struct_write_channel_params_1a3d76a05a426c05abc9e0fd82a2ef5ad7" compoundref="_i_p_n_w_b___structures_8ipf" startline="22">WriteChannelParams::channelNumber</references>
+        <references refid="struct_write_channel_params_1a09aac8b8b63a8c7ebf689a8ec8ef52ec" compoundref="_i_p_n_w_b___structures_8ipf" startline="16">WriteChannelParams::channelSuffix</references>
+        <references refid="struct_write_channel_params_1a311c363ac47c8d4dbd14c330da6cbfa5" compoundref="_i_p_n_w_b___structures_8ipf" startline="17">WriteChannelParams::channelSuffixDesc</references>
+        <references refid="struct_write_channel_params_1a38f7d38162427221d630d5f9df57aafe" compoundref="_i_p_n_w_b___structures_8ipf" startline="21">WriteChannelParams::channelType</references>
+        <references refid="struct_write_channel_params_1a1f08154490152e4929a8d2d050080613" compoundref="_i_p_n_w_b___structures_8ipf" startline="25">WriteChannelParams::clampMode</references>
+        <references refid="struct_write_channel_params_1a274953009c86f8bbdb613d87da3d4bb8" compoundref="_i_p_n_w_b___structures_8ipf" startline="29">WriteChannelParams::data</references>
+        <references refid="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" compoundref="_i_p_n_w_b___structures_8ipf" startline="190">TimeSeriesProperties::data</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a85ff4820b61b0f71dde948fcc0b70e9b" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="238" endline="261">DetermineDataTypeFromProperties</references>
+        <references refid="struct_write_channel_params_1ad8a8913b309be9629fad45a6f3d941f9" compoundref="_i_p_n_w_b___structures_8ipf" startline="13">WriteChannelParams::device</references>
+        <references refid="struct_write_channel_params_1aa9f11e6a8ecd6b8c8739e3418d49fcd1" compoundref="_i_p_n_w_b___structures_8ipf" startline="24">WriteChannelParams::electrodeName</references>
+        <references refid="struct_write_channel_params_1a37cdc51087a57cb7413402854fe367bb" compoundref="_i_p_n_w_b___structures_8ipf" startline="23">WriteChannelParams::electrodeNumber</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="struct_write_channel_params_1ada03467c405c04a8f4a54eed4951435b" compoundref="_i_p_n_w_b___structures_8ipf" startline="30">WriteChannelParams::epochs</references>
+        <references refid="struct_write_channel_params_1a412ee394bef25abf535f7ada1e2c8aaa" compoundref="_i_p_n_w_b___structures_8ipf" startline="26">WriteChannelParams::groupIndex</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a696d6a1f4ac46aa537f87924260e5b09" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="288" endline="299">H5_CreateSoftLink</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf5f210ef163ad8cace9140400010b24" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="260" endline="281">H5_WriteAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897" compoundref="_i_p_n_w_b___constants_8ipf" startline="65">IGOR_TYPE_32BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a625bd66ce4a14cedff71733b4ac43251" compoundref="_i_p_n_w_b___constants_8ipf" startline="69">IGOR_TYPE_32BIT_INT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" compoundref="_i_p_n_w_b___constants_8ipf" startline="66">IGOR_TYPE_64BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a17d6bcaff1e1e59a22b107171f7f4404" compoundref="_i_p_n_w_b___constants_8ipf" startline="70">IGOR_TYPE_UNSIGNED</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1adaeb9a1e231b07bd0dcb8e2d764cd8e9" compoundref="_i_p_n_w_b___constants_8ipf" startline="50">IPNWB_CHANNEL_TYPE_OTHER</references>
+        <references refid="struct_time_series_properties_1a887273c24eb25544ccc4a7c556ad8ae3" compoundref="_i_p_n_w_b___structures_8ipf" startline="192">TimeSeriesProperties::isCustom</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</references>
+        <references refid="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" compoundref="_i_p_n_w_b___structures_8ipf" startline="193">TimeSeriesProperties::missing_fields</references>
+        <references refid="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" compoundref="_i_p_n_w_b___structures_8ipf" startline="188">TimeSeriesProperties::names</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aab342afddfd12ae20d30a1e5c916fd3b" compoundref="_i_p_n_w_b___utils_8ipf" startline="762" endline="776">NormalizeToEOL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5c5776a7b5e8e204f7d0956d2bea90c4" compoundref="_i_p_n_w_b___constants_8ipf" startline="15">PLACEHOLDER</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_write_channel_params_1a767687b67129f64a42465c537151aa71" compoundref="_i_p_n_w_b___structures_8ipf" startline="18">WriteChannelParams::samplingRate</references>
+        <references refid="struct_write_channel_params_1a9a83fabae6dbae9d791e680341e625ba" compoundref="_i_p_n_w_b___structures_8ipf" startline="19">WriteChannelParams::startingTime</references>
+        <references refid="struct_write_channel_params_1abf032adb36c83b63108b5305a605d49b" compoundref="_i_p_n_w_b___structures_8ipf" startline="15">WriteChannelParams::stimSet</references>
+        <references refid="struct_write_channel_params_1a0e5dbafcf650c1fa01257868ca909f85" compoundref="_i_p_n_w_b___structures_8ipf" startline="20">WriteChannelParams::sweep</references>
+        <references refid="struct_time_series_properties_1a9e9fd3b46e294c03fffeb15814021112" compoundref="_i_p_n_w_b___structures_8ipf" startline="191">TimeSeriesProperties::unit</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1ac08ac71c6ce1cc78e1612352b5c27120" compoundref="_i_p_n_w_b___writer_8ipf" startline="524" endline="538">WriteEpochs</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1ac08ac71c6ce1cc78e1612352b5c27120" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable WriteEpochs</definition>
+        <argsstring>(string nwbFilePath, WaveText epochs, string timeseries, variable startingTime, variable samplingRate)</argsstring>
+        <name>WriteEpochs</name>
+        <param>
+          <type>string</type>
+          <declname>nwbFilePath</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>epochs</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>timeseries</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startingTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>samplingRate</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="524" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="524" bodyend="538"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AppendToEpochTable</definition>
+        <argsstring>(string nwbFilePath, variable startTime, variable stopTime, WaveText tags, WaveText timeseries, wave startingTime, wave rate, variable treelevel)</argsstring>
+        <name>AppendToEpochTable</name>
+        <param>
+          <type>string</type>
+          <declname>nwbFilePath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stopTime</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>tags</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>timeseries</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>startingTime</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>rate</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>treelevel</declname>
+        </param>
+        <briefdescription>
+<para>Append an epoch to the TimeIntervals table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: NWBv2 specific function</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nwbFilePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 file path (required for writing the timeseries compound using a custom XOP) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>startTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>start time of the epoch in seconds in the global time coordinate system (included in the range) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stopTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stop time of the epoch in seconds in the global time coordinate system (<emphasis>not</emphasis> included in the range) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>text wave with strings for the epoch, format is unspecified </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeseries</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>absolute paths to <emphasis>existing</emphasis> timeseries groups </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>startingTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>timeseries starting time in s according to NWBv2 spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>timeseries rate in Hz according to NWBv2 spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>treelevel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Tree level of the epoch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="552" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="552" bodyend="672"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96bce9fe68faa625f250f51788bfcd00" compoundref="_i_p_n_w_b___utils_8ipf" startline="884" endline="888">GetWindowsPath</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1abf7905b5e5dd764af0e7631d2a03478c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="461" endline="484">H5_GetDatasetSize</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a625bd66ce4a14cedff71733b4ac43251" compoundref="_i_p_n_w_b___constants_8ipf" startline="69">IGOR_TYPE_32BIT_INT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" compoundref="_i_p_n_w_b___constants_8ipf" startline="66">IGOR_TYPE_64BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1abd76ed452e3a3b42832127a99fc3401a" compoundref="_i_p_n_w_b___structures_8ipf" startline="231" endline="237">InitDynamicTable</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a26c88dd735666e2bf7662c0d85e815d8" compoundref="_i_p_n_w_b___structures_8ipf" startline="243" endline="247">InitElementIdentifiers</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a1534fc7be8c2697fb3a0c6c1f0e7c00c" compoundref="_i_p_n_w_b___structures_8ipf" startline="255" endline="261">InitVectorData</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1aeed73dd27e3763e0ed61e047f0d9b7d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="268" endline="272">InitVectorIndex</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a451140a4408ee517d7c814e1c2ac5e51" compoundref="_i_p_n_w_b___constants_8ipf" startline="37">NWB_TIME_INTERVALS_EPOCHS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a946088a6b91030bd0991d8e0d1ced7da" compoundref="_i_p_n_w_b___constants_8ipf" startline="38">NWB_TIME_INTERVALS_TIMESERIES_EPOCHS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a96d2c33fc51000d49ee1fa0726cb8419" compoundref="_i_p_n_w_b___constants_8ipf" startline="114">OBJECT_REFERENCE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1ac08ac71c6ce1cc78e1612352b5c27120" compoundref="_i_p_n_w_b___writer_8ipf" startline="524" endline="538">WriteEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable CreateDynamicTable</definition>
+        <argsstring>(variable locationID, string path, DynamicTable *dt)</argsstring>
+        <name>CreateDynamicTable</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_dynamic_table" kindref="compound">DynamicTable</ref> *</type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+<para>Create a Dynamic Table group at path. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: A dynamic table needs at least an <computeroutput>id</computeroutput> and a <computeroutput>vectorData</computeroutput> column</para>
+<para><simplesect kind="return"><para>NaN if the group already exists, 1 otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="679" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="679" bodyend="698"/>
+        <references refid="struct_dynamic_table_1a3980d211cbf2fbf6b0a7fa0c7679395d" compoundref="_i_p_n_w_b___structures_8ipf" startline="225">DynamicTable::colnames</references>
+        <references refid="struct_dynamic_table_1a7bce79608a270f58166423c96fd87873" compoundref="_i_p_n_w_b___structures_8ipf" startline="228">DynamicTable::data_type</references>
+        <references refid="struct_dynamic_table_1a4570a063de72097b914a6eef137ddbf5" compoundref="_i_p_n_w_b___structures_8ipf" startline="227">DynamicTable::description</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AppendToSweepTable</definition>
+        <argsstring>(variable locationID, string reference, variable sweepNumber)</argsstring>
+        <name>AppendToSweepTable</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>reference</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNumber</declname>
+        </param>
+        <briefdescription>
+<para>Append a sweep to the sweep table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: NWBv2 specific function</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>reference</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>path to dataset where sweep is stored </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="707" column="18" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="707" bodyend="768"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a7dfc88bf30b0a6b3605ea124a62baa32" compoundref="_i_p_n_w_b___constants_8ipf" startline="106">CHUNKED_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5b57e6c41b2f4fb74bece8971780e6d8" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="72" endline="96">H5_WriteDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a625bd66ce4a14cedff71733b4ac43251" compoundref="_i_p_n_w_b___constants_8ipf" startline="69">IGOR_TYPE_32BIT_INT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a17d6bcaff1e1e59a22b107171f7f4404" compoundref="_i_p_n_w_b___constants_8ipf" startline="70">IGOR_TYPE_UNSIGNED</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1abd76ed452e3a3b42832127a99fc3401a" compoundref="_i_p_n_w_b___structures_8ipf" startline="231" endline="237">InitDynamicTable</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a26c88dd735666e2bf7662c0d85e815d8" compoundref="_i_p_n_w_b___structures_8ipf" startline="243" endline="247">InitElementIdentifiers</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a1534fc7be8c2697fb3a0c6c1f0e7c00c" compoundref="_i_p_n_w_b___structures_8ipf" startline="255" endline="261">InitVectorData</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1aeed73dd27e3763e0ed61e047f0d9b7d4" compoundref="_i_p_n_w_b___structures_8ipf" startline="268" endline="272">InitVectorIndex</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4bd491c9248a548a1e03366a598c3dcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="105">NO_COMPRESSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a96d2c33fc51000d49ee1fa0726cb8419" compoundref="_i_p_n_w_b___constants_8ipf" startline="114">OBJECT_REFERENCE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1ab55a88a1027596756d2963a669f6fe08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable WriteSpecifications</definition>
+        <argsstring>(variable locationID)</argsstring>
+        <name>WriteSpecifications</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <briefdescription>
+<para>write NWB:N specifications that were used for creating this file </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: non threadsafe due to limitations in <computeroutput>LoadSpecification</computeroutput> </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>open HDF5 file identifier </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="775" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="775" bodyend="781"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac41361df5e7764fee1cd1cb24e170050" compoundref="_i_p_n_w_b___constants_8ipf" startline="129">HDMF_SPEC_INCLUDE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a18501f235e4533ab61b5ae73275cf4fe" compoundref="_i_p_n_w_b___constants_8ipf" startline="127">HDMF_SPEC_LOCATION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a84d198660804a71c0754740d3438eeea" compoundref="_i_p_n_w_b___constants_8ipf" startline="125">HDMF_SPEC_NAME</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1aef64ca3d0dee15542ce754def934236f" compoundref="_i_p_n_w_b___constants_8ipf" startline="128">HDMF_SPEC_START</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a3edce101929108d111040d5c829c9c36" compoundref="_i_p_n_w_b___constants_8ipf" startline="126">HDMF_SPEC_VERSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5215f9c0e2bbf7656fba696a491cbdf" compoundref="_i_p_n_w_b___constants_8ipf" startline="134">NDX_MIES_SPEC_INCLUDE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a5b8d38b8513f165e43c35e29506bdbab" compoundref="_i_p_n_w_b___constants_8ipf" startline="132">NDX_MIES_SPEC_LOCATION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a59ebae4de96af7be2c8c5ecd812da8f5" compoundref="_i_p_n_w_b___constants_8ipf" startline="130">NDX_MIES_SPEC_NAME</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a711431c02a9e7c5a66e77aaeb9e740b7" compoundref="_i_p_n_w_b___constants_8ipf" startline="133">NDX_MIES_SPEC_START</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4cf6f3b3cca800d2d098994ea03283b9" compoundref="_i_p_n_w_b___constants_8ipf" startline="131">NDX_MIES_SPEC_VERSION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1adaaf6f61840839976e76ab1e8687e025" compoundref="_i_p_n_w_b___constants_8ipf" startline="124">NWB_SPEC_INCLUDE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1aa55b1f78126137db2a90dcd406677897" compoundref="_i_p_n_w_b___constants_8ipf" startline="122">NWB_SPEC_LOCATION</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab4a856f41c72878b371428608f1471f0" compoundref="_i_p_n_w_b___constants_8ipf" startline="120">NWB_SPEC_NAME</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a1d3179533143183cec8f5beefab284e9" compoundref="_i_p_n_w_b___constants_8ipf" startline="123">NWB_SPEC_START</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1abe03d3ef93b33f7a7a8f00ceb5d85da7" compoundref="_i_p_n_w_b___constants_8ipf" startline="121">NWB_SPEC_VERSION</references>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" compoundref="_i_p_n_w_b___writer_8ipf" startline="794" endline="815">WriteSpecification</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa30c9a15c5a6c4fb8f77977172e98abe" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="263" endline="272">NWB_AddSpecifications</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a4ec91452d4dad484c9fe9f93213609e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable WriteSpecification</definition>
+        <argsstring>(variable locationID, string spec_name, string spec_version, string spec_location, string spec_start, string spec_include)</argsstring>
+        <name>WriteSpecification</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>spec_name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>spec_version</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>spec_location</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>spec_start</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>spec_include</declname>
+        </param>
+        <briefdescription>
+<para>write a specifications group to <ref refid="_i_p_n_w_b___constants_8ipf_1a3a222ea5de6d5510d28dc6c55495e683" kindref="member">NWB_SPECIFICATIONS</ref> and link its location in <computeroutput></computeroutput>.specloc </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>open HDF5 file identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of namespace, e.g. &quot;core&quot; </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec_version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>version of added namespace as string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Igor File Path to location of *.json files in IPNWB repository </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec_start</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>namespace.json declaration file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec_include</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>&quot;;&quot; separated list of include files for defining extensions within the namespace </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="794" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="794" bodyend="815"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4e842c8bad331078394cb269d5c56071" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="592" endline="627">H5_CreateGroupsRecursively</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1aa64713a442a61916bcf5be73ab3a562d" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="33" endline="56">H5_WriteTextDataset</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9adf28753f0e29f3ea0617e27622b239" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="342" endline="363">LoadSpecification</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ae7c0821d84755380c69f752be9044f28" compoundref="_i_p_n_w_b___constants_8ipf" startline="22">NWB_ROOT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a3a222ea5de6d5510d28dc6c55495e683" compoundref="_i_p_n_w_b___constants_8ipf" startline="36">NWB_SPECIFICATIONS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a96d2c33fc51000d49ee1fa0726cb8419" compoundref="_i_p_n_w_b___constants_8ipf" startline="114">OBJECT_REFERENCE</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1ab55a88a1027596756d2963a669f6fe08" compoundref="_i_p_n_w_b___writer_8ipf" startline="775" endline="781">WriteSpecifications</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable WriteNeuroDataType</definition>
+        <argsstring>(variable locationID, string path, string neurodata_type)</argsstring>
+        <name>WriteNeuroDataType</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>neurodata_type</declname>
+        </param>
+        <briefdescription>
+<para>Write a NeuroDataType. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" kindref="member">ReadNeuroDataType</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to element who&apos;s DataType is queried </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>neurodata_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>String version of the data type that should get written </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="825" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="825" bodyend="847"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1" compoundref="_i_p_n_w_b___writer_8ipf" startline="853" endline="876">DetermineDataTypeRefTree</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a4d12447e5ed1bdc711e5314a1e4dcd17" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="25" endline="153">DetermineNamespace</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae1b75623d2b123242cf13aaed42ab575" compoundref="_i_p_n_w_b___utils_8ipf" startline="646" endline="671">GenerateRFC4122UUID</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ac93eadc88a17471e54924435430d5d2f" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="211" endline="249">H5_WriteTextAttribute</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aec0a30203e6b3fa69f55dc1f615b8394" compoundref="_i_p_n_w_b___writer_8ipf" startline="147" endline="171">AddDevice</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" compoundref="_i_p_n_w_b___writer_8ipf" startline="174" endline="206">AddElectrode</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a158fd13569672fde86ae958036aa2081" compoundref="_i_p_n_w_b___writer_8ipf" startline="552" endline="672">AppendToEpochTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abc06575d5481284eb6ce0d2bcf64565c" compoundref="_i_p_n_w_b___writer_8ipf" startline="707" endline="768">AppendToSweepTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a17dbcf3a3be495909c70d260b712e342" compoundref="_i_p_n_w_b___writer_8ipf" startline="20" endline="118">CreateCommonGroups</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a78a850ef2a6a7e71419a47de5920b830" compoundref="_i_p_n_w_b___writer_8ipf" startline="679" endline="698">CreateDynamicTable</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1468f15718ea147e165fe922a0ddb90c" compoundref="_i_p_n_w_b___writer_8ipf" startline="231" endline="236">MarkAsCustomEntry</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="221" endline="261">NWB_AddGeneratorString</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7906cd0b5f16f426529ffa26c6f61a96" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="844" endline="867">NWB_AppendStoredTestPulses</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1390" endline="1426">NWB_WriteStimsetCustomWave</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1428" endline="1491">NWB_WriteStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DetermineDataTypeRefTree</definition>
+        <argsstring>(string ancestry)</argsstring>
+        <name>DetermineDataTypeRefTree</name>
+        <param>
+          <type>string</type>
+          <declname>ancestry</declname>
+        </param>
+        <briefdescription>
+<para>Determine the ancestry tree for the specified neurodata type definition. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ancestry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A list of all previously ancester dataTypes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a specified neurodata type definition string json </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" line="853" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf" bodystart="853" bodyend="876"/>
+        <references refid="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1" compoundref="_i_p_n_w_b___writer_8ipf" startline="853" endline="876">DetermineDataTypeRefTree</references>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1a2c3adab2a0ceab953783f1a15ad1f1" compoundref="_i_p_n_w_b___writer_8ipf" startline="853" endline="876">DetermineDataTypeRefTree</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" compoundref="_i_p_n_w_b___writer_8ipf" startline="825" endline="847">WriteNeuroDataType</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Generic functions related to export into the NeuroDataWithoutBorders format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Writer.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_h_d_f5_data_info" kind="struct" language="C++" prot="public">
+    <compoundname>HDF5DataInfo</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a84db83090764268601e0ba2dd5249267" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 HDF5DataInfo::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="385" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="383" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1adc362489ec54acbb7217b5b12ce375a7" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char HDF5DataInfo::structName[16]</definition>
+        <argsstring>[16]</argsstring>
+        <name>structName</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="386" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="386" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad558a103c52d406ff0e6b398d29458e6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="375" endline="381">InitHDF5DataInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a623a3110c3e6c3d03c2da7069ee0871f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::datatype_class</definition>
+        <argsstring></argsstring>
+        <name>datatype_class</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="389" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="389" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a97ac0f751aa795e84a056f6a80f2da09" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char HDF5DataInfo::datatype_class_str[32]</definition>
+        <argsstring>[32]</argsstring>
+        <name>datatype_class_str</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="390" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="389" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a62743ad49c48e06a9b0048102fbf810b" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::datatype_size</definition>
+        <argsstring></argsstring>
+        <name>datatype_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="391" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="390" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a5cea20d75d9abed7c973c2441f7de77d" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::datatype_sign</definition>
+        <argsstring></argsstring>
+        <name>datatype_sign</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="392" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a5776c1048d78e6eaa989c025c9b5ca4d" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::datatype_order</definition>
+        <argsstring></argsstring>
+        <name>datatype_order</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="393" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1ad80815acb148c5467454c164120aac54" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char HDF5DataInfo::datatype_str[64]</definition>
+        <argsstring>[64]</argsstring>
+        <name>datatype_str</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="394" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1acc4ca43b15235b24ed65d1d023c128ca" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::dataspace_type</definition>
+        <argsstring></argsstring>
+        <name>dataspace_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="395" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a09f67f8985805bf93a2ba89cd4ce15a8" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::ndims</definition>
+        <argsstring></argsstring>
+        <name>ndims</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="396" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a384fcecf7ab60e47e2a23a3020e33640" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::dims[H5S_MAX_RANK]</definition>
+        <argsstring>[H5S_MAX_RANK]</argsstring>
+        <name>dims</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="397" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="396" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_h_d_f5_data_info_1a9a32ae46a934db01e9174a2b28de191b" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double HDF5DataInfo::maxdims[H5S_MAX_RANK]</definition>
+        <argsstring>[H5S_MAX_RANK]</argsstring>
+        <name>maxdims</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="398" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="397" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" line="383" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_HDF5Helpers.ipf" bodystart="383" bodyend="399"/>
+    <listofallmembers>
+      <member refid="struct_h_d_f5_data_info_1acc4ca43b15235b24ed65d1d023c128ca" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>dataspace_type</name></member>
+      <member refid="struct_h_d_f5_data_info_1a623a3110c3e6c3d03c2da7069ee0871f" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_class</name></member>
+      <member refid="struct_h_d_f5_data_info_1a97ac0f751aa795e84a056f6a80f2da09" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_class_str</name></member>
+      <member refid="struct_h_d_f5_data_info_1a5776c1048d78e6eaa989c025c9b5ca4d" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_order</name></member>
+      <member refid="struct_h_d_f5_data_info_1a5cea20d75d9abed7c973c2441f7de77d" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_sign</name></member>
+      <member refid="struct_h_d_f5_data_info_1a62743ad49c48e06a9b0048102fbf810b" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_size</name></member>
+      <member refid="struct_h_d_f5_data_info_1ad80815acb148c5467454c164120aac54" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>datatype_str</name></member>
+      <member refid="struct_h_d_f5_data_info_1a384fcecf7ab60e47e2a23a3020e33640" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>dims</name></member>
+      <member refid="struct_h_d_f5_data_info_1a9a32ae46a934db01e9174a2b28de191b" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>maxdims</name></member>
+      <member refid="struct_h_d_f5_data_info_1a09f67f8985805bf93a2ba89cd4ce15a8" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>ndims</name></member>
+      <member refid="struct_h_d_f5_data_info_1adc362489ec54acbb7217b5b12ce375a7" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>structName</name></member>
+      <member refid="struct_h_d_f5_data_info_1a84db83090764268601e0ba2dd5249267" prot="public" virt="non-virtual"><scope>HDF5DataInfo</scope><name>version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

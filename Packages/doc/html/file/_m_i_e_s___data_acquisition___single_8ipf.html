@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_DataAcquisition_Single.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_DataBrowser.ipf" href="_m_i_e_s___data_browser_8ipf.html" />
+    <link rel="prev" title="File MIES_DataAcquisition_Multi.ipf" href="_m_i_e_s___data_acquisition___multi_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_browser_8ipf.html" title="File MIES_DataBrowser.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___multi_8ipf.html" title="File MIES_DataAcquisition_Multi.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataAcquisition_Single.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-dataacquisition-single-ipf">
+<span id="id1"></span><h1>File MIES_DataAcquisition_Single.ipf<a class="headerlink" href="#file-mies-dataacquisition-single-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>DQS</strong> Routines for Single Device Data acquisition </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DQS_StartDAQSingleDevice6string8variable">
+<span id="_CPPv324DQS_StartDAQSingleDevice6string8variable"></span><span id="_CPPv224DQS_StartDAQSingleDevice6string8variable"></span><span id="DQS_StartDAQSingleDevice__string.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1ac943ce95b47035d99ac1425ab74867c4"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StartDAQSingleDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useBackground</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DQS_StartDAQSingleDevice6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start data acquisition using single device mode. </p>
+<p>This is the high level function usable for all external users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>useBackground</strong> – [optional, defaults to background checkbox setting in the DA_Ephys panel] </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411DQS_DataAcq6string">
+<span id="_CPPv311DQS_DataAcq6string"></span><span id="_CPPv211DQS_DataAcq6string"></span><span id="DQS_DataAcq__string"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_DataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411DQS_DataAcq6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQS_BkrdDataAcq6string">
+<span id="_CPPv315DQS_BkrdDataAcq6string"></span><span id="_CPPv215DQS_BkrdDataAcq6string"></span><span id="DQS_BkrdDataAcq__string"></span><span class="target" id="group___background_functions_1ga216a30befc7388a82cb20819096a2077"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_BkrdDataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQS_BkrdDataAcq6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fifo monitor for DAQ Single Device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQS_StopDataAcq6string8variable8variable">
+<span id="_CPPv315DQS_StopDataAcq6string8variable8variable"></span><span id="_CPPv215DQS_StopDataAcq6string8variable8variable"></span><span id="DQS_StopDataAcq__string.variable.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1a1104d58ee90aca88e6e13fc7f7ae863b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StopDataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stopReason</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">forcedStop</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQS_StopDataAcq6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stop single device data acquisition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430DQS_StartBackgroundFifoMonitorv">
+<span id="_CPPv330DQS_StartBackgroundFifoMonitorv"></span><span id="_CPPv230DQS_StartBackgroundFifoMonitorv"></span><span id="DQS_StartBackgroundFifoMonitor"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1adeee1e81813e88ae2442d0d5a0848edf"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StartBackgroundFifoMonitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DQS_StartBackgroundFifoMonitorv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQS_FIFOMonitorP18WMBackgroundStruct">
+<span id="_CPPv315DQS_FIFOMonitorP18WMBackgroundStruct"></span><span id="_CPPv215DQS_FIFOMonitorP18WMBackgroundStruct"></span><span id="DQS_FIFOMonitor__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1ga180063aa9185bc1412cda48d5aee95ef"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_FIFOMonitor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQS_FIFOMonitorP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fifo monitor for DAQ Single Device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DQS_StopBackgroundFifoMonitorv">
+<span id="_CPPv329DQS_StopBackgroundFifoMonitorv"></span><span id="_CPPv229DQS_StopBackgroundFifoMonitorv"></span><span id="DQS_StopBackgroundFifoMonitor"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1a27445ce933df888e9f58fe41c673b5c8"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StopBackgroundFifoMonitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DQS_StopBackgroundFifoMonitorv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DQS_StartBackgroundTimer6string8variable6string">
+<span id="_CPPv324DQS_StartBackgroundTimer6string8variable6string"></span><span id="_CPPv224DQS_StartBackgroundTimer6string8variable6string"></span><span id="DQS_StartBackgroundTimer__string.variable.string"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1a2c20af858715bf1f8195cc0ab0339030"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StartBackgroundTimer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">funcList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DQS_StartBackgroundTimer6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start the background timer for the inter trial interval (ITI) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>runTime</strong> – left over time to wait in seconds </p></li>
+<li><p><strong>funcList</strong> – list of functions to execute at the end of the ITI </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DQS_StopBackgroundTimerv">
+<span id="_CPPv323DQS_StopBackgroundTimerv"></span><span id="_CPPv223DQS_StopBackgroundTimerv"></span><span id="DQS_StopBackgroundTimer"></span><span class="target" id="_m_i_e_s___data_acquisition___single_8ipf_1abf20e1274f4624ddc776a326e17356b3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_StopBackgroundTimer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DQS_StopBackgroundTimerv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stop the background timer used for ITI tracking. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49DQS_TimerP18WMBackgroundStruct">
+<span id="_CPPv39DQS_TimerP18WMBackgroundStruct"></span><span id="_CPPv29DQS_TimerP18WMBackgroundStruct"></span><span id="DQS_Timer__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1gafb23af241ade6aecd4a7ac6b1c49f633"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQS_Timer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49DQS_TimerP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Keep track of time during ITI. </p>
+</dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_acquisition___multi_8ipf.html"
+                          title="previous chapter">File MIES_DataAcquisition_Multi.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_browser_8ipf.html"
+                          title="next chapter">File MIES_DataBrowser.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_browser_8ipf.html" title="File MIES_DataBrowser.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___multi_8ipf.html" title="File MIES_DataAcquisition_Multi.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataAcquisition_Single.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

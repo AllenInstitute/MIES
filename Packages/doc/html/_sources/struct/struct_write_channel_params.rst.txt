@@ -1,0 +1,4 @@
+Struct WriteChannelParams
+=========================
+
+.. doxygenstruct:: WriteChannelParams

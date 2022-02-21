@@ -1,0 +1,4 @@
+Struct TimeSeriesProperties
+===========================
+
+.. doxygenstruct:: TimeSeriesProperties

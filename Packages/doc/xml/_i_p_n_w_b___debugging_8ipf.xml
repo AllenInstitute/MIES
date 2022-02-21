@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___debugging_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_Debugging.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_i_p_n_w_b___debugging_8ipf_1a09a63e7b15919a810beb339a7c9cf55d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string functionReturnMessage</definition>
+        <argsstring></argsstring>
+        <name>functionReturnMessage</name>
+        <initializer>= &quot;return value&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="93" column="21" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="93" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1a2e70157cc4677a547ad715dae949db78" compoundref="_i_p_n_w_b___debugging_8ipf" startline="148" endline="158">DEBUGPRINTs</referencedby>
+        <referencedby refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ASSERT_TS</definition>
+        <argsstring>(variable var, string errorMsg)</argsstring>
+        <name>ASSERT_TS</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errorMsg</declname>
+        </param>
+        <briefdescription>
+<para>Low overhead function to check assertions (threadsafe variant) </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if zero an error message is printed into the history and procedure execution is aborted, nothing is done otherwise. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>errorMsg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>error message to output in failure case</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+Example usage: <programlisting><codeline><highlight class="normal">ASSERT_TS(DataFolderExistsDFR(dfr),<sp/>&quot;MyFunc:<sp/>dfr<sp/>does<sp/>not<sp/>exist&quot;)</highlight></codeline>
+<codeline><highlight class="normal">do<sp/>something<sp/>with<sp/>dfr</highlight></codeline>
+</programlisting></para>
+<para>Unlike <ref refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" kindref="member">ASSERT()</ref> this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations. Therefore it is advised to prefix <computeroutput>errorMsg</computeroutput> with the current function name. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="35" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="35" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINTv</definition>
+        <argsstring>(variable var, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINTv</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Output debug information and return the parameter var. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Debug function especially designed for usage in return statements.</para>
+<para>For example calling the following function <programlisting><codeline><highlight class="normal">Function<sp/>doStuff()</highlight></codeline>
+<codeline><highlight class="normal"><sp/>variable<sp/>var<sp/>=<sp/>1<sp/>+<sp/>2</highlight></codeline>
+<codeline><highlight class="normal"><sp/>return<sp/>DEBUGPRINTv(var)</highlight></codeline>
+<codeline><highlight class="normal">End</highlight></codeline>
+</programlisting> will output <verbatim>DEBUG doStuff(...)#L5: return value 3 </verbatim> to the history.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical argument for debug output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional format string to override the default of &quot;%g&quot; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="115" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="115" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1a2e70157cc4677a547ad715dae949db78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DEBUGPRINTs</definition>
+        <argsstring>(string str, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINTs</name>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Output debug information and return the parameter str. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Debug function especially designed for usage in return statements.</para>
+<para>For example calling the following function <programlisting><codeline><highlight class="normal">Function/s<sp/>doStuff()</highlight></codeline>
+<codeline><highlight class="normal"><sp/>variable<sp/>str=<sp/>&quot;a&quot;<sp/>+<sp/>&quot;b&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/>return<sp/>DEBUGPRINTs(str)</highlight></codeline>
+<codeline><highlight class="normal">End</highlight></codeline>
+</programlisting> will output <verbatim>DEBUG doStuff(...)#L5: return value ab </verbatim> to the history.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string argument for debug output </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional format string to override the default of &quot;%s&quot; </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="148" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="148" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT</definition>
+        <argsstring>(string msg, variable var=defaultValue, string str=defaultValue, string format=defaultValue)</argsstring>
+        <name>DEBUGPRINT</name>
+        <param>
+          <type>string</type>
+          <declname>msg</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Generic debug output function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Outputs variables and strings with optional format argument.</para>
+<para>Examples: <programlisting><codeline><highlight class="normal">DEBUGPRINT(&quot;before<sp/>a<sp/>possible<sp/>crash&quot;)</highlight></codeline>
+<codeline><highlight class="normal">DEBUGPRINT(&quot;some<sp/>variable&quot;,<sp/>var=myVariable)</highlight></codeline>
+<codeline><highlight class="normal">DEBUGPRINT(&quot;my<sp/>string&quot;,<sp/>str=myString)</highlight></codeline>
+<codeline><highlight class="normal">DEBUGPRINT(&quot;Current<sp/>state&quot;,<sp/>var=state,<sp/>format=&quot;%.5f&quot;)</highlight></codeline>
+</programlisting></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>msg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>descriptive string for the debug message </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>variable </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>format</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>format string overrides the default of &quot;%g&quot; for variables and &quot;%s&quot; for strings </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="179" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="179" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUG_TIMER_START</definition>
+        <argsstring>()</argsstring>
+        <name>DEBUG_TIMER_START</name>
+        <briefdescription>
+<para>Start a timer for performance measurements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Usage: <programlisting><codeline><highlight class="normal">variable<sp/>referenceTime<sp/>=<sp/>DEBUG_TIMER_START()</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>part<sp/>one<sp/>to<sp/>benchmark</highlight></codeline>
+<codeline><highlight class="normal">DEBUGPRINT_ELAPSED(referenceTime)</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>part<sp/>two<sp/>to<sp/>benchmark</highlight></codeline>
+<codeline><highlight class="normal">DEBUGPRINT_ELAPSED(referenceTime)</highlight></codeline>
+</programlisting> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="231" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="231" bodyend="234"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad6d842e2411f62e6e681508a6f444501" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7150" endline="7196">UploadCrashDumps</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a4bf0d43a15fa604a95806beb6d673800" compoundref="_m_i_e_s___wave_builder_8ipf" startline="397" endline="513">WB_GetStimSet</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUGPRINT_ELAPSED</definition>
+        <argsstring>(variable referenceTime)</argsstring>
+        <name>DEBUGPRINT_ELAPSED</name>
+        <param>
+          <type>variable</type>
+          <declname>referenceTime</declname>
+        </param>
+        <briefdescription>
+<para>Print the elapsed time for performance measurements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" kindref="member">DEBUG_TIMER_START()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="238" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="238" bodyend="242"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ad6d842e2411f62e6e681508a6f444501" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7150" endline="7196">UploadCrashDumps</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a4bf0d43a15fa604a95806beb6d673800" compoundref="_m_i_e_s___wave_builder_8ipf" startline="397" endline="513">WB_GetStimSet</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1a2af0a90aca41a7f32f3d5ba4aef09f63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EnableDebugMode</definition>
+        <argsstring>()</argsstring>
+        <name>EnableDebugMode</name>
+        <briefdescription>
+<para>Enable debug mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="282" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="282" bodyend="285"/>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a05abf802fdc41cfc88b56cbe01582218" compoundref="_m_i_e_s___debug_panel_8ipf" startline="156" endline="180">DP_CheckProc_Debug</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1a1a35450e9a3c571a26682c687262b2e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DisableDebugMode</definition>
+        <argsstring>()</argsstring>
+        <name>DisableDebugMode</name>
+        <briefdescription>
+<para>Disable debug mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="288" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="288" bodyend="291"/>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a05abf802fdc41cfc88b56cbe01582218" compoundref="_m_i_e_s___debug_panel_8ipf" startline="156" endline="180">DP_CheckProc_Debug</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___debugging_8ipf_1af54dd9466d715ed3c4e498a2f7d7d56c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DEBUG_STOREFUNCTION</definition>
+        <argsstring>()</argsstring>
+        <name>DEBUG_STOREFUNCTION</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" line="294" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf" bodystart="294" bodyend="313"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Holds functions for debugging. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Debugging.ipf"/>
+  </compounddef>
+</doxygen>

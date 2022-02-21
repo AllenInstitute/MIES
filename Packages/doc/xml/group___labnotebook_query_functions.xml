@@ -1,0 +1,1518 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="group___labnotebook_query_functions" kind="group">
+    <compoundname>LabnotebookQueryFunctions</compoundname>
+    <title>Labnotebook Query Functions</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetLastSettingIndep</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable entrySourceType, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSettingIndep</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a headstage independent setting from the numerical labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the headstage independent setting or <computeroutput>defValue</computeroutput></para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="705" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="705" bodyend="723"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="568" endline="649">AD_GetBaselineFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a0d9ba5617fc8d23c50213e3a98bf3b91" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="239" endline="259">AFH_GetSweepsFromSameRACycleNC</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1321" endline="1347">GetLastSettingIndepEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae11c888b71a2243a367e106f29b05cb5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7600" endline="7607">GetSamplingIntervalFromLBN</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a3d9a7dac997770aae6869bfb40ec9bb2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6136" endline="6142">GetTotalOnsetDelay</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a317997222eaf0ebda9cbaab829abaa11" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="1131" endline="1192">LBV_LimitXRangeToSelected</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abeec857866729bbf5ffff7d0ba309d42" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="239" endline="256">MSQ_NumPassesInSet</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7783ec4cf66e5ba82bb27b3f6331f1c6" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="291" endline="327">NWB_GenerateDeviceDescription</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a56c837973106d0935fb1d020422e8190" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="396" endline="420">PA_DiffPulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a55e451f103efce93c22debd0f76983e3" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1277" endline="1317">PSQ_GetLastPassingDAScaleSub</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1222" endline="1273">PSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaf9ac438db2183bc5afe53ac82027101" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="809" endline="826">PSQ_NumPassesInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1ab1f6eff43ab5d2754261b76521e0f524" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="526" endline="543">RA_DocumentSweepSkipping</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetLastSettingTextIndep</definition>
+        <argsstring>(WaveText textualValues, variable sweepNo, string setting, variable entrySourceType, string defValue=defaultValue)</argsstring>
+        <name>GetLastSettingTextIndep</name>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a headstage independent setting from the textual labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the headstage independent setting or <computeroutput>defValue</computeroutput></para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="731" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="731" bodyend="751"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1357" endline="1385">GetLastSettingTextIndepEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga0423691e2aa695e83c96f647c68202de" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1574" endline="1602">GetLastSettingTextIndepEachSCI</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a7783ec4cf66e5ba82bb27b3f6331f1c6" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="291" endline="327">NWB_GenerateDeviceDescription</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acf50cbf8f2e130dbef461beb4ec5ccb3" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="43" endline="61">NWB_GetStartTimeOfSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga1e666613b436430efca00e4217e5760e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetLastSettingIndepRAC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable entrySourceType, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSettingIndepRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the headstage independent setting or <computeroutput>defValue</computeroutput></para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="760" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="760" bodyend="778"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1288" endline="1311">GetLastSettingRAC</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetLastSettingIndepSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSettingIndepSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the headstage independent setting or <computeroutput>defValue</computeroutput></para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="787" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="787" bodyend="805"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a1d441f3409a75c90a4a74f9b1eb02426" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="78" endline="158">AD_GetResultMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="365" endline="404">AD_GetSquarePulseFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1ae0da5713f81cf110e6c0074ca01a297f" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="526" endline="556">IVS_GetSetQCForSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gaf36c35c0f7025c17c3d0f66f0dd86f84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetLastSettingTextIndepRAC</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable entrySourceType, string defValue=defaultValue)</argsstring>
+        <name>GetLastSettingTextIndepRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a headstage independent setting from the numerical labnotebook of the sweeps in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the headstage independent setting or <computeroutput>defValue</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="813" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="813" bodyend="832"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1258" endline="1282">GetLastSettingTextRAC</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveOrNull, variable &gt;</type>
+        <definition>std::tuple&lt; WaveOrNull, variable &gt; GetLastSettingChannel</definition>
+        <argsstring>(wave numericalValues, WaveTextOrNull textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)</argsstring>
+        <name>GetLastSettingChannel</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return a numerical or text setting for the given channel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>It also returns headstage independent entries when the given channel refers to an active channel.</para>
+<para><simplesect kind="return"><para>the wave containing the setting and the index into it.</para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___mies_utilities_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8" kindref="member">GetLastSettingChannelInternal()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="842" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="842" bodyend="861"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="880" endline="956">GetLastSettingChannelInternal</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae66c7392f41fe70449caea6397dbbffc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7672" endline="7694">AddChannelUnitFromLBN</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1afbbdf129bf8e8f9c7d7fded973839fb7" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7642" endline="7669">AddDAQChannelTypeFromLBN</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a66b34d66b25f718fc93a3046196d5dc1" compoundref="_m_i_e_s___epochs_8ipf" startline="701" endline="741">EP_GetEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a6a5b00bfb6620fc0bc030fd9b3555603" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4798" endline="4842">GetActiveChannels</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1af7544d4fd92cdd0ca997562dc8de64e5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7771" endline="7786">GetHeadstageForChannel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1331" endline="1352">NWB_FetchEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSetting</definition>
+        <argsstring>(wave values, variable sweepNo, string setting, variable entrySourceType)</argsstring>
+        <name>GetLastSetting</name>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return a numeric/textual wave with the latest value of a setting from the numerical/labnotebook labnotebook for the given sweep number. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical/textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the setting to query </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the labnotebook entry, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref>. If you don&apos;t care about the entry source type pass <ref refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" kindref="member">UNKNOWN_MODE</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a free wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows. In case the setting could not be found an invalid wave reference is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="971" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="971" bodyend="1042"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8ed1daec72f2a0bbfc9c85adea14ba45" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6117" endline="6121">EntrySourceTypeMapper</references>
+        <references refid="group___labnotebook_query_functions_1ga955f73f68b1e19210e8f4553d8534e49" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1064" endline="1252">GetLastSettingNoCache</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcacd60859c3899f5093408148ce2bec" compoundref="_m_i_e_s___constants_8ipf" startline="936">LABNOTEBOOK_GET_RANGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dc284d7016608cd800cf4b470676a8d" compoundref="_m_i_e_s___constants_8ipf" startline="1216">LABNOTEBOOK_MISSING_VALUE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3a1e5a015a109becb78cbfa93a050e44" compoundref="_m_i_e_s___constants_8ipf" startline="1217">LABNOTEBOOK_UNCACHED_VALUE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acf3267691e4fcb96f5ddf15235a6c200" compoundref="_m_i_e_s___constants_8ipf" startline="278">NUMBER_OF_LBN_DAQ_MODES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af5b6db63db3deeb78b8757989a7b6a84" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="382" endline="458">AB_FillListWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a9cde47775897369ca6f1cf4e2e4a6219" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="331" endline="346">AB_GetSettingNumFiniteVals</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aec47fc9a595b6bdd05011b6f80b87943" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="651" endline="675">AD_GetBaselineChunkFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a5970b78e335cfb9acaa45ffc1dd4164a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="568" endline="649">AD_GetBaselineFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa4d0023165e44117fe586ffcec856042" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="926" endline="990">AD_PlotBounds</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1ad03b3295acb97de96f481fe078969b3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="340" endline="361">AFH_GetSweepsFromSameSCINC</referencedby>
+        <referencedby refid="_m_i_e_s___artefact_removal_8ipf_1a22283eb3d23f96ebb98dbdad74892cea" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="22" endline="99">AR_ComputeRanges</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1a4a791e75e66dfc97536b3f62b4d4d6d4" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1052" endline="1093">BSP_RemoveDisabledChannels</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae0f79975754bf6d7dc4a61a21583cae4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5886" endline="5981">CalculateTPLikePropsFromSweep</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a3ffafc6f1c44fecb5f3ed88617cc5acb" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="294" endline="374">ED_WriteChangedValuesToNote</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a3ca21e4d5a5ae755443a7f5620a0ed39" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="381" endline="450">ED_WriteChangedValuesToNoteText</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1abeb861dc5fb3bba0d1b31a327cfe35b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="880" endline="956">GetLastSettingChannelInternal</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1395" endline="1426">GetLastSettingEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1288" endline="1311">GetLastSettingRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1436" endline="1469">GetLastSettingTextEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga3d79a377c5eb8689c43d346367ad8f09" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1653" endline="1686">GetLastSettingTextEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1258" endline="1282">GetLastSettingTextRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gad111b2ba70447e45e67656279a5d4d84" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1475" endline="1499">GetLastSettingTextSCI</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a0a7cd0c9a074dfdcd5583cf4c540ac53" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4658" endline="4676">GetTTLBits</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1acc054715b299728138a94f00e1a5f222" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4724" endline="4752">GetTTLChannels</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a2f7b49adcda068737d45cf9726a2edf1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4683" endline="4714">GetTTLChannelsOrBits</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a9093268c0ed35af94d92313312029c39" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4863" endline="4891">GetTTLLabnotebookEntry</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1ae0da5713f81cf110e6c0074ca01a297f" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="526" endline="556">IVS_GetSetQCForSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="555" endline="588">LastStimSetRun</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="86" endline="123">MSQ_GetPulseDurations</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a100fe9405b34fdd131be180d98ffc382" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1844" endline="1880">NWB_AddSweepDataSets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ae677c7873191ad09c092c491aa795384" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1010" endline="1050">NWB_GetStimsetFromSweepGeneric</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1aa80280e7b081acf5d5a6dd17ff4b545e" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="274" endline="342">OVS_UpdateSweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1aaea06d31c5d819cb5b33fc115773da86" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="343" endline="393">PA_GetPulseInfos</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3326" endline="3485">PSQ_CR_DetermineBoundsAction</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae27d7213770e56525e674d14dd1145c4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3505" endline="3521">PSQ_CR_GetCycles</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7b707e76b16fa585c4f23dedf09aac13" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1322" endline="1347">PSQ_DS_GetDAScaleOffset</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acc6d1c769b30543e8bc74944078d822f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1354" endline="1369">PSQ_FoundAtLeastOneSpike</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1222" endline="1273">PSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a94f0f23a8c8f67aecf32cb606874bb57" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="154" endline="181">PSQ_GetPulseDurations</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser_8ipf_1afd915f4e2302d32e33d922b1e1fca577" compoundref="_m_i_e_s___analysis_browser___sweep_browser_8ipf" startline="109" endline="134">SB_GetSweepPropertyFromNumLBN</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a866485920681fcc331ea04586dd5f57c" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="114" endline="181">SBE_AddMissingADTraceInfo</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a5237940d122c43a261b962c21335cb08" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="281" endline="565">SBE_ExportSweepBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a1d43c89e235162a4318171792171b9a2" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="127" endline="138">SC_GetSetSweepCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="17" endline="62">SC_GetTrials</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="170" endline="181">SC_LastSweepInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1adf59633248beab8bcbe6bf5c9c5a7bd1" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="39" endline="98">WB_OpenStimulusSetInWaveBuilder</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga955f73f68b1e19210e8f4553d8534e49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingNoCache</definition>
+        <argsstring>(wave values, variable sweepNo, string setting, variable entrySourceType, variable *first=defaultValue, variable *last=defaultValue, variable *rowIndex=defaultValue)</argsstring>
+        <name>GetLastSettingNoCache</name>
+        <param>
+          <type>wave</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>first</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>last</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>rowIndex</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a wave with the latest value of a setting from the numerical/textual labnotebook for the given sweep number. Uncached version, general users should prefer <ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical/textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the setting to query </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entrySourceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of the labnotebook entry, one of <ref refid="_m_i_e_s___constants_8ipf_1DataAcqModes" kindref="member">DataAcqModes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] Can be used to query and return the labnotebook row range. Useful for routines which must make a lot of queries to the same sweep and want to avoid the overhead of calculating <computeroutput>first</computeroutput> and <computeroutput>last</computeroutput>. Passing <ref refid="_m_i_e_s___constants_8ipf_1afcacd60859c3899f5093408148ce2bec" kindref="member">LABNOTEBOOK_GET_RANGE</ref> will set the calculated values of <computeroutput>first</computeroutput> and <computeroutput>last</computeroutput> after the function returns. Passing a value greater or equal zero will use these values instead. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">last</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] see <computeroutput>first</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">rowIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] return the row where the setting could be found, otherwise it is set to <ref refid="_m_i_e_s___constants_8ipf_1a4dc284d7016608cd800cf4b470676a8d" kindref="member">LABNOTEBOOK_MISSING_VALUE</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a free wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows. In case the setting could not be found an invalid wave reference is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1064" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1064" bodyend="1252"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" compoundref="_m_i_e_s___debugging_8ipf" startline="263" endline="303">DEBUGPRINT_TS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af6435bbdc82b259966b07c7b94e16def" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="508" endline="608">FindRange</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af5509d65f79b5c03ae3ead1b32f74bc3" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="19">GET_LB_MODE_NONE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1eac996a911fa1e73820e9918d0511f0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="20">GET_LB_MODE_READ</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a56abcae6507106d9331168bf1ab45d23" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="22">GET_LB_MODE_WRITE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcacd60859c3899f5093408148ce2bec" compoundref="_m_i_e_s___constants_8ipf" startline="936">LABNOTEBOOK_GET_RANGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dc284d7016608cd800cf4b470676a8d" compoundref="_m_i_e_s___constants_8ipf" startline="1216">LABNOTEBOOK_MISSING_VALUE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextRAC</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable entrySourceType)</argsstring>
+        <name>GetLastSettingTextRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last textual value of the sweeps in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1258" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1258" bodyend="1282"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="group___labnotebook_query_functions_1gaf36c35c0f7025c17c3d0f66f0dd86f84" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="813" endline="832">GetLastSettingTextIndepRAC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingRAC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable entrySourceType)</argsstring>
+        <name>GetLastSettingRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value of the sweeps in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1288" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1288" bodyend="1311"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="group___labnotebook_query_functions_1ga1e666613b436430efca00e4217e5760e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="760" endline="778">GetLastSettingIndepRAC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingIndepEachRAC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable entrySourceType, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSettingIndepEachRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value for the given setting of <emphasis>each</emphasis> sweep in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1321" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1321" bodyend="1347"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextIndepEachRAC</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable entrySourceType, string defValue=defaultValue)</argsstring>
+        <name>GetLastSettingTextIndepEachRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last textual value for the given setting of <emphasis>each</emphasis> sweep in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1357" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1357" bodyend="1385"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingEachRAC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingEachRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value for the given setting of <emphasis>each</emphasis> sweep for a given headstage in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1395" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1395" bodyend="1426"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextEachRAC</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingTextEachRAC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last textual value for the given setting of <emphasis>each</emphasis> sweep for a given headstage in the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1436" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1436" bodyend="1469"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gad111b2ba70447e45e67656279a5d4d84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextSCI</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingTextSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last textual value of the sweeps in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1475" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1475" bodyend="1499"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a55e451f103efce93c22debd0f76983e3" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1277" endline="1317">PSQ_GetLastPassingDAScaleSub</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value of the sweeps in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1505" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1505" bodyend="1528"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="365" endline="404">AD_GetSquarePulseFailMsg</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae2e427402030ca80b53ee0b4edaf4f06" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1016" endline="1051">MSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="86" endline="123">MSQ_GetPulseDurations</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1222" endline="1273">PSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingIndepEachSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSettingIndepEachSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value for the given setting of <emphasis>each</emphasis> sweep in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1538" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1538" bodyend="1564"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="524" endline="560">AD_GetChirpFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a0031984fe5c9c059adb3c6453188fe8a" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="365" endline="404">AD_GetSquarePulseFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4631" endline="4657">PSQ_AddLabnotebookEntriesToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aeb677bfa136ee4acd712b516c4c80b3f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3161" endline="3205">PSQ_CR_SetHasPassed</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga0423691e2aa695e83c96f647c68202de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextIndepEachSCI</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, variable headstage, string setting, variable entrySourceType, string defValue=defaultValue)</argsstring>
+        <name>GetLastSettingTextIndepEachSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last textual value for the given setting of <emphasis>each</emphasis> sweep in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1574" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1574" bodyend="1602"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="731" endline="751">GetLastSettingTextIndep</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingEachSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingEachSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value for the given setting of <emphasis>each</emphasis> sweep for a given headstage in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1612" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1612" bodyend="1643"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ab1de8cfc07fff93738c9199f030fab5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="524" endline="560">AD_GetChirpFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a7302a27cd7e0bafe16ea7a2717bcc19c" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="490" endline="502">AD_GetFastRheoEstFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a127585e35a713a3ac1daf83501220c45" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="474" endline="484">AD_GetRheobaseFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a9605da75dc927b5f040d9b9d1aa05b67" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="504" endline="516">AD_GetSpikeControlFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ad301b893cd611f61e8534935bf8c5b57" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="516" endline="539">MSQ_GetLBNEntryForHeadstageSCI</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aefc8fe3a8deb731576c4ce87824021a3" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="490" endline="508">MSQ_GetLBNEntryForHSSCIBool</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4631" endline="4657">PSQ_AddLabnotebookEntriesToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aeb677bfa136ee4acd712b516c4c80b3f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3161" endline="3205">PSQ_CR_SetHasPassed</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="17" endline="62">SC_GetTrials</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga3d79a377c5eb8689c43d346367ad8f09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSettingTextEachSCI</definition>
+        <argsstring>(wave numericalValues, WaveText textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)</argsstring>
+        <name>GetLastSettingTextEachSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>entrySourceType</declname>
+        </param>
+        <briefdescription>
+<para>Return the last textual value for the given setting of <emphasis>each</emphasis> sweep for a given headstage in the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned wave will have <computeroutput>NaN</computeroutput> for sweeps which do not have that entry. This is done in order to keep the indizes intact.</para>
+<para><simplesect kind="see"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1653" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1653" bodyend="1686"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetSweepsWithSetting</definition>
+        <argsstring>(wave labnotebookValues, string setting)</argsstring>
+        <name>GetSweepsWithSetting</name>
+        <param>
+          <type>wave</type>
+          <declname>labnotebookValues</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave with all sweep numbers which have a non-empty entry for setting. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>labnotebookValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical/textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the value to search</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a 1D free wave with the matching sweep numbers. In case the setting could not be found an invalid wave reference is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1714" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1714" bodyend="1742"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0fe5065b45dc94fb5b0adb2188d72753" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1689" endline="1703">GetNonEmptyLBNRows</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae2e427402030ca80b53ee0b4edaf4f06" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1016" endline="1051">MSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a537ae82c8a93a95f24a5969a5a765953" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="697" endline="727">NWB_CheckForMissingSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a55e451f103efce93c22debd0f76983e3" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1277" endline="1317">PSQ_GetLastPassingDAScaleSub</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1222" endline="1273">PSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa3a4675df1e81dcbbda83361c198a883" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7396" endline="7494">RecreateMissingSweepAndConfigWaves</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSweepWithSetting</definition>
+        <argsstring>(wave numericalValues, string setting, variable *sweepNo)</argsstring>
+        <name>GetLastSweepWithSetting</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value of a setting from the labnotebook and the sweep it was set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the value to search </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number the value was last set</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a free wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows. In case the setting could not be found an invalid wave reference is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1755" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1755" bodyend="1775"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0fe5065b45dc94fb5b0adb2188d72753" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1689" endline="1703">GetNonEmptyLBNRows</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="group___labnotebook_query_functions_1gaf69ef19ad8b95b18c583590e13fbd437" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1787" endline="1805">GetLastSweepWithSettingIndep</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1ac33ddd24393b3f237468dda99b010a4e" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="664" endline="983">PA_GenerateAllPulseWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gaf69ef19ad8b95b18c583590e13fbd437" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable GetLastSweepWithSettingIndep</definition>
+        <argsstring>(wave numericalValues, string setting, variable *sweepNo, variable defValue=defaultValue)</argsstring>
+        <name>GetLastSweepWithSettingIndep</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last numerical value of a headstage independent setting from the labnotebook and the sweep it was set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the value to search </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number the value was last set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <computeroutput>NaN</computeroutput>] value to return in case nothing could be found </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1787" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1787" bodyend="1805"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1755" endline="1775">GetLastSweepWithSetting</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave GetLastSweepWithSettingText</definition>
+        <argsstring>(WaveText textualValues, string setting, variable *sweepNo)</argsstring>
+        <name>GetLastSweepWithSettingText</name>
+        <param>
+          <type>WaveText</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the last textual value of a setting from the labnotebook and the sweep it was set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>textual labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the value to search </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number the value was last set</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a free wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows. In case the setting could not be found an invalid wave reference is returned. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1818" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1818" bodyend="1838"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0fe5065b45dc94fb5b0adb2188d72753" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1689" endline="1703">GetNonEmptyLBNRows</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="group___labnotebook_query_functions_1gaf0699b541ed20bdebfb3ff5ad3cac656" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1850" endline="1868">GetLastSweepWithSettingTextI</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a892b05bc870d1861a0088ff28563347c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1901" endline="1957">GetLBIndexCache</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe496864fec2d6c763435f74e4ba64c9" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1820" endline="1881">GetLBRowCache</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___labnotebook_query_functions_1gaf0699b541ed20bdebfb3ff5ad3cac656" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetLastSweepWithSettingTextI</definition>
+        <argsstring>(wave numericalValues, string setting, variable *sweepNo, string defValue=defaultValue)</argsstring>
+        <name>GetLastSweepWithSettingTextI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>setting</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the last textual value of a headstage independent setting from the labnotebook and the sweep it was set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>numerical labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">setting</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the value to search </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep number the value was last set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to an empty string] value to return in case nothing could be found </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" line="1850" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_MiesUtilities.ipf" bodystart="1850" bodyend="1868"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af55402862e2a382d02da60c90659bc68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="615" endline="621">EnforceIndependentSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4849" endline="4853">GetIndexForHeadstageIndepData</references>
+        <references refid="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1818" endline="1838">GetLastSweepWithSettingText</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>The labnotebook querying functions can be categorized into the following categories:</para>
+<para>Return the stored settings of a <emphasis>single</emphasis> sweep. The functions return a wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> rows, where the first <ref refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" kindref="member">NUM_HEADSTAGES</ref> hold headstage dependent data and the row returned by <ref refid="_m_i_e_s___mies_utilities_8ipf_1ae8fc2ed79de8e4cabaf75cc552e8fad6" kindref="member">GetIndexForHeadstageIndepData()</ref> the headstage independent data.<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>Return the <emphasis>headstage independent</emphasis> data of a single sweep. Trimmed down a special default value in case the setting could not be found.<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" kindref="member">GetLastSettingIndep()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga50e942902c7780980cf6225250252320" kindref="member">GetLastSettingTextIndep()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>If you want to query the information on a per-channel basis the following functions are helpful. They also take care of unassociated channels automatically.<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d" kindref="member">GetLastSettingChannel()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>Return the data of <emphasis>one</emphasis> of the sweeps of a repeated acquistion cycle (RAC). The functions return only the <emphasis>first</emphasis> valid setting searching the sweeps from the end to the begin of the RAC.<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917" kindref="member">GetLastSettingTextRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1gaf36c35c0f7025c17c3d0f66f0dd86f84" kindref="member">GetLastSettingTextIndepRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga1e666613b436430efca00e4217e5760e" kindref="member">GetLastSettingIndepRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778" kindref="member">GetLastSettingRAC()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>Return the data of <emphasis>all</emphasis> sweeps of a repeated acquistion cycle (RAC) with the following functions:<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba" kindref="member">GetLastSettingTextEachRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d" kindref="member">GetLastSettingTextIndepEachRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d" kindref="member">GetLastSettingIndepEachRAC()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999" kindref="member">GetLastSettingEachRAC()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>All the above functions are concerned with querying data from the labnotebook where the sweep number is known. In case you are looking for data from an arbitrary sweep use one of the following functions:<itemizedlist>
+<listitem><para><ref refid="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662" kindref="member">GetLastSweepWithSetting()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c" kindref="member">GetLastSweepWithSettingText()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1gaf0699b541ed20bdebfb3ff5ad3cac656" kindref="member">GetLastSweepWithSettingTextI()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1gaf69ef19ad8b95b18c583590e13fbd437" kindref="member">GetLastSweepWithSettingIndep()</ref></para>
+</listitem><listitem><para><ref refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" kindref="member">GetSweepsWithSetting()</ref> </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

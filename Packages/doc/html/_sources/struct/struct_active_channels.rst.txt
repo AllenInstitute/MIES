@@ -1,0 +1,4 @@
+Struct ActiveChannels
+=====================
+
+.. doxygenstruct:: ActiveChannels

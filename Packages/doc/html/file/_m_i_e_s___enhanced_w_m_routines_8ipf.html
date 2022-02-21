@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_EnhancedWMRoutines.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Epochs.ipf" href="_m_i_e_s___epochs_8ipf.html" />
+    <link rel="prev" title="File MIES_Downsample.ipf" href="_m_i_e_s___downsample_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___epochs_8ipf.html" title="File MIES_Epochs.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___downsample_8ipf.html" title="File MIES_Downsample.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_EnhancedWMRoutines.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-enhancedwmroutines-ipf">
+<span id="id1"></span><h1>File MIES_EnhancedWMRoutines.ipf<a class="headerlink" href="#file-mies-enhancedwmroutines-ipf" title="Permalink to this headline">¶</a></h1>
+<p>Routines packaged with IGOR PRO but enhanced from us. </p>
+<p>Everthing in this file is copyrighted by WaveMetrics Inc. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions-taken-from-&lt;tt&gt;waves-average.ipf&lt;/tt&gt;-from-igor-pro-6.3.6.4">Functions taken from &lt;tt&gt;Waves Average.ipf&lt;/tt&gt; from Igor Pro 6.3.6.4</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417MIES_fWaveAverage10WaveOrNull8variable8variable8variable11WaveRefWave">
+<span id="_CPPv317MIES_fWaveAverage10WaveOrNull8variable8variable8variable11WaveRefWave"></span><span id="_CPPv217MIES_fWaveAverage10WaveOrNull8variable8variable8variable11WaveRefWave"></span><span id="MIES_fWaveAverage__WaveOrNull.variable.variable.variable.WaveRefWave"></span><span class="target" id="_m_i_e_s___enhanced_w_m_routines_8ipf_1a5d9e0a5028f7bc505a8cfe493190f7dd"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MIES_fWaveAverage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveOrNull</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">yWaves</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ignoreNaNs</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">averageWaveType</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">getComponents</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prevAvgData</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417MIES_fWaveAverage10WaveOrNull8variable8variable8variable11WaveRefWave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Average the given waves. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yWaves</strong> – Y waves </p></li>
+<li><p><strong>ignoreNaNs</strong> – Ignoring NaNs means that the average does skip over NaNs. </p></li>
+<li><p><strong>averageWaveType</strong> – wave type of the average wave. Currently supported are <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2"><span class="std std-ref">IGOR_TYPE_64BIT_FLOAT</span></a> and <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897"><span class="std std-ref">IGOR_TYPE_32BIT_FLOAT</span></a>. </p></li>
+<li><p><strong>getComponents</strong> – [optional, default = 0] Return sum / count components as well </p></li>
+<li><p><strong>prevAvgData</strong> – [optional, default = $””] wave reference wave with data from previous averaging for incremental averaging. first entry refers to the sum per row wave and second to the counts per row wave.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wave ref wave containing three free waves with the average per row, sums per row and counts per row. The latter two are only calculated when getComponents was set to 1. The latter two are undefined when getComponents is 0. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413x2pntWithFrac4wave8variable">
+<span id="_CPPv313x2pntWithFrac4wave8variable"></span><span id="_CPPv213x2pntWithFrac4wave8variable"></span><span id="x2pntWithFrac__wave.variable"></span><span class="target" id="_m_i_e_s___enhanced_w_m_routines_8ipf_1af06fbef2db9c84175a2c435436fab94b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x2pntWithFrac</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scaledDim</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413x2pntWithFrac4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___downsample_8ipf.html"
+                          title="previous chapter">File MIES_Downsample.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___epochs_8ipf.html"
+                          title="next chapter">File MIES_Epochs.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___epochs_8ipf.html" title="File MIES_Epochs.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___downsample_8ipf.html" title="File MIES_Downsample.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_EnhancedWMRoutines.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1072 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___downsample_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Downsample.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1ad27487484d76ac088a5a4add9d39ed60" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string checkbox_equalize</definition>
+        <argsstring></argsstring>
+        <name>checkbox_equalize</name>
+        <initializer>= &quot;checkbox_equalize_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="20" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26" compoundref="_m_i_e_s___downsample_8ipf" startline="301" endline="315">ApplyConstantRateChanges</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ad5b1b986357ef083192185fe8eb95420" compoundref="_m_i_e_s___downsample_8ipf" startline="321" endline="343">ExpandRateToList</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1af068f399153dc3db5bb13e0708e96cc8" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string checkbox_downsample</definition>
+        <argsstring></argsstring>
+        <name>checkbox_downsample</name>
+        <initializer>= &quot;checkbox_downsample_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="21" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="21" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a8dfcfabda0d8b6db41b3bdcd3e19bbdd" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string popup_targetrate</definition>
+        <argsstring></argsstring>
+        <name>popup_targetrate</name>
+        <initializer>= &quot;popup_targetrate_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="22" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="22" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a3840120884231aeea02056ab35464826" compoundref="_m_i_e_s___downsample_8ipf" startline="264" endline="276">GetTargetRate</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382" compoundref="_m_i_e_s___downsample_8ipf" startline="656" endline="667">UpdatePopupMenuTargetRate</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1ac3834c8fe081bab324e0061c68925598" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string checkbox_interpolation</definition>
+        <argsstring></argsstring>
+        <name>checkbox_interpolation</name>
+        <initializer>= &quot;checkbox_interpolation_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="23" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1abd06e58518178ad5a44adbe9052b2c85" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string popup_windowfunction</definition>
+        <argsstring></argsstring>
+        <name>popup_windowfunction</name>
+        <initializer>= &quot;popup_windowfunction_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="24" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f" compoundref="_m_i_e_s___downsample_8ipf" startline="404" endline="417">UpdatePopupMenuWindowFunction</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a38cfeb26eff1f4af358220774ae99e62" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string popup_decimationmethod</definition>
+        <argsstring></argsstring>
+        <name>popup_decimationmethod</name>
+        <initializer>= &quot;popup_decimationmethod_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="25" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a8899cf80c234bb67bddf4c9cb49686d0" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string popup_deviceselection</definition>
+        <argsstring></argsstring>
+        <name>popup_deviceselection</name>
+        <initializer>= &quot;popup_deviceselection_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="26" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="26" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a429e06b6fe498868ee5ef48eca5de49d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string checkbox_backupwaves</definition>
+        <argsstring></argsstring>
+        <name>checkbox_backupwaves</name>
+        <initializer>= &quot;checkbox_backupwaves_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="27" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="27" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1ac312f0fd8a540bd499cad4186922bfa0" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string valdisp_estimatedsize</definition>
+        <argsstring></argsstring>
+        <name>valdisp_estimatedsize</name>
+        <initializer>= &quot;valdisp_estimatedsize_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="28" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="28" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a80874ce4c46e39421fcd89973bdbddf4" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string valdisp_currentsize</definition>
+        <argsstring></argsstring>
+        <name>valdisp_currentsize</name>
+        <initializer>= &quot;valdisp_currentsize_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="29" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="29" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a2d14bcf7cf45e213baa5f1a8ddd0b115" compoundref="_m_i_e_s___downsample_8ipf" startline="246" endline="262">UpdateCurrentSize</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a7712eeab985d3c25a1a106af3e13b9f8" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string listbox_waves</definition>
+        <argsstring></argsstring>
+        <name>listbox_waves</name>
+        <initializer>= &quot;listbox_waves_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="30" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a885ea3ffccb231ccadd67faf6fc70ff5" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string button_doit</definition>
+        <argsstring></argsstring>
+        <name>button_doit</name>
+        <initializer>= &quot;button_doit_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="31" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a4ad4e77a724af5f4e4c3e44394462aec" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string button_restorebackup</definition>
+        <argsstring></argsstring>
+        <name>button_restorebackup</name>
+        <initializer>= &quot;button_restorebackup_id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="32" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a843e767a8d4633e75a9243a5ad1f58fb" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string dataPath</definition>
+        <argsstring></argsstring>
+        <name>dataPath</name>
+        <initializer>= &quot;root:MIES:postExperimentProcedures:downsample:&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="34" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="34" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a57f92f53a91c97c782d3995ebcf77108" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2082" endline="2124">AB_LoadStimsetRAW</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a50caece7af3a95dc609c0c8582d1ee5a" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2129" endline="2178">AB_LoadStimsetTemplateWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a82877003dfb717d5eb9f79f6fb7ed7e5" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1914" endline="1954">AB_LoadSweepFromIgor</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429" compoundref="_m_i_e_s___downsample_8ipf" startline="496" endline="521">DownsampleWindowHook</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1afb2222dc632722e0575ede5de2f65675" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1953" endline="1994">GetAllDevicesWithContent</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" compoundref="_m_i_e_s___downsample_8ipf" startline="37" endline="39">GetDownsampleDataFolder</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string panel</definition>
+        <argsstring></argsstring>
+        <name>panel</name>
+        <initializer>= &quot;Downsampling&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="35" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="35" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af62052db006407812b25ae23ba7458df" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2507" endline="2529">AB_BrowserStartupSettings</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1acfb0db7b33d86deb61e12449d4af31af" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2561" endline="2586">AB_ButtonProc_LoadSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a8c69604af3abe2932ae64f813a5e0bb5" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2406" endline="2411">AB_CheckPanelVersion</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1aa57bf494513fec75fd3bb98efd42845d" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2372" endline="2404">AB_OpenAnalysisBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1f87c9a7ae14c638e2ccf88de507fce" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3974" endline="4130">AverageWavesFromSameYAxisIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aa78a52a578d2073d7554610e72ac5fe8" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1006" endline="1025">BSP_ChannelSelectionWaveToGUI</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366" compoundref="_m_i_e_s___downsample_8ipf" startline="419" endline="494">CreateDownsamplePanel</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa41a427ad050ba65c71d195bcc21bcce" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4525" endline="4549">DAP_CreateDAEphysPanel</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" compoundref="_m_i_e_s___data_browser_8ipf" startline="685" endline="708">DB_FindDataBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1ad2447b4c8350787a038153405e89a31c" compoundref="_m_i_e_s___debug_panel_8ipf" startline="54" endline="75">DP_OpenDebugPanel</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1af856b39f2aa6e39f2b3ec5650d38a43d" compoundref="_m_i_e_s___menu_8ipf" startline="95" endline="148">MEN_OpenAboutDialog</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf_1a7351feb3dfc3186225301f9dbd83cba7" compoundref="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf" startline="230" endline="243">SBE_ShowExportPanel</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a0985bbc8db1f6fc02a0f1f3ddb8fd1fa" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="46" endline="56">ScreenShotsForAnalysisBrowser</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1acd4bc7bd49fda1e5bd28f3cd24880396" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="86" endline="109">ScreenShotsForDAEphys</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1a62b3c05a9a509d2c4e68ef3adb262382" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="58" endline="84">ScreenShotsForWaveBuilder</referencedby>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1a6928b66709263cbb38c08b33239ec014" compoundref="_m_i_e_s___utilities_8ipf" startline="6065" endline="6071">StoreCurrentPanelsResizeInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dfref</type>
+        <definition>static dfref GetDownsampleDataFolder</definition>
+        <argsstring>()</argsstring>
+        <name>GetDownsampleDataFolder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="37" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="37" bodyend="39"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a1eb71cae989ce4dfcfee3dbaeefd3b71" compoundref="_m_i_e_s___utilities_8ipf" startline="715" endline="741">createDFWithAllParents</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a843e767a8d4633e75a9243a5ad1f58fb" compoundref="_m_i_e_s___downsample_8ipf" startline="34">dataPath</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" compoundref="_m_i_e_s___downsample_8ipf" startline="69" endline="85">GetDownsampleListWave</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetDownsampleDataRefWave</definition>
+        <argsstring>()</argsstring>
+        <name>GetDownsampleDataRefWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="41" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="41" bodyend="53"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" compoundref="_m_i_e_s___downsample_8ipf" startline="37" endline="39">GetDownsampleDataFolder</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a7337ea7fd48d5dd301013b08c427a909" compoundref="_m_i_e_s___downsample_8ipf" startline="555" endline="591">ButtonRestoreBackup</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429" compoundref="_m_i_e_s___downsample_8ipf" startline="496" endline="521">DownsampleWindowHook</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a2d14bcf7cf45e213baa5f1a8ddd0b115" compoundref="_m_i_e_s___downsample_8ipf" startline="246" endline="262">UpdateCurrentSize</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" compoundref="_m_i_e_s___downsample_8ipf" startline="223" endline="244">UpdateDataWaves</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetDownsampleRateWave</definition>
+        <argsstring>()</argsstring>
+        <name>GetDownsampleRateWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="55" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="55" bodyend="67"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" compoundref="_m_i_e_s___downsample_8ipf" startline="37" endline="39">GetDownsampleDataFolder</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26" compoundref="_m_i_e_s___downsample_8ipf" startline="301" endline="315">ApplyConstantRateChanges</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429" compoundref="_m_i_e_s___downsample_8ipf" startline="496" endline="521">DownsampleWindowHook</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" compoundref="_m_i_e_s___downsample_8ipf" startline="223" endline="244">UpdateDataWaves</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetDownsampleListWave</definition>
+        <argsstring>()</argsstring>
+        <name>GetDownsampleListWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="69" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="69" bodyend="85"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" compoundref="_m_i_e_s___downsample_8ipf" startline="37" endline="39">GetDownsampleDataFolder</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366" compoundref="_m_i_e_s___downsample_8ipf" startline="419" endline="494">CreateDownsamplePanel</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429" compoundref="_m_i_e_s___downsample_8ipf" startline="496" endline="521">DownsampleWindowHook</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" compoundref="_m_i_e_s___downsample_8ipf" startline="223" endline="244">UpdateDataWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a6f2824cb254bdac8e19b0222f5c331f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetPopupMenuDeviceListWithData</definition>
+        <argsstring>()</argsstring>
+        <name>GetPopupMenuDeviceListWithData</name>
+        <briefdescription>
+<para>Create a list of all devices with acquired data, honour yoking dependencies. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000018"><xreftitle>Todo</xreftitle><xrefdescription><para>is not very accurate as we should store the yoking dependencies in a permanent way instead of hoping that ListOfFollowerITC1600s is accurate </para>
+</xrefdescription></xrefsect><simplesect kind="return"><para>list of all devices with data in the format ITC18USB_Dev_1;ITC1600_Dev_1;ITC1600_Dev_0 (2,3); </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="92" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="92" bodyend="153"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a83da80bb60fc03112dcb1fb52ae52c59" compoundref="_m_i_e_s___constants_8ipf" startline="30">DEVICE_NUMBERS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a26d8d38984ce53a1421152056e52dabd" compoundref="_m_i_e_s___constants_8ipf" startline="29">DEVICE_TYPES_ITC</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0c7e4b1dce9b4950459da78fd85d4df7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="640" endline="656">GetDevicePathAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aab3f9f50c68ee33816d38209c1c92bf7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="615" endline="619">GetDeviceTypePathAsString</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1af234240403414dc255162e7b96d71e36" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="683" endline="691">HW_ITC_BuildDeviceString</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a394e0be8a8b04f48cabe566b12c25d38" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ParsePopupItem</definition>
+        <argsstring>(string popStr, string *deviceType, string *deviceNumber, string *followerList)</argsstring>
+        <name>ParsePopupItem</name>
+        <param>
+          <type>string</type>
+          <declname>popStr</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>deviceType</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>deviceNumber</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>followerList</declname>
+        </param>
+        <briefdescription>
+<para>Parse the given popup item string created by <ref refid="_m_i_e_s___downsample_8ipf_1a6f2824cb254bdac8e19b0222f5c331f0" kindref="member">GetPopupMenuDeviceListWithData()</ref> and return the device name, type and possible follower list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="157" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="157" bodyend="174"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7bb3e4ebdfdaeb4e6d9b3a62e26a53d2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2238" endline="2257">ParseDeviceString</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1abfbc1d65b451e0145a285b7faf4cf9ea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AppendEntries</definition>
+        <argsstring>(WaveText list, WaveRefWave dataRef, wave rate, variable startIndex, string deviceType, string deviceNumber)</argsstring>
+        <name>AppendEntries</name>
+        <param>
+          <type>WaveText</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>dataRef</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>rate</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startIndex</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>deviceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>deviceNumber</declname>
+        </param>
+        <briefdescription>
+<para>Searches for sweep waves from all devices. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ListBox wave, see <ref refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" kindref="member">GetDownsampleListWave()</ref> for the format </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataRef</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave with wave references to all data waves </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave with the sampling rates in kHz of all data waves </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>startIndex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>first unused index into the passed waves </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>deviceType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device type </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>deviceNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device number </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>index of the last valid entry into the passed waves </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="185" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="185" bodyend="220"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5fe7e09cc9f0a69e6e36f45dcf6961c7" compoundref="_m_i_e_s___utilities_8ipf" startline="678" endline="682">ConvertSamplingIntervalToRate</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a138bbfab81822c31a0658888b4511987" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2166" endline="2178">GetSamplingInterval</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1af234240403414dc255162e7b96d71e36" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="683" endline="691">HW_ITC_BuildDeviceString</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" compoundref="_m_i_e_s___downsample_8ipf" startline="223" endline="244">UpdateDataWaves</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdateDataWaves</definition>
+        <argsstring>(string deviceType, string deviceNumber, string followerList)</argsstring>
+        <name>UpdateDataWaves</name>
+        <param>
+          <type>string</type>
+          <declname>deviceType</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>deviceNumber</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>followerList</declname>
+        </param>
+        <briefdescription>
+<para>Updates all waves holding acquired data info. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="223" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="223" bodyend="244"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1abfbc1d65b451e0145a285b7faf4cf9ea" compoundref="_m_i_e_s___downsample_8ipf" startline="185" endline="220">AppendEntries</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" compoundref="_m_i_e_s___downsample_8ipf" startline="69" endline="85">GetDownsampleListWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a2d14bcf7cf45e213baa5f1a8ddd0b115" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdateCurrentSize</definition>
+        <argsstring>(string win)</argsstring>
+        <name>UpdateCurrentSize</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="246" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="246" bodyend="262"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5e30d6374c5baf76cd7ab0cabe3660cb" compoundref="_m_i_e_s___utilities_8ipf" startline="586" endline="590">ConvertFromBytesToMiB</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abc03730185019abb08c713b4552ecdad" compoundref="_m_i_e_s___utilities_8ipf" startline="644" endline="667">GetWaveSize</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a80874ce4c46e39421fcd89973bdbddf4" compoundref="_m_i_e_s___downsample_8ipf" startline="29">valdisp_currentsize</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a3840120884231aeea02056ab35464826" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable GetTargetRate</definition>
+        <argsstring>(string win)</argsstring>
+        <name>GetTargetRate</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="264" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="264" bodyend="276"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a8dfcfabda0d8b6db41b3bdcd3e19bbdd" compoundref="_m_i_e_s___downsample_8ipf" startline="22">popup_targetrate</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdateEstimatedSizeAfterwards</definition>
+        <argsstring>(string win)</argsstring>
+        <name>UpdateEstimatedSizeAfterwards</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="278" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="278" bodyend="298"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5e30d6374c5baf76cd7ab0cabe3660cb" compoundref="_m_i_e_s___utilities_8ipf" startline="586" endline="590">ConvertFromBytesToMiB</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a3840120884231aeea02056ab35464826" compoundref="_m_i_e_s___downsample_8ipf" startline="264" endline="276">GetTargetRate</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abc03730185019abb08c713b4552ecdad" compoundref="_m_i_e_s___utilities_8ipf" startline="644" endline="667">GetWaveSize</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ac312f0fd8a540bd499cad4186922bfa0" compoundref="_m_i_e_s___downsample_8ipf" startline="28">valdisp_estimatedsize</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ab8adf7fddbe73c8f92a0b0e9e2a3ead1" compoundref="_m_i_e_s___downsample_8ipf" startline="523" endline="536">CheckBoxInterpolation</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a0fcad95bc29b762ca8cd1fa8bb6b6d57" compoundref="_m_i_e_s___downsample_8ipf" startline="538" endline="553">PopupMenuTargetRate</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable ApplyConstantRateChanges</definition>
+        <argsstring>(string win)</argsstring>
+        <name>ApplyConstantRateChanges</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Disable the equalize checkbox if all data waves have the same rate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="301" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="301" bodyend="315"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1ad27487484d76ac088a5a4add9d39ed60" compoundref="_m_i_e_s___downsample_8ipf" startline="20">checkbox_equalize</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa8588b6b7329369c25fbd768f02f7c32" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="97" endline="108">DisableControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4b8f5d3b64fd8d1ea8d475f420bb3aad" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="70" endline="81">EnableControl</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1ad5b1b986357ef083192185fe8eb95420" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string ExpandRateToList</definition>
+        <argsstring>(string win, variable var, variable constantRates=defaultValue)</argsstring>
+        <name>ExpandRateToList</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>constantRates</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Returns a list of values 1/k*var with k = {1..10} or k = {2..10} if constantRates == 1. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>variable to expand </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>constantRates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>boolean switch, defaults to false </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="321" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="321" bodyend="343"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1ad27487484d76ac088a5a4add9d39ed60" compoundref="_m_i_e_s___downsample_8ipf" startline="20">checkbox_equalize</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string GetPopupMenuRates</definition>
+        <argsstring>()</argsstring>
+        <name>GetPopupMenuRates</name>
+        <briefdescription>
+<para>Returns a list of all possible equalize/downsampling rates. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="346" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="346" bodyend="372"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a66fb0b2993942a21c9f896c25ea7c6b6" compoundref="_m_i_e_s___utilities_8ipf" startline="857" endline="872">CalculateLCMOfWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ac3834c8fe081bab324e0061c68925598" compoundref="_m_i_e_s___downsample_8ipf" startline="23">checkbox_interpolation</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ad5b1b986357ef083192185fe8eb95420" compoundref="_m_i_e_s___downsample_8ipf" startline="321" endline="343">ExpandRateToList</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382" compoundref="_m_i_e_s___downsample_8ipf" startline="656" endline="667">UpdatePopupMenuTargetRate</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a5cd58467f6fb0c1e5a44f2059b119d5e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable GetDecimationMethod</definition>
+        <argsstring>(string win)</argsstring>
+        <name>GetDecimationMethod</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="374" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="374" bodyend="380"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0f7767bbb512666184715e50564b8b7c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="431" endline="439">GetPopupMenuIndex</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f" compoundref="_m_i_e_s___downsample_8ipf" startline="404" endline="417">UpdatePopupMenuWindowFunction</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdateCheckBoxes</definition>
+        <argsstring>(string win, string control, variable state)</argsstring>
+        <name>UpdateCheckBoxes</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>state</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="382" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="382" bodyend="402"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1af068f399153dc3db5bb13e0708e96cc8" compoundref="_m_i_e_s___downsample_8ipf" startline="21">checkbox_downsample</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ad27487484d76ac088a5a4add9d39ed60" compoundref="_m_i_e_s___downsample_8ipf" startline="20">checkbox_equalize</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae8a5d44752a376e8560f3634cbbaa072" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="372" endline="386">SetCheckBoxState</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382" compoundref="_m_i_e_s___downsample_8ipf" startline="656" endline="667">UpdatePopupMenuTargetRate</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26" compoundref="_m_i_e_s___downsample_8ipf" startline="301" endline="315">ApplyConstantRateChanges</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1ab0b6f2cfcef1eea6061de59edee97818" compoundref="_m_i_e_s___downsample_8ipf" startline="720" endline="739">CheckBoxEqualizeDown</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdatePopupMenuWindowFunction</definition>
+        <argsstring>(string win, variable decimationMethod=defaultValue)</argsstring>
+        <name>UpdatePopupMenuWindowFunction</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>decimationMethod</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="404" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="404" bodyend="417"/>
+        <references refid="_m_i_e_s___constants_8ipf_1adf9a695780e5efd7419a364e587dfd50" compoundref="_m_i_e_s___constants_8ipf" startline="141">DECIMATION_BY_SMOOTHING</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa8588b6b7329369c25fbd768f02f7c32" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="97" endline="108">DisableControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4b8f5d3b64fd8d1ea8d475f420bb3aad" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="70" endline="81">EnableControl</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a5cd58467f6fb0c1e5a44f2059b119d5e" compoundref="_m_i_e_s___downsample_8ipf" startline="374" endline="380">GetDecimationMethod</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1abd06e58518178ad5a44adbe9052b2c85" compoundref="_m_i_e_s___downsample_8ipf" startline="24">popup_windowfunction</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366" compoundref="_m_i_e_s___downsample_8ipf" startline="419" endline="494">CreateDownsamplePanel</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a3236dcadedfb74c65ed9eaa1442d056b" compoundref="_m_i_e_s___downsample_8ipf" startline="706" endline="718">PopupMenuDecimationMethod</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CreateDownsamplePanel</definition>
+        <argsstring>()</argsstring>
+        <name>CreateDownsamplePanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="419" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="419" bodyend="494"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" compoundref="_m_i_e_s___downsample_8ipf" startline="69" endline="85">GetDownsampleListWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a78aed704e6ceaa334feb8861c3aab72d" compoundref="_m_i_e_s___package_settings_8ipf" startline="222" endline="236">PS_InitCoordinates</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f" compoundref="_m_i_e_s___downsample_8ipf" startline="404" endline="417">UpdatePopupMenuWindowFunction</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DownsampleWindowHook</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>DownsampleWindowHook</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="496" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="496" bodyend="521"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1a843e767a8d4633e75a9243a5ad1f58fb" compoundref="_m_i_e_s___downsample_8ipf" startline="34">dataPath</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9a17d2ea6dd29be29539b45db0f5c79d" compoundref="_m_i_e_s___constants_8ipf" startline="152">EVENT_KILL_WINDOW_HOOK</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" compoundref="_m_i_e_s___downsample_8ipf" startline="69" endline="85">GetDownsampleListWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a3fb317ccd37c832917b2c54b8cb677f8" compoundref="_m_i_e_s___package_settings_8ipf" startline="186" endline="205">PS_StoreWindowCoordinate</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab85f4f987a429923eeb7f2e86458b70c" compoundref="_m_i_e_s___utilities_8ipf" startline="1031" endline="1051">RecursiveRemoveEmptyDataFolder</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1ab8adf7fddbe73c8f92a0b0e9e2a3ead1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CheckBoxInterpolation</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>CheckBoxInterpolation</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="523" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="523" bodyend="536"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a0fcad95bc29b762ca8cd1fa8bb6b6d57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PopupMenuTargetRate</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>PopupMenuTargetRate</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="538" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="538" bodyend="553"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a7337ea7fd48d5dd301013b08c427a909" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ButtonRestoreBackup</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>ButtonRestoreBackup</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="555" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="555" bodyend="591"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a078203a566711c4537f609bfcef85e59" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5337" endline="5350">GetBackupWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a17922b1390c832ac1a55f52139ae4aff" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5372" endline="5405">ReplaceWaveWithBackup</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ButtonDoIt</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>ButtonDoIt</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="593" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="593" bodyend="654"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a429e06b6fe498868ee5ef48eca5de49d" compoundref="_m_i_e_s___downsample_8ipf" startline="27">checkbox_backupwaves</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1afceef779ed2219f04830a390754ef437" compoundref="_m_i_e_s___utilities_8ipf" startline="685" endline="689">ConvertRateToSamplingInterval</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a337e0af2ce2030a56cebe15264caba34" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5308" endline="5334">CreateBackupWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adf9a695780e5efd7419a364e587dfd50" compoundref="_m_i_e_s___constants_8ipf" startline="141">DECIMATION_BY_SMOOTHING</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a5cd58467f6fb0c1e5a44f2059b119d5e" compoundref="_m_i_e_s___downsample_8ipf" startline="374" endline="380">GetDecimationMethod</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" compoundref="_m_i_e_s___downsample_8ipf" startline="41" endline="53">GetDownsampleDataRefWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" compoundref="_m_i_e_s___downsample_8ipf" startline="69" endline="85">GetDownsampleListWave</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" compoundref="_m_i_e_s___downsample_8ipf" startline="55" endline="67">GetDownsampleRateWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a3840120884231aeea02056ab35464826" compoundref="_m_i_e_s___downsample_8ipf" startline="264" endline="276">GetTargetRate</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1abd06e58518178ad5a44adbe9052b2c85" compoundref="_m_i_e_s___downsample_8ipf" startline="24">popup_windowfunction</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a50ec9fe574fae39cb883ddc820f05676" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2198" endline="2204">UpdateSweepConfig</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdatePopupMenuTargetRate</definition>
+        <argsstring>(string win)</argsstring>
+        <name>UpdatePopupMenuTargetRate</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="656" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="656" bodyend="667"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0f7767bbb512666184715e50564b8b7c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="431" endline="439">GetPopupMenuIndex</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965" compoundref="_m_i_e_s___downsample_8ipf" startline="346" endline="372">GetPopupMenuRates</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a8dfcfabda0d8b6db41b3bdcd3e19bbdd" compoundref="_m_i_e_s___downsample_8ipf" startline="22">popup_targetrate</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a7fe088c1d04218bed35a0240a7531379" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="442" endline="452">SetPopupMenuIndex</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable UpdatePanel</definition>
+        <argsstring>(string win, string deviceSelectionString=defaultValue)</argsstring>
+        <name>UpdatePanel</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>deviceSelectionString</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="669" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="669" bodyend="689"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26" compoundref="_m_i_e_s___downsample_8ipf" startline="301" endline="315">ApplyConstantRateChanges</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a394e0be8a8b04f48cabe566b12c25d38" compoundref="_m_i_e_s___downsample_8ipf" startline="157" endline="174">ParsePopupItem</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a8899cf80c234bb67bddf4c9cb49686d0" compoundref="_m_i_e_s___downsample_8ipf" startline="26">popup_deviceselection</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a2d14bcf7cf45e213baa5f1a8ddd0b115" compoundref="_m_i_e_s___downsample_8ipf" startline="246" endline="262">UpdateCurrentSize</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23" compoundref="_m_i_e_s___downsample_8ipf" startline="223" endline="244">UpdateDataWaves</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971" compoundref="_m_i_e_s___downsample_8ipf" startline="278" endline="298">UpdateEstimatedSizeAfterwards</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382" compoundref="_m_i_e_s___downsample_8ipf" startline="656" endline="667">UpdatePopupMenuTargetRate</references>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb" compoundref="_m_i_e_s___downsample_8ipf" startline="593" endline="654">ButtonDoIt</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a7337ea7fd48d5dd301013b08c427a909" compoundref="_m_i_e_s___downsample_8ipf" startline="555" endline="591">ButtonRestoreBackup</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366" compoundref="_m_i_e_s___downsample_8ipf" startline="419" endline="494">CreateDownsamplePanel</referencedby>
+        <referencedby refid="_m_i_e_s___downsample_8ipf_1a6db12eed38309d90276286f6882e9b00" compoundref="_m_i_e_s___downsample_8ipf" startline="691" endline="704">PopupMenuDeviceSelection</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a6db12eed38309d90276286f6882e9b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PopupMenuDeviceSelection</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>PopupMenuDeviceSelection</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="691" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="691" bodyend="704"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065" compoundref="_m_i_e_s___downsample_8ipf" startline="669" endline="689">UpdatePanel</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1a3236dcadedfb74c65ed9eaa1442d056b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PopupMenuDecimationMethod</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>PopupMenuDecimationMethod</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="706" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="706" bodyend="718"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f" compoundref="_m_i_e_s___downsample_8ipf" startline="404" endline="417">UpdatePopupMenuWindowFunction</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___downsample_8ipf_1ab0b6f2cfcef1eea6061de59edee97818" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable CheckBoxEqualizeDown</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>CheckBoxEqualizeDown</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" line="720" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf" bodystart="720" bodyend="739"/>
+        <references refid="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb" compoundref="_m_i_e_s___downsample_8ipf" startline="382" endline="402">UpdateCheckBoxes</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Panel for downsampling acquired data. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Folders and waves managed by code in this file <table rows="5" cols="4"><row>
+<entry thead="yes"><para>Object type   </para>
+</entry><entry thead="yes"><para>Name   </para>
+</entry><entry thead="yes"><para>Purpose   </para>
+</entry><entry thead="yes"><para>Function    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>DFREF   </para>
+</entry><entry thead="no"><para>$dataPath   </para>
+</entry><entry thead="no"><para>location of all the GUI and temporary data   </para>
+</entry><entry thead="no"><para><ref refid="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f" kindref="member">GetDownsampleDataFolder()</ref>    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>Wave   </para>
+</entry><entry thead="no"><para>$dataPath:dataRef   </para>
+</entry><entry thead="no"><para>Holds wave references to all waves currently displayed in the list box   </para>
+</entry><entry thead="no"><para><ref refid="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0" kindref="member">GetDownsampleDataRefWave()</ref>    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>Wave   </para>
+</entry><entry thead="no"><para>$dataPath:rateWave   </para>
+</entry><entry thead="no"><para>Holds all rates in kHz for each wave.   </para>
+</entry><entry thead="no"><para><ref refid="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31" kindref="member">GetDownsampleRateWave()</ref>    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>Wave   </para>
+</entry><entry thead="no"><para>$dataPath:sweepProperties   </para>
+</entry><entry thead="no"><para>Used by the list box to show the properties of each sweep   </para>
+</entry><entry thead="no"><para><ref refid="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c" kindref="member">GetDownsampleListWave()</ref>   </para>
+</entry></row>
+</table>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Downsample.ipf"/>
+  </compounddef>
+</doxygen>

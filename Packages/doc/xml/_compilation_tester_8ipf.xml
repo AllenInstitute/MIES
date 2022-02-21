@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_compilation_tester_8ipf" kind="file" language="C++">
+    <compoundname>CompilationTester.ipf</compoundname>
+    <innernamespace refid="namespace_compilation_tester">CompilationTester</innernamespace>
+    <briefdescription>
+<para>Compilation Testing. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>How it works:<itemizedlist>
+<listitem><para><computeroutput>input.txt</computeroutput> holds a EOL separated list of files to test and must be located in the same folder as the experiment.</para>
+</listitem><listitem><para>The procedure files to be included must be located in the Igor Pro &quot;User Procedure&quot;.</para>
+</listitem><listitem><para>For each include file use the unit-testing framework to report the success/failure of the compilation check.</para>
+</listitem><listitem><para>An optional file <computeroutput>define.txt</computeroutput> is loaded. If found the compilation testing is done twice once with the symbol defined (using <computeroutput>poundDefine</computeroutput> from SetIgorOption) </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/tools/unit-testing/CompilationTester.ipf"/>
+  </compounddef>
+</doxygen>

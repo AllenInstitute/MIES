@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_IgorHooks.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Include.ipf" href="_m_i_e_s___include_8ipf.html" />
+    <link rel="prev" title="File MIES_IVSCC.ipf" href="_m_i_e_s___i_v_s_c_c_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___include_8ipf.html" title="File MIES_Include.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___i_v_s_c_c_8ipf.html" title="File MIES_IVSCC.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_IgorHooks.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-igorhooks-ipf">
+<span id="id1"></span><h1>File MIES_IgorHooks.ipf<a class="headerlink" href="#file-mies-igorhooks-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>IH</strong> Various hooks which influence the behaviour at certain global events </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IH_KillTemporariesv">
+<span id="_CPPv318IH_KillTemporariesv"></span><span id="_CPPv218IH_KillTemporariesv"></span><span id="IH_KillTemporaries"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1ab0a5b7935bfdb31fd6406b341f0c77d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_KillTemporaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IH_KillTemporariesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove all strings/variables/waves which should not survive experiment reload/quit/saving. </p>
+<p>Mainly useful for temporaries which you want to recreate on initialization </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427IH_RemoveAmplifierConnWavesv">
+<span id="_CPPv327IH_RemoveAmplifierConnWavesv"></span><span id="_CPPv227IH_RemoveAmplifierConnWavesv"></span><span id="IH_RemoveAmplifierConnWaves"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1ab2e97295c1804d7ae7dbe07db54861d2"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_RemoveAmplifierConnWaves</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427IH_RemoveAmplifierConnWavesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove the amplifier connection waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IH_KillStimSetsv">
+<span id="_CPPv315IH_KillStimSetsv"></span><span id="_CPPv215IH_KillStimSetsv"></span><span id="IH_KillStimSets"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a2c3020201b453a5b91a8627445d8389e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_KillStimSets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IH_KillStimSetsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Delete all wavebuilder stim sets to save memory. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420IH_SerializeSettingsv">
+<span id="_CPPv320IH_SerializeSettingsv"></span><span id="_CPPv220IH_SerializeSettingsv"></span><span id="IH_SerializeSettings"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1ac9f7b913826e7a5c70d5d88a3affe444"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_SerializeSettings</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420IH_SerializeSettingsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Write the current JSON settings to disc. </p>
+<p>We also invalidate the stored json ID, so that on the next access it is read again. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424BeforeExperimentSaveHook8variable6string6string6string6string8variable">
+<span id="_CPPv324BeforeExperimentSaveHook8variable6string6string6string6string8variable"></span><span id="_CPPv224BeforeExperimentSaveHook8variable6string6string6string6string8variable"></span><span id="BeforeExperimentSaveHook__variable.string.string.string.string.variable"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BeforeExperimentSaveHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rN</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">creator</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kind</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424BeforeExperimentSaveHook8variable6string6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410IH_Cleanupv">
+<span id="_CPPv310IH_Cleanupv"></span><span id="_CPPv210IH_Cleanupv"></span><span id="IH_Cleanup"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_Cleanup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410IH_Cleanupv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Cleanup before closing or starting a new experiment. </p>
+<p>Takes care of unlocking the hardware, removing any data which is stale on reload anyway (amplifier connection details) and removes temporary waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IgorBeforeQuitHook8variable8variable8variable">
+<span id="_CPPv318IgorBeforeQuitHook8variable8variable8variable"></span><span id="_CPPv218IgorBeforeQuitHook8variable8variable8variable"></span><span id="IgorBeforeQuitHook__variable.variable.variable"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a1289f5b73d08710832e8d874837319a9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IgorBeforeQuitHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unsavedExp</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unsavedNotebooks</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unsavedProcedures</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IgorBeforeQuitHook8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412IgorQuitHook6string">
+<span id="_CPPv312IgorQuitHook6string"></span><span id="_CPPv212IgorQuitHook6string"></span><span id="IgorQuitHook__string"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a6fcae5eafc97bca9a637bd7800b13e25"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IgorQuitHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">igorApplicationNameStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412IgorQuitHook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417IgorBeforeNewHook6string">
+<span id="_CPPv317IgorBeforeNewHook6string"></span><span id="_CPPv217IgorBeforeNewHook6string"></span><span id="IgorBeforeNewHook__string"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IgorBeforeNewHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">igorApplicationNameStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417IgorBeforeNewHook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called before a new experiment is opened, in response to the New Experiment, Revert Experiment, or Open Experiment menu items in the File menu. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418IgorStartOrNewHook6string">
+<span id="_CPPv318IgorStartOrNewHook6string"></span><span id="_CPPv218IgorStartOrNewHook6string"></span><span id="IgorStartOrNewHook__string"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IgorStartOrNewHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">igorApplicationNameStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418IgorStartOrNewHook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called when Igor is first launched and then whenever a new experiment is being created. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420BeforeUncompiledHook8variable6string6string">
+<span id="_CPPv320BeforeUncompiledHook8variable6string6string"></span><span id="_CPPv220BeforeUncompiledHook8variable6string6string"></span><span id="BeforeUncompiledHook__variable.string.string"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1ae44d37d110115372a6318b15bb15bbaa"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BeforeUncompiledHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">changeCode</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">procedureWindowTitleStr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">textChangeStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420BeforeUncompiledHook8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AfterCompiledHookv">
+<span id="_CPPv317AfterCompiledHookv"></span><span id="_CPPv217AfterCompiledHookv"></span><span id="AfterCompiledHook"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AfterCompiledHook</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AfterCompiledHookv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415IH_ResetScalingP15WMWinHookStruct">
+<span id="_CPPv315IH_ResetScalingP15WMWinHookStruct"></span><span id="_CPPv215IH_ResetScalingP15WMWinHookStruct"></span><span id="IH_ResetScaling__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___igor_hooks_8ipf_1a7f51fc0ec113268838e2b3dba108c688"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IH_ResetScaling</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMWinHookStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415IH_ResetScalingP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___i_v_s_c_c_8ipf.html"
+                          title="previous chapter">File MIES_IVSCC.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___include_8ipf.html"
+                          title="next chapter">File MIES_Include.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___include_8ipf.html" title="File MIES_Include.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___i_v_s_c_c_8ipf.html" title="File MIES_IVSCC.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_IgorHooks.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

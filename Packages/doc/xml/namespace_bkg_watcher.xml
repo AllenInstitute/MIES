@@ -1,0 +1,448 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="namespace_bkg_watcher" kind="namespace" language="C++">
+    <compoundname>BkgWatcher</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespace_bkg_watcher_1ac9370dbada58e6d034db112d1aa05fc9" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string BkgWatcher::PANEL</definition>
+        <argsstring></argsstring>
+        <name>PANEL</name>
+        <initializer>= &quot;BW_MiesBackgroundWatchPanel&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="9" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="9" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1abd11c65eec03d4c3d17b7440ee89866c" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string BkgWatcher::TASK</definition>
+        <argsstring></argsstring>
+        <name>TASK</name>
+        <initializer>= &quot;BW_BackgroundWatchdog&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="10" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="10" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="252" endline="270">BW_WindowHook</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1a4f21410922b8adbea960a8da2f0ca6e6" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string BkgWatcher::CONTROL_PREFIX</definition>
+        <argsstring></argsstring>
+        <name>CONTROL_PREFIX</name>
+        <initializer>= &quot;bckrdw&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="11" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="11" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a82cf8e29d0dc2ae4574719d0a3b9811e" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="230" endline="250">BW_ButtonProc_QuitTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a537e3f042cd44b2bf400b4a8e599c3ac" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="206" endline="228">BW_ButtonProc_ShowTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1ac9de4ea1f850eec1c1d1633b1aaa6509" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BkgWatcher::INVALIDATE_STATE</definition>
+        <argsstring></argsstring>
+        <name>INVALIDATE_STATE</name>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="12" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1a5b6cc510b6be889bcef749bcfa1c32d3" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BkgWatcher::XGRID</definition>
+        <argsstring></argsstring>
+        <name>XGRID</name>
+        <initializer>= 20</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="13" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1a187856ba991af923a511cad77d2ea08c" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BkgWatcher::XOFFS</definition>
+        <argsstring></argsstring>
+        <name>XOFFS</name>
+        <initializer>= 240</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="14" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1a8255468aca0bdb3956b9f6bf475bffc1" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BkgWatcher::YGRID</definition>
+        <argsstring></argsstring>
+        <name>YGRID</name>
+        <initializer>= 20</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="15" column="24" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="namespace_bkg_watcher_1a57bb1261e8d16dfcef8f36e629cd5584" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BkgWatcher::CONTROL_TYPE_VALDISPLAY</definition>
+        <argsstring></argsstring>
+        <name>CONTROL_TYPE_VALDISPLAY</name>
+        <initializer>= 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="17" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="namespace_bkg_watcher_1af4734028f0d9ca32c666a996a1e96875" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="65" endline="72">GetValDisplayAsString</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespace_bkg_watcher_1a5c7ad5119083d87e83f9c2f60336eef3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BkgWatcher::ASSERT</definition>
+        <argsstring>(variable var, string errorMsg)</argsstring>
+        <name>ASSERT</name>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>errorMsg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="19" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="19" bodyend="32"/>
+        <referencedby refid="namespace_bkg_watcher_1af4734028f0d9ca32c666a996a1e96875" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="65" endline="72">GetValDisplayAsString</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a836cb7cf9e5e63f1d547125e198bfc40" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="34" endline="63">SetValDisplay</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a836cb7cf9e5e63f1d547125e198bfc40" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BkgWatcher::SetValDisplay</definition>
+        <argsstring>(string win, string control, variable var=defaultValue, string str=defaultValue, string format=defaultValue)</argsstring>
+        <name>SetValDisplay</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>format</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="34" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="34" bodyend="63"/>
+        <references refid="namespace_bkg_watcher_1a5c7ad5119083d87e83f9c2f60336eef3" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="19" endline="32">ASSERT</references>
+        <references refid="namespace_bkg_watcher_1af4734028f0d9ca32c666a996a1e96875" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="65" endline="72">GetValDisplayAsString</references>
+        <referencedby refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1af4734028f0d9ca32c666a996a1e96875" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string BkgWatcher::GetValDisplayAsString</definition>
+        <argsstring>(string win, string control)</argsstring>
+        <name>GetValDisplayAsString</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>control</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="65" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="65" bodyend="72"/>
+        <references refid="namespace_bkg_watcher_1a5c7ad5119083d87e83f9c2f60336eef3" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="19" endline="32">ASSERT</references>
+        <references refid="namespace_bkg_watcher_1a57bb1261e8d16dfcef8f36e629cd5584" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="17">CONTROL_TYPE_VALDISPLAY</references>
+        <referencedby refid="namespace_bkg_watcher_1a836cb7cf9e5e63f1d547125e198bfc40" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="34" endline="63">SetValDisplay</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a10ba99aa35a63565eb4aa6494bd738ea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BkgWatcher::IsBackgroundTaskRunning</definition>
+        <argsstring>(string task)</argsstring>
+        <name>IsBackgroundTaskRunning</name>
+        <param>
+          <type>string</type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="74" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="74" bodyend="79"/>
+        <referencedby refid="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="252" endline="270">BW_WindowHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1acb94acded92aa0037381037f68a4a7b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_StartPanel</definition>
+        <argsstring>()</argsstring>
+        <name>BW_StartPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="81" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="81" bodyend="91"/>
+        <references refid="namespace_bkg_watcher_1aaf647edced2dca36f8b8f03ee7780a1f" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="93" endline="97">BW_CreatePanel</references>
+        <references refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1aaf647edced2dca36f8b8f03ee7780a1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_CreatePanel</definition>
+        <argsstring>()</argsstring>
+        <name>BW_CreatePanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="93" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="93" bodyend="97"/>
+        <references refid="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="252" endline="270">BW_WindowHook</references>
+        <referencedby refid="namespace_bkg_watcher_1acb94acded92aa0037381037f68a4a7b5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="81" endline="91">BW_StartPanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_StartTask</definition>
+        <argsstring>()</argsstring>
+        <name>BW_StartTask</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="99" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="99" bodyend="103"/>
+        <references refid="namespace_bkg_watcher_1a252dc770eb95d23828a51b6e70e2bb7d" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="285" endline="295">BW_ButtonProc_StopTask</references>
+        <references refid="namespace_bkg_watcher_1a5b6cc510b6be889bcef749bcfa1c32d3" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="13">XGRID</references>
+        <references refid="namespace_bkg_watcher_1a187856ba991af923a511cad77d2ea08c" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="14">XOFFS</references>
+        <references refid="namespace_bkg_watcher_1a8255468aca0bdb3956b9f6bf475bffc1" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="15">YGRID</references>
+        <referencedby refid="namespace_bkg_watcher_1a2e2f81c83cb5af7d68caf8f0572775cc" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="272" endline="283">BW_ButtonProc_StartTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1acb94acded92aa0037381037f68a4a7b5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="81" endline="91">BW_StartPanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1acee0c204a32ca5d9e0dec37911690950" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_StopTask</definition>
+        <argsstring>()</argsstring>
+        <name>BW_StopTask</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="105" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="105" bodyend="109"/>
+        <references refid="namespace_bkg_watcher_1a2e2f81c83cb5af7d68caf8f0572775cc" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="272" endline="283">BW_ButtonProc_StartTask</references>
+        <references refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</references>
+        <referencedby refid="namespace_bkg_watcher_1a252dc770eb95d23828a51b6e70e2bb7d" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="285" endline="295">BW_ButtonProc_StopTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="252" endline="270">BW_WindowHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_PanelUpdate</definition>
+        <argsstring>()</argsstring>
+        <name>BW_PanelUpdate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="111" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="111" bodyend="188"/>
+        <references refid="namespace_bkg_watcher_1a4f21410922b8adbea960a8da2f0ca6e6" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="11">CONTROL_PREFIX</references>
+        <references refid="namespace_bkg_watcher_1ac9370dbada58e6d034db112d1aa05fc9" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="9">PANEL</references>
+        <references refid="namespace_bkg_watcher_1a836cb7cf9e5e63f1d547125e198bfc40" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="34" endline="63">SetValDisplay</references>
+        <references refid="namespace_bkg_watcher_1a5b6cc510b6be889bcef749bcfa1c32d3" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="13">XGRID</references>
+        <references refid="namespace_bkg_watcher_1a187856ba991af923a511cad77d2ea08c" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="14">XOFFS</references>
+        <references refid="namespace_bkg_watcher_1a8255468aca0bdb3956b9f6bf475bffc1" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="15">YGRID</references>
+        <referencedby refid="group___background_functions_1gae2bff2c8661d41db57bea97887406598" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="193" endline="204">BW_BackgroundWatchdog</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a82cf8e29d0dc2ae4574719d0a3b9811e" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="230" endline="250">BW_ButtonProc_QuitTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1acee0c204a32ca5d9e0dec37911690950" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="105" endline="109">BW_StopTask</referencedby>
+        <referencedby refid="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="252" endline="270">BW_WindowHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1gae2bff2c8661d41db57bea97887406598" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_BackgroundWatchdog</definition>
+        <argsstring>(WMBackgroundStruct *s)</argsstring>
+        <name>BW_BackgroundWatchdog</name>
+        <param>
+          <type>WMBackgroundStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Helper background task for debugging. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="193" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="193" bodyend="204"/>
+        <references refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a537e3f042cd44b2bf400b4a8e599c3ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_ButtonProc_ShowTask</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>BW_ButtonProc_ShowTask</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="206" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="206" bodyend="228"/>
+        <references refid="namespace_bkg_watcher_1a4f21410922b8adbea960a8da2f0ca6e6" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="11">CONTROL_PREFIX</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a82cf8e29d0dc2ae4574719d0a3b9811e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_ButtonProc_QuitTask</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>BW_ButtonProc_QuitTask</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="230" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="230" bodyend="250"/>
+        <references refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</references>
+        <references refid="namespace_bkg_watcher_1a4f21410922b8adbea960a8da2f0ca6e6" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="11">CONTROL_PREFIX</references>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a1645491401242a35ab712f708cac0082" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_WindowHook</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>BW_WindowHook</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="252" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="252" bodyend="270"/>
+        <references refid="namespace_bkg_watcher_1a8b9478406e2ca66a6e37f47f36513cdf" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="111" endline="188">BW_PanelUpdate</references>
+        <references refid="namespace_bkg_watcher_1acee0c204a32ca5d9e0dec37911690950" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="105" endline="109">BW_StopTask</references>
+        <references refid="namespace_bkg_watcher_1a10ba99aa35a63565eb4aa6494bd738ea" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="74" endline="79">IsBackgroundTaskRunning</references>
+        <references refid="namespace_bkg_watcher_1abd11c65eec03d4c3d17b7440ee89866c" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="10">TASK</references>
+        <referencedby refid="namespace_bkg_watcher_1aaf647edced2dca36f8b8f03ee7780a1f" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="93" endline="97">BW_CreatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a2e2f81c83cb5af7d68caf8f0572775cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_ButtonProc_StartTask</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>BW_ButtonProc_StartTask</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="272" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="272" bodyend="283"/>
+        <references refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</references>
+        <referencedby refid="namespace_bkg_watcher_1acee0c204a32ca5d9e0dec37911690950" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="105" endline="109">BW_StopTask</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="namespace_bkg_watcher_1a252dc770eb95d23828a51b6e70e2bb7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BkgWatcher::BW_ButtonProc_StopTask</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>BW_ButtonProc_StopTask</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="285" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" bodystart="285" bodyend="295"/>
+        <references refid="namespace_bkg_watcher_1acee0c204a32ca5d9e0dec37911690950" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="105" endline="109">BW_StopTask</references>
+        <referencedby refid="namespace_bkg_watcher_1a52cb0ec545942db88de26aeabe9cbdd5" compoundref="_m_i_e_s___background_watchdog_8ipf" startline="99" endline="103">BW_StartTask</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_BackgroundWatchdog.ipf" line="4" column="1"/>
+  </compounddef>
+</doxygen>

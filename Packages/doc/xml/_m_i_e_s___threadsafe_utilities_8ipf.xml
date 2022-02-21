@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___threadsafe_utilities_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ThreadsafeUtilities.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___threadsafe_utilities_8ipf_1a541a4d171b0356cbc8758247baa85550" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TS_GET_REPEAT_TIMEOUT_IN_MS</definition>
+        <argsstring></argsstring>
+        <name>TS_GET_REPEAT_TIMEOUT_IN_MS</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="8" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="8" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___threadsafe_utilities_8ipf_1acf16ac71023f593d5fbcd0ed4b9e5c37" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TS_ERROR_INVALID_TGID</definition>
+        <argsstring></argsstring>
+        <name>TS_ERROR_INVALID_TGID</name>
+        <initializer>= 980</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="9" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="9" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1aa1b49ca198dc3b7f85c569ff2d2f1b8b" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="128" endline="154">TS_ThreadGroupGetVariable</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_GetNewestFromThreadQueue</definition>
+        <argsstring>(variable tgID, string varName)</argsstring>
+        <name>TS_GetNewestFromThreadQueue</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>varName</declname>
+        </param>
+        <briefdescription>
+<para>Return the newest variable named <computeroutput>varName</computeroutput> from the thread queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return <computeroutput>NaN</computeroutput> if the thread is not running anymore.</para>
+<para>Throws away anything else in the datafolder from the thread queue. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="19" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="19" bodyend="61"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acf16ac71023f593d5fbcd0ed4b9e5c37" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="9">TS_ERROR_INVALID_TGID</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a541a4d171b0356cbc8758247baa85550" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="8">TS_GET_REPEAT_TIMEOUT_IN_MS</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acb2662c65f37ea98e0f9a2d6970cfc99" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="197" endline="204">TS_ThreadGroupFinished</references>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave TS_GetNewestFromThreadQueueMult</definition>
+        <argsstring>(variable tgID, WaveText varNames)</argsstring>
+        <name>TS_GetNewestFromThreadQueueMult</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>varNames</declname>
+        </param>
+        <briefdescription>
+<para>Return the newest variables from the thread queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function returns if it received at least one variable from the thread queue. Return an invalid wave reference if the thread is not running anymore.</para>
+<para>Throws away anything else in the datafolder from the thread queue. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="69" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="69" bodyend="122"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acf16ac71023f593d5fbcd0ed4b9e5c37" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="9">TS_ERROR_INVALID_TGID</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a541a4d171b0356cbc8758247baa85550" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="8">TS_GET_REPEAT_TIMEOUT_IN_MS</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acb2662c65f37ea98e0f9a2d6970cfc99" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="197" endline="204">TS_ThreadGroupFinished</references>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1aa1b49ca198dc3b7f85c569ff2d2f1b8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_ThreadGroupGetVariable</definition>
+        <argsstring>(variable tgID, string varName)</argsstring>
+        <name>TS_ThreadGroupGetVariable</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>varName</declname>
+        </param>
+        <briefdescription>
+<para>Return the variable named <computeroutput>varName</computeroutput> from the thread queue or <computeroutput>NaN</computeroutput> if there is none. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Throws away anything else in the datafolder from the thread queue. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="128" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="128" bodyend="154"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acf16ac71023f593d5fbcd0ed4b9e5c37" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="9">TS_ERROR_INVALID_TGID</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1a4610ea679b6a76e3c4cf5d95b7bbdf63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_ThreadGroupPutVariable</definition>
+        <argsstring>(variable tgID, string varName, variable varValue)</argsstring>
+        <name>TS_ThreadGroupPutVariable</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>varName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>varValue</declname>
+        </param>
+        <briefdescription>
+<para>Push a single variable named <computeroutput>varName</computeroutput> with value <computeroutput>varValue</computeroutput> to the thread queue. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="158" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="158" bodyend="170"/>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1aeca04bc6f450ed9b0adc6a5cf1fcf7b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="210" endline="234">TS_StopThreadGroup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1a8a2cfd839391abcb7f95e5776d01b700" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_ThreadGroupPutDFR</definition>
+        <argsstring>(variable tgID, dfref dfr)</argsstring>
+        <name>TS_ThreadGroupPutDFR</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <param>
+          <type>dfref</type>
+          <declname>dfr</declname>
+        </param>
+        <briefdescription>
+<para>Push a datafolder to the thread queue. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Works on a duplicate of the input DF to remove all references. dfr can be a free DF </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="176" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="176" bodyend="194"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c6e0e9cb2687bd403e65b2bb777f782" compoundref="_m_i_e_s___constants_8ipf" startline="165">COUNTOBJECTS_DATAFOLDER</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1acb2662c65f37ea98e0f9a2d6970cfc99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_ThreadGroupFinished</definition>
+        <argsstring>(variable tgID)</argsstring>
+        <name>TS_ThreadGroupFinished</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <briefdescription>
+<para>Returns 1 if all worker threads have finished. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="197" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="197" bodyend="204"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</referencedby>
+        <referencedby refid="_m_i_e_s___threadsafe_utilities_8ipf_1aeca04bc6f450ed9b0adc6a5cf1fcf7b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="210" endline="234">TS_StopThreadGroup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threadsafe_utilities_8ipf_1aeca04bc6f450ed9b0adc6a5cf1fcf7b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TS_StopThreadGroup</definition>
+        <argsstring>(variable tgID)</argsstring>
+        <name>TS_StopThreadGroup</name>
+        <param>
+          <type>variable</type>
+          <declname>tgID</declname>
+        </param>
+        <briefdescription>
+<para>Stop the given thread group. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Assumes that the running worker functions finish on getting the <computeroutput>abort</computeroutput> variable sent. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" line="210" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf" bodystart="210" bodyend="234"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1acb2662c65f37ea98e0f9a2d6970cfc99" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="197" endline="204">TS_ThreadGroupFinished</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a4610ea679b6a76e3c4cf5d95b7bbdf63" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="158" endline="170">TS_ThreadGroupPutVariable</references>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa0791df077df40d58cfd0ca139578cfa" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="69" endline="79">TFH_StopFIFODaemon</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>TS</bold> Helper functions for threadsafe code and main/worker function interactions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadsafeUtilities.ipf"/>
+  </compounddef>
+</doxygen>

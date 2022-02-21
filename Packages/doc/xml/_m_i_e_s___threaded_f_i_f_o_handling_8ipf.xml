@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" kind="file" language="C++">
+    <compoundname>MIES_ThreadedFIFOHandling.ipf</compoundname>
+      <sectiondef kind="user-defined">
+      <memberdef kind="variable" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ae93f07f22f4725c657d1b855465fddd9" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TFH_RESTART_ACQ</definition>
+        <argsstring></argsstring>
+        <name>TFH_RESTART_ACQ</name>
+        <initializer>= 0x1</initializer>
+        <briefdescription>
+<para>Mode constants. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>DAQ restarting for TP MP </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</referencedby>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aba15c449b31b69bee97da31bfb16fcb9" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="21" endline="25">TFH_StartFIFOResetDeamon</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ab916fd304ab976c5ba7995c3dd40cf17" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TFH_STOP_ACQ</definition>
+        <argsstring></argsstring>
+        <name>TFH_STOP_ACQ</name>
+        <initializer>= 0x2</initializer>
+        <briefdescription>
+<para>DAQ stopping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="17" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</referencedby>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aecefd48c296beb0e1522b156aa1daef8" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="28" endline="32">TFH_StartFIFOStopDaemon</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1adf2d7503eab753d600a19237bd9183a2" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TIMEOUT_IN_MS</definition>
+        <argsstring></argsstring>
+        <name>TIMEOUT_IN_MS</name>
+        <initializer>= 50</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="11" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="11" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aba15c449b31b69bee97da31bfb16fcb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TFH_StartFIFOResetDeamon</definition>
+        <argsstring>(variable hwType, variable deviceID, variable triggerMode)</argsstring>
+        <name>TFH_StartFIFOResetDeamon</name>
+        <param>
+          <type>variable</type>
+          <declname>hwType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>triggerMode</declname>
+        </param>
+        <briefdescription>
+<para>Start the FIFO reset daemon used for TP MD. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="21" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="21" bodyend="25"/>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ae93f07f22f4725c657d1b855465fddd9" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="16">TFH_RESTART_ACQ</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1a815d27b928c387af6a46fe6a50e1eea3" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="37" endline="64">TFH_StartFIFODeamonInternal</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a3a0451327c2b2e01b846ba7405d2985f" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="147" endline="176">TPM_BkrdTPMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aecefd48c296beb0e1522b156aa1daef8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TFH_StartFIFOStopDaemon</definition>
+        <argsstring>(variable hwType, variable deviceID)</argsstring>
+        <name>TFH_StartFIFOStopDaemon</name>
+        <param>
+          <type>variable</type>
+          <declname>hwType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+<para>Start the FIFO stop daemon used for DAQ MD. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="28" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="28" bodyend="32"/>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1a815d27b928c387af6a46fe6a50e1eea3" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="37" endline="64">TFH_StartFIFODeamonInternal</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ab916fd304ab976c5ba7995c3dd40cf17" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="17">TFH_STOP_ACQ</references>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="371" endline="398">DQM_BkrdDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1a815d27b928c387af6a46fe6a50e1eea3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TFH_StartFIFODeamonInternal</definition>
+        <argsstring>(variable hwType, variable deviceID, variable mode, variable triggerMode=defaultValue)</argsstring>
+        <name>TFH_StartFIFODeamonInternal</name>
+        <param>
+          <type>variable</type>
+          <declname>hwType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>triggerMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Start the FIFO reset daemon used for TP MD. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We create one thread group for each device. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="37" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="37" bodyend="64"/>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="95" endline="146">TFH_FifoLoop</references>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aba15c449b31b69bee97da31bfb16fcb9" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="21" endline="25">TFH_StartFIFOResetDeamon</referencedby>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aecefd48c296beb0e1522b156aa1daef8" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="28" endline="32">TFH_StartFIFOStopDaemon</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa0791df077df40d58cfd0ca139578cfa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TFH_StopFIFODaemon</definition>
+        <argsstring>(variable hwType, variable deviceID)</argsstring>
+        <name>TFH_StopFIFODaemon</name>
+        <param>
+          <type>variable</type>
+          <declname>hwType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <briefdescription>
+<para>Stop the FIFO daemon if required. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets the global <computeroutput>threadGroupIDFifo</computeroutput> to NaN afterwards. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="69" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="69" bodyend="79"/>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1aeca04bc6f450ed9b0adc6a5cf1fcf7b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="210" endline="234">TS_StopThreadGroup</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab67bb454009e818288006b8ddbee9bfd" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5083" endline="5201">DAP_UnlockDevice</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="357" endline="369">DQM_StopDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1a2fe5a288f4c1f29520b7bf092caf3c63" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="129" endline="148">DQM_TerminateOngoingDAQHelper</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aa22783c05de7420c63c5c41764066710" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TFH_FifoLoop</definition>
+        <argsstring>(wave config, variable triggerMode, variable deviceID, variable stopCollectionPoint, variable ADChannelToMonitor, variable mode)</argsstring>
+        <name>TFH_FifoLoop</name>
+        <param>
+          <type>wave</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>triggerMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stopCollectionPoint</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ADChannelToMonitor</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Worker function used for monitoring the FIFO position of the given device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Actions depend on <computeroutput>mode</computeroutput>:<itemizedlist>
+<listitem><para><ref refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ae93f07f22f4725c657d1b855465fddd9" kindref="member">TFH_RESTART_ACQ</ref>: Restart acquisition from the start</para>
+</listitem><listitem><para><ref refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ab916fd304ab976c5ba7995c3dd40cf17" kindref="member">TFH_STOP_ACQ</ref>: Stop acquisition and quit running</para>
+</listitem></itemizedlist>
+</para>
+<para>Stops in the following cases:<itemizedlist>
+<listitem><para>An error during ITC operation calls</para>
+</listitem><listitem><para>The input queue is not empty</para>
+</listitem></itemizedlist>
+</para>
+<para>Pushes the following entries into the thread queue:<itemizedlist>
+<listitem><para>fifoPos: fifo position (relative to offset)</para>
+</listitem><listitem><para>startSequence: (yoking only) inform the main thread that ARDStartSequence() commmand should be called </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" line="95" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf" bodystart="95" bodyend="146"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9f3e189b24ff66bea00a2836828d5568" compoundref="_m_i_e_s___constants_8ipf" startline="667">HARDWARE_PREVENT_ERROR_POPUP</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac4262877c3dba87d417acd1c1c588e9b" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1745" endline="1749">HW_ITC_DebugMode_TS</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a1484c63413fdae9aed6394a7fdf6e058" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1766" endline="1774">HW_ITC_MoreData_TS</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a2fc443b79510c24e9838a2f119e18b80" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1680" endline="1686">HW_ITC_ResetFifo_TS</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1aac46ff3a1b94e12aedb8a9dbfa28b9e9" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1697" endline="1701">HW_ITC_StartAcq_TS</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a9b4db1effcc8242432e55c9c954740f9" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1654" endline="1658">HW_ITC_StopAcq_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5f7361cd4c4c6ce5b6aec6d1c29243e4" compoundref="_m_i_e_s___constants_8ipf" startline="748">MAIN_THREAD</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ae93f07f22f4725c657d1b855465fddd9" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="16">TFH_RESTART_ACQ</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1ab916fd304ab976c5ba7995c3dd40cf17" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="17">TFH_STOP_ACQ</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1adf2d7503eab753d600a19237bd9183a2" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="11">TIMEOUT_IN_MS</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a4610ea679b6a76e3c4cf5d95b7bbdf63" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="158" endline="170">TS_ThreadGroupPutVariable</references>
+        <referencedby refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1a815d27b928c387af6a46fe6a50e1eea3" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="37" endline="64">TFH_StartFIFODeamonInternal</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>TFH</bold> Functions related to threadsafe FIFO monitor and stop daemons </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_ThreadedFIFOHandling.ipf"/>
+  </compounddef>
+</doxygen>

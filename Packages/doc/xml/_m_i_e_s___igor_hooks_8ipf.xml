@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___igor_hooks_8ipf" kind="file" language="C++">
+    <compoundname>MIES_IgorHooks.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1ab0a5b7935bfdb31fd6406b341f0c77d8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IH_KillTemporaries</definition>
+        <argsstring>()</argsstring>
+        <name>IH_KillTemporaries</name>
+        <briefdescription>
+<para>Remove all strings/variables/waves which should not survive experiment reload/quit/saving. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Mainly useful for temporaries which you want to recreate on initialization </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="16" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="16" bodyend="45"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a160d4ece1e9fdbfd0c1cd335fd9d1c" compoundref="_m_i_e_s___utilities_8ipf" startline="1773" endline="1790">CallFunctionForEachListItem_TS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a15ee549a1603a1e0c0f9be194cb04ba4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="573" endline="576">GetDAQDevicesFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a5b7b41865f6e797e4581a4225ada2589" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="671" endline="673">GetMiesPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a4bdeb049a2b66bf07db1a723b370723c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3349" endline="3351">GetWaveBuilderDataPath</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1e9b6d7b1701518b81724c35c39f9702" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2017" endline="2042">KillOrMoveToTrashPath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ada073dc7820a186e4a8272533761a7d0" compoundref="_m_i_e_s___utilities_8ipf" startline="979" endline="992">RemoveEmptyDataFolder</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa53b82af485c21001786bf2d89b6079e" compoundref="_m_i_e_s___constants_8ipf" startline="801">SEGMENTWAVE_SPECTRUM_PREFIX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adbce42985e5fd1ac1d791bca190e4774" compoundref="_m_i_e_s___constants_8ipf" startline="190">TRASH_FOLDER_PREFIX</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="122" endline="145">BeforeExperimentSaveHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1ab2e97295c1804d7ae7dbe07db54861d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IH_RemoveAmplifierConnWaves</definition>
+        <argsstring>()</argsstring>
+        <name>IH_RemoveAmplifierConnWaves</name>
+        <briefdescription>
+<para>Remove the amplifier connection waves. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="48" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="48" bodyend="52"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a77e226f632c12d18b5715cd85aaeaa43" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3319" endline="3332">GetAmplifierMultiClamps</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a702a319c5c5f535b02fdf3c6c1a2b5d3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3300" endline="3313">GetAmplifierTelegraphServers</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a2c3020201b453a5b91a8627445d8389e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IH_KillStimSets</definition>
+        <argsstring>()</argsstring>
+        <name>IH_KillStimSets</name>
+        <briefdescription>
+<para>Delete all wavebuilder stim sets to save memory. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="55" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="55" bodyend="68"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae06ce11a65d995a76c4c8a66b95285fe" compoundref="_i_p_n_w_b___utils_8ipf" startline="500" endline="512">AddPrefixToEachListItem</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a160d4ece1e9fdbfd0c1cd335fd9d1c" compoundref="_m_i_e_s___utilities_8ipf" startline="1773" endline="1790">CallFunctionForEachListItem_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2c3614711dba6600cf4362cb8fbef967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3399" endline="3401">GetWBSvdStimSetDAPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7cfe322fc7a7d822e0baa8ca3778ed3f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3409" endline="3411">GetWBSvdStimSetTTLPath</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1e9b6d7b1701518b81724c35c39f9702" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2017" endline="2042">KillOrMoveToTrashPath</references>
+        <references refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1ac9f7b913826e7a5c70d5d88a3affe444" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IH_SerializeSettings</definition>
+        <argsstring>()</argsstring>
+        <name>IH_SerializeSettings</name>
+        <briefdescription>
+<para>Write the current JSON settings to disc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We also invalidate the stored json ID, so that on the next access it is read again. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="74" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="74" bodyend="80"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a32ad82bdafa61863fc20a64fcbd7c534" compoundref="_m_i_e_s___package_settings_8ipf" startline="241" endline="250">PS_SerializeSettings</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="122" endline="145">BeforeExperimentSaveHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BeforeExperimentSaveHook</definition>
+        <argsstring>(variable rN, string fileName, string path, string type, string creator, variable kind)</argsstring>
+        <name>BeforeExperimentSaveHook</name>
+        <param>
+          <type>variable</type>
+          <declname>rN</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>creator</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="122" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="122" bodyend="145"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a717259fc76e7b072717d1c2b46a0bff3" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4471" endline="4475">DAP_SerializeAllCommentNBs</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2fb7b92915193c9b27c42f45e8556545" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="677" endline="679">GetMiesPathAsString</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="348" endline="353">H5_IsFileOpen</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1ab0a5b7935bfdb31fd6406b341f0c77d8" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="16" endline="45">IH_KillTemporaries</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1ac9f7b913826e7a5c70d5d88a3affe444" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="74" endline="80">IH_SerializeSettings</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ac61cc66016fbf31b0120ee149a6405ce" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1910" endline="1917">NWB_Flush</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IH_Cleanup</definition>
+        <argsstring>()</argsstring>
+        <name>IH_Cleanup</name>
+        <briefdescription>
+<para>Cleanup before closing or starting a new experiment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Takes care of unlocking the hardware, removing any data which is stale on reload anyway (amplifier connection details) and removes temporary waves. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="151" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="151" bodyend="185"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___cache_8ipf_1a91d9ef3e90908e66941751cf3a7aad96" compoundref="_m_i_e_s___cache_8ipf" startline="566" endline="571">CA_FlushCache</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a699ae0f0de19d8a1c676e02114b8960e" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4161" endline="4179">DAP_UnlockAllDevices</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ac6abc1946f0eb2ab5433c879c2c458ad" compoundref="_m_i_e_s___utilities_8ipf" startline="1063" endline="1074">DisableDebugger</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2fb7b92915193c9b27c42f45e8556545" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="677" endline="679">GetMiesPathAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1a161020f996c7f5df8e01376a4ece2c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5380" endline="5382">GetNWBFolder</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1a2c3020201b453a5b91a8627445d8389e" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="55" endline="68">IH_KillStimSets</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1ab0a5b7935bfdb31fd6406b341f0c77d8" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="16" endline="45">IH_KillTemporaries</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1ab2e97295c1804d7ae7dbe07db54861d2" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="48" endline="52">IH_RemoveAmplifierConnWaves</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1ac9f7b913826e7a5c70d5d88a3affe444" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="74" endline="80">IH_SerializeSettings</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a858623cebd95c65064813c43ba67c33f" compoundref="_m_i_e_s___utilities_8ipf" startline="1087" endline="1097">ResetDebuggerState</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="218" endline="244">IgorBeforeNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a1289f5b73d08710832e8d874837319a9" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="187" endline="204">IgorBeforeQuitHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a6fcae5eafc97bca9a637bd7800b13e25" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="206" endline="214">IgorQuitHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a1289f5b73d08710832e8d874837319a9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IgorBeforeQuitHook</definition>
+        <argsstring>(variable unsavedExp, variable unsavedNotebooks, variable unsavedProcedures)</argsstring>
+        <name>IgorBeforeQuitHook</name>
+        <param>
+          <type>variable</type>
+          <declname>unsavedExp</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>unsavedNotebooks</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>unsavedProcedures</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="187" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="187" bodyend="204"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a6fcae5eafc97bca9a637bd7800b13e25" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IgorQuitHook</definition>
+        <argsstring>(string igorApplicationNameStr)</argsstring>
+        <name>IgorQuitHook</name>
+        <param>
+          <type>string</type>
+          <declname>igorApplicationNameStr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="206" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="206" bodyend="214"/>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IgorBeforeNewHook</definition>
+        <argsstring>(string igorApplicationNameStr)</argsstring>
+        <name>IgorBeforeNewHook</name>
+        <param>
+          <type>string</type>
+          <declname>igorApplicationNameStr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called before a new experiment is opened, in response to the New Experiment, Revert Experiment, or Open Experiment menu items in the File menu. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="218" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="218" bodyend="244"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78fd7e44b2b990276a28fa5aa3f30cef" compoundref="_m_i_e_s___constants_8ipf" startline="61">UNTITLED_EXPERIMENT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable IgorStartOrNewHook</definition>
+        <argsstring>(string igorApplicationNameStr)</argsstring>
+        <name>IgorStartOrNewHook</name>
+        <param>
+          <type>string</type>
+          <declname>igorApplicationNameStr</declname>
+        </param>
+        <briefdescription>
+<para>Called when Igor is first launched and then whenever a new experiment is being created. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="247" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="247" bodyend="269"/>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1afab118667f7010c16d1f4e2cd7e524bd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="131" endline="141">GetMiesVersion</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___logging_8ipf_1ac3693a6ab51beddaf0a8491c6473ec68" compoundref="_m_i_e_s___logging_8ipf" startline="62" endline="71">LOG_MarkSessionStart</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a422a5f69c7fa4d50b8eb17098549656d" compoundref="_m_i_e_s___package_settings_8ipf" startline="277" endline="316">PS_FixPackageLocation</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a4fe5a300faa2aa99469072f3be7f49bb" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="119" endline="126">ROStr</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7063c66534829ef09e5830e604a5f68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7362" endline="7372">UpdateZeroMQXOPLoggingTemplate</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1ae44d37d110115372a6318b15bb15bbaa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BeforeUncompiledHook</definition>
+        <argsstring>(variable changeCode, string procedureWindowTitleStr, string textChangeStr)</argsstring>
+        <name>BeforeUncompiledHook</name>
+        <param>
+          <type>variable</type>
+          <declname>changeCode</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>procedureWindowTitleStr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>textChangeStr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="271" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="271" bodyend="283"/>
+        <references refid="_m_i_e_s___async_8ipf_1ac952f31d6a066caa560f361bdd21cd26" compoundref="_m_i_e_s___async_8ipf" startline="429" endline="542">ASYNC_Stop</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5981aea72bac65549f25479b6c480ee9" compoundref="_m_i_e_s___constants_8ipf" startline="1537">DQ_STOP_REASON_UNCOMPILED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aed5ed58a07e896036f0c2b62309e08c2" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="13" endline="25">DQ_StopOngoingDAQAllLocked</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AfterCompiledHook</definition>
+        <argsstring>()</argsstring>
+        <name>AfterCompiledHook</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="285" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="285" bodyend="302"/>
+        <references refid="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0" compoundref="_m_i_e_s___async_8ipf" startline="51" endline="85">ASYNC_Start</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___igor_hooks_8ipf_1a7f51fc0ec113268838e2b3dba108c688" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable IH_ResetScaling</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>IH_ResetScaling</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" line="306" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf" bodystart="306" bodyend="346"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a18b7b3ace4463b9b49003b7d8133183d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1734" endline="1741">GetAllWindows</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac46c4c4f5091587d62bc10575c85c2c1" compoundref="_m_i_e_s___constants_8ipf" startline="1329">WINTYPE_GRAPH</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>IH</bold> Various hooks which influence the behaviour at certain global events </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_IgorHooks.ipf"/>
+  </compounddef>
+</doxygen>

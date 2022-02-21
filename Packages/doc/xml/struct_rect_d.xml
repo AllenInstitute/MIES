@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_rect_d" kind="struct" language="C++" prot="public">
+    <compoundname>RectD</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_rect_d_1a44c69df4210de0bbfe251468b3df9cc7" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double RectD::top</definition>
+        <argsstring></argsstring>
+        <name>top</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="310" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="309" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a02508fe217eeee299cd3fdb6763318e6" compoundref="_m_i_e_s___structures_8ipf" startline="316" endline="323">InitRectD</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_rect_d_1a53356b63b447d9a255c7b2776e4a129d" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double RectD::left</definition>
+        <argsstring></argsstring>
+        <name>left</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="311" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="311" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a02508fe217eeee299cd3fdb6763318e6" compoundref="_m_i_e_s___structures_8ipf" startline="316" endline="323">InitRectD</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_rect_d_1a0966cb83c2665af787761be743023808" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double RectD::bottom</definition>
+        <argsstring></argsstring>
+        <name>bottom</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="312" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="312" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a02508fe217eeee299cd3fdb6763318e6" compoundref="_m_i_e_s___structures_8ipf" startline="316" endline="323">InitRectD</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_rect_d_1ac21043918dc25f4a24e29b3b8c523c96" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double RectD::right</definition>
+        <argsstring></argsstring>
+        <name>right</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="313" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="313" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" compoundref="_m_i_e_s___utilities_8ipf" startline="4737" endline="4753">GetPlotArea</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1a02508fe217eeee299cd3fdb6763318e6" compoundref="_m_i_e_s___structures_8ipf" startline="316" endline="323">InitRectD</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="_m_i_e_s___utilities_8ipf_1ad3a73400c1868f71bb0bf1ccbaa9707e" kindref="member">GetPlotArea()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="309" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="309" bodyend="314"/>
+    <listofallmembers>
+      <member refid="struct_rect_d_1a0966cb83c2665af787761be743023808" prot="public" virt="non-virtual"><scope>RectD</scope><name>bottom</name></member>
+      <member refid="struct_rect_d_1a53356b63b447d9a255c7b2776e4a129d" prot="public" virt="non-virtual"><scope>RectD</scope><name>left</name></member>
+      <member refid="struct_rect_d_1ac21043918dc25f4a24e29b3b8c523c96" prot="public" virt="non-virtual"><scope>RectD</scope><name>right</name></member>
+      <member refid="struct_rect_d_1a44c69df4210de0bbfe251468b3df9cc7" prot="public" virt="non-virtual"><scope>RectD</scope><name>top</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,329 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_n_w_b_async_parameters" kind="struct" language="C++" prot="public">
+    <compoundname>NWBAsyncParameters</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string NWBAsyncParameters::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="368" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="367" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a98c2beea930ed021caac06f3f16a2e87" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string NWBAsyncParameters::userComment</definition>
+        <argsstring></argsstring>
+        <name>userComment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="368" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="368" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a10c2391c31b8a93102937e11147768e3" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string NWBAsyncParameters::nwbFilePath</definition>
+        <argsstring></argsstring>
+        <name>nwbFilePath</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="368" column="27" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="368" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a2826956c0d937926fa527ffcdfbad56b" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable NWBAsyncParameters::sweep</definition>
+        <argsstring></argsstring>
+        <name>sweep</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="370" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="370" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable NWBAsyncParameters::compressionMode</definition>
+        <argsstring></argsstring>
+        <name>compressionMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="370" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="370" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a76793c1263f32b1cf2aceac891ef7a85" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable NWBAsyncParameters::session_start_time</definition>
+        <argsstring></argsstring>
+        <name>session_start_time</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="370" column="32" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="370" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable NWBAsyncParameters::locationID</definition>
+        <argsstring></argsstring>
+        <name>locationID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="371" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="371" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable NWBAsyncParameters::nwbVersion</definition>
+        <argsstring></argsstring>
+        <name>nwbVersion</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="371" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="371" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a1b423c88ce23fd89d7adc25876216d3e" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="446" endline="452">NWB_AddDeviceSpecificData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a0de759f9b9c6494bed1c5c4e297ef2f9" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="454" endline="498">NWB_WriteTestpulseData</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a371a607b2d7369c582a5fe766c1320f6" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE NWBAsyncParameters::DAQDataWave</definition>
+        <argsstring></argsstring>
+        <name>DAQDataWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="373" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="373" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a6ee153a1b072bb7f25888101281ac7c0" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE NWBAsyncParameters::DAQConfigWave</definition>
+        <argsstring></argsstring>
+        <name>DAQConfigWave</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="373" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="373" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE NWBAsyncParameters::numericalValues</definition>
+        <argsstring></argsstring>
+        <name>numericalValues</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="375" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="375" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1ab725ce3a13beaff472ccc3c9a8acefbb" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::numericalKeys</definition>
+        <argsstring></argsstring>
+        <name>numericalKeys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="376" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="376" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::textualValues</definition>
+        <argsstring></argsstring>
+        <name>textualValues</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="377" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="377" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8cfcc516142828b2d4125aa21e4e0d00" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="284" endline="289">NWB_AddDevice</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1ac247b79093587c9ed5fc8654f03be8ac" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::textualKeys</definition>
+        <argsstring></argsstring>
+        <name>textualKeys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="378" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="378" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1abe916ff535e6b2fc58d8be199d99d53d" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="360" endline="413">NWB_WriteLabnoteBooksAndComments</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1afe95bb7ef1b8a5ea8e322171d4c9e756" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE NWBAsyncParameters::numericalResultsValues</definition>
+        <argsstring></argsstring>
+        <name>numericalResultsValues</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="380" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="380" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a8befd6cb3e9c7613c91a6cc509c39c0f" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::numericalResultsKeys</definition>
+        <argsstring></argsstring>
+        <name>numericalResultsKeys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="381" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="381" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1add6b391639ae89a76f09cf53e0de4990" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::textualResultsValues</definition>
+        <argsstring></argsstring>
+        <name>textualResultsValues</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="382" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="382" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_n_w_b_async_parameters_1a5b7bfc997402a22f07ba6de33486aec7" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText NWBAsyncParameters::textualResultsKeys</definition>
+        <argsstring></argsstring>
+        <name>textualResultsKeys</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="383" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="383" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" compoundref="_m_i_e_s___structures_8ipf" startline="386" endline="409">NWB_ASYNC_SerializeStruct</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1af4b794224cca73cd0093a1e80df1846a" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="415" endline="444">NWB_WriteResultsWaves</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for the ASYNC NWB writing during DAQ. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___structures_8ipf_1aea0b95a4bccf6527cb15bc871284ac3f" kindref="member">NWB_ASYNC_SerializeStruct()</ref> and <ref refid="_m_i_e_s___structures_8ipf_1a1c5aa8c810e1890c3918483bee113067" kindref="member">NWB_ASYNC_DeserializeStruct()</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="367" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="367" bodyend="384"/>
+    <listofallmembers>
+      <member refid="struct_n_w_b_async_parameters_1a3ba3bdec0eddb95c1cc0f81705476f24" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>compressionMode</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a6ee153a1b072bb7f25888101281ac7c0" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>DAQConfigWave</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a371a607b2d7369c582a5fe766c1320f6" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>DAQDataWave</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a00ff3edbcbf3e9113e655143093bc84e" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>device</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a1d7eedd4a6a347f8871d761c54f29e43" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>locationID</name></member>
+      <member refid="struct_n_w_b_async_parameters_1ab725ce3a13beaff472ccc3c9a8acefbb" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>numericalKeys</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a8befd6cb3e9c7613c91a6cc509c39c0f" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>numericalResultsKeys</name></member>
+      <member refid="struct_n_w_b_async_parameters_1afe95bb7ef1b8a5ea8e322171d4c9e756" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>numericalResultsValues</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a9c349528321cdb6ddbff18550c6349d1" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>numericalValues</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a10c2391c31b8a93102937e11147768e3" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>nwbFilePath</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a26db5f952b6deffd4e83fc3b19e8db9b" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>nwbVersion</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a76793c1263f32b1cf2aceac891ef7a85" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>session_start_time</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a2826956c0d937926fa527ffcdfbad56b" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>sweep</name></member>
+      <member refid="struct_n_w_b_async_parameters_1ac247b79093587c9ed5fc8654f03be8ac" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>textualKeys</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a5b7bfc997402a22f07ba6de33486aec7" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>textualResultsKeys</name></member>
+      <member refid="struct_n_w_b_async_parameters_1add6b391639ae89a76f09cf53e0de4990" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>textualResultsValues</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a367416ac7593123abedc2880b05f8ef0" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>textualValues</name></member>
+      <member refid="struct_n_w_b_async_parameters_1a98c2beea930ed021caac06f3f16a2e87" prot="public" virt="non-virtual"><scope>NWBAsyncParameters</scope><name>userComment</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

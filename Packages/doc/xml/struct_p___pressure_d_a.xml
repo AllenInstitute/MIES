@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_p___pressure_d_a" kind="struct" language="C++" prot="public">
+    <compoundname>P_PressureDA</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_p___pressure_d_a_1abdb1f47ea8983d5d8a9e12740e3d4087" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable P_PressureDA::calPressure</definition>
+        <argsstring></argsstring>
+        <name>calPressure</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="55" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="54" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a421a42b88d6c4d9a9e08992a6dd6bd1b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1408" endline="1445">P_FillDAQWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1263" endline="1358">P_GetPressureForDA</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p___pressure_d_a_1ab70e2cec35c6e41b973185f9e9c728da" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable P_PressureDA::calPressureOffset</definition>
+        <argsstring></argsstring>
+        <name>calPressureOffset</name>
+        <briefdescription>
+<para>preconditioned for the DAC hardware </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="55" column="22" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="55" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a421a42b88d6c4d9a9e08992a6dd6bd1b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1408" endline="1445">P_FillDAQWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1263" endline="1358">P_GetPressureForDA</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p___pressure_d_a_1ac7d46d393c765549cf546f6db5605ea5" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable P_PressureDA::pressure</definition>
+        <argsstring></argsstring>
+        <name>pressure</name>
+        <briefdescription>
+<para>[psi] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="56" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="56" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1263" endline="1358">P_GetPressureForDA</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p___pressure_d_a_1abfd75eb5d94d7c92ad15dda54bd7181e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable P_PressureDA::first</definition>
+        <argsstring></argsstring>
+        <name>first</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="57" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="57" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a421a42b88d6c4d9a9e08992a6dd6bd1b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1408" endline="1445">P_FillDAQWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1263" endline="1358">P_GetPressureForDA</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p___pressure_d_a_1a36522270d8d5eb3c126d8299a30cbe0d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable P_PressureDA::last</definition>
+        <argsstring></argsstring>
+        <name>last</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="57" column="16" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="57" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a421a42b88d6c4d9a9e08992a6dd6bd1b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1408" endline="1445">P_FillDAQWaves</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1263" endline="1358">P_GetPressureForDA</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Filled by <ref refid="_m_i_e_s___pressure_control_8ipf_1a9d52e1830287ccfd65904aeff42c1b47" kindref="member">P_GetPressureForDA()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" line="54" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_PressureControl.ipf" bodystart="54" bodyend="58"/>
+    <listofallmembers>
+      <member refid="struct_p___pressure_d_a_1abdb1f47ea8983d5d8a9e12740e3d4087" prot="public" virt="non-virtual"><scope>P_PressureDA</scope><name>calPressure</name></member>
+      <member refid="struct_p___pressure_d_a_1ab70e2cec35c6e41b973185f9e9c728da" prot="public" virt="non-virtual"><scope>P_PressureDA</scope><name>calPressureOffset</name></member>
+      <member refid="struct_p___pressure_d_a_1abfd75eb5d94d7c92ad15dda54bd7181e" prot="public" virt="non-virtual"><scope>P_PressureDA</scope><name>first</name></member>
+      <member refid="struct_p___pressure_d_a_1a36522270d8d5eb3c126d8299a30cbe0d" prot="public" virt="non-virtual"><scope>P_PressureDA</scope><name>last</name></member>
+      <member refid="struct_p___pressure_d_a_1ac7d46d393c765549cf546f6db5605ea5" prot="public" virt="non-virtual"><scope>P_PressureDA</scope><name>pressure</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

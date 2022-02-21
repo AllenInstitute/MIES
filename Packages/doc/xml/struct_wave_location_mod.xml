@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_wave_location_mod" kind="struct" language="C++" prot="public">
+    <compoundname>WaveLocationMod</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_wave_location_mod_1ad5e136d65946224f108ffc4e8014fff8" prot="public" static="no" mutable="no">
+        <type>DFREF</type>
+        <definition>DFREF WaveLocationMod::dfr</definition>
+        <argsstring></argsstring>
+        <name>dfr</name>
+        <briefdescription>
+<para>former location of the wave </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="185" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="184" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a26b2e876b3a4e9d0d0fa785786c54390" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4938" endline="4973">GetAnalysisBrowserMap</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a32ed09f2a8784b97dbcf5362fa8d1080" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5092" endline="5103">GetAnalysLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af5f138562eec9afacfebfce8e3a1687d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5064" endline="5075">GetAnalysLBNumericalValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a14288bbaba5e5c0689bdf1764f80f328" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5106" endline="5117">GetAnalysLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ab42e274c2ce7fe73fdb40ac7eec5f8f4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5078" endline="5089">GetAnalysLBTextualValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0b2fc17a6bb1dbe567913e530a222f72" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1487" endline="1527">GetLBNumericalKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adb6ba8a8aca5b78259b65e1c9e599015" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1433" endline="1468">GetLBTextualKeys</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a07605af1ddd9fecac155fbfba0f67241" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6010" endline="6054">GetOverlaySweepSelectionChoices</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae231301c1545cde0c9aa47e6318cac4f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2163" endline="2416">GetSweepSettingsKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aef30f0d5c463fd435c8718e4b33ac184" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2521" endline="2594">GetSweepSettingsTextKeyWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a34694fa85d7a70c349a7ee154310d1bd" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2431" endline="2467">GetSweepSettingsTextWave</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0736abe1b281c5989011ebb1d7d64ad6" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2057" endline="2093">GetSweepSettingsWave</referencedby>
+        <referencedby refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="387" endline="433">UpgradeWaveLocationAndGetIt</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_wave_location_mod_1aaa99e0f72ff9348d8f871807b4579045" prot="public" static="no" mutable="no">
+        <type>DFREF</type>
+        <definition>DFREF WaveLocationMod::newDFR</definition>
+        <argsstring></argsstring>
+        <name>newDFR</name>
+        <briefdescription>
+<para>new location of the wave (can be invalid) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="186" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="186" bodyend="-1"/>
+        <referencedby refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="387" endline="433">UpgradeWaveLocationAndGetIt</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_wave_location_mod_1a8a2e52d5ea20a0a87da1d9a72a6a837c" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WaveLocationMod::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+<para>former name of the wave </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="187" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="187" bodyend="-1"/>
+        <referencedby refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="387" endline="433">UpgradeWaveLocationAndGetIt</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_wave_location_mod_1a5101b3861b2b8b152d6e886b52f08b47" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string WaveLocationMod::newName</definition>
+        <argsstring></argsstring>
+        <name>newName</name>
+        <briefdescription>
+<para>new name of the wave (can be null/empty) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="188" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="188" bodyend="-1"/>
+        <referencedby refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="387" endline="433">UpgradeWaveLocationAndGetIt</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper structure for <ref refid="group___wave_versioning_support_1ga677057601df492f62d924a538eac1afc" kindref="member">UpgradeWaveLocationAndGetIt()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="184" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="184" bodyend="189"/>
+    <listofallmembers>
+      <member refid="struct_wave_location_mod_1ad5e136d65946224f108ffc4e8014fff8" prot="public" virt="non-virtual"><scope>WaveLocationMod</scope><name>dfr</name></member>
+      <member refid="struct_wave_location_mod_1a8a2e52d5ea20a0a87da1d9a72a6a837c" prot="public" virt="non-virtual"><scope>WaveLocationMod</scope><name>name</name></member>
+      <member refid="struct_wave_location_mod_1aaa99e0f72ff9348d8f871807b4579045" prot="public" virt="non-virtual"><scope>WaveLocationMod</scope><name>newDFR</name></member>
+      <member refid="struct_wave_location_mod_1a5101b3861b2b8b152d6e886b52f08b47" prot="public" virt="non-virtual"><scope>WaveLocationMod</scope><name>newName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

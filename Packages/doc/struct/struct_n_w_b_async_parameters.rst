@@ -1,0 +1,4 @@
+Struct NWBAsyncParameters
+=========================
+
+.. doxygenstruct:: NWBAsyncParameters

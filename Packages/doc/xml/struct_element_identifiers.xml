@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_element_identifiers" kind="struct" language="C++" prot="public">
+    <compoundname>ElementIdentifiers</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_element_identifiers_1a82c0c0563af31abe70140cc1901101b2" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string ElementIdentifiers::data_type</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="240" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="239" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a26c88dd735666e2bf7662c0d85e815d8" compoundref="_i_p_n_w_b___structures_8ipf" startline="243" endline="247">InitElementIdentifiers</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="239" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="239" bodyend="241"/>
+    <listofallmembers>
+      <member refid="struct_element_identifiers_1a82c0c0563af31abe70140cc1901101b2" prot="public" virt="non-virtual"><scope>ElementIdentifiers</scope><name>data_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

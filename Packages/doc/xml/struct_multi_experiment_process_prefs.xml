@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_multi_experiment_process_prefs" kind="struct" language="C++" prot="public">
+    <compoundname>MultiExperimentProcessPrefs</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_multi_experiment_process_prefs_1a584eb068918113d4382a658d2eed937c" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 MultiExperimentProcessPrefs::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="46" column="8" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="45" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_multi_experiment_process_prefs_1a1049252c562c363b3ff6e348864af0e3" prot="public" static="no" mutable="no">
+        <type>uint32</type>
+        <definition>uint32 MultiExperimentProcessPrefs::processRunning</definition>
+        <argsstring></argsstring>
+        <name>processRunning</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="47" column="8" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="47" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char MultiExperimentProcessPrefs::settingsFile[256]</definition>
+        <argsstring>[256]</argsstring>
+        <name>settingsFile</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="48" column="6" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="48" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a38f605d62fef0eebe598b416f6268ebd" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="180" endline="188">GetJSON</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1abb7563acd587c8d9889e2094356e2303" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="55" endline="73">LoadPackagePrefs</referencedby>
+        <referencedby refid="_m_i_e_s___mass_experiment_processing_8ipf_1a2552f2d6a5229f8dc9318488d82453a2" compoundref="_m_i_e_s___mass_experiment_processing_8ipf" startline="191" endline="200">StoreJSON</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" line="45" column="8" bodyfile="/home/firma/devel/mies/Packages/Conversion/MIES_MassExperimentProcessing.ipf" bodystart="45" bodyend="49"/>
+    <listofallmembers>
+      <member refid="struct_multi_experiment_process_prefs_1a1049252c562c363b3ff6e348864af0e3" prot="public" virt="non-virtual"><scope>MultiExperimentProcessPrefs</scope><name>processRunning</name></member>
+      <member refid="struct_multi_experiment_process_prefs_1aa5a6628ddc430e3cbdc21059581d3847" prot="public" virt="non-virtual"><scope>MultiExperimentProcessPrefs</scope><name>settingsFile</name></member>
+      <member refid="struct_multi_experiment_process_prefs_1a584eb068918113d4382a658d2eed937c" prot="public" virt="non-virtual"><scope>MultiExperimentProcessPrefs</scope><name>version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

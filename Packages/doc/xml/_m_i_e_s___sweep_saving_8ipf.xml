@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___sweep_saving_8ipf" kind="file" language="C++">
+    <compoundname>MIES_SweepSaving.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SWS_SaveAcquiredData</definition>
+        <argsstring>(string device, variable forcedStop=defaultValue)</argsstring>
+        <name>SWS_SaveAcquiredData</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>forcedStop</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Save the acquired sweep permanently. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>forcedStop</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" line="16" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" bodystart="16" bodyend="74"/>
+        <references refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</references>
+        <references refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6144de64e082a27a4ecc71ce9ebb01b8" compoundref="_m_i_e_s___constants_8ipf" startline="539">AS_POST_SWEEP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a35652d9f717b5245384c9ab9bfc80a7a" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="397" endline="432">DAG_Update</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a336f02e64c1f30add2e4c0d9458386e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2151" endline="2155">GetConfigWaveName</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac3607be11b7801c81b7ff857eea3814a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2158" endline="2162">GetSweepWaveName</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af359cb8004bf03ea7429e95e773da6b0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6083" endline="6100">IsValidSweepAndConfig</references>
+        <references refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a8212c0b28ea8e468bbde3f8a66395f4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="927" endline="970">NWB_AppendSweepDuringDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a02181c92e359df5d62958592a088e68b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="321" endline="343">SetSetVariable</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aeaf50fe0998b62c3a49d46999f9c982b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="389" endline="398">SetSetVariableLimits</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="79" endline="104">SWS_AfterSweepDataChangeHook</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="357" endline="369">DQM_StopDataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a1104d58ee90aca88e6e13fc7f7ae863b" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="110" endline="126">DQS_StopDataAcq</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SWS_AfterSweepDataChangeHook</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SWS_AfterSweepDataChangeHook</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>General hook function which gets always executed after sweep data was added or removed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" line="79" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" bodystart="79" bodyend="104"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" compoundref="_m_i_e_s___data_browser_8ipf" startline="685" endline="708">DB_FindDataBrowser</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="203" endline="267">SWS_DeleteDataWaves</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_saving_8ipf_1a4dad46a54274e70a3f0590d43d98d727" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave SWS_GetChannelGains</definition>
+        <argsstring>(string device, variable timing=defaultValue)</argsstring>
+        <name>SWS_GetChannelGains</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>timing</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a free wave with all channel gains. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Rows:<itemizedlist>
+<listitem><para>Active channels only (same as DAQConfigWave)</para>
+</listitem></itemizedlist>
+</para>
+<para>Different hardware has different requirements how the DA, AD and TLL channels are scaled. As general rule use <computeroutput>data * SWS_GetChannelGains</computeroutput> for GAIN_BEFORE_DAQ and <computeroutput>data / SWS_GetChannelGains</computeroutput> for GAIN_AFTER_DAQ, i.e. <computeroutput>before_gain * data(before_DAQ) == after_gain * data(after_DAQ)</computeroutput>.</para>
+<para><verbatim>embed:rst:leading-asterisk
+* 
+*  ========== ========= ===============================================
+*   Hardware   Channel   Specialities
+*  ========== ========= ===============================================
+*   ITC        DA        None
+*   ITC        AD        None
+*   ITC        TTL       Multiple TTL bits are combined. See SplitTTLWaveIntoComponents() for details.
+*   NI         DA        None
+*   NI         AD        Scaled directly on acquisition.
+*   NI         TTL       One channel per TTL bit.
+*  ========== ========= ===============================================
+* 
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timing</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1GainTimeParameter" kindref="member">GainTimeParameter</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" kindref="member">GetDAQDataWave()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" line="135" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" bodystart="135" bodyend="199"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a423cc2db7127dce04d22ac0910f01894" compoundref="_m_i_e_s___constants_8ipf" startline="213">CHANNEL_CONTROL_GAIN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a810568628b0f967a08e251c8483c7af7" compoundref="_m_i_e_s___constants_8ipf" startline="209">CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a00b5630e82d91a4ad23208597bacc998" compoundref="_m_i_e_s___constants_8ipf" startline="1292">GAIN_AFTER_DAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a93abd208f9548ec67bbeca50db8a1379" compoundref="_m_i_e_s___constants_8ipf" startline="1291">GAIN_BEFORE_DAQ</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af9962e13ff64498a97907aa7176c0ccf" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5268" endline="5317">GetDA_EphysGuiStateNum</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa602a1bd3abd7b6c95d4e393d7c35ee2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="306" endline="310">GetTTLListFromConfig</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a07bbe1e5803fbef57c2160169d6da45e" compoundref="_m_i_e_s___constants_8ipf" startline="620">HARDWARE_ITC_BITS_PER_VOLT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a19b307c760b9a7f1cb9f8355c0b327c4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1282" endline="1505">DC_GetConfiguration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a95c6b1d082bf5c57a758e28c3a9685df" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3532" endline="3563">PSQ_CR_DetermineCycles</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a26d80e8dbcc50a676e7cbfa5cbf4a493" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1031" endline="1210">PSQ_SearchForSpikes</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="637" endline="697">SCOPE_NI_UpdateOscilloscope</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_saving_8ipf_1a62d833a684fd4dbb79977b4a0f801cb8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SWS_DeleteDataWaves</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SWS_DeleteDataWaves</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Delete all sweep and config waves having a sweep number of <computeroutput>sweepNo</computeroutput> and higher. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" line="203" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" bodystart="203" bodyend="267"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c6e0e9cb2687bd403e65b2bb777f782" compoundref="_m_i_e_s___constants_8ipf" startline="165">COUNTOBJECTS_DATAFOLDER</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6fc9b20b27896cd20d9b75fdc54aa86" compoundref="_m_i_e_s___constants_8ipf" startline="54">DATA_CONFIG_REGEXP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae0855b2ae1bdcc33982d7b63904747a6" compoundref="_m_i_e_s___constants_8ipf" startline="58">DATA_CONFIG_REGEXP_BAK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad03c2fe92868f2aa0c9a2a15d74946b1" compoundref="_m_i_e_s___constants_8ipf" startline="57">DATA_SWEEP_REGEXP_BAK</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a75e35ab385383442c6438751ac24be3a" compoundref="_i_p_n_w_b___utils_8ipf" startline="293" endline="310">DataFolderExistsDFR</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="231" endline="234">DEBUG_TIMER_START</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" compoundref="_i_p_n_w_b___debugging_8ipf" startline="238" endline="242">DEBUGPRINT_ELAPSED</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1acefc16ac59a59d9c514ef8b97aa2c395" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="665" endline="668">GetDeviceDataPathAsString</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1714" endline="1742">GetSweepsWithSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aecccbc2fdd114e020d3c020c59dc3f5c" compoundref="_m_i_e_s___utilities_8ipf" startline="995" endline="1004">IsDataFolderEmpty</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac4cf512e3f8cbe677646c224f260bd8f" compoundref="_m_i_e_s___constants_8ipf" startline="922">SWEEP_ROLLBACK_KEY</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="79" endline="104">SWS_AfterSweepDataChangeHook</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a880635d68b536768486818064c4efa2c" compoundref="_m_i_e_s___utilities_8ipf" startline="1508" endline="1524">UniqueDataFolder</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___sweep_saving_8ipf_1aef783d5c066f35312e2cd85e40ce0dd3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SWS_GetRawDataFPType</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SWS_GetRawDataFPType</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the floating point type for storing the raw data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned values are the same as for <computeroutput>WaveType</computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" line="272" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf" bodystart="272" bodyend="276"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a91ada173e6654ba70a87cfa8d3c75897" compoundref="_i_p_n_w_b___constants_8ipf" startline="65">IGOR_TYPE_32BIT_FLOAT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" compoundref="_i_p_n_w_b___constants_8ipf" startline="66">IGOR_TYPE_64BIT_FLOAT</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ab452363445d68b843dce2d9e3ebd226a" compoundref="_m_i_e_s___data_configurator_8ipf" startline="331" endline="360">DC_MakeAndGetDAQDataWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SWS</bold> Scale and store acquired data </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_SweepSaving.ipf"/>
+  </compounddef>
+</doxygen>

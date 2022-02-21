@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_p_s_q___pulse_settings" kind="struct" language="C++" prot="public">
+    <compoundname>PSQ_PulseSettings</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_p_s_q___pulse_settings_1a418a47aed4dd499bb18494ea3fabdc17" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PSQ_PulseSettings::prePulseChunkLength</definition>
+        <argsstring></argsstring>
+        <name>prePulseChunkLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="579" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="578" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a963398369495ff1a060a2d60d89b6b8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="108" endline="147">PSQ_GetPulseSettingsForType</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p_s_q___pulse_settings_1a346a7b9613f35adb5bc447dceb22557c" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PSQ_PulseSettings::pulseDuration</definition>
+        <argsstring></argsstring>
+        <name>pulseDuration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="580" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="580" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a963398369495ff1a060a2d60d89b6b8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="108" endline="147">PSQ_GetPulseSettingsForType</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_p_s_q___pulse_settings_1aa1bdd768c0537af8afd1bfa862c6c10e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PSQ_PulseSettings::postPulseChunkLength</definition>
+        <argsstring></argsstring>
+        <name>postPulseChunkLength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="581" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="581" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a963398369495ff1a060a2d60d89b6b8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="108" endline="147">PSQ_GetPulseSettingsForType</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Settings structure filled by <ref refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a963398369495ff1a060a2d60d89b6b8d" kindref="member">PSQ_GetPulseSettingsForType()</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="578" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="578" bodyend="582"/>
+    <listofallmembers>
+      <member refid="struct_p_s_q___pulse_settings_1aa1bdd768c0537af8afd1bfa862c6c10e" prot="public" virt="non-virtual"><scope>PSQ_PulseSettings</scope><name>postPulseChunkLength</name></member>
+      <member refid="struct_p_s_q___pulse_settings_1a418a47aed4dd499bb18494ea3fabdc17" prot="public" virt="non-virtual"><scope>PSQ_PulseSettings</scope><name>prePulseChunkLength</name></member>
+      <member refid="struct_p_s_q___pulse_settings_1a346a7b9613f35adb5bc447dceb22557c" prot="public" virt="non-virtual"><scope>PSQ_PulseSettings</scope><name>pulseDuration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

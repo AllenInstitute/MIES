@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_Downsample.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_EnhancedWMRoutines.ipf" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html" />
+    <link rel="prev" title="File MIES_Debugging.ipf" href="_m_i_e_s___debugging_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___enhanced_w_m_routines_8ipf.html" title="File MIES_EnhancedWMRoutines.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___debugging_8ipf.html" title="File MIES_Debugging.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Downsample.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-downsample-ipf">
+<span id="id1"></span><h1>File MIES_Downsample.ipf<a class="headerlink" href="#file-mies-downsample-ipf" title="Permalink to this headline">¶</a></h1>
+<p>Panel for downsampling acquired data. </p>
+<p>Folders and waves managed by code in this file <table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Object type   </p></th>
+<th class="head"><p>Name   </p></th>
+<th class="head"><p>Purpose   </p></th>
+<th class="head"><p>Function    </p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DFREF   </p></td>
+<td><p>$dataPath   </p></td>
+<td><p>location of all the GUI and temporary data   </p></td>
+<td><p><a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f"><span class="std std-ref">GetDownsampleDataFolder()</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Wave   </p></td>
+<td><p>$dataPath:dataRef   </p></td>
+<td><p>Holds wave references to all waves currently displayed in the list box   </p></td>
+<td><p><a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0"><span class="std std-ref">GetDownsampleDataRefWave()</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Wave   </p></td>
+<td><p>$dataPath:rateWave   </p></td>
+<td><p>Holds all rates in kHz for each wave.   </p></td>
+<td><p><a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31"><span class="std std-ref">GetDownsampleRateWave()</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Wave   </p></td>
+<td><p>$dataPath:sweepProperties   </p></td>
+<td><p>Used by the list box to show the properties of each sweep   </p></td>
+<td><p><a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c"><span class="std std-ref">GetDownsampleListWave()</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423GetDownsampleDataFolderv">
+<span id="_CPPv323GetDownsampleDataFolderv"></span><span id="_CPPv223GetDownsampleDataFolderv"></span><span id="GetDownsampleDataFolder"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ab07c8364823548d69211021440b0d51f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDownsampleDataFolder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423GetDownsampleDataFolderv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424GetDownsampleDataRefWavev">
+<span id="_CPPv324GetDownsampleDataRefWavev"></span><span id="_CPPv224GetDownsampleDataRefWavev"></span><span id="GetDownsampleDataRefWave"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a47b22e66d6796f9c504f8adf0d3ccfc0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDownsampleDataRefWave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GetDownsampleDataRefWavev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetDownsampleRateWavev">
+<span id="_CPPv321GetDownsampleRateWavev"></span><span id="_CPPv221GetDownsampleRateWavev"></span><span id="GetDownsampleRateWave"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a7aa007577f297fdd47518baccac14c31"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDownsampleRateWave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetDownsampleRateWavev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421GetDownsampleListWavev">
+<span id="_CPPv321GetDownsampleListWavev"></span><span id="_CPPv221GetDownsampleListWavev"></span><span id="GetDownsampleListWave"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDownsampleListWave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GetDownsampleListWavev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430GetPopupMenuDeviceListWithDatav">
+<span id="_CPPv330GetPopupMenuDeviceListWithDatav"></span><span id="_CPPv230GetPopupMenuDeviceListWithDatav"></span><span id="GetPopupMenuDeviceListWithData"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a6f2824cb254bdac8e19b0222f5c331f0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPopupMenuDeviceListWithData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430GetPopupMenuDeviceListWithDatav" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a list of all devices with acquired data, honour yoking dependencies. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../todo.html#todo_1_todo000018"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>is not very accurate as we should store the yoking dependencies in a permanent way instead of hoping that ListOfFollowerITC1600s is accurate </p>
+</dd></dl>
+
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of all devices with data in the format ITC18USB_Dev_1;ITC1600_Dev_1;ITC1600_Dev_0 (2,3); </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ParsePopupItem6stringP6stringP6stringP6string">
+<span id="_CPPv314ParsePopupItem6stringP6stringP6stringP6string"></span><span id="_CPPv214ParsePopupItem6stringP6stringP6stringP6string"></span><span id="ParsePopupItem__string.stringP.stringP.stringP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a394e0be8a8b04f48cabe566b12c25d38"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ParsePopupItem</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">popStr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">deviceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">deviceNumber</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">followerList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ParsePopupItem6stringP6stringP6stringP6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Parse the given popup item string created by <a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1a6f2824cb254bdac8e19b0222f5c331f0"><span class="std std-ref">GetPopupMenuDeviceListWithData()</span></a> and return the device name, type and possible follower list. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413AppendEntries8WaveText11WaveRefWave4wave8variable6string6string">
+<span id="_CPPv313AppendEntries8WaveText11WaveRefWave4wave8variable6string6string"></span><span id="_CPPv213AppendEntries8WaveText11WaveRefWave4wave8variable6string6string"></span><span id="AppendEntries__WaveText.WaveRefWave.wave.variable.string.string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1abfbc1d65b451e0145a285b7faf4cf9ea"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AppendEntries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WaveText</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span>, <span class="n"><span class="pre">WaveRefWave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataRef</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rate</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startIndex</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceNumber</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413AppendEntries8WaveText11WaveRefWave4wave8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Searches for sweep waves from all devices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list</strong> – ListBox wave, see <a class="reference internal" href="#_m_i_e_s___downsample_8ipf_1a355ff73f95be83f9633f96258d242c6c"><span class="std std-ref">GetDownsampleListWave()</span></a> for the format </p></li>
+<li><p><strong>dataRef</strong> – wave with wave references to all data waves </p></li>
+<li><p><strong>rate</strong> – wave with the sampling rates in kHz of all data waves </p></li>
+<li><p><strong>startIndex</strong> – first unused index into the passed waves </p></li>
+<li><p><strong>deviceType</strong> – device type </p></li>
+<li><p><strong>deviceNumber</strong> – device number </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index of the last valid entry into the passed waves </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415UpdateDataWaves6string6string6string">
+<span id="_CPPv315UpdateDataWaves6string6string6string"></span><span id="_CPPv215UpdateDataWaves6string6string6string"></span><span id="UpdateDataWaves__string.string.string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a1c586cff8352bece297f48fa696aed23"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateDataWaves</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceType</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceNumber</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">followerList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415UpdateDataWaves6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Updates all waves holding acquired data info. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417UpdateCurrentSize6string">
+<span id="_CPPv317UpdateCurrentSize6string"></span><span id="_CPPv217UpdateCurrentSize6string"></span><span id="UpdateCurrentSize__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a2d14bcf7cf45e213baa5f1a8ddd0b115"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateCurrentSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417UpdateCurrentSize6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetTargetRate6string">
+<span id="_CPPv313GetTargetRate6string"></span><span id="_CPPv213GetTargetRate6string"></span><span id="GetTargetRate__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a3840120884231aeea02056ab35464826"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTargetRate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetTargetRate6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429UpdateEstimatedSizeAfterwards6string">
+<span id="_CPPv329UpdateEstimatedSizeAfterwards6string"></span><span id="_CPPv229UpdateEstimatedSizeAfterwards6string"></span><span id="UpdateEstimatedSizeAfterwards__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a81fca27b420283e5e9040883b3b6a971"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateEstimatedSizeAfterwards</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429UpdateEstimatedSizeAfterwards6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424ApplyConstantRateChanges6string">
+<span id="_CPPv324ApplyConstantRateChanges6string"></span><span id="_CPPv224ApplyConstantRateChanges6string"></span><span id="ApplyConstantRateChanges__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1aea1dcbefa5c8e59cd8cd2e27dc86aa26"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApplyConstantRateChanges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424ApplyConstantRateChanges6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Disable the equalize checkbox if all data waves have the same rate. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ExpandRateToList6string8variable8variable">
+<span id="_CPPv316ExpandRateToList6string8variable8variable"></span><span id="_CPPv216ExpandRateToList6string8variable8variable"></span><span id="ExpandRateToList__string.variable.variable"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ad5b1b986357ef083192185fe8eb95420"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExpandRateToList</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">constantRates</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ExpandRateToList6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of values 1/k*var with k = {1..10} or k = {2..10} if constantRates == 1. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win</strong> – panel name </p></li>
+<li><p><strong>var</strong> – variable to expand </p></li>
+<li><p><strong>constantRates</strong> – boolean switch, defaults to false </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417GetPopupMenuRatesv">
+<span id="_CPPv317GetPopupMenuRatesv"></span><span id="_CPPv217GetPopupMenuRatesv"></span><span id="GetPopupMenuRates"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a6e42d443605d088ecde466c466675965"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPopupMenuRates</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417GetPopupMenuRatesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of all possible equalize/downsampling rates. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetDecimationMethod6string">
+<span id="_CPPv319GetDecimationMethod6string"></span><span id="_CPPv219GetDecimationMethod6string"></span><span id="GetDecimationMethod__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a5cd58467f6fb0c1e5a44f2059b119d5e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDecimationMethod</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetDecimationMethod6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416UpdateCheckBoxes6string6string8variable">
+<span id="_CPPv316UpdateCheckBoxes6string6string8variable"></span><span id="_CPPv216UpdateCheckBoxes6string6string8variable"></span><span id="UpdateCheckBoxes__string.string.variable"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a5cb11074b898dfa3bb91ad1fa8823ebb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateCheckBoxes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">control</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416UpdateCheckBoxes6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429UpdatePopupMenuWindowFunction6string8variable">
+<span id="_CPPv329UpdatePopupMenuWindowFunction6string8variable"></span><span id="_CPPv229UpdatePopupMenuWindowFunction6string8variable"></span><span id="UpdatePopupMenuWindowFunction__string.variable"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1acd9868911ec925c74323eaf09df0b07f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdatePopupMenuWindowFunction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">decimationMethod</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429UpdatePopupMenuWindowFunction6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CreateDownsamplePanelv">
+<span id="_CPPv321CreateDownsamplePanelv"></span><span id="_CPPv221CreateDownsamplePanelv"></span><span id="CreateDownsamplePanel"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a70f113f818803ec876522de078d67366"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateDownsamplePanel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CreateDownsamplePanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420DownsampleWindowHookP15WMWinHookStruct">
+<span id="_CPPv320DownsampleWindowHookP15WMWinHookStruct"></span><span id="_CPPv220DownsampleWindowHookP15WMWinHookStruct"></span><span id="DownsampleWindowHook__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1afafaacb4bc70a013f4107a1052724429"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DownsampleWindowHook</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMWinHookStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DownsampleWindowHookP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421CheckBoxInterpolationP16WMCheckboxAction">
+<span id="_CPPv321CheckBoxInterpolationP16WMCheckboxAction"></span><span id="_CPPv221CheckBoxInterpolationP16WMCheckboxAction"></span><span id="CheckBoxInterpolation__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ab8adf7fddbe73c8f92a0b0e9e2a3ead1"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckBoxInterpolation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421CheckBoxInterpolationP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419PopupMenuTargetRateP13WMPopupAction">
+<span id="_CPPv319PopupMenuTargetRateP13WMPopupAction"></span><span id="_CPPv219PopupMenuTargetRateP13WMPopupAction"></span><span id="PopupMenuTargetRate__WMPopupActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a0fcad95bc29b762ca8cd1fa8bb6b6d57"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PopupMenuTargetRate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419PopupMenuTargetRateP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ButtonRestoreBackupP14WMButtonAction">
+<span id="_CPPv319ButtonRestoreBackupP14WMButtonAction"></span><span id="_CPPv219ButtonRestoreBackupP14WMButtonAction"></span><span id="ButtonRestoreBackup__WMButtonActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a7337ea7fd48d5dd301013b08c427a909"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonRestoreBackup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ButtonRestoreBackupP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410ButtonDoItP14WMButtonAction">
+<span id="_CPPv310ButtonDoItP14WMButtonAction"></span><span id="_CPPv210ButtonDoItP14WMButtonAction"></span><span id="ButtonDoIt__WMButtonActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a033bea2f9f64d475db1361aed2d4e8cb"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonDoIt</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410ButtonDoItP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425UpdatePopupMenuTargetRate6string">
+<span id="_CPPv325UpdatePopupMenuTargetRate6string"></span><span id="_CPPv225UpdatePopupMenuTargetRate6string"></span><span id="UpdatePopupMenuTargetRate__string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ac5b89933d5741d9de2c2e9cf1c0a0382"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdatePopupMenuTargetRate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425UpdatePopupMenuTargetRate6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411UpdatePanel6string6string">
+<span id="_CPPv311UpdatePanel6string6string"></span><span id="_CPPv211UpdatePanel6string6string"></span><span id="UpdatePanel__string.string"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a68e65ddebde676eb2dba0dcc5e4ef065"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdatePanel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">win</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceSelectionString</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411UpdatePanel6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424PopupMenuDeviceSelectionP13WMPopupAction">
+<span id="_CPPv324PopupMenuDeviceSelectionP13WMPopupAction"></span><span id="_CPPv224PopupMenuDeviceSelectionP13WMPopupAction"></span><span id="PopupMenuDeviceSelection__WMPopupActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a6db12eed38309d90276286f6882e9b00"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PopupMenuDeviceSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424PopupMenuDeviceSelectionP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425PopupMenuDecimationMethodP13WMPopupAction">
+<span id="_CPPv325PopupMenuDecimationMethodP13WMPopupAction"></span><span id="_CPPv225PopupMenuDecimationMethodP13WMPopupAction"></span><span id="PopupMenuDecimationMethod__WMPopupActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a3236dcadedfb74c65ed9eaa1442d056b"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PopupMenuDecimationMethod</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMPopupAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pa</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425PopupMenuDecimationMethodP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420CheckBoxEqualizeDownP16WMCheckboxAction">
+<span id="_CPPv320CheckBoxEqualizeDownP16WMCheckboxAction"></span><span id="_CPPv220CheckBoxEqualizeDownP16WMCheckboxAction"></span><span id="CheckBoxEqualizeDown__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ab0b6f2cfcef1eea6061de59edee97818"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckBoxEqualizeDown</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMCheckboxAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420CheckBoxEqualizeDownP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417checkbox_equalize">
+<span id="_CPPv317checkbox_equalize"></span><span id="_CPPv217checkbox_equalize"></span><span id="checkbox_equalize__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ad27487484d76ac088a5a4add9d39ed60"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkbox_equalize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;checkbox_equalize_id&quot;</span></span><a class="headerlink" href="#_CPPv417checkbox_equalize" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419checkbox_downsample">
+<span id="_CPPv319checkbox_downsample"></span><span id="_CPPv219checkbox_downsample"></span><span id="checkbox_downsample__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1af068f399153dc3db5bb13e0708e96cc8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkbox_downsample</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;checkbox_downsample_id&quot;</span></span><a class="headerlink" href="#_CPPv419checkbox_downsample" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416popup_targetrate">
+<span id="_CPPv316popup_targetrate"></span><span id="_CPPv216popup_targetrate"></span><span id="popup_targetrate__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a8dfcfabda0d8b6db41b3bdcd3e19bbdd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">popup_targetrate</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;popup_targetrate_id&quot;</span></span><a class="headerlink" href="#_CPPv416popup_targetrate" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422checkbox_interpolation">
+<span id="_CPPv322checkbox_interpolation"></span><span id="_CPPv222checkbox_interpolation"></span><span id="checkbox_interpolation__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ac3834c8fe081bab324e0061c68925598"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkbox_interpolation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;checkbox_interpolation_id&quot;</span></span><a class="headerlink" href="#_CPPv422checkbox_interpolation" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420popup_windowfunction">
+<span id="_CPPv320popup_windowfunction"></span><span id="_CPPv220popup_windowfunction"></span><span id="popup_windowfunction__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1abd06e58518178ad5a44adbe9052b2c85"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">popup_windowfunction</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;popup_windowfunction_id&quot;</span></span><a class="headerlink" href="#_CPPv420popup_windowfunction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422popup_decimationmethod">
+<span id="_CPPv322popup_decimationmethod"></span><span id="_CPPv222popup_decimationmethod"></span><span id="popup_decimationmethod__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a38cfeb26eff1f4af358220774ae99e62"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">popup_decimationmethod</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;popup_decimationmethod_id&quot;</span></span><a class="headerlink" href="#_CPPv422popup_decimationmethod" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421popup_deviceselection">
+<span id="_CPPv321popup_deviceselection"></span><span id="_CPPv221popup_deviceselection"></span><span id="popup_deviceselection__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a8899cf80c234bb67bddf4c9cb49686d0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">popup_deviceselection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;popup_deviceselection_id&quot;</span></span><a class="headerlink" href="#_CPPv421popup_deviceselection" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420checkbox_backupwaves">
+<span id="_CPPv320checkbox_backupwaves"></span><span id="_CPPv220checkbox_backupwaves"></span><span id="checkbox_backupwaves__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a429e06b6fe498868ee5ef48eca5de49d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkbox_backupwaves</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;checkbox_backupwaves_id&quot;</span></span><a class="headerlink" href="#_CPPv420checkbox_backupwaves" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421valdisp_estimatedsize">
+<span id="_CPPv321valdisp_estimatedsize"></span><span id="_CPPv221valdisp_estimatedsize"></span><span id="valdisp_estimatedsize__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1ac312f0fd8a540bd499cad4186922bfa0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">valdisp_estimatedsize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;valdisp_estimatedsize_id&quot;</span></span><a class="headerlink" href="#_CPPv421valdisp_estimatedsize" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419valdisp_currentsize">
+<span id="_CPPv319valdisp_currentsize"></span><span id="_CPPv219valdisp_currentsize"></span><span id="valdisp_currentsize__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a80874ce4c46e39421fcd89973bdbddf4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">valdisp_currentsize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;valdisp_currentsize_id&quot;</span></span><a class="headerlink" href="#_CPPv419valdisp_currentsize" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413listbox_waves">
+<span id="_CPPv313listbox_waves"></span><span id="_CPPv213listbox_waves"></span><span id="listbox_waves__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a7712eeab985d3c25a1a106af3e13b9f8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">listbox_waves</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;listbox_waves_id&quot;</span></span><a class="headerlink" href="#_CPPv413listbox_waves" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411button_doit">
+<span id="_CPPv311button_doit"></span><span id="_CPPv211button_doit"></span><span id="button_doit__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a885ea3ffccb231ccadd67faf6fc70ff5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">button_doit</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;button_doit_id&quot;</span></span><a class="headerlink" href="#_CPPv411button_doit" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420button_restorebackup">
+<span id="_CPPv320button_restorebackup"></span><span id="_CPPv220button_restorebackup"></span><span id="button_restorebackup__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a4ad4e77a724af5f4e4c3e44394462aec"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">button_restorebackup</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;button_restorebackup_id&quot;</span></span><a class="headerlink" href="#_CPPv420button_restorebackup" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48dataPath">
+<span id="_CPPv38dataPath"></span><span id="_CPPv28dataPath"></span><span id="dataPath__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a843e767a8d4633e75a9243a5ad1f58fb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dataPath</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;root:MIES:postExperimentProcedures:downsample:&quot;</span></span><a class="headerlink" href="#_CPPv48dataPath" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45panel">
+<span id="_CPPv35panel"></span><span id="_CPPv25panel"></span><span id="panel__stringC"></span><span class="target" id="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">panel</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;Downsampling&quot;</span></span><a class="headerlink" href="#_CPPv45panel" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___debugging_8ipf.html"
+                          title="previous chapter">File MIES_Debugging.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___enhanced_w_m_routines_8ipf.html"
+                          title="next chapter">File MIES_EnhancedWMRoutines.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___enhanced_w_m_routines_8ipf.html" title="File MIES_EnhancedWMRoutines.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___debugging_8ipf.html" title="File MIES_Debugging.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Downsample.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+Struct DataConfigurationResult
+==============================
+
+.. doxygenstruct:: DataConfigurationResult

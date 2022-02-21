@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_Async.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AsynchronousData.ipf" href="_m_i_e_s___asynchronous_data_8ipf.html" />
+    <link rel="prev" title="File MIES_ArtefactRemoval.ipf" href="_m_i_e_s___artefact_removal_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___asynchronous_data_8ipf.html" title="File MIES_AsynchronousData.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Async.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-async-ipf">
+<span id="id1"></span><h1>File MIES_Async.ipf<a class="headerlink" href="#file-mies-async-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>ASYNC</strong> This file holds the asynchronous execution framework </p>
+<p><p>See <a class="reference internal" href="../asyncframework.html#async-framework-doc"><span class="std std-ref">Async Framework</span></a> for the full documentation.</p>
+ </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-common-constants">Common Constants</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44ROWS">
+<span id="_CPPv34ROWS"></span><span id="_CPPv24ROWS"></span><span id="ROWS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1af473e90f88b6d5512af2908298c4daa0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROWS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv44ROWS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44COLS">
+<span id="_CPPv34COLS"></span><span id="_CPPv24COLS"></span><span id="COLS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">COLS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv44COLS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46LAYERS">
+<span id="_CPPv36LAYERS"></span><span id="_CPPv26LAYERS"></span><span id="LAYERS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a4aa6d9209372228eab9ac2f7192fea86"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LAYERS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv46LAYERS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46CHUNKS">
+<span id="_CPPv36CHUNKS"></span><span id="_CPPv26CHUNKS"></span><span id="CHUNKS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae39f67d188d5c5e8f5fc3d2c35f5bdad"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CHUNKS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv46CHUNKS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variable-names-for-free-data-folder-structure">Variable names for free data folder structure</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_THREAD_MARKER_STR">
+<span id="_CPPv323ASYNC_THREAD_MARKER_STR"></span><span id="_CPPv223ASYNC_THREAD_MARKER_STR"></span><span id="ASYNC_THREAD_MARKER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1afcab96212c9166d93ecd160f61da6b21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_THREAD_MARKER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;threadDFMarker&quot;</span></span><a class="headerlink" href="#_CPPv423ASYNC_THREAD_MARKER_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_WORKERFUNC_STR">
+<span id="_CPPv320ASYNC_WORKERFUNC_STR"></span><span id="_CPPv220ASYNC_WORKERFUNC_STR"></span><span id="ASYNC_WORKERFUNC_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a0e3776cf27e827fd212301374701f740"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WORKERFUNC_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;WorkerFunc&quot;</span></span><a class="headerlink" href="#_CPPv420ASYNC_WORKERFUNC_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv421ASYNC_READOUTFUNC_STR">
+<span id="_CPPv321ASYNC_READOUTFUNC_STR"></span><span id="_CPPv221ASYNC_READOUTFUNC_STR"></span><span id="ASYNC_READOUTFUNC_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a2f5ea56ed50965735a9e52a0332e13d8"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_READOUTFUNC_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;ReadOutFunc&quot;</span></span><a class="headerlink" href="#_CPPv421ASYNC_READOUTFUNC_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_WORKLOADCLASS_STR">
+<span id="_CPPv323ASYNC_WORKLOADCLASS_STR"></span><span id="_CPPv223ASYNC_WORKLOADCLASS_STR"></span><span id="ASYNC_WORKLOADCLASS_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1af8881a45d63c9511a2aa5cee16e0678a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WORKLOADCLASS_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;workloadClass&quot;</span></span><a class="headerlink" href="#_CPPv423ASYNC_WORKLOADCLASS_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_PARAMCOUNT_STR">
+<span id="_CPPv320ASYNC_PARAMCOUNT_STR"></span><span id="_CPPv220ASYNC_PARAMCOUNT_STR"></span><span id="ASYNC_PARAMCOUNT_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a729c58570487126c118f6726a45820d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_PARAMCOUNT_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;paramCount&quot;</span></span><a class="headerlink" href="#_CPPv420ASYNC_PARAMCOUNT_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_INORDER_STR">
+<span id="_CPPv317ASYNC_INORDER_STR"></span><span id="_CPPv217ASYNC_INORDER_STR"></span><span id="ASYNC_INORDER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a932f9c16859c39e37dbafd34881c41a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_INORDER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;inOrder&quot;</span></span><a class="headerlink" href="#_CPPv417ASYNC_INORDER_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_ABORTFLAG_STR">
+<span id="_CPPv319ASYNC_ABORTFLAG_STR"></span><span id="_CPPv219ASYNC_ABORTFLAG_STR"></span><span id="ASYNC_ABORTFLAG_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1adab2aaf9982a7f8c5e80f1f588384dfd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ABORTFLAG_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;abortFlag&quot;</span></span><a class="headerlink" href="#_CPPv419ASYNC_ABORTFLAG_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415ASYNC_ERROR_STR">
+<span id="_CPPv315ASYNC_ERROR_STR"></span><span id="_CPPv215ASYNC_ERROR_STR"></span><span id="ASYNC_ERROR_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a04a2750bce7b40db213af975f1e5b751"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ERROR_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;err&quot;</span></span><a class="headerlink" href="#_CPPv415ASYNC_ERROR_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418ASYNC_ERRORMSG_STR">
+<span id="_CPPv318ASYNC_ERRORMSG_STR"></span><span id="_CPPv218ASYNC_ERRORMSG_STR"></span><span id="ASYNC_ERRORMSG_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ac06563d4c3616d8c1ec4bed54f49936f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ERRORMSG_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;errmsg&quot;</span></span><a class="headerlink" href="#_CPPv418ASYNC_ERRORMSG_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_WLCOUNTER_STR">
+<span id="_CPPv319ASYNC_WLCOUNTER_STR"></span><span id="_CPPv219ASYNC_WLCOUNTER_STR"></span><span id="ASYNC_WLCOUNTER_STR__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab029325a1bb56bc53102abea5600f4dd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WLCOUNTER_STR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;workloadClassCounter&quot;</span></span><a class="headerlink" href="#_CPPv419ASYNC_WLCOUNTER_STR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411ASYNC_Start8variable8variable">
+<span id="_CPPv311ASYNC_Start8variable8variable"></span><span id="_CPPv211ASYNC_Start8variable8variable"></span><span id="ASYNC_Start__variable.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae60635a9ab349dc16e89ed2f114416e0"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Start</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">disableTask</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411ASYNC_Start8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Starts the Async Framework with numThreads parallel threads. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numThreads</strong> – number of threads to setup for processing data, must be &gt;= 1 and &lt;= ASYNC_MAX_THREADS</p></li>
+<li><p><strong>disableTask</strong> – [optional, default = 0] when set to 1 the background task processing readouts is not started</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 if ASYNC framework was started, 0 if ASYNC framework was already running, in this case the number of threads is not changed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ASYNC_Worker5dfref">
+<span id="_CPPv312ASYNC_Worker5dfref"></span><span id="_CPPv212ASYNC_Worker5dfref"></span><span id="ASYNC_Worker__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a1a3843adf223fff23d467e32a1280c1c"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Worker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412ASYNC_Worker5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prototype function for an async worker function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dfr</strong> – reference to thread data folder</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data folder reference to output data folder </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ASYNC_ReadOut5dfref8variable6string">
+<span id="_CPPv313ASYNC_ReadOut5dfref8variable6string"></span><span id="_CPPv213ASYNC_ReadOut5dfref8variable6string"></span><span id="ASYNC_ReadOut__dfref.variable.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a98d941082effa86dccdc44a5a4d33227"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ReadOut</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">err</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">errmsg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ASYNC_ReadOut5dfref8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prototype function for an async readout function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – reference to returned data folder from thread </p></li>
+<li><p><strong>err</strong> – error code, only set in the error case </p></li>
+<li><p><strong>errmsg</strong> – error message, only set in the error case </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412ASYNC_Threadv">
+<span id="_CPPv312ASYNC_Threadv"></span><span id="_CPPv212ASYNC_Threadv"></span><span id="ASYNC_Thread"></span><span class="target" id="_m_i_e_s___async_8ipf_1a310585f49183eaae2a26ede5acdbd214"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Thread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412ASYNC_Threadv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>thread function that receives data folders from the thread input queue and calls the setup custom worker function. With :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_Start</span></code> numThreads :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_Thread</span></code> functions will be started in their own thread. Each will run until the framework is stopped. UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416ASYNC_Run_Worker5dfref">
+<span id="_CPPv316ASYNC_Run_Worker5dfref"></span><span id="_CPPv216ASYNC_Run_Worker5dfref"></span><span id="ASYNC_Run_Worker__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a2a1eb41d87478bc4b6c5a7daba4d3d85"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Run_Worker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416ASYNC_Run_Worker5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_ThreadReadOutv">
+<span id="_CPPv319ASYNC_ThreadReadOutv"></span><span id="_CPPv219ASYNC_ThreadReadOutv"></span><span id="ASYNC_ThreadReadOut"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab01ac3210d8b52b2f1bffbe8015ded95"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_ThreadReadOut</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ASYNC_ThreadReadOutv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Receives data from finished workloads. Calls the user defined readout function. For in order readouts this function buffers pending result data folders until they can be processed in order. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425ASYNC_IsWorkloadClassDone6string8variable">
+<span id="_CPPv325ASYNC_IsWorkloadClassDone6string8variable"></span><span id="_CPPv225ASYNC_IsWorkloadClassDone6string8variable"></span><span id="ASYNC_IsWorkloadClassDone__string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a7eca8152b3a944a49757498ddf1271aa"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_IsWorkloadClassDone</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">removeClass</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425ASYNC_IsWorkloadClassDone6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allows to check if all executed work loads of a specific work load class were read out. For that case, the work load class can optionally be removed from Async. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workloadClass</strong> – <strong>[in]</strong> work load class string </p></li>
+<li><p><strong>removeClass</strong> – <strong>[in]</strong> [optional, default = 0] when set the specified work load class is removed from Async The parameter has no effect, if the work loads of the specified class are not done. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 if work load class finished, 0 if work load class did not finish, NaN if work load class not known to ASYNC </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable">
+<span id="_CPPv333ASYNC_WaitForWLCToFinishAndRemove6string8variable"></span><span id="_CPPv233ASYNC_WaitForWLCToFinishAndRemove6string8variable"></span><span id="ASYNC_WaitForWLCToFinishAndRemove__string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a418ad58c03d057974c2e71aa04ff6a75"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_WaitForWLCToFinishAndRemove</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433ASYNC_WaitForWLCToFinishAndRemove6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wait for TP analysis from specific panel to finish and remove it. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workloadClass</strong> – <strong>[in]</strong> name of work load class </p></li>
+<li><p><strong>timeout</strong> – <strong>[in]</strong> time out in seconds </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>0 if work load class is unknown or has finished and was removed, 1 if timeout was encountered. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423ASYNC_BackgroundReadOutP18WMBackgroundStruct">
+<span id="_CPPv323ASYNC_BackgroundReadOutP18WMBackgroundStruct"></span><span id="_CPPv223ASYNC_BackgroundReadOutP18WMBackgroundStruct"></span><span id="ASYNC_BackgroundReadOut__WMBackgroundStructP"></span><span class="target" id="_m_i_e_s___async_8ipf_1a63e3e87cf2883d1f43e8afcac9dad682"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_BackgroundReadOut</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ASYNC_BackgroundReadOutP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Background function that reads data folders from the thread output queue and calls the setup custom readout function The function takes care to buffer results if they should be processed in order. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> – default structure for Igor background tasks </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string">
+<span id="_CPPv314ASYNC_AddParam5dfref4wave8variable6string8variable6string"></span><span id="_CPPv214ASYNC_AddParam5dfref4wave8variable6string8variable6string"></span><span id="ASYNC_AddParam__dfref.wave.variable.string.variable.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a4db78dbdee22abd609d1149fe9d8aef5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_AddParam</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">move</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414ASYNC_AddParam5dfref4wave8variable6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adds one parameter to a data folder for a threaded worker execution. </p>
+<p>The parameters are globals in the threads data folder and named param0, param1, param2… in order of adding them. Only one parameter can be added per call. move is only allowed in combination with a wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – data folder reference to thread df, prepared by calling ASYNC_PrepareDF </p></li>
+<li><p><strong>w</strong> – [optional, default = null] wave reference of wave to be added as parameter </p></li>
+<li><p><strong>var</strong> – [optional, default = 0] variable to be added as parameter </p></li>
+<li><p><strong>str</strong> – [optional, default = 0] string to be added as parameter </p></li>
+<li><p><strong>move</strong> – [optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder </p></li>
+<li><p><strong>name</strong> – [optional, default = paramXXX] name of the added parameter </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ASYNC_FetchWave5dfref6string">
+<span id="_CPPv315ASYNC_FetchWave5dfref6string"></span><span id="_CPPv215ASYNC_FetchWave5dfref6string"></span><span id="ASYNC_FetchWave__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a595a3452d6f5457880088d9b51e6b37b"></span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ASYNC_FetchWave5dfref6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fetch a wave from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_FetchVariable5dfref6string">
+<span id="_CPPv319ASYNC_FetchVariable5dfref6string"></span><span id="_CPPv219ASYNC_FetchVariable5dfref6string"></span><span id="ASYNC_FetchVariable__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a85651bc5fc822f7180c28b336a5e9520"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419ASYNC_FetchVariable5dfref6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fetch a variable from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_FetchString5dfref6string">
+<span id="_CPPv317ASYNC_FetchString5dfref6string"></span><span id="_CPPv217ASYNC_FetchString5dfref6string"></span><span id="ASYNC_FetchString__dfref.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1aafb64ac648892aecae5c61ed7e6f94ff"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_FetchString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417ASYNC_FetchString5dfref6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fetch a string from the DFREF in the worker function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410ASYNC_Stop8variable8variable">
+<span id="_CPPv310ASYNC_Stop8variable8variable"></span><span id="_CPPv210ASYNC_Stop8variable8variable"></span><span id="ASYNC_Stop__variable.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ac952f31d6a066caa560f361bdd21cd26"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Stop</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fromAssert</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410ASYNC_Stop8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stops the Async Framework. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> – [optional, default = Inf] time in s to wait for running threads, the function waits for pending threads and pending readouts within this time. After a timeout happened the readout processing is stopped and threads are stopped. Any pending data is lost. If the threads have to be stopped forcefully, an assertion is raised. Using a finite timeout is strongly recommended.</p></li>
+<li><p><strong>fromAssert</strong> – [optional, default = 0] specified when called as cleanup function from ASSERT Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease are executed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>2 if ASYNC framework was not running, 1 if a timeout was encountered, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415ASYNC_PrepareDF6string6string6string8variable">
+<span id="_CPPv315ASYNC_PrepareDF6string6string6string8variable"></span><span id="_CPPv215ASYNC_PrepareDF6string6string6string8variable"></span><span id="ASYNC_PrepareDF__string.string.string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ad0763d663832657d1a935ccb23d9b6ca"></span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_PrepareDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">WorkerFunc</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ReadOutFunc</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workloadClass</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">inOrder</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415ASYNC_PrepareDF6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prepares a thread data folder for use with the AsyncFramework This function should be called first when setting up a worker with parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>WorkerFunc</strong> – string naming a threadsafe worker function in the form of the ASYNC_Worker template</p></li>
+<li><p><strong>ReadOutFunc</strong> – string naming a readout function in the form of the ASYNC_ReadOut template</p></li>
+<li><p><strong>workloadClass</strong> – string naming a work load class for work load attribution like “TestPulse” The string must follow strict object naming rules.</p></li>
+<li><p><strong>inOrder</strong> – [optional, default = 1] flag that allows to disable in order readout of results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data folder for thread, where parameters can be put to with :cpp:func:<code class="docutils literal notranslate"><span class="pre">ASYNC_AddParam</span></code> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413ASYNC_Execute5dfref">
+<span id="_CPPv313ASYNC_Execute5dfref"></span><span id="_CPPv213ASYNC_Execute5dfref"></span><span id="ASYNC_Execute__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1aad3777dd6bb37e4a242b4d53bf1f722a"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_Execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413ASYNC_Execute5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Puts a prepared thread data folder to parallel execution in another thread. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dfr</strong> – data folder that is setup for thread and is to be deployed </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48IsFinite8variable">
+<span id="_CPPv38IsFinite8variable"></span><span id="_CPPv28IsFinite8variable"></span><span id="IsFinite__variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a6f6b264152ed553065244c6adee09418"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsFinite</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48IsFinite8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if var is a finite/normal number, 0 otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47IsEmptyP6string">
+<span id="_CPPv37IsEmptyP6string"></span><span id="_CPPv27IsEmptyP6string"></span><span id="IsEmpty__stringP"></span><span class="target" id="_m_i_e_s___async_8ipf_1a04f2fce56cb96b91a5df24ed3dc14277"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsEmpty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47IsEmptyP6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns one if str is empty or null, zero otherwise. </p>
+<p>
+UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> – must not be a SVAR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45IsNaN8variable">
+<span id="_CPPv35IsNaN8variable"></span><span id="_CPPv25IsNaN8variable"></span><span id="IsNaN__variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1afba0636f9a8c888217a5caa26997cf53"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsNaN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45IsNaN8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if var is a NaN, 0 otherwise. </p>
+<p>UTF_NOINSTRUMENTATION </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419DataFolderExistsDFR5dfref">
+<span id="_CPPv319DataFolderExistsDFR5dfref"></span><span id="_CPPv219DataFolderExistsDFR5dfref"></span><span id="DataFolderExistsDFR__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a59c41313844087509e0cc5ef79b2b519"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DataFolderExistsDFR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DataFolderExistsDFR5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if the datafolder referenced by dfr exists. </p>
+<p>Unlike DataFolderExists() a dfref pointing to an empty (“”) dataFolder is considered non-existing here. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>one if dfr is valid and references an existing or free datafolder, zero otherwise Taken from <a class="reference external" href="http://www.igorexchange.com/node/2055">http://www.igorexchange.com/node/2055</a> UTF_NOINSTRUMENTATION </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetStackTrace6string">
+<span id="_CPPv313GetStackTrace6string"></span><span id="_CPPv213GetStackTrace6string"></span><span id="GetStackTrace__string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a781cdd2ba4e2c36a410d14332d257c79"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetStackTrace</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetStackTrace6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a nicely formatted multiline stacktrace. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46ASSERT8variable6string">
+<span id="_CPPv36ASSERT8variable6string"></span><span id="_CPPv26ASSERT8variable6string"></span><span id="ASSERT__variable.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASSERT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">errorMsg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46ASSERT8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Low overhead function to check assertions. </p>
+<p>
+Example usage: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span><span class="nc">ControlInfo</span>/W = $device popup_MoreSettings_DeviceType
+ASSERT(V_flag &gt; 0, <span class="s">&quot;Non-existing control or window&quot;</span>)
+<span class="k">do</span> something with S_value
+</pre></div>
+</div>
+</p>
+</p>
+<p>UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var</strong> – if zero an error message is printed into the history and procedure execution is aborted, nothing is done otherwise. If the debugger is enabled, it also steps into it. </p></li>
+<li><p><strong>errorMsg</strong> – error message to output in failure case</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49ASSERT_TS8variable6string">
+<span id="_CPPv39ASSERT_TS8variable6string"></span><span id="_CPPv29ASSERT_TS8variable6string"></span><span id="ASSERT_TS__variable.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1ac9613ef0ca17669e69d6e17267f652b9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASSERT_TS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">errorMsg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49ASSERT_TS8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Low overhead function to check assertions (threadsafe variant) </p>
+<p>
+Example usage: <p><div class="highlight-igorpro notranslate"><div class="highlight"><pre><span></span>ASSERT(DataFolderExistsDFR(dfr), <span class="s">&quot;MyFunc: dfr does not exist&quot;</span>)
+<span class="k">do</span> something with dfr
+</pre></div>
+</div>
+</p>
+</p>
+<p>Unlike <a class="reference internal" href="#_m_i_e_s___async_8ipf_1aa0371857aa0aaeef8ea67c2950293c49"><span class="std std-ref">ASSERT()</span></a> this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations. Therefore it is advised to prefix <code class="docutils literal notranslate"><span class="pre">errorMsg</span></code> with the current function name.</p>
+<p>UTF_NOINSTRUMENTATION </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var</strong> – if zero an error message is printed into the history and procedure execution is aborted, nothing is done otherwise. </p></li>
+<li><p><strong>errorMsg</strong> – error message to output in failure case</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417FuncRefIsAssigned6string">
+<span id="_CPPv317FuncRefIsAssigned6string"></span><span id="_CPPv217FuncRefIsAssigned6string"></span><span id="FuncRefIsAssigned__string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a6d7c46d547f1fa225fd5dfb6ba20593f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FuncRefIsAssigned</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">funcInfo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417FuncRefIsAssigned6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check wether the function reference points to the prototype function or to an assigned function. </p>
+<p>Due to Igor Pro limitations you need to pass the function info from <code class="docutils literal notranslate"><span class="pre">FuncRefInfo</span></code> and not the function reference itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1 if pointing to prototype function, 0 otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetNVARAsString5dfref6string8variable">
+<span id="_CPPv315GetNVARAsString5dfref6string8variable"></span><span id="_CPPv215GetNVARAsString5dfref6string8variable"></span><span id="GetNVARAsString__dfref.string.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1a89a56af7f4690d830d6f33c1493f1feb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNVARAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalVarName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetNVARAsString5dfref6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to a global variable. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – location of the global variable, must exist </p></li>
+<li><p><strong>globalVarName</strong> – name of the global variable </p></li>
+<li><p><strong>initialValue</strong> – initial value of the variable. Will only be used if it is created. 0 by default. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetSVARAsString5dfref6string6string">
+<span id="_CPPv315GetSVARAsString5dfref6string6string"></span><span id="_CPPv215GetSVARAsString5dfref6string6string"></span><span id="GetSVARAsString__dfref.string.string"></span><span class="target" id="_m_i_e_s___async_8ipf_1adda663266b20accc016fcca9afdb3a76"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSVARAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalStrName</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetSVARAsString5dfref6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to a global string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – location of the global string, must exist </p></li>
+<li><p><strong>globalStrName</strong> – name of the global string </p></li>
+<li><p><strong>initialValue</strong> – initial value of the string. Will only be used if it is created. null by default. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422createDFWithAllParents6string">
+<span id="_CPPv322createDFWithAllParents6string"></span><span id="_CPPv222createDFWithAllParents6string"></span><span id="createDFWithAllParents__string"></span><span class="target" id="_m_i_e_s___async_8ipf_1a56ac1f5e4865f7a27faedbee02e5861e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createDFWithAllParents</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataFolder</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422createDFWithAllParents6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a datafolder and all its parents,. </p>
+<p>Includes fast handling of the common case that the datafolder exists. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>reference to the datafolder </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetAsyncHomeStrv">
+<span id="_CPPv315GetAsyncHomeStrv"></span><span id="_CPPv215GetAsyncHomeStrv"></span><span id="GetAsyncHomeStr"></span><span class="target" id="_m_i_e_s___async_8ipf_1a12bcfeb05e62155b97ada7ac1b791a6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAsyncHomeStr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetAsyncHomeStrv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to async framework home data folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetAsyncHomeDFv">
+<span id="_CPPv314GetAsyncHomeDFv"></span><span id="_CPPv214GetAsyncHomeDFv"></span><span id="GetAsyncHomeDF"></span><span class="target" id="_m_i_e_s___async_8ipf_1ac4c0b2326e40004bc854ac1aedcea7db"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAsyncHomeDF</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetAsyncHomeDFv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns reference to async framework home data folder. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410isThreadDF5dfref">
+<span id="_CPPv310isThreadDF5dfref"></span><span id="_CPPv210isThreadDF5dfref"></span><span id="isThreadDF__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1abc0fd23cd04bc821be55dbbf6d8a5444"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isThreadDF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410isThreadDF5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>test if data folder is marked for thread usage </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416GetThreadGroupIDv">
+<span id="_CPPv316GetThreadGroupIDv"></span><span id="_CPPv216GetThreadGroupIDv"></span><span id="GetThreadGroupID"></span><span class="target" id="_m_i_e_s___async_8ipf_1a7b1f8863176787f7a8199e2fe43ae313"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetThreadGroupID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416GetThreadGroupIDv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to the thread group id. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413GetNumThreadsv">
+<span id="_CPPv313GetNumThreadsv"></span><span id="_CPPv213GetNumThreadsv"></span><span id="GetNumThreads"></span><span class="target" id="_m_i_e_s___async_8ipf_1a62abc33be193877664b8abc1f4b7c89e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumThreads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GetNumThreadsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to the number of threads. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420GetTaskDisableStatusv">
+<span id="_CPPv320GetTaskDisableStatusv"></span><span id="_CPPv220GetTaskDisableStatusv"></span><span id="GetTaskDisableStatus"></span><span class="target" id="_m_i_e_s___async_8ipf_1a3360b24788c4f6d40dc59666c45d7194"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTaskDisableStatus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GetTaskDisableStatusv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns string path to flag if background task was disabled. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414GetDFREFbuffer5dfref">
+<span id="_CPPv314GetDFREFbuffer5dfref"></span><span id="_CPPv214GetDFREFbuffer5dfref"></span><span id="GetDFREFbuffer__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1aaac024a5ed4722f9cc78b9c09b0cf0bb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDFREFbuffer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GetDFREFbuffer5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return wave reference to wave with data folder reference buffer for delayed readouts 1d wave for data folder references, starts with size 0 when jobs should be read out in order, the waiting data folders are buffered in this wave e.g. if the next read out would be job 2, but a data folder from job 3 is returned the data folder is buffered until the one from job 2 appears from the output queue. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419GetWorkloadTracking5dfref">
+<span id="_CPPv319GetWorkloadTracking5dfref"></span><span id="_CPPv219GetWorkloadTracking5dfref"></span><span id="GetWorkloadTracking__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a6069e1dc789c8febb8bcd8dfba75a923"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWorkloadTracking</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419GetWorkloadTracking5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns wave ref for workload tracking 2d wave row stores work load classes named through dimension label column 0 stores how many work loads were pushed to Async column 1 stores how many work loads were read out from Async. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424GetSerialExecutionBuffer5dfref">
+<span id="_CPPv324GetSerialExecutionBuffer5dfref"></span><span id="_CPPv224GetSerialExecutionBuffer5dfref"></span><span id="GetSerialExecutionBuffer__dfref"></span><span class="target" id="_m_i_e_s___async_8ipf_1a3c345ee73258b93a34c704fd9910c3b2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSerialExecutionBuffer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GetSerialExecutionBuffer5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns wave ref for buffering results when THREADING_DISABLED is defined 1D wave using NOTE_INDEX logic. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420ASYNC_IsASYNCRunningv">
+<span id="_CPPv320ASYNC_IsASYNCRunningv"></span><span id="_CPPv220ASYNC_IsASYNCRunningv"></span><span id="ASYNC_IsASYNCRunning"></span><span class="target" id="_m_i_e_s___async_8ipf_1a6aa559d1bd54409db4a16c037f9a1cb0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_IsASYNCRunning</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420ASYNC_IsASYNCRunningv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>returns 1 if ASYNC framework is running, 0 otherwise </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DeleteWavePoint4wave8variable8variable">
+<span id="_CPPv315DeleteWavePoint4wave8variable8variable"></span><span id="_CPPv215DeleteWavePoint4wave8variable8variable"></span><span id="DeleteWavePoint__wave.variable.variable"></span><span class="target" id="_m_i_e_s___async_8ipf_1ab6b1596916bb78f2015a223250e617b2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteWavePoint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wave</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DeleteWavePoint4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deletes one row, column, layer or chunk from a wave Advantages over DeletePoints: Keeps the dimensionality of the wave when deleting the last row, column, layer or chunk in a wave Implements range check Advantages over DeletePoints + KillWaves: The wave reference stays valid. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv</strong> – wave where the row, column, layer or chunk should be deleted</p></li>
+<li><p><strong>dim</strong> – dimension 0 - rows, 1 - column, 2 - layer, 3 - chunk</p></li>
+<li><p><strong>index</strong> – index where one point in the given dimension is deleted </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417IsValidObjectName6string">
+<span id="_CPPv317IsValidObjectName6string"></span><span id="_CPPv217IsValidObjectName6string"></span><span id="IsValidObjectName__string"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae9c6826b513482377ee158694d72a3ee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValidObjectName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417IsValidObjectName6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if a name for an object adheres to the strict naming rules. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">DisplayHelpTopic</span> <span class="pre">&quot;ObjectName&quot;</span></code> </p>
+</div>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416ASYNC_BACKGROUND">
+<span id="_CPPv316ASYNC_BACKGROUND"></span><span id="_CPPv216ASYNC_BACKGROUND"></span><span id="ASYNC_BACKGROUND__stringC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a076566adbe17f2337117674ee2e2e72b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_BACKGROUND</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;AsyncFramework&quot;</span></span><a class="headerlink" href="#_CPPv416ASYNC_BACKGROUND" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv431MAX_OBJECT_NAME_LENGTH_IN_BYTES">
+<span id="_CPPv331MAX_OBJECT_NAME_LENGTH_IN_BYTES"></span><span id="_CPPv231MAX_OBJECT_NAME_LENGTH_IN_BYTES"></span><span id="MAX_OBJECT_NAME_LENGTH_IN_BYTES__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1af4ab7f2ba8962740ba8010d067a4672a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MAX_OBJECT_NAME_LENGTH_IN_BYTES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">255</span></span><a class="headerlink" href="#_CPPv431MAX_OBJECT_NAME_LENGTH_IN_BYTES" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_THREAD_MARKER">
+<span id="_CPPv319ASYNC_THREAD_MARKER"></span><span id="_CPPv219ASYNC_THREAD_MARKER"></span><span id="ASYNC_THREAD_MARKER__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1ae9f387dc6515018a9b692784ff8f6c19"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_THREAD_MARKER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">299792458</span></span><a class="headerlink" href="#_CPPv419ASYNC_THREAD_MARKER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv417ASYNC_MAX_THREADS">
+<span id="_CPPv317ASYNC_MAX_THREADS"></span><span id="_CPPv217ASYNC_MAX_THREADS"></span><span id="ASYNC_MAX_THREADS__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a9bf4061c963042eec53be64a4d8752e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_MAX_THREADS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">64</span></span><a class="headerlink" href="#_CPPv417ASYNC_MAX_THREADS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv419ASYNC_SLEEP_ON_WAIT">
+<span id="_CPPv319ASYNC_SLEEP_ON_WAIT"></span><span id="_CPPv219ASYNC_SLEEP_ON_WAIT"></span><span id="ASYNC_SLEEP_ON_WAIT__doubleC"></span><span class="target" id="_m_i_e_s___async_8ipf_1a3c4e9548a6e19658e3e2c653e4c5ff08"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ASYNC_SLEEP_ON_WAIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span><a class="headerlink" href="#_CPPv419ASYNC_SLEEP_ON_WAIT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___artefact_removal_8ipf.html"
+                          title="previous chapter">File MIES_ArtefactRemoval.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___asynchronous_data_8ipf.html"
+                          title="next chapter">File MIES_AsynchronousData.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___asynchronous_data_8ipf.html" title="File MIES_AsynchronousData.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___artefact_removal_8ipf.html" title="File MIES_ArtefactRemoval.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Async.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

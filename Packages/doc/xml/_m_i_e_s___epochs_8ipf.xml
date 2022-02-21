@@ -1,0 +1,1599 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___epochs_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Epochs.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1aa7e21884500826cce5156ec617243437" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SHORTNAME_KEY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SHORTNAME_KEY</name>
+        <initializer>= &quot;ShortName&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1abc42472e440fd5b35ac282944d6e2485" compoundref="_m_i_e_s___epochs_8ipf" startline="627" endline="630">EP_GetShortName</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_TYPE_KEY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_TYPE_KEY</name>
+        <initializer>= &quot;Type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a58854b46b3b0a66213e1a71d8cb1c25a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SUBTYPE_KEY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SUBTYPE_KEY</name>
+        <initializer>= &quot;SubType&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a1359cdf1a22ea9fd3afabf60a67f2347" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_AMPLITUDE_KEY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_AMPLITUDE_KEY</name>
+        <initializer>= &quot;Amplitude&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1aecb91633e468ddb5b1685e31f23b6793" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_PULSE_KEY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_PULSE_KEY</name>
+        <initializer>= &quot;Pulse&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCHNAME_SEP</definition>
+        <argsstring></argsstring>
+        <name>EPOCHNAME_SEP</name>
+        <initializer>= &quot;;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="18" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="18" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string STIMSETKEYNAME_SEP</definition>
+        <argsstring></argsstring>
+        <name>STIMSETKEYNAME_SEP</name>
+        <initializer>= &quot;=&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="19" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="19" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a73cc9accb58f6e9280ec0a7dd6e86bad" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SHORTNAMEKEY_SEP</definition>
+        <argsstring></argsstring>
+        <name>SHORTNAMEKEY_SEP</name>
+        <initializer>= &quot;=&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="20" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="20" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1abc42472e440fd5b35ac282944d6e2485" compoundref="_m_i_e_s___epochs_8ipf" startline="627" endline="630">EP_GetShortName</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a45497eb10afddbd2611de43389bede3e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_BL_ONSETDELAYUSER</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_BL_ONSETDELAYUSER</name>
+        <initializer>= &quot;B0_OD&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="22" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="22" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1aa4bc0baa27d0a43b954a0c1c9e7e4a3e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_BL_DDAQ</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_BL_DDAQ</name>
+        <initializer>= &quot;B0_DD&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="23" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ab2e5e5c6f3e73180cb1443db393a1b40" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_BL_TERMINATIONDELAY</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_BL_TERMINATIONDELAY</name>
+        <initializer>= &quot;B0_TD&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="24" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a4325cb63e15f59d7ce01a6e841d9f4e6" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_BL_DDAQOPT</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_BL_DDAQOPT</name>
+        <initializer>= &quot;B0_DO&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="25" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="25" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ad4b729df530cc43317786c47cca80604" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_BL_DDAQTRAIL</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_BL_DDAQTRAIL</name>
+        <initializer>= &quot;B0_TR&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="26" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="26" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a6ce4d72f6e60aba301e1303e8c3fdc6e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_TP</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_TP</name>
+        <initializer>= &quot;TP&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="27" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="27" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1aac35d5afae0924b1ce07fe7d61de6dea" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_TP_PULSE</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_TP_PULSE</name>
+        <initializer>= &quot;TP_P&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="28" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="28" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a310254446a632352c04d1ca37f064488" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_TP_BLFRONT</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_TP_BLFRONT</name>
+        <initializer>= &quot;TP_B0&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="29" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="29" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a1e90cd64369af1050933717313b8ae50" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_TP_BLBACK</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_TP_BLBACK</name>
+        <initializer>= &quot;TP_B1&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="30" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="30" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ae04c257660110428e5bc21324fafc54d" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_OODAQ</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_OODAQ</name>
+        <initializer>= &quot;OD&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="31" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="31" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a73250bd28e59a7f0fe4be3dc7497cb9f" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_STIMSET</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_STIMSET</name>
+        <initializer>= &quot;ST&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="32" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="32" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1abc9f6e3111edfb4fc25eb307e204e179" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_STIMSETBLTRAIL</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_STIMSETBLTRAIL</name>
+        <initializer>= &quot;B&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="33" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="33" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1aa71f598cec8792b90d622e7013d8f3a7" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_EPOCH</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_EPOCH</name>
+        <initializer>= &quot;E&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="34" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="34" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ae2c0cbc9c3947391209af91c7226c47e" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAIN</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAIN</name>
+        <initializer>= &quot;PT&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="35" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="35" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a6be966eefae689a09e4927cd8ce469ca" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAIN_FULLPULSE</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAIN_FULLPULSE</name>
+        <initializer>= &quot;P&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="36" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="36" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a54aa4f1a80fa1ab164f657178c298295" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAIN_PULSEAMP</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAIN_PULSEAMP</name>
+        <initializer>= &quot;P&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="37" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="37" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ae430c73a1baa6abf31b4a9dfd8013017" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAIN_PULSEBASE</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAIN_PULSEBASE</name>
+        <initializer>= &quot;B&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="38" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="38" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a28923c4f2e00987c85f65e32878bcfdc" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAIN_PULSEBASETRAIL</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAIN_PULSEBASETRAIL</name>
+        <initializer>= &quot;BT&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="39" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="39" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1ae47da15e9ba8e1899fee6349598d9757" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_PULSETRAINBASETRAIL</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_PULSETRAINBASETRAIL</name>
+        <initializer>= &quot;BT&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="40" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="40" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___epochs_8ipf_1a92688e09554d2bedb1083db81399adf6" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string EPOCH_SN_UNACQUIRED</definition>
+        <argsstring></argsstring>
+        <name>EPOCH_SN_UNACQUIRED</name>
+        <initializer>= &quot;UA&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="41" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="41" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a177daba53fe91fe9c471ab765193237f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EP_ClearEpochs</definition>
+        <argsstring>(string device)</argsstring>
+        <name>EP_ClearEpochs</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Clear the list of epochs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="44" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="44" bodyend="48"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EP_CollectEpochInfo</definition>
+        <argsstring>(string device, DataConfigurationResult *s)</argsstring>
+        <name>EP_CollectEpochInfo</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_data_configuration_result" kindref="compound">DataConfigurationResult</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Fill the epoch wave with epochs before DAQ/TP. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>struct holding all input </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="54" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="54" bodyend="136"/>
+        <references refid="struct_data_configuration_result_1a4c8a2d3f9b6366311e3c425ea3a7cf9f" compoundref="_m_i_e_s___structures_8ipf" startline="538">DataConfigurationResult::DACAmp</references>
+        <references refid="struct_data_configuration_result_1a2619b28ecfc6970f257b01af014cd553" compoundref="_m_i_e_s___structures_8ipf" startline="529">DataConfigurationResult::DACList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="struct_data_configuration_result_1ac39cc10b0ef54a1802507f82616836f9" compoundref="_m_i_e_s___structures_8ipf" startline="475">DataConfigurationResult::dataAcqOrTP</references>
+        <references refid="struct_data_configuration_result_1a0c53d5c7db359178c0a970393ddcfb2d" compoundref="_m_i_e_s___structures_8ipf" startline="464">DataConfigurationResult::distributedDAQ</references>
+        <references refid="struct_data_configuration_result_1a4c19323b062129ecfb40939b0582834f" compoundref="_m_i_e_s___structures_8ipf" startline="465">DataConfigurationResult::distributedDAQOptOv</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0e8c1f8ef0c2553cdb585cf2269e6b0b" compoundref="_m_i_e_s___constants_8ipf" startline="1285">EPOCH_BASELINE_REGION_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aa4bc0baa27d0a43b954a0c1c9e7e4a3e" compoundref="_m_i_e_s___epochs_8ipf" startline="23">EPOCH_SN_BL_DDAQ</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4325cb63e15f59d7ce01a6e841d9f4e6" compoundref="_m_i_e_s___epochs_8ipf" startline="25">EPOCH_SN_BL_DDAQOPT</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ad4b729df530cc43317786c47cca80604" compoundref="_m_i_e_s___epochs_8ipf" startline="26">EPOCH_SN_BL_DDAQTRAIL</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a45497eb10afddbd2611de43389bede3e" compoundref="_m_i_e_s___epochs_8ipf" startline="22">EPOCH_SN_BL_ONSETDELAYUSER</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ab2e5e5c6f3e73180cb1443db393a1b40" compoundref="_m_i_e_s___epochs_8ipf" startline="24">EPOCH_SN_BL_TERMINATIONDELAY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" compoundref="_m_i_e_s___epochs_8ipf" startline="13">EPOCH_TYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" compoundref="_m_i_e_s___epochs_8ipf" startline="18">EPOCHNAME_SEP</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="311" endline="315">GetStopCollectionPoint</references>
+        <references refid="struct_data_configuration_result_1a01f96fc46be36cb803d3fd788a34c3e4" compoundref="_m_i_e_s___structures_8ipf" startline="457">DataConfigurationResult::globalTPInsert</references>
+        <references refid="struct_data_configuration_result_1ae4a27142e528cf8391a12169750feaa2" compoundref="_m_i_e_s___structures_8ipf" startline="550">DataConfigurationResult::headstageDAC</references>
+        <references refid="struct_data_configuration_result_1a06a3f1639bb2656f7bdaa5970ae0656a" compoundref="_m_i_e_s___structures_8ipf" startline="559">DataConfigurationResult::insertStart</references>
+        <references refid="struct_data_configuration_result_1ad7ee92cb58e79a0b1473d58c34efc682" compoundref="_m_i_e_s___structures_8ipf" startline="485">DataConfigurationResult::numDACEntries</references>
+        <references refid="struct_data_configuration_result_1adf89c655dd287c35dbf5c98edd794ee6" compoundref="_m_i_e_s___structures_8ipf" startline="520">DataConfigurationResult::offsets</references>
+        <references refid="struct_data_configuration_result_1aab9f921931bbfc21dfc6c5fe8e578dd8" compoundref="_m_i_e_s___structures_8ipf" startline="507">DataConfigurationResult::onsetDelay</references>
+        <references refid="struct_data_configuration_result_1a5d0b3eb9afc2acac26ab1f298ced2fc1" compoundref="_m_i_e_s___structures_8ipf" startline="506">DataConfigurationResult::onsetDelayAuto</references>
+        <references refid="struct_data_configuration_result_1a69eb57743919b13a89f56967078f2469" compoundref="_m_i_e_s___structures_8ipf" startline="505">DataConfigurationResult::onsetDelayUser</references>
+        <references refid="struct_data_configuration_result_1a95201b77a12aad3e9fb1cece8ffd3b6c" compoundref="_m_i_e_s___structures_8ipf" startline="521">DataConfigurationResult::regions</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="struct_data_configuration_result_1af5f92b6bec38afaf7e2efb82046b6fcf" compoundref="_m_i_e_s___structures_8ipf" startline="500">DataConfigurationResult::samplingInterval</references>
+        <references refid="struct_data_configuration_result_1adf6bc98f57eb9252c74420f9ae206689" compoundref="_m_i_e_s___structures_8ipf" startline="554">DataConfigurationResult::setColumn</references>
+        <references refid="struct_data_configuration_result_1a1f887229150d9f3f3fee23bf65a36d2e" compoundref="_m_i_e_s___structures_8ipf" startline="547">DataConfigurationResult::setLength</references>
+        <references refid="struct_data_configuration_result_1a7688f619919cd315766b0b830a432518" compoundref="_m_i_e_s___structures_8ipf" startline="541">DataConfigurationResult::setName</references>
+        <references refid="struct_data_configuration_result_1ac0b82ee485e079b5fdb3edcbd02d4b72" compoundref="_m_i_e_s___structures_8ipf" startline="544">DataConfigurationResult::stimSet</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" compoundref="_m_i_e_s___epochs_8ipf" startline="19">STIMSETKEYNAME_SEP</references>
+        <references refid="struct_data_configuration_result_1a9a4793010784e70104eece185bb60dfc" compoundref="_m_i_e_s___structures_8ipf" startline="509">DataConfigurationResult::terminationDelay</references>
+        <references refid="struct_data_configuration_result_1a164e98355dcd58ebfed2db25c7f72b91" compoundref="_m_i_e_s___structures_8ipf" startline="516">DataConfigurationResult::testPulseLength</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a642aee3a2e40200b908164b6dc91e561" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2365" endline="2375">WB_StimsetIsFromThirdParty</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a65e4f8857cf448ecf8c108ce005223f4" compoundref="_m_i_e_s___data_configurator_8ipf" startline="787" endline="822">DC_PlaceDataInDAQDataWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_AddEpochsFromTP</definition>
+        <argsstring>(string device, variable channel, variable baselinefrac, variable testPulseLength, variable offset, variable amplitude)</argsstring>
+        <name>EP_AddEpochsFromTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>baselinefrac</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>testPulseLength</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>amplitude</declname>
+        </param>
+        <briefdescription>
+<para>Adds four epochs for a test pulse and three sub epochs for test pulse components. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">baselinefrac</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>base line fraction of testpulse </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">testPulseLength</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>test pulse length in micro seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">offset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>start time of test pulse in micro seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">amplitude</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>amplitude of the TP in the DA wave without gain </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="145" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="145" bodyend="180"/>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a1359cdf1a22ea9fd3afabf60a67f2347" compoundref="_m_i_e_s___epochs_8ipf" startline="15">EPOCH_AMPLITUDE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0e8c1f8ef0c2553cdb585cf2269e6b0b" compoundref="_m_i_e_s___constants_8ipf" startline="1285">EPOCH_BASELINE_REGION_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aecb91633e468ddb5b1685e31f23b6793" compoundref="_m_i_e_s___epochs_8ipf" startline="16">EPOCH_PULSE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a6ce4d72f6e60aba301e1303e8c3fdc6e" compoundref="_m_i_e_s___epochs_8ipf" startline="27">EPOCH_SN_TP</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a1e90cd64369af1050933717313b8ae50" compoundref="_m_i_e_s___epochs_8ipf" startline="30">EPOCH_SN_TP_BLBACK</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a310254446a632352c04d1ca37f064488" compoundref="_m_i_e_s___epochs_8ipf" startline="29">EPOCH_SN_TP_BLFRONT</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aac35d5afae0924b1ce07fe7d61de6dea" compoundref="_m_i_e_s___epochs_8ipf" startline="28">EPOCH_SN_TP_PULSE</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a58854b46b3b0a66213e1a71d8cb1c25a" compoundref="_m_i_e_s___epochs_8ipf" startline="14">EPOCH_SUBTYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" compoundref="_m_i_e_s___epochs_8ipf" startline="13">EPOCH_TYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" compoundref="_m_i_e_s___epochs_8ipf" startline="18">EPOCHNAME_SEP</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" compoundref="_m_i_e_s___epochs_8ipf" startline="19">STIMSETKEYNAME_SEP</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_AddEpochsFromOodDAQRegions</definition>
+        <argsstring>(string device, variable channel, string oodDAQRegions, variable stimsetBegin, variable stimsetEnd)</argsstring>
+        <name>EP_AddEpochsFromOodDAQRegions</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>oodDAQRegions</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stimsetBegin</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stimsetEnd</declname>
+        </param>
+        <briefdescription>
+<para>Adds epochs for oodDAQ regions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">oodDAQRegions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string containing list of oodDAQ regions as d-d;... </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">stimsetBegin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>offset time in micro seconds where stim set begins </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">stimsetEnd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>offset time in micro seconds where stim set ends </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="188" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="188" bodyend="209"/>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a010b60657da2f120cf8794b4e30ee994" compoundref="_m_i_e_s___constants_8ipf" startline="1284">EPOCH_OODDAQ_REGION_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae04c257660110428e5bc21324fafc54d" compoundref="_m_i_e_s___epochs_8ipf" startline="31">EPOCH_SN_OODAQ</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" compoundref="_m_i_e_s___epochs_8ipf" startline="13">EPOCH_TYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" compoundref="_m_i_e_s___epochs_8ipf" startline="18">EPOCHNAME_SEP</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" compoundref="_m_i_e_s___epochs_8ipf" startline="19">STIMSETKEYNAME_SEP</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_AddEpochsFromStimSetNote</definition>
+        <argsstring>(string device, variable channel, wave stimset, variable stimsetBegin, variable setLength, variable sweep, variable scale)</argsstring>
+        <name>EP_AddEpochsFromStimSetNote</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>stimset</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>stimsetBegin</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>setLength</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Adds epochs for a stimset and sub epochs for stimset components currently adds also sub sub epochs for pulse train components. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">stimset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stimset wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">stimsetBegin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>offset time in micro seconds where stim set begins </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">setLength</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>length of stimset in micro seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">sweep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of sweep </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>scale factor between the stimsets internal amplitude to the DA wave without gain </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="220" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="220" bodyend="422"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a1359cdf1a22ea9fd3afabf60a67f2347" compoundref="_m_i_e_s___epochs_8ipf" startline="15">EPOCH_AMPLITUDE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0e8c1f8ef0c2553cdb585cf2269e6b0b" compoundref="_m_i_e_s___constants_8ipf" startline="1285">EPOCH_BASELINE_REGION_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a477c34f5ab05bb8528f43d2648839bd9" compoundref="_m_i_e_s___constants_8ipf" startline="1240">EPOCH_ENTRY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aecb91633e468ddb5b1685e31f23b6793" compoundref="_m_i_e_s___epochs_8ipf" startline="16">EPOCH_PULSE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aa71f598cec8792b90d622e7013d8f3a7" compoundref="_m_i_e_s___epochs_8ipf" startline="34">EPOCH_SN_EPOCH</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae2c0cbc9c3947391209af91c7226c47e" compoundref="_m_i_e_s___epochs_8ipf" startline="35">EPOCH_SN_PULSETRAIN</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a6be966eefae689a09e4927cd8ce469ca" compoundref="_m_i_e_s___epochs_8ipf" startline="36">EPOCH_SN_PULSETRAIN_FULLPULSE</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a54aa4f1a80fa1ab164f657178c298295" compoundref="_m_i_e_s___epochs_8ipf" startline="37">EPOCH_SN_PULSETRAIN_PULSEAMP</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae430c73a1baa6abf31b4a9dfd8013017" compoundref="_m_i_e_s___epochs_8ipf" startline="38">EPOCH_SN_PULSETRAIN_PULSEBASE</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a28923c4f2e00987c85f65e32878bcfdc" compoundref="_m_i_e_s___epochs_8ipf" startline="39">EPOCH_SN_PULSETRAIN_PULSEBASETRAIL</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae47da15e9ba8e1899fee6349598d9757" compoundref="_m_i_e_s___epochs_8ipf" startline="40">EPOCH_SN_PULSETRAINBASETRAIL</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a73250bd28e59a7f0fe4be3dc7497cb9f" compoundref="_m_i_e_s___epochs_8ipf" startline="32">EPOCH_SN_STIMSET</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1abc9f6e3111edfb4fc25eb307e204e179" compoundref="_m_i_e_s___epochs_8ipf" startline="33">EPOCH_SN_STIMSETBLTRAIL</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a58854b46b3b0a66213e1a71d8cb1c25a" compoundref="_m_i_e_s___epochs_8ipf" startline="14">EPOCH_SUBTYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" compoundref="_m_i_e_s___epochs_8ipf" startline="13">EPOCH_TYPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3a52a61633c0165070766869111a6fac" compoundref="_m_i_e_s___constants_8ipf" startline="784">EPOCH_TYPE_PULSE_TRAIN</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" compoundref="_m_i_e_s___epochs_8ipf" startline="18">EPOCHNAME_SEP</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a46f613a23c0d91d06fa1a833a40fb892" compoundref="_m_i_e_s___constants_8ipf" startline="1241">STIMSET_ENTRY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" compoundref="_m_i_e_s___epochs_8ipf" startline="19">STIMSETKEYNAME_SEP</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1afb1f5cda7a6e116d69753f769dddcd6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1560" endline="1576">WB_GetPulsesFromPTSweepEpoch</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a56f2a6d6f8ba42034e7562509dbce57d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1477" endline="1524">WB_GetWaveNoteEntry</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a2d0a9c7408a236ff618a895aa24f8d69" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1527" endline="1558">WB_GetWaveNoteEntryAsNumber</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a346d1fb1d9940927893889c537869edc" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1401" endline="1427">WB_ToEpochType</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a06992acd981b690000662619d50875a2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_SortEpochs</definition>
+        <argsstring>(string device)</argsstring>
+        <name>EP_SortEpochs</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Sorts all epochs per channel in EpochsWave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Removes epochs marked for removal, those with NaN as StartTime and EndTime, as well.</para>
+<para>Sorting:<itemizedlist>
+<listitem><para>Ascending starting time</para>
+</listitem><listitem><para>Descending ending time</para>
+</listitem><listitem><para>Ascending tree level</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="434" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="434" bodyend="466"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae599ef847cdfe1fa4da9ca7ed40519af" compoundref="_m_i_e_s___epochs_8ipf" startline="472" endline="479">EP_GetEpochCount</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a59ca4090ff14bb14d0fe246db1968039" compoundref="_m_i_e_s___constants_8ipf" startline="1435">EPOCH_COL_ENDTIME</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac9145bd102365405962f7e9d1c5566e2" compoundref="_m_i_e_s___constants_8ipf" startline="1434">EPOCH_COL_STARTTIME</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a959c972005e0b8623f2cd4b56a799ee9" compoundref="_m_i_e_s___constants_8ipf" startline="1437">EPOCH_COL_TREELEVEL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb3c53d4a4acb32629af52b46ab81c78" compoundref="_m_i_e_s___constants_8ipf" startline="1600">EPOCHTIME_PRECISION</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a4aa6d9209372228eab9ac2f7192fea86" compoundref="_i_p_n_w_b___constants_8ipf" startline="79">LAYERS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" compoundref="_i_p_n_w_b___utils_8ipf" startline="725" endline="736">num2strHighPrec</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a215c47910f6ef60c62c7f26a28a0a8ac" compoundref="_m_i_e_s___utilities_8ipf" startline="4987" endline="5025">RemoveTextWaveEntry1D</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1ae599ef847cdfe1fa4da9ca7ed40519af" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_GetEpochCount</definition>
+        <argsstring>(string device, variable channel)</argsstring>
+        <name>EP_GetEpochCount</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of epoch in the epochsWave for the given channel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of epochs for channel </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="472" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="472" bodyend="479"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ae23468e17f360d323cbf8f3e93a11dde" compoundref="_m_i_e_s___epochs_8ipf" startline="494" endline="506">EP_AddUserEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06992acd981b690000662619d50875a2" compoundref="_m_i_e_s___epochs_8ipf" startline="434" endline="466">EP_SortEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1ae23468e17f360d323cbf8f3e93a11dde" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EP_AddUserEpoch</definition>
+        <argsstring>(string device, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, string shortName=defaultValue)</argsstring>
+        <name>EP_AddUserEpoch</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epBegin</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epEnd</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>tags</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>shortName</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add user epochs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Allows to add user epochs for not yet finished sweeps. The tree level is fixed to <ref refid="_m_i_e_s___constants_8ipf_1a0022023d849c9121d8e4183014c65472" kindref="member">EPOCH_USER_LEVEL</ref> to not collide with stock entries.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel type, currently only <ref refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" kindref="member">XOP_CHANNEL_TYPE_DAC</ref> is supported </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel number </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epBegin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>start time of the epoch in seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>epEnd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>end time of the epoch in seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>tags for the epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>shortName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to auto-generated] user defined short name for the epoch, will be prefixed with <ref refid="_m_i_e_s___constants_8ipf_1a5c2ac163619be899074ce4958b91c150" kindref="member">EPOCH_SHORTNAME_USER_PREFIX</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="494" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="494" bodyend="506"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae599ef847cdfe1fa4da9ca7ed40519af" compoundref="_m_i_e_s___epochs_8ipf" startline="472" endline="479">EP_GetEpochCount</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5c2ac163619be899074ce4958b91c150" compoundref="_m_i_e_s___constants_8ipf" startline="1617">EPOCH_SHORTNAME_USER_PREFIX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0022023d849c9121d8e4183014c65472" compoundref="_m_i_e_s___constants_8ipf" startline="1615">EPOCH_USER_LEVEL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1abc9e4fbc6f6056cad7fea876eeab14b1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3145" endline="3155">PSQ_Ramp_AddEpoch</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_AddEpoch</definition>
+        <argsstring>(string device, variable channel, variable epBegin, variable epEnd, string epTags, string epShortName, variable level=defaultValue, variable lowerlimit=defaultValue, variable upperlimit=defaultValue)</argsstring>
+        <name>EP_AddEpoch</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epBegin</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>epEnd</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>epTags</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>epShortName</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>level</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>lowerlimit</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>upperlimit</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Adds a epoch to the epochsWave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>title of device panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of DA channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">epBegin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>start time of the epoch in micro seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">epEnd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>end time of the epoch in micro seconds </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">epTags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>tags of the epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">epShortName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>short name of the epoch, should be unique </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>level of epoch </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lowerlimit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be &gt; this limit </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">upperlimit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be &lt; this limit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="518" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="518" bodyend="562"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae599ef847cdfe1fa4da9ca7ed40519af" compoundref="_m_i_e_s___epochs_8ipf" startline="472" endline="479">EP_GetEpochCount</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aa7e21884500826cce5156ec617243437" compoundref="_m_i_e_s___epochs_8ipf" startline="12">EPOCH_SHORTNAME_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac2101c065e7f7efb0cea94c15261b45f" compoundref="_m_i_e_s___constants_8ipf" startline="1607">EPOCH_TAG_INVALID_CHARS_REGEXP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb3c53d4a4acb32629af52b46ab81c78" compoundref="_m_i_e_s___constants_8ipf" startline="1600">EPOCHTIME_PRECISION</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a4a909427286bc9649753a8e9d2ce0550" compoundref="_i_p_n_w_b___utils_8ipf" startline="42" endline="47">isNull</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" compoundref="_i_p_n_w_b___utils_8ipf" startline="725" endline="736">num2strHighPrec</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a73cc9accb58f6e9280ec0a7dd6e86bad" compoundref="_m_i_e_s___epochs_8ipf" startline="20">SHORTNAMEKEY_SEP</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ad9491289b63c8624a23d6a9e2c3d9d8f" compoundref="_m_i_e_s___epochs_8ipf" startline="188" endline="209">EP_AddEpochsFromOodDAQRegions</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a06ad517c1ecc3e3f4bd1a6276e9fe17e" compoundref="_m_i_e_s___epochs_8ipf" startline="220" endline="422">EP_AddEpochsFromStimSetNote</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a67b1a23674f55b3c9f47bd24ac75dbc0" compoundref="_m_i_e_s___epochs_8ipf" startline="145" endline="180">EP_AddEpochsFromTP</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1ae23468e17f360d323cbf8f3e93a11dde" compoundref="_m_i_e_s___epochs_8ipf" startline="494" endline="506">EP_AddUserEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a3f50d0cdfb8ee0e232e396972aa86158" compoundref="_m_i_e_s___epochs_8ipf" startline="54" endline="136">EP_CollectEpochInfo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable EP_WriteEpochInfoIntoSweepSettings</definition>
+        <argsstring>(string device, wave sweepWave, wave configWave)</argsstring>
+        <name>EP_WriteEpochInfoIntoSweepSettings</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweepWave</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>configWave</declname>
+        </param>
+        <briefdescription>
+<para>Write the epoch info into the sweep settings wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>configWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>config wave </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="569" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="569" bodyend="600"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="48" endline="55">AFH_GetHeadstageFromDAC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___data_configurator_8ipf_1a63b2b2b8ad7145aa0733ec574f91f477" compoundref="_m_i_e_s___data_configurator_8ipf" startline="1666" endline="1736">DC_DocumentChannelProperty</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" compoundref="_m_i_e_s___epochs_8ipf" startline="642" endline="688">EP_AdaptEpochInfo</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1abdbf463702610b2601e2c64f41c57ff4" compoundref="_m_i_e_s___epochs_8ipf" startline="606" endline="611">EP_EpochWaveToStr</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a06992acd981b690000662619d50875a2" compoundref="_m_i_e_s___epochs_8ipf" startline="434" endline="466">EP_SortEpochs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7eb87d6504dab4320331c4024279ec43" compoundref="_m_i_e_s___constants_8ipf" startline="860">EPOCHS_ENTRY_KEY</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b51595ed8d1af27a8a6f52c54f3b8a4" compoundref="_m_i_e_s___constants_8ipf" startline="653">SWEEP_EPOCH_VERSION</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1abdbf463702610b2601e2c64f41c57ff4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string EP_EpochWaveToStr</definition>
+        <argsstring>(wave epochsWave, variable channel)</argsstring>
+        <name>EP_EpochWaveToStr</name>
+        <param>
+          <type>wave</type>
+          <declname>epochsWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+        </param>
+        <briefdescription>
+<para>Convert the epochs wave layer given by <computeroutput>channel</computeroutput> to a string suitable for storing the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>epochsWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>wave with epoch information </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DA channel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="606" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="606" bodyend="611"/>
+        <references refid="_m_i_e_s___constants_8ipf_1af88d73aa7af5e33654fb027bad57b238" compoundref="_m_i_e_s___constants_8ipf" startline="1603">EPOCH_LIST_COL_SEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0d179c7c44b2003ea5f76ddb47831343" compoundref="_m_i_e_s___constants_8ipf" startline="1602">EPOCH_LIST_ROW_SEP</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1ae8a9aacc232d865e1c676aead3290755" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave EP_EpochStrToWave</definition>
+        <argsstring>(string epochStr)</argsstring>
+        <name>EP_EpochStrToWave</name>
+        <param>
+          <type>string</type>
+          <declname>epochStr</declname>
+        </param>
+        <briefdescription>
+<para>Converts a string containing epoch information in the format that is stored in the Labnotebook to a 2D epoch wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" kindref="member">GetEpochsWave</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">epochStr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string with epoch information in the format as stored in the labnotebook </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>2D text wave with epoch information, use EPOCH_COL_ constants for column access </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="618" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="618" bodyend="624"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af88d73aa7af5e33654fb027bad57b238" compoundref="_m_i_e_s___constants_8ipf" startline="1603">EPOCH_LIST_COL_SEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0d179c7c44b2003ea5f76ddb47831343" compoundref="_m_i_e_s___constants_8ipf" startline="1602">EPOCH_LIST_ROW_SEP</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a63b7169303030ff1e72e75071d9532f3" compoundref="_m_i_e_s___utilities_8ipf" startline="3107" endline="3200">ListToTextWaveMD</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a66b34d66b25f718fc93a3046196d5dc1" compoundref="_m_i_e_s___epochs_8ipf" startline="701" endline="741">EP_GetEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a57149957c8e3ad38651b9c11c69c3e74" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1331" endline="1352">NWB_FetchEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___pulse_averaging_8ipf_1a84ec970c0b383ce00dce7e9f06f91d4a" compoundref="_m_i_e_s___pulse_averaging_8ipf" startline="426" endline="498">PA_RetrievePulseInfosFromEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1abc42472e440fd5b35ac282944d6e2485" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string EP_GetShortName</definition>
+        <argsstring>(string name)</argsstring>
+        <name>EP_GetShortName</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ShortName from a epoch name string, empty string if no ShortName is present. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="627" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="627" bodyend="630"/>
+        <references refid="_m_i_e_s___epochs_8ipf_1aa7e21884500826cce5156ec617243437" compoundref="_m_i_e_s___epochs_8ipf" startline="12">EPOCH_SHORTNAME_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a73cc9accb58f6e9280ec0a7dd6e86bad" compoundref="_m_i_e_s___epochs_8ipf" startline="20">SHORTNAMEKEY_SEP</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a66b34d66b25f718fc93a3046196d5dc1" compoundref="_m_i_e_s___epochs_8ipf" startline="701" endline="741">EP_GetEpochs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1aa4cb3c0472cc642d7067981b07a16753" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable EP_AdaptEpochInfo</definition>
+        <argsstring>(string device, wave configWave, variable acquiredTime, variable plannedTime)</argsstring>
+        <name>EP_AdaptEpochInfo</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>configWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>acquiredTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>plannedTime</declname>
+        </param>
+        <briefdescription>
+<para>Adapt epoch information. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>Adjust epoch end time to the acquired time</para>
+</listitem><listitem><para>Blanks out which are then too small or lie outside the acquired region</para>
+</listitem><listitem><para>Add an unacquired epoch</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>configWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DAQ config wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>acquiredTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Last acquired time point [s] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>plannedTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Last time point in the sweep [s] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="642" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="642" bodyend="688"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af18a620bae8e5bc874d18e969d4e7018" compoundref="_m_i_e_s___constants_8ipf" startline="97">DAQ_CHANNEL_TYPE_DAQ</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a4895d3d426ced9d7aa33d491e91291e4" compoundref="_m_i_e_s___epochs_8ipf" startline="518" endline="562">EP_AddEpoch</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae599ef847cdfe1fa4da9ca7ed40519af" compoundref="_m_i_e_s___epochs_8ipf" startline="472" endline="479">EP_GetEpochCount</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a92688e09554d2bedb1083db81399adf6" compoundref="_m_i_e_s___epochs_8ipf" startline="41">EPOCH_SN_UNACQUIRED</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a637a315a63f41113eebb2d0af6ba3527" compoundref="_m_i_e_s___epochs_8ipf" startline="13">EPOCH_TYPE_KEY</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a0a054c8097a97aecd8f7f82e66671a86" compoundref="_m_i_e_s___epochs_8ipf" startline="18">EPOCHNAME_SEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb3c53d4a4acb32629af52b46ab81c78" compoundref="_m_i_e_s___constants_8ipf" startline="1600">EPOCHTIME_PRECISION</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="845" endline="863">GetEpochsWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a512951988b6a8e54630751c2073e9d0b" compoundref="_i_p_n_w_b___utils_8ipf" startline="725" endline="736">num2strHighPrec</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1a24ae7430e61a861258a798940a5c9894" compoundref="_m_i_e_s___epochs_8ipf" startline="19">STIMSETKEYNAME_SEP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___epochs_8ipf_1a66b34d66b25f718fc93a3046196d5dc1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave EP_GetEpochs</definition>
+        <argsstring>(wave numericalValues, wave textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, variable treelevel=defaultValue)</argsstring>
+        <name>EP_GetEpochs</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>textualValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>shortname</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>treelevel</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Get epochs from the LBN filtered by given parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>numericalValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numerical values from the labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>textualValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Textual values from the labnotebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweepNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of sweep </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of channel </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>XopChannelConstants </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>channelNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>shortname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>short name filter, can be a regular expression which is matched caseless </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>treelevel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional: default = not set] tree level of epochs, if not set then treelevel is ignored</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" line="701" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf" bodystart="701" bodyend="741"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1ae8a9aacc232d865e1c676aead3290755" compoundref="_m_i_e_s___epochs_8ipf" startline="618" endline="624">EP_EpochStrToWave</references>
+        <references refid="_m_i_e_s___epochs_8ipf_1abc42472e440fd5b35ac282944d6e2485" compoundref="_m_i_e_s___epochs_8ipf" startline="627" endline="630">EP_GetShortName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac9145bd102365405962f7e9d1c5566e2" compoundref="_m_i_e_s___constants_8ipf" startline="1434">EPOCH_COL_STARTTIME</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7580fd0b6c59ea45d4749f5559182d79" compoundref="_m_i_e_s___constants_8ipf" startline="1436">EPOCH_COL_TAGS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a959c972005e0b8623f2cd4b56a799ee9" compoundref="_m_i_e_s___constants_8ipf" startline="1437">EPOCH_COL_TREELEVEL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7eb87d6504dab4320331c4024279ec43" compoundref="_m_i_e_s___constants_8ipf" startline="860">EPOCHS_ENTRY_KEY</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="group___labnotebook_query_functions_1gabb16f09410b8b243f293391ec3c7823d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="842" endline="861">GetLastSettingChannel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>EP</bold> Handle code relating to epoch information </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Epochs.ipf"/>
+  </compounddef>
+</doxygen>

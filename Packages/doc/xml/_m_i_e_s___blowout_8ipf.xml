@@ -1,0 +1,389 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___blowout_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Blowout.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___blowout_8ipf_1a98044a9c0249d8cf6092769cf9db2788" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BWO_MAX_RESISTANCE</definition>
+        <argsstring></argsstring>
+        <name>BWO_MAX_RESISTANCE</name>
+        <initializer>= 10</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___blowout_8ipf_1acc7f82c3c0524c3747bbc290bd04b04d" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BWO_INIT_PRESSURE</definition>
+        <argsstring></argsstring>
+        <name>BWO_INIT_PRESSURE</name>
+        <initializer>= 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" compoundref="_m_i_e_s___blowout_8ipf" startline="145" endline="162">BWO_InitParaPipetteClear</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___blowout_8ipf_1a9cb6e95a6ecc4cd20c200b76c79f4693" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double BWO_PRESSURE_INCREMENT</definition>
+        <argsstring></argsstring>
+        <name>BWO_PRESSURE_INCREMENT</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___blowout_8ipf_1a5b9fa1737d73cd67fda72b50bdfb6927" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TWO_SECONDS</definition>
+        <argsstring></argsstring>
+        <name>TWO_SECONDS</name>
+        <initializer>= 120</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___blowout_8ipf_1a92cbd601ae1dcb15a350ab1cc4ff3bf5" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double FIFTEEN_SECONDS</definition>
+        <argsstring></argsstring>
+        <name>FIFTEEN_SECONDS</name>
+        <initializer>= 900</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a5a7cc9617cd0e9bf61fa31fee1d82686" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BWO_SelectDevice</definition>
+        <argsstring>()</argsstring>
+        <name>BWO_SelectDevice</name>
+        <briefdescription>
+<para>Initiates blowout protocol on single locked device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="19" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="19" bodyend="41"/>
+        <references refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable BWO_Go</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_Go</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Executes blowout protocol. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="44" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="44" bodyend="64"/>
+        <references refid="_m_i_e_s___blowout_8ipf_1a5534916d8b31bbca1345f032aef62a14" compoundref="_m_i_e_s___blowout_8ipf" startline="270" endline="275">BWO_AcquireSweep</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a313740c4e7e9130531d23188d271c528" compoundref="_m_i_e_s___blowout_8ipf" startline="218" endline="228">BWO_AllMCCCtrlsOFF</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1aed29078f9980cc9c56ed9a668436fd1a" compoundref="_m_i_e_s___blowout_8ipf" startline="69" endline="112">BWO_CheckGlobalSettings</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a16fa0df8222a6a091d0398923bc2b317" compoundref="_m_i_e_s___blowout_8ipf" startline="115" endline="123">BWO_ConfigureTP</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" compoundref="_m_i_e_s___blowout_8ipf" startline="145" endline="162">BWO_InitParaPipetteClear</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a5caf5dd3be3743566c9a2a279e23c78d" compoundref="_m_i_e_s___blowout_8ipf" startline="126" endline="142">BWO_SetMIESSettings</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1a5a7cc9617cd0e9bf61fa31fee1d82686" compoundref="_m_i_e_s___blowout_8ipf" startline="19" endline="41">BWO_SelectDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1aed29078f9980cc9c56ed9a668436fd1a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_CheckGlobalSettings</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_CheckGlobalSettings</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Checks that MIES is correctly configured for automated blowout protocol. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>one if settings are valid, zero otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="69" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="69" bodyend="112"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1ac4bd0369df4873d417caa3cc67d4244a" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1670" endline="1675">AI_SelectMultiClamp</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad20bcc5e3031855e147069d22d3d626c" compoundref="_m_i_e_s___constants_8ipf" startline="713">AMPLIFIER_CONNECTION_SUCCESS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5911e6b3062aae4de812f650fee579fc" compoundref="_m_i_e_s___constants_8ipf" startline="441">DAQ_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a98f88b39bcea835cbf2133d76fbf7319" compoundref="_m_i_e_s___constants_8ipf" startline="756">PRESSURE_METHOD_ATM</references>
+        <references refid="group___stimset_a_p_i_functions_1gaca4a2980dbf18818ff9174af2788107f" compoundref="_m_i_e_s___stimset_a_p_i_8ipf" startline="195" endline="256">ST_GetStimsetList</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a16fa0df8222a6a091d0398923bc2b317" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_ConfigureTP</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_ConfigureTP</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Initates test pulse. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="115" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="115" bodyend="123"/>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a5caf5dd3be3743566c9a2a279e23c78d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_SetMIESSettings</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_SetMIESSettings</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Configures data acquisition settings for blowout. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="126" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="126" bodyend="142"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6d345019664ca2deafcf37e34bffc18" compoundref="_m_i_e_s___constants_8ipf" startline="229">CHANNEL_INDEX_ALL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1ab4781b044c3e7fa28aeca191f5630b" compoundref="_m_i_e_s___constants_8ipf" startline="231">CHANNEL_INDEX_ALL_I_CLAMP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_InitParaPipetteClear</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_InitParaPipetteClear</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Applies a pressure pulse to all headstages with valid pressure settings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="145" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="145" bodyend="162"/>
+        <references refid="_m_i_e_s___blowout_8ipf_1acc7f82c3c0524c3747bbc290bd04b04d" compoundref="_m_i_e_s___blowout_8ipf" startline="13">BWO_INIT_PRESSURE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_CheckAndClearPipettes</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_CheckAndClearPipettes</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Attempts to clear pipettes that have a resistance larger than MAX_RESISTANCE. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="165" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="165" bodyend="215"/>
+        <references refid="_m_i_e_s___blowout_8ipf_1acc7f82c3c0524c3747bbc290bd04b04d" compoundref="_m_i_e_s___blowout_8ipf" startline="13">BWO_INIT_PRESSURE</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a98044a9c0249d8cf6092769cf9db2788" compoundref="_m_i_e_s___blowout_8ipf" startline="12">BWO_MAX_RESISTANCE</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a9cb6e95a6ecc4cd20c200b76c79f4693" compoundref="_m_i_e_s___blowout_8ipf" startline="14">BWO_PRESSURE_INCREMENT</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a92cbd601ae1dcb15a350ab1cc4ff3bf5" compoundref="_m_i_e_s___blowout_8ipf" startline="16">FIFTEEN_SECONDS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0cc26ea00b335a5104f8eb68a1f53768" compoundref="_m_i_e_s___constants_8ipf" startline="70">MAX_REGULATOR_PRESSURE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</references>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1a5c531776ae7abc7e92f19dd0f821f210" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1861" endline="1937">P_ValidatePressureSetHeadstage</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1a5b9fa1737d73cd67fda72b50bdfb6927" compoundref="_m_i_e_s___blowout_8ipf" startline="15">TWO_SECONDS</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a313740c4e7e9130531d23188d271c528" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_AllMCCCtrlsOFF</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_AllMCCCtrlsOFF</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Turns OFF all relevant MCC amplifier controls in I- and V-clamp modes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="218" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="218" bodyend="228"/>
+        <references refid="_m_i_e_s___blowout_8ipf_1a77b055bc10fee597f9dbce73bd4bda0b" compoundref="_m_i_e_s___blowout_8ipf" startline="251" endline="258">BWO_DisableMCCIClampCtrls</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1abaa619a95f61031fcdf16a7a7372cb1b" compoundref="_m_i_e_s___blowout_8ipf" startline="261" endline="267">BWO_DisableMCCVClampCtrls</references>
+        <references refid="_m_i_e_s___blowout_8ipf_1aa4e05a30d93316302e749e6acf41d8ec" compoundref="_m_i_e_s___blowout_8ipf" startline="231" endline="248">BWO_SetClampModeAll</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1aa4e05a30d93316302e749e6acf41d8ec" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_SetClampModeAll</definition>
+        <argsstring>(string device, variable mode)</argsstring>
+        <name>BWO_SetClampModeAll</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper function for setting the clamp mode on all headstages (T̶h̶o̶m̶a̶s̶ ̶p̶r̶o̶b̶a̶b̶l̶y̶ ̶w̶o̶n̶&apos;̶t̶ ̶l̶i̶k̶e̶ ̶i̶t̶ He liked it!! :/ ). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="231" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="231" bodyend="248"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1a313740c4e7e9130531d23188d271c528" compoundref="_m_i_e_s___blowout_8ipf" startline="218" endline="228">BWO_AllMCCCtrlsOFF</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a77b055bc10fee597f9dbce73bd4bda0b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_DisableMCCIClampCtrls</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_DisableMCCIClampCtrls</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Turns OFF I-clamp controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="251" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="251" bodyend="258"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1a313740c4e7e9130531d23188d271c528" compoundref="_m_i_e_s___blowout_8ipf" startline="218" endline="228">BWO_AllMCCCtrlsOFF</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1abaa619a95f61031fcdf16a7a7372cb1b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_DisableMCCVClampCtrls</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_DisableMCCVClampCtrls</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Turns OFF V-clamp controls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="261" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="261" bodyend="267"/>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1a313740c4e7e9130531d23188d271c528" compoundref="_m_i_e_s___blowout_8ipf" startline="218" endline="228">BWO_AllMCCCtrlsOFF</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___blowout_8ipf_1a5534916d8b31bbca1345f032aef62a14" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable BWO_AcquireSweep</definition>
+        <argsstring>(string device)</argsstring>
+        <name>BWO_AcquireSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Acquires blowout sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" line="270" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf" bodystart="270" bodyend="275"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ade89ed1eeb1c88af7fc42411e688fac5" compoundref="_m_i_e_s___blowout_8ipf" startline="44" endline="64">BWO_Go</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>BWO</bold> Automates amplifier configuration and acquisition of the sweep used to measure drift in the zero calibration of the amplifer. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Blowout.ipf"/>
+  </compounddef>
+</doxygen>

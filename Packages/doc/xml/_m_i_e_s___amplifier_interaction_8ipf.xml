@@ -1,0 +1,1283 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___amplifier_interaction_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AmplifierInteraction.ipf</compoundname>
+    <innerclass refid="struct_axon_telegraph___data_struct" prot="public">AxonTelegraph_DataStruct</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___amplifier_interaction_8ipf_1a20b0c9b0682d3f63648ca9b296c414d6" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double ZERO_TOLERANCE</definition>
+        <argsstring></argsstring>
+        <name>ZERO_TOLERANCE</name>
+        <initializer>= 100</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1aa573d5e1b04e05a74b4b964933599896" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="682" endline="703">AI_ZeroAmps</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___amplifier_interaction_8ipf_1a39d2afc2f560edf1a190a53879a404fa" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string AMPLIFIER_CONTROLS_VC</definition>
+        <argsstring></argsstring>
+        <name>AMPLIFIER_CONTROLS_VC</name>
+        <initializer>= &quot;setvar_DataAcq_Hold_VC;check_DataAcq_Amp_Chain;check_DatAcq_HoldEnableVC;setvar_DataAcq_WCC;setvar_DataAcq_WCR;check_DatAcq_WholeCellEnable;setvar_DataAcq_RsCorr;setvar_DataAcq_RsPred;check_DataAcq_Amp_Chain;check_DatAcq_RsCompEnable;setvar_DataAcq_PipetteOffset_VC;button_DataAcq_FastComp_VC;button_DataAcq_SlowComp_VC;button_DataAcq_AutoPipOffset_VC&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___amplifier_interaction_8ipf_1a94929a598e1576f47f2e24ab0f470ad7" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string AMPLIFIER_CONTROLS_IC</definition>
+        <argsstring></argsstring>
+        <name>AMPLIFIER_CONTROLS_IC</name>
+        <initializer>= &quot;setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___amplifier_interaction_8ipf_1afda808714a7c7d6cd9284c4139af26e4" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MAX_PIPETTEOFFSET</definition>
+        <argsstring></argsstring>
+        <name>MAX_PIPETTEOFFSET</name>
+        <initializer>= 150</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___amplifier_interaction_8ipf_1a03f0a854ebf94e36e6f674d2c883a246" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MIN_PIPETTEOFFSET</definition>
+        <argsstring></argsstring>
+        <name>MIN_PIPETTEOFFSET</name>
+        <initializer>= -150</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="17" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="17" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a1d588a28ea5c33a5f4c04ca69a8bbc34" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_InitAxonTelegraphStruct</definition>
+        <argsstring>(AxonTelegraph_DataStruct *tds)</argsstring>
+        <name>AI_InitAxonTelegraphStruct</name>
+        <param>
+          <type><ref refid="struct_axon_telegraph___data_struct" kindref="compound">AxonTelegraph_DataStruct</ref> *</type>
+          <declname>tds</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="23" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="23" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a1fb6e4aaa9819a32756479a511e56dd8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_GetAmpAxonSerial</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>AI_GetAmpAxonSerial</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Returns the serial number of the headstage compatible with Axon* functions,. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" kindref="member">GetChanAmpAssign</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="59" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="59" bodyend="66"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="43" endline="92">GetChanAmpAssign</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a74776fcd38d81de8059b04cde0147389" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="69" endline="84">AI_GetAmpMCCSerial</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a74776fcd38d81de8059b04cde0147389" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AI_GetAmpMCCSerial</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>AI_GetAmpMCCSerial</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Returns the serial number of the headstage compatible with MCC* functions,. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" kindref="member">GetChanAmpAssign</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="69" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="69" bodyend="84"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a1fb6e4aaa9819a32756479a511e56dd8" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="59" endline="66">AI_GetAmpAxonSerial</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1adfdd67d3cbd7f52ce429bb27334f3875" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_GetAmpChannel</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>AI_GetAmpChannel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Return the channel of the currently selected head stage. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="87" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="87" bodyend="94"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="43" endline="92">GetChanAmpAssign</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a3db904f0b5e55d2782393d0d25cc01af" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_IsValidSerialAndChannel</definition>
+        <argsstring>(string mccSerial=defaultValue, variable axonSerial=defaultValue, variable channel=defaultValue)</argsstring>
+        <name>AI_IsValidSerialAndChannel</name>
+        <param>
+          <type>string</type>
+          <declname>mccSerial</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>axonSerial</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channel</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="96" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="96" bodyend="120"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1aabd82a91ce2838c781cf420aeaf8709e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_GetMCCScale</definition>
+        <argsstring>(variable clampMode, variable func)</argsstring>
+        <name>AI_GetMCCScale</name>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+<para>Return the unit prefixes used by MIES in comparison to the MCC app. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>clampMode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>clamp mode (pass <computeroutput>NaN</computeroutput> for doesn&apos;t matter) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>MCC function, one of <ref refid="_m_i_e_s___constants_8ipf_1AI_SendToAmpConstants" kindref="member">AI_SendToAmpConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="125" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="125" bodyend="184"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4cb1a100857f35e4c495575b30304fbe" compoundref="_m_i_e_s___constants_8ipf" startline="302">MCC_AUTOBRIDGEBALANCE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acbd1a4837f692cff8b923000edf409c9" compoundref="_m_i_e_s___constants_8ipf" startline="324">MCC_AUTOPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a33afafd7a291585f97c6be58abfcce49" compoundref="_m_i_e_s___constants_8ipf" startline="301">MCC_GETBRIDGEBALRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9edbaf1e407e7880922d3dcdb23e32ec" compoundref="_m_i_e_s___constants_8ipf" startline="295">MCC_GETHOLDING_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aaf908fbaf456c6b723499c1d78bd9d91" compoundref="_m_i_e_s___constants_8ipf" startline="306">MCC_GETNEUTRALIZATIONCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a870986e9a9ca5a3c0f9fff292031168f" compoundref="_m_i_e_s___constants_8ipf" startline="326">MCC_GETPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae4ac9461abab85f9d89060c113d3f6ce" compoundref="_m_i_e_s___constants_8ipf" startline="317">MCC_GETRSCOMPBANDWIDTH_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a65823a7445d322ded1a706c92d504bd9" compoundref="_m_i_e_s___constants_8ipf" startline="310">MCC_GETWHOLECELLCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a45f876270e82006cbd5d5bacf3b72b02" compoundref="_m_i_e_s___constants_8ipf" startline="312">MCC_GETWHOLECELLCOMPRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a651db8ab9289c55945e6561d04922980" compoundref="_m_i_e_s___constants_8ipf" startline="300">MCC_SETBRIDGEBALRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6a8fff88b6b124301625a37c122149d" compoundref="_m_i_e_s___constants_8ipf" startline="294">MCC_SETHOLDING_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac3aee78e199703f6ccdbcce17a844f2e" compoundref="_m_i_e_s___constants_8ipf" startline="305">MCC_SETNEUTRALIZATIONCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acacc02f538ba4784ed45a67b55d5867f" compoundref="_m_i_e_s___constants_8ipf" startline="325">MCC_SETPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad79043763d0f4e48bf09ecd07fa92c73" compoundref="_m_i_e_s___constants_8ipf" startline="316">MCC_SETRSCOMPBANDWIDTH_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a713124cc29b37ab777fe6e148c8375b8" compoundref="_m_i_e_s___constants_8ipf" startline="309">MCC_SETWHOLECELLCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae5ee4a970e0d94d5457b46f085806416" compoundref="_m_i_e_s___constants_8ipf" startline="311">MCC_SETWHOLECELLCOMPRESIST_FUNC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_UpdateAmpModel</definition>
+        <argsstring>(string device, string ctrl, variable headStage, variable value=defaultValue, variable sendToAll=defaultValue, variable checkBeforeWrite=defaultValue, variable selectAmp=defaultValue)</argsstring>
+        <name>AI_UpdateAmpModel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sendToAll</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>checkBeforeWrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>selectAmp</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Update the AmpStorageWave entry and send the value to the amplifier. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Additionally setting the GUI value if the given headstage is the selected one and a value has been passed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the amplifier control </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional: defaults to the controls value] value to set. values is in MIES units, see <ref refid="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" kindref="member">AI_SendToAmp()</ref> and there the description of <computeroutput>usePrefixes</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sendToAll</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional: defaults to the state of the checkbox] should the value be send to all active headstages (true) or just to the given one (false) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>checkBeforeWrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to false] (ignored for getter functions) check the current value and do nothing if it is equal within some tolerance to the one written </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>selectAmp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] Select the amplifier before use, some callers might save time in doing that once themselves.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on success, 1 otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="204" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="204" bodyend="479"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1ac4bd0369df4873d417caa3cc67d4244a" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1670" endline="1675">AI_SelectMultiClamp</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1685" endline="1691">AI_SendToAmp</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad20bcc5e3031855e147069d22d3d626c" compoundref="_m_i_e_s___constants_8ipf" startline="713">AMPLIFIER_CONNECTION_SUCCESS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a1d1a1e8f96482c095993aae0c65ab519" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1301" endline="1312">CheckIfValueIsInsideLimits</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a15515fef2b249421594b96f21e061f9c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5840" endline="5857">ConvertAmplifierModeToString</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aa00ef9459287f8981cccd35151f806ef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4713" endline="4719">DAP_AbortIfUnlocked</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a4232b730cf2ea786c61194d5fb6ae646" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="657" endline="664">GetTabID</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4cb1a100857f35e4c495575b30304fbe" compoundref="_m_i_e_s___constants_8ipf" startline="302">MCC_AUTOBRIDGEBALANCE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad762ed3872f0c0b58cc0f2165165022a" compoundref="_m_i_e_s___constants_8ipf" startline="337">MCC_AUTOFASTCOMP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acbd1a4837f692cff8b923000edf409c9" compoundref="_m_i_e_s___constants_8ipf" startline="324">MCC_AUTOPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae2739b79b0d76d11def08c7c42fa31cc" compoundref="_m_i_e_s___constants_8ipf" startline="338">MCC_AUTOSLOWCOMP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acf449c79f3ca353ab7b8a97cac40bb95" compoundref="_m_i_e_s___constants_8ipf" startline="313">MCC_AUTOWHOLECELLCOMP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a870986e9a9ca5a3c0f9fff292031168f" compoundref="_m_i_e_s___constants_8ipf" startline="326">MCC_GETPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a65823a7445d322ded1a706c92d504bd9" compoundref="_m_i_e_s___constants_8ipf" startline="310">MCC_GETWHOLECELLCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a72975826b810e0dddfe752d3ca7a33bc" compoundref="_m_i_e_s___constants_8ipf" startline="308">MCC_GETWHOLECELLCOMPENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a45f876270e82006cbd5d5bacf3b72b02" compoundref="_m_i_e_s___constants_8ipf" startline="312">MCC_GETWHOLECELLCOMPRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af282af9f7df0c8a81e1e4b0a25c2c866" compoundref="_m_i_e_s___constants_8ipf" startline="298">MCC_SETBRIDGEBALENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a651db8ab9289c55945e6561d04922980" compoundref="_m_i_e_s___constants_8ipf" startline="300">MCC_SETBRIDGEBALRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6a8fff88b6b124301625a37c122149d" compoundref="_m_i_e_s___constants_8ipf" startline="294">MCC_SETHOLDING_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a23df6f6f6115195a90b2ddd423dde291" compoundref="_m_i_e_s___constants_8ipf" startline="296">MCC_SETHOLDINGENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac3aee78e199703f6ccdbcce17a844f2e" compoundref="_m_i_e_s___constants_8ipf" startline="305">MCC_SETNEUTRALIZATIONCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae29bca8d9961df3631a86b5ac22f728e" compoundref="_m_i_e_s___constants_8ipf" startline="303">MCC_SETNEUTRALIZATIONENABL_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acacc02f538ba4784ed45a67b55d5867f" compoundref="_m_i_e_s___constants_8ipf" startline="325">MCC_SETPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac320578fe81abce3f39d0ea39c8a5ee8" compoundref="_m_i_e_s___constants_8ipf" startline="318">MCC_SETRSCOMPCORRECTION_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abeddaae1f69c88806df425a8f67732d7" compoundref="_m_i_e_s___constants_8ipf" startline="314">MCC_SETRSCOMPENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a664e44cc24c3698dec95ea706a4e5d81" compoundref="_m_i_e_s___constants_8ipf" startline="320">MCC_SETRSCOMPPREDICTION_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a713124cc29b37ab777fe6e148c8375b8" compoundref="_m_i_e_s___constants_8ipf" startline="309">MCC_SETWHOLECELLCOMPCAP_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8993ec3059fbda765b2f61053044b7d" compoundref="_m_i_e_s___constants_8ipf" startline="307">MCC_SETWHOLECELLCOMPENABLE_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae5ee4a970e0d94d5457b46f085806416" compoundref="_m_i_e_s___constants_8ipf" startline="311">MCC_SETWHOLECELLCOMPRESIST_FUNC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ab81aabb8a66630545d75b955e0839985" compoundref="_m_i_e_s___constants_8ipf" startline="727">MCC_SKIP_UPDATES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1b161043fd8e1ae19faf8cef394e26f" compoundref="_m_i_e_s___constants_8ipf" startline="430">TEST_PULSE_NOT_RUNNING</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1268" endline="1291">TP_RestartTestPulse</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a12d7a6d3e09c49f52e9523aef5357e7f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1213" endline="1217">TP_StopTestPulseFast</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1468" endline="1494">TP_UpdateHoldCmdInTPStorage</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af316ea8e1c3db516b562b08182a7b2bc" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3988" endline="4005">DAP_ButtonProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1261f9225c4da2e6c2fe01b032fa8813" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4007" endline="4025">DAP_CheckProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a1fa85fe377c21a85280efb6de8f8b6b2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3968" endline="3986">DAP_SetVarProc_AmpCntrls</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae2a40ac9b7c4d3e2115d04a83a13c1db" compoundref="_m_i_e_s___pressure_control_8ipf" startline="259" endline="288">P_MethodApproach</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae7f6628f1dedf5089bdf994a9aa944e4" compoundref="_m_i_e_s___pressure_control_8ipf" startline="498" endline="508">P_UpdateVcom</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1ae00f6ab602d2515dcf3ffdcd139b928a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SyncAmpStorageToGUI</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>AI_SyncAmpStorageToGUI</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Convenience wrapper for <ref refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" kindref="member">AI_UpdateAmpView</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Disallows setting single controls for outside callers as <ref refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" kindref="member">AI_UpdateAmpModel</ref> should be used for that. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="484" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="484" bodyend="489"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3429c12c8e2f37e8dac77452e8b97563" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3563" endline="3581">DAP_UpdateClampmodeTabs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SyncGUIToAmpStorageAndMCCApp</definition>
+        <argsstring>(string device, variable headStage, variable clampMode)</argsstring>
+        <name>AI_SyncGUIToAmpStorageAndMCCApp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Sync the settings from the GUI to the amp storage wave and the MCC application. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="492" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="492" bodyend="526"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1ad9e6d2c86d7b3d46c8e790b13ca05526" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1693" endline="1698">AI_EnsureCorrectMode</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a94929a598e1576f47f2e24ab0f470ad7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="15">AMPLIFIER_CONTROLS_IC</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a39d2afc2f560edf1a190a53879a404fa" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="14">AMPLIFIER_CONTROLS_VC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aa00ef9459287f8981cccd35151f806ef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4713" endline="4719">DAP_AbortIfUnlocked</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3429c12c8e2f37e8dac77452e8b97563" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3563" endline="3581">DAP_UpdateClampmodeTabs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_UpdateAmpView</definition>
+        <argsstring>(string device, variable headStage, string ctrl=defaultValue)</argsstring>
+        <name>AI_UpdateAmpView</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ctrl</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Synchronizes the AmpStorageWave to the amplifier GUI control. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to all controls] name of the control being updated </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="533" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="533" bodyend="577"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a0a3275b07469e72377963428d5f5776d" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="580" endline="660">AI_AmpStorageControlToRowLabel</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a94929a598e1576f47f2e24ab0f470ad7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="15">AMPLIFIER_CONTROLS_IC</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a39d2afc2f560edf1a190a53879a404fa" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="14">AMPLIFIER_CONTROLS_VC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a35652d9f717b5245384c9ab9bfc80a7a" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="397" endline="432">DAG_Update</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aa00ef9459287f8981cccd35151f806ef" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4713" endline="4719">DAP_AbortIfUnlocked</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a283c449f887b0035523ef4f755e07568" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2946" endline="3004">GetAmplifierParamStorageWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae8a5d44752a376e8560f3634cbbaa072" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="372" endline="386">SetCheckBoxState</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a02181c92e359df5d62958592a088e68b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="321" endline="343">SetSetVariable</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1ae00f6ab602d2515dcf3ffdcd139b928a" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="484" endline="489">AI_SyncAmpStorageToGUI</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a0a3275b07469e72377963428d5f5776d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AI_AmpStorageControlToRowLabel</definition>
+        <argsstring>(string ctrl)</argsstring>
+        <name>AI_AmpStorageControlToRowLabel</name>
+        <param>
+          <type>string</type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+<para>Convert amplifier controls to row labels for <computeroutput>AmpStorageWave</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="580" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="580" bodyend="660"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a22c03e4ef78983caafa405206cf799ca" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="533" endline="577">AI_UpdateAmpView</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a718654a9bbc27fec1384bcf51f7bb341" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SetMIESHeadstage</definition>
+        <argsstring>(string device, variable headstage=defaultValue, variable increment=defaultValue)</argsstring>
+        <name>AI_SetMIESHeadstage</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>increment</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="661" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="661" bodyend="676"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1aa573d5e1b04e05a74b4b964933599896" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_ZeroAmps</definition>
+        <argsstring>(string device, variable headStage=defaultValue)</argsstring>
+        <name>AI_ZeroAmps</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Executes MCC auto zero command if the baseline current exceeds <ref refid="_m_i_e_s___amplifier_interaction_8ipf_1a20b0c9b0682d3f63648ca9b296c414d6" kindref="member">ZERO_TOLERANCE</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional: defaults to all active headstages] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="682" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="682" bodyend="703"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a25dc56630c23fe842bf229e14d73a586" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5074" endline="5112">IsDeviceActiveWithBGTask</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a20b0c9b0682d3f63648ca9b296c414d6" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="12">ZERO_TOLERANCE</references>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae2a40ac9b7c4d3e2115d04a83a13c1db" compoundref="_m_i_e_s___pressure_control_8ipf" startline="259" endline="288">P_MethodApproach</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_MIESAutoPipetteOffset</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>AI_MIESAutoPipetteOffset</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+<para>Auto pipette zeroing Quicker than MCC auto pipette offset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="710" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="710" bodyend="731"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1685" endline="1691">AI_SendToAmp</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a869521933e3c94ce469efab88073324d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="382" endline="387">DAG_GetHeadstageMode</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1afda808714a7c7d6cd9284c4139af26e4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="16">MAX_PIPETTEOFFSET</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a870986e9a9ca5a3c0f9fff292031168f" compoundref="_m_i_e_s___constants_8ipf" startline="326">MCC_GETPIPETTEOFFSET_FUNC</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a03f0a854ebf94e36e6f674d2c883a246" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="17">MIN_PIPETTEOFFSET</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1aa573d5e1b04e05a74b4b964933599896" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="682" endline="703">AI_ZeroAmps</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a47b4bcb639e2324b3ef4bcf9ab143e3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_QueryGainsUnitsForClampMode</definition>
+        <argsstring>(string device, variable headstage, variable clampMode, variable *DAGain, variable *ADGain, string *DAUnit, string *ADUnit)</argsstring>
+        <name>AI_QueryGainsUnitsForClampMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>DAGain</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>ADGain</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>DAUnit</declname>
+        </param>
+        <param>
+          <type>string *</type>
+          <declname>ADUnit</declname>
+        </param>
+        <briefdescription>
+<para>Query the MCC application for the gains and units of the given clamp mode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Assumes that the correct amplifier is already selected! </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="736" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="736" bodyend="758"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a5c67faf6ab5c67377539bd2a8b95da25" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1654" endline="1663">AI_RetrieveGains</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1abcc9aaf6fbc5299bd0de24586d5aaed8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_UpdateChanAmpAssign</definition>
+        <argsstring>(string device, variable headStage, variable clampMode, variable DAGain, variable ADGain, string DAUnit, string ADUnit)</argsstring>
+        <name>AI_UpdateChanAmpAssign</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>DAGain</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>ADGain</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>DAUnit</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ADUnit</declname>
+        </param>
+        <briefdescription>
+<para>Update the <computeroutput>ChanAmpAssign</computeroutput> and <computeroutput>ChanAmpAssignUnit</computeroutput> waves according to the passed clamp mode with the gains and units. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="762" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="762" bodyend="788"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ad98a213eef7f69336c792c4819b26d06" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="43" endline="92">GetChanAmpAssign</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ba66dba82209c52f01b621278216dc2" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="105" endline="135">GetChanAmpAssignUnit</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_AssertOnInvalidClampMode</definition>
+        <argsstring>(variable clampMode)</argsstring>
+        <name>AI_AssertOnInvalidClampMode</name>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Assert on invalid clamp modes, does nothing otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="791" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="791" bodyend="795"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a63db4af38c39eb171a045023e6869e2e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="798" endline="802">AI_IsValidClampMode</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1aabd82a91ce2838c781cf420aeaf8709e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="125" endline="184">AI_GetMCCScale</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a47b4bcb639e2324b3ef4bcf9ab143e3f" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="736" endline="758">AI_QueryGainsUnitsForClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1abcc9aaf6fbc5299bd0de24586d5aaed8" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="762" endline="788">AI_UpdateChanAmpAssign</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a100b0a48e39c702cc341b0be2bee8232" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3260" endline="3328">DAP_GetInfoFromControl</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3429c12c8e2f37e8dac77452e8b97563" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3563" endline="3581">DAP_UpdateClampmodeTabs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a63db4af38c39eb171a045023e6869e2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_IsValidClampMode</definition>
+        <argsstring>(variable clampMode)</argsstring>
+        <name>AI_IsValidClampMode</name>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <briefdescription>
+<para>Return true if the given clamp mode is valid. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="798" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="798" bodyend="802"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab77292160177f61c5b4285768287c211" compoundref="_i_p_n_w_b___constants_8ipf" startline="88">I_EQUAL_ZERO_MODE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac1b6ecd2a4d52e8e4077d202f5a3c9fb" compoundref="_i_p_n_w_b___constants_8ipf" startline="86">V_CLAMP_MODE</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="791" endline="795">AI_AssertOnInvalidClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae9e138e4cc495dd02693a62189ea6113" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1146" endline="1173">GetHeadstageFromSettings</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a3f710ef1a81bebcba9598b7308f39daa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_OpenMCCs</definition>
+        <argsstring>(string ampSerialNumList, string ampTitleList=defaultValue)</argsstring>
+        <name>AI_OpenMCCs</name>
+        <param>
+          <type>string</type>
+          <declname>ampSerialNumList</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>ampTitleList</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Opens Multi-clamp commander software. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ampSerialNumList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A text list of amplifier serial numbers without leading zeroes Ex. &quot;834001;435003;836059&quot;, &quot;0;&quot; starts the MCC in Demo mode Duplicate serial numbers are ignored as well as amplifier titles for the duplicates. For each unique serial number one MCC is opened. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ampTitleList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to blank] MCC gui window title </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="812" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="812" bodyend="881"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a3af0ad87eec81963385f8fb6d617b28e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="886" endline="891">AI_GetMCCSerialNumbers</references>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a4ced37e8376af8d3a96e5e17a9bda5d5" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="898" endline="918">AI_GetMCCWinFilePath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a5c5eca9858d73f4daf77341760683b93" compoundref="_m_i_e_s___configuration_8ipf" startline="1817" endline="1934">CONF_RestoreHeadstageAssociation</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a3af0ad87eec81963385f8fb6d617b28e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave AI_GetMCCSerialNumbers</definition>
+        <argsstring>()</argsstring>
+        <name>AI_GetMCCSerialNumbers</name>
+        <briefdescription>
+<para>Gets the serial numbers of all open MCCs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>a 1D FREE wave containing amplifier serial numbers without leading zeroes </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="886" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="886" bodyend="891"/>
+        <references refid="_m_i_e_s___amplifier_interaction_8ipf_1a998ef792f249288a6eacc762cb20e680" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="1713" endline="1716">AI_FindConnectedAmps</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a702a319c5c5f535b02fdf3c6c1a2b5d3" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3300" endline="3313">GetAmplifierTelegraphServers</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a3f710ef1a81bebcba9598b7308f39daa" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="812" endline="881">AI_OpenMCCs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a4ced37e8376af8d3a96e5e17a9bda5d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string AI_GetMCCWinFilePath</definition>
+        <argsstring>()</argsstring>
+        <name>AI_GetMCCWinFilePath</name>
+        <briefdescription>
+<para>Return a path to the MCC. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Hardcoded as Igor does not allow to query that information.</para>
+<para>Distinguishes between i386 and x64 Igor versions </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="898" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="898" bodyend="918"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96c36680850ddf105617d23667b0cb53" compoundref="_i_p_n_w_b___utils_8ipf" startline="479" endline="486">FileExists</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a5395fd0b8002dfbe08df698ab6ca17fc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5552" endline="5559">GetProgramFilesFolder</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a3f710ef1a81bebcba9598b7308f39daa" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="812" endline="881">AI_OpenMCCs</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1aa88481f4af14cde5362d73b01784098d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_GetHoldingCommand</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>AI_GetHoldingCommand</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1640" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1640" bodyend="1645"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a43fb930f9583f1bd9e85729de9015184" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1468" endline="1494">TP_UpdateHoldCmdInTPStorage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a336e40551329ebeac8958f08e35c00e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_GetMode</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>AI_GetMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1647" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1647" bodyend="1652"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a6768d2273a60a85081e0d59d586ea438" compoundref="_m_i_e_s___configuration_8ipf" startline="2182" endline="2225">CONF_MCC_MidExp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a5c67faf6ab5c67377539bd2a8b95da25" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_RetrieveGains</definition>
+        <argsstring>(string device, variable headstage, variable clampMode, variable *ADGain, variable *DAGain)</argsstring>
+        <name>AI_RetrieveGains</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>ADGain</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>DAGain</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1654" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1654" bodyend="1663"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a47b4bcb639e2324b3ef4bcf9ab143e3f" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="736" endline="758">AI_QueryGainsUnitsForClampMode</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a57dc1178ffd75ea3850db877d9d203e4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_SwitchAxonAmpMode</definition>
+        <argsstring>()</argsstring>
+        <name>AI_SwitchAxonAmpMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1665" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1665" bodyend="1668"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1ac4bd0369df4873d417caa3cc67d4244a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SelectMultiClamp</definition>
+        <argsstring>(string device, variable headStage)</argsstring>
+        <name>AI_SelectMultiClamp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1670" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1670" bodyend="1675"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1aed29078f9980cc9c56ed9a668436fd1a" compoundref="_m_i_e_s___blowout_8ipf" startline="69" endline="112">BWO_CheckGlobalSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="26" endline="180">IVS_ConfigureMCC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a22b235d4b782395f812d6a16088f9640" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SetClampMode</definition>
+        <argsstring>(string device, variable headStage, variable mode, variable zeroStep=defaultValue)</argsstring>
+        <name>AI_SetClampMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>zeroStep</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1677" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1677" bodyend="1683"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab8c62d4db26dd1436258e32abb784bff" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3395" endline="3484">DAP_ChangeHeadStageMode</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1af44c6d955b55d16f68405f41d9bac4ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_SendToAmp</definition>
+        <argsstring>(string device, variable headStage, variable mode, variable func, variable value, variable checkBeforeWrite=defaultValue, variable usePrefixes=defaultValue, variable selectAmp=defaultValue)</argsstring>
+        <name>AI_SendToAmp</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>checkBeforeWrite</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>usePrefixes</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>selectAmp</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1685" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1685" bodyend="1691"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a077c39268779e1f1251787539d1d0b3e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="710" endline="731">AI_MIESAutoPipetteOffset</referencedby>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a131e19bba9c9f3c312dccb10b1d957e3" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="204" endline="479">AI_UpdateAmpModel</referencedby>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a6768d2273a60a85081e0d59d586ea438" compoundref="_m_i_e_s___configuration_8ipf" startline="2182" endline="2225">CONF_MCC_MidExp</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1a9fe7057886274ac0efb50058b0ec1a57" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="239" endline="336">DQ_ApplyAutoBias</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___i_v_s_c_c_8ipf_1a0f2f9a20b92c59568ee08239a9fefb5c" compoundref="_m_i_e_s___i_v_s_c_c_8ipf" startline="26" endline="180">IVS_ConfigureMCC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1ad9e6d2c86d7b3d46c8e790b13ca05526" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_EnsureCorrectMode</definition>
+        <argsstring>(string device, variable headStage, variable selectAmp=defaultValue)</argsstring>
+        <name>AI_EnsureCorrectMode</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>selectAmp</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1693" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1693" bodyend="1698"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a62ba6a5f217717b1fc5f5b914e0bb8f4" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="492" endline="526">AI_SyncGUIToAmpStorageAndMCCApp</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1aeeeb243dbf5eeb41b0ce2e6cca1e21b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_FillAndSendAmpliferSettings</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>AI_FillAndSendAmpliferSettings</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1700" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1700" bodyend="1705"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1acd5a342bce0c5a10491019ab75e73ae1" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="628" endline="669">ED_createWaveNoteTags</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a80df01035c3e66a51f94bf1205dd7436" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_QueryGainsFromMCC</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AI_QueryGainsFromMCC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1707" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1707" bodyend="1711"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae2286410e0abefb23f9274a2db911b85" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3912" endline="3936">DAP_ButtonProc_AutoFillGain</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1a998ef792f249288a6eacc762cb20e680" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AI_FindConnectedAmps</definition>
+        <argsstring>()</argsstring>
+        <name>AI_FindConnectedAmps</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1713" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1713" bodyend="1716"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <referencedby refid="_m_i_e_s___amplifier_interaction_8ipf_1a3af0ad87eec81963385f8fb6d617b28e" compoundref="_m_i_e_s___amplifier_interaction_8ipf" startline="886" endline="891">AI_GetMCCSerialNumbers</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a0566f145ca0b909ba6dfd66efa033112" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1894" endline="1902">DAP_ButtonCtrlFindConnectedAmps</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___amplifier_interaction_8ipf_1abd11fed6c2d38d44ffef7cdd80442864" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable AI_PublishAutoBridgeBalance</definition>
+        <argsstring>(string device, variable headstage, variable resistance)</argsstring>
+        <name>AI_PublishAutoBridgeBalance</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>resistance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" line="1719" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf" bodystart="1719" bodyend="1728"/>
+        <references refid="_m_i_e_s___constants_8ipf_1abef82c2a1d0fe19ac2a5bea852998c23" compoundref="_m_i_e_s___constants_8ipf" startline="1595">AMPLIFIER_AUTO_BRIDGE_BALANCE</references>
+        <references refid="_m_i_e_s___foreign_function_interface_8ipf_1a79a4c9d863eb3498467accb986169da0" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="61" endline="72">FFI_GetJSONTemplate</references>
+        <references refid="_m_i_e_s___foreign_function_interface_8ipf_1ad1ab2de703de93f74fb9add3b781e572" compoundref="_m_i_e_s___foreign_function_interface_8ipf" startline="92" endline="106">FFI_Publish</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AI</bold> Interface with the Axon/MCC amplifiers </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AmplifierInteraction.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___debug_panel_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DebugPanel.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___debug_panel_8ipf_1ad7da56e090505270844e41fdaa9e38fc" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string PANEL</definition>
+        <argsstring></argsstring>
+        <name>PANEL</name>
+        <initializer>= &quot;DP_DebugPanel&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a2ec8ffead5298260e88dca833b416738" compoundref="_m_i_e_s___debug_panel_8ipf" startline="15" endline="35">DP_DebuggingEnabledForFile</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1ad2447b4c8350787a038153405e89a31c" compoundref="_m_i_e_s___debug_panel_8ipf" startline="54" endline="75">DP_OpenDebugPanel</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1ac8285c2e67bab3939f25358eaa44a175" compoundref="_m_i_e_s___debug_panel_8ipf" startline="141" endline="154">DP_WindowHook</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a2ec8ffead5298260e88dca833b416738" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DP_DebuggingEnabledForFile</definition>
+        <argsstring>(string file)</argsstring>
+        <name>DP_DebuggingEnabledForFile</name>
+        <param>
+          <type>string</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="15" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="15" bodyend="35"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a202a3bf16f6d27fe273218e1a1925bd1" compoundref="_m_i_e_s___debug_panel_8ipf" startline="108" endline="139">DP_FillDebugPanelWaves</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae04b782e860ed95f61b67793bc9d7023" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6154" endline="6169">GetDebugPanelListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a05c96f82c78eb3ccc7830927b2a45853" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6136" endline="6151">GetDebugPanelListWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1ad7da56e090505270844e41fdaa9e38fc" compoundref="_m_i_e_s___debug_panel_8ipf" startline="13">PANEL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1ab782b581b2c11a4d80eed302a3fc0afa" compoundref="_m_i_e_s___debugging_8ipf" startline="172" endline="240">DEBUGPRINT</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a79a700a0d52db2593a8076e4034db872" compoundref="_m_i_e_s___debugging_8ipf" startline="306" endline="328">DEBUGPRINTSTACKINFO</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DP_DebuggingEnabledForCaller</definition>
+        <argsstring>()</argsstring>
+        <name>DP_DebuggingEnabledForCaller</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="37" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="37" bodyend="52"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a2ec8ffead5298260e88dca833b416738" compoundref="_m_i_e_s___debug_panel_8ipf" startline="15" endline="35">DP_DebuggingEnabledForFile</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aa2802715ac9ca599bb78a14ec3179f0e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="229" endline="268">DAG_GetTextualValue</referencedby>
+        <referencedby refid="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a696d2c0fbdc8a8de8a739531d870e259" compoundref="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf" startline="240" endline="275">OOD_CalculateOffsetsYoked</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3326" endline="3485">PSQ_CR_DetermineBoundsAction</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="699" endline="776">SCOPE_ITC_UpdateOscilloscope</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_formula_8ipf_1a3d44eafbee9a3195a98d2969b54de583" compoundref="_m_i_e_s___sweep_formula_8ipf" startline="220" endline="524">SF_FormulaParser</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a7f61ca3b88321de2607be108d490049c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5629" endline="5687">StartZeroMQSockets</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ae6f166f490f3fee791643e6a71b6ca52" compoundref="_m_i_e_s___test_pulse_8ipf" startline="411" endline="507">TP_AutoFitBaseline</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac5b405e9cd0d943c5f66d8b1fc3c7530" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7204" endline="7273">UploadLogFiles</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aad6a0ee69107a08976b8d6759604993c" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1484" endline="1586">WBP_MainWindowHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1ad2447b4c8350787a038153405e89a31c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DP_OpenDebugPanel</definition>
+        <argsstring>()</argsstring>
+        <name>DP_OpenDebugPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="54" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="54" bodyend="75"/>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a202a3bf16f6d27fe273218e1a1925bd1" compoundref="_m_i_e_s___debug_panel_8ipf" startline="108" endline="139">DP_FillDebugPanelWaves</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae04b782e860ed95f61b67793bc9d7023" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6154" endline="6169">GetDebugPanelListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a05c96f82c78eb3ccc7830927b2a45853" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6136" endline="6151">GetDebugPanelListWave</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1ad7da56e090505270844e41fdaa9e38fc" compoundref="_m_i_e_s___debug_panel_8ipf" startline="13">PANEL</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a60dc2d5036f9120303d88fd28e34b119" compoundref="_m_i_e_s___utilities_8ipf" startline="2673" endline="2709">QuerySetIgorOption</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae8a5d44752a376e8560f3634cbbaa072" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="372" endline="386">SetCheckBoxState</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a1a6b92e1b9a9e462bdaf853aeff7e7ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DP_DebugPanel</definition>
+        <argsstring>()</argsstring>
+        <name>DP_DebugPanel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="77" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="77" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a202a3bf16f6d27fe273218e1a1925bd1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DP_FillDebugPanelWaves</definition>
+        <argsstring>()</argsstring>
+        <name>DP_FillDebugPanelWaves</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="108" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="108" bodyend="139"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2bf90f6830e37603aa197e07c14235a" compoundref="_m_i_e_s___utilities_8ipf" startline="2872" endline="2943">GetAllFilesRecursivelyFromPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae04b782e860ed95f61b67793bc9d7023" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6154" endline="6169">GetDebugPanelListSelWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a05c96f82c78eb3ccc7830927b2a45853" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6136" endline="6151">GetDebugPanelListWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a3f8c2314ac69c2d2996a85803999cacb" compoundref="_i_p_n_w_b___utils_8ipf" startline="370" endline="378">GetFile</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abe7eae12945773c6be75d7a39b731c51" compoundref="_m_i_e_s___utilities_8ipf" startline="2850" endline="2861">GetUniqueSymbolicPath</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1a2ec8ffead5298260e88dca833b416738" compoundref="_m_i_e_s___debug_panel_8ipf" startline="15" endline="35">DP_DebuggingEnabledForFile</referencedby>
+        <referencedby refid="_m_i_e_s___debug_panel_8ipf_1ad2447b4c8350787a038153405e89a31c" compoundref="_m_i_e_s___debug_panel_8ipf" startline="54" endline="75">DP_OpenDebugPanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1ac8285c2e67bab3939f25358eaa44a175" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DP_WindowHook</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>DP_WindowHook</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="141" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="141" bodyend="154"/>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1ad7da56e090505270844e41fdaa9e38fc" compoundref="_m_i_e_s___debug_panel_8ipf" startline="13">PANEL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a60dc2d5036f9120303d88fd28e34b119" compoundref="_m_i_e_s___utilities_8ipf" startline="2673" endline="2709">QuerySetIgorOption</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae8a5d44752a376e8560f3634cbbaa072" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="372" endline="386">SetCheckBoxState</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a05abf802fdc41cfc88b56cbe01582218" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DP_CheckProc_Debug</definition>
+        <argsstring>(WMCheckboxAction *cba)</argsstring>
+        <name>DP_CheckProc_Debug</name>
+        <param>
+          <type>WMCheckboxAction *</type>
+          <declname>cba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="156" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="156" bodyend="180"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1a35450e9a3c571a26682c687262b2e9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="288" endline="291">DisableDebugMode</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2af0a90aca41a7f32f3d5ba4aef09f63" compoundref="_i_p_n_w_b___debugging_8ipf" startline="282" endline="285">EnableDebugMode</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a366c31de0daccbb01fd5d85fde4a00f3" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1751" endline="1755">HW_ITC_DebugMode</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___debug_panel_8ipf_1a3645eab7c1a75f39037bdf1bcd4b838c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DP_PopMenuProc_Selection</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>DP_PopMenuProc_Selection</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" line="182" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf" bodystart="182" bodyend="204"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1afe5a1b70d29ef8ecdb31df2f7d5830bf" compoundref="_m_i_e_s___utilities_8ipf" startline="2096" endline="2100">ClearBit</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae04b782e860ed95f61b67793bc9d7023" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6154" endline="6169">GetDebugPanelListSelWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1be1e5f5e9d99848760fdc53ec039a25" compoundref="_m_i_e_s___constants_8ipf" startline="243">LISTBOX_CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5f83165f8c60adde2528eb5d5aa51167" compoundref="_m_i_e_s___utilities_8ipf" startline="2089" endline="2093">SetBit</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DP</bold> Holds the debug panel </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DebugPanel.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,4 @@
+Struct VectorData
+=================
+
+.. doxygenstruct:: VectorData

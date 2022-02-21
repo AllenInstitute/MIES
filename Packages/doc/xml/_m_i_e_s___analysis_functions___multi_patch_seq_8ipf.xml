@@ -1,0 +1,1169 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctions_MultiPatchSeq.ipf</compoundname>
+    <innerclass refid="struct_m_s_q___pulse_settings" prot="public">MSQ_PulseSettings</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aa52783bc446989cb99e8d35e468264ee" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MSQ_BL_PRE_PULSE</definition>
+        <argsstring></argsstring>
+        <name>MSQ_BL_PRE_PULSE</name>
+        <initializer>= 0x0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="53" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaf816286bc0c71ff7e3bbc86ace09b74" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MSQ_BL_POST_PULSE</definition>
+        <argsstring></argsstring>
+        <name>MSQ_BL_POST_PULSE</name>
+        <initializer>= 0x1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="54" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a74a5affb5c32a326e6152a6d8a6664c0" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MSQ_RMS_SHORT_TEST</definition>
+        <argsstring></argsstring>
+        <name>MSQ_RMS_SHORT_TEST</name>
+        <initializer>= 0x0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="56" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a302f9a4b17e3bd026f1edea61d40361c" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MSQ_RMS_LONG_TEST</definition>
+        <argsstring></argsstring>
+        <name>MSQ_RMS_LONG_TEST</name>
+        <initializer>= 0x1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="57" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a29bc91a2efb30057865255caf7774b0b" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MSQ_TARGETV_TEST</definition>
+        <argsstring></argsstring>
+        <name>MSQ_TARGETV_TEST</name>
+        <initializer>= 0x2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="58" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a71d22390b623123666e23a4f94e24dfe" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_GetPulseSettingsForType</definition>
+        <argsstring>(variable type, MSQ_PulseSettings *s)</argsstring>
+        <name>MSQ_GetPulseSettingsForType</name>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_m_s_q___pulse_settings" kindref="compound">MSQ_PulseSettings</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Fills <computeroutput>s</computeroutput> according to the analysis function type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="68" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="68" bodyend="82"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="struct_m_s_q___pulse_settings_1aef7d378c16d6e8ff32c571708f84b285" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="64">MSQ_PulseSettings::postPulseChunkLength</references>
+        <references refid="struct_m_s_q___pulse_settings_1a3dc046eb58e4a165e5353894d2bbc23f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="61">MSQ_PulseSettings::prePulseChunkLength</references>
+        <references refid="struct_m_s_q___pulse_settings_1a52b0f0bcef6482eeb6f2c041b8574263" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="63">MSQ_PulseSettings::pulseDuration</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave MSQ_GetPulseDurations</definition>
+        <argsstring>(string device, variable type, variable sweepNo, variable totalOnsetDelay, variable headstage, variable useSCI=defaultValue, variable forceRecalculation=defaultValue)</argsstring>
+        <name>MSQ_GetPulseDurations</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalOnsetDelay</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>useSCI</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>forceRecalculation</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the pulse durations from the labnotebook or calculate them before if required. For convenience unused headstages will have 0 instead of NaN in the returned wave. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="86" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="86" bodyend="123"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a6a8a67bf9bcc2577a58698d7c0b43048" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="128" endline="176">MSQ_DeterminePulseDuration</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0f1f7ab575e62b56be446d73576ce841" compoundref="_m_i_e_s___constants_8ipf" startline="1177">MSQ_FMT_LBN_PULSE_DUR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a6a8a67bf9bcc2577a58698d7c0b43048" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave MSQ_DeterminePulseDuration</definition>
+        <argsstring>(string device, variable sweepNo, variable totalOnsetDelay)</argsstring>
+        <name>MSQ_DeterminePulseDuration</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalOnsetDelay</declname>
+        </param>
+        <briefdescription>
+<para>Determine the pulse duration on each headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the labnotebook wave as well. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="128" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="128" bodyend="176"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2780553f6a32f6f47da1284e627ffbbe" compoundref="_m_i_e_s___utilities_8ipf" startline="4303" endline="4322">GetMachineEpsilon</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="86" endline="123">MSQ_GetPulseDurations</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a2ceb4982221b3f8f08d7a5aba84cb39e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_CalculateAvg</definition>
+        <argsstring>(wave wv, variable column, variable startTime, variable rangeTime)</argsstring>
+        <name>MSQ_CalculateAvg</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>column</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>rangeTime</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="180" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="180" bodyend="195"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0621e43dc79d40e6d9f837ddf7226d9e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_CalculateRMS</definition>
+        <argsstring>(wave wv, variable column, variable startTime, variable rangeTime)</argsstring>
+        <name>MSQ_CalculateRMS</name>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>column</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>startTime</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>rangeTime</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="202" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="202" bodyend="218"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae8abbca08e17ffd871d3e0207775a87f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_NumAcquiredSweepsInSet</definition>
+        <argsstring>(string device, variable sweepNo, variable headstage)</argsstring>
+        <name>MSQ_NumAcquiredSweepsInSet</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of already acquired sweeps of the given stimset cycle ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="222" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="222" bodyend="235"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abeec857866729bbf5ffff7d0ba309d42" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_NumPassesInSet</definition>
+        <argsstring>(wave numericalValues, variable type, variable sweepNo, variable headstage)</argsstring>
+        <name>MSQ_NumPassesInSet</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the number of passed sweeps in all sweeps from the given repeated acquisition cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="239" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="239" bodyend="256"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a81fb0d638961b3bb053996f1727605b0" compoundref="_m_i_e_s___constants_8ipf" startline="1175">MSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abc03b32335ca9fd9d7aab739e0580c5e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_GetDAStimsetLength</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>MSQ_GetDAStimsetLength</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the DA stimset length in ms of the given headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>stimset length or -1 on error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="261" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="261" bodyend="277"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave MSQ_CreateOverrideResults</definition>
+        <argsstring>(string device, variable headstage, variable type)</argsstring>
+        <name>MSQ_CreateOverrideResults</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>MSQ_PSQ_CreateOverrideResults(&quot;ITC18USB_DEV_0&quot;, 0, $type) where type is one of:</para>
+<para><ref refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" kindref="member">MSQ_FAST_RHEO_EST</ref></para>
+<para>Type:<itemizedlist>
+<listitem><para>Double wave</para>
+</listitem></itemizedlist>
+</para>
+<para>Value:<itemizedlist>
+<listitem><para>x position in ms where the spike is in each sweep/step For convenience the values <computeroutput>0</computeroutput> always means no spike and <computeroutput>1</computeroutput> spike detected (at the appropriate position).</para>
+</listitem></itemizedlist>
+</para>
+<para>Rows:<itemizedlist>
+<listitem><para>Sweeps in set</para>
+</listitem></itemizedlist>
+</para>
+<para>Cols:<itemizedlist>
+<listitem><para>IC headstages</para>
+</listitem></itemizedlist>
+</para>
+<para><ref refid="_m_i_e_s___constants_8ipf_1a12e825674d33cb1085fd2123741dea7c" kindref="member">MSQ_DA_SCALE</ref></para>
+<para>Nothing</para>
+<para><ref refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" kindref="member">SC_SPIKE_CONTROL</ref></para>
+<para>Type:<itemizedlist>
+<listitem><para>Text wave</para>
+</listitem></itemizedlist>
+</para>
+<para>Value:<itemizedlist>
+<listitem><para>Key-Valuse pairs in format <computeroutput>key1:value1;key2:value2;</computeroutput> where value can be a comma separated list</para>
+</listitem><listitem><para><computeroutput>SpontaneousSpikeMax</computeroutput>: single value denoting the maximum value for the spontaneous spiking check</para>
+</listitem><listitem><para><computeroutput>SpikePosition_ms</computeroutput>: comma separated list with the spike positions in ms. Zero is the start of each pulse</para>
+</listitem></itemizedlist>
+</para>
+<para>Rows:<itemizedlist>
+<listitem><para>Sweeps in set</para>
+</listitem></itemizedlist>
+</para>
+<para>Cols (NUM_HEADSTAGES):<itemizedlist>
+<listitem><para>Headstage</para>
+</listitem></itemizedlist>
+</para>
+<para>Layers (10):<itemizedlist>
+<listitem><para>Pulse index, 0-based</para>
+</listitem></itemizedlist>
+</para>
+<para>Chunks (10):<itemizedlist>
+<listitem><para>Region, 0-based </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="321" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="321" bodyend="360"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9c029cddbbe23e5311d7e5ab830bc8d2" compoundref="_i_p_n_w_b___constants_8ipf" startline="66">IGOR_TYPE_64BIT_FLOAT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12e825674d33cb1085fd2123741dea7c" compoundref="_m_i_e_s___constants_8ipf" startline="1071">MSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ac70080f0dcfbfb6251c12fa7e5232859" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave MSQ_SearchForSpikes</definition>
+        <argsstring>(string device, variable type, wave sweepWave, variable headstage, variable totalOnsetDelay, variable numberOfSpikes=defaultValue, variable defaultValue=defaultValue, wave spikePositions=defaultValue)</argsstring>
+        <name>MSQ_SearchForSpikes</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweepWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalOnsetDelay</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>numberOfSpikes</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defaultValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>spikePositions</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Search the AD channel of the given headstage for spikes from the pulse onset until the end of the sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1MultiPatchSeqAnalysisFunctionTypes" kindref="member">MultiPatchSeqAnalysisFunctionTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">sweepWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep wave with acquired data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage in the range [0, NUM_HEADSTAGES[ </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">totalOnsetDelay</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>total delay in ms until the stimset data starts </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">numberOfSpikes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to one] number of spikes to look for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">spikePositions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] returns the position of the first <computeroutput>numberOfSpikes</computeroutput> found on success in ms </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">defaultValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optiona, defaults to <computeroutput>NaN</computeroutput>] the value of the other headstages in the returned wave</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>labnotebook value wave suitable for <ref refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" kindref="member">ED_AddEntryToLabnotebook()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="375" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="375" bodyend="484"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a60663651acfeb60f3f5503f66018db61" compoundref="_m_i_e_s___debugging_8ipf" startline="103" endline="114">DEBUGPRINTw</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2780553f6a32f6f47da1284e627ffbbe" compoundref="_m_i_e_s___utilities_8ipf" startline="4303" endline="4322">GetMachineEpsilon</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a08d9f02c59fd47b6435197c169e69e55" compoundref="_m_i_e_s___constants_8ipf" startline="1135">MSQ_SPIKE_LEVEL</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aefc8fe3a8deb731576c4ce87824021a3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_GetLBNEntryForHSSCIBool</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable type, string str, variable headstage)</argsstring>
+        <name>MSQ_GetLBNEntryForHSSCIBool</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return true if one of the entries is true for the given headstage. False otherwise. Searches in the complete SCI and assumes that the entries are either 0/1/NaN. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000007"><xreftitle>Todo</xreftitle><xrefdescription><para>merge with LBN functions once these are reworked. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="490" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="490" bodyend="508"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ad301b893cd611f61e8534935bf8c5b57" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_GetLBNEntryForHeadstageSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable type, string str, variable headstage)</argsstring>
+        <name>MSQ_GetLBNEntryForHeadstageSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the last entry for a given headstage from the full SCI. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This differs from GetLastSettingSCI as specifically the setting for the passed headstage must be valid.</para>
+<para><xrefsect id="todo_1_todo000008"><xreftitle>Todo</xreftitle><xrefdescription><para>merge with LBN functions once these are reworked. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="516" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="516" bodyend="539"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a3a08792157f0f6f70ed03a2a39ff9a51" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="982" endline="1005">MSQ_DS_GetDAScaleOffset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a96cafd56bc1efdb1d71313ac2f1511c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_FastRheoEst_GetParams</definition>
+        <argsstring>()</argsstring>
+        <name>MSQ_FastRheoEst_GetParams</name>
+        <briefdescription>
+<para>Return a list of required parameters for <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" kindref="member">MSQ_FastRheoEst()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="542" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="542" bodyend="549"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ab50dd744e4a591038d11a9039eb36387" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_FastRheoEst_GetHelp</definition>
+        <argsstring>(string name)</argsstring>
+        <name>MSQ_FastRheoEst_GetHelp</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="551" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="551" bodyend="577"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a1af1b8887d50095d551c310ae519d364" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_FastRheoEst_CheckParam</definition>
+        <argsstring>(string name, CheckParametersStruct *s)</argsstring>
+        <name>MSQ_FastRheoEst_CheckParam</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="579" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="579" bodyend="606"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a513f6663ad54f10a35fd2c8d6fad1165" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6145" endline="6149">IsValidSamplingMultiplier</references>
+        <references refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" compoundref="_m_i_e_s___structures_8ipf" startline="584">CheckParametersStruct::params</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MSQ_FastRheoEst</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>MSQ_FastRheoEst</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to find the smallest DAScale where the cell spikes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Prerequisites:<itemizedlist>
+<listitem><para>Assumes that the stimset has a square pulse</para>
+</listitem></itemizedlist>
+</para>
+<para>Testing: For testing the spike detection logic, the results can be defined in the override wave, <simplesect kind="see"><para><ref refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" kindref="member">MSQ_CreateOverrideResults()</ref>.</para>
+</simplesect>
+Decision logic flowchart:</para>
+<para><verbatim>embed:rst:leading-asterisk
+ *  .. image:: /dot/multi-patch-seq-fast-rheo-estimate.svg
+ *  </verbatim></para>
+<para><verbatim>///
+/// Sketch of a stimset with pre pulse baseline (-), square pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+/// </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="643" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="643" bodyend="976"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a31329d00429cd9a90dade23507f4b005" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="13" endline="28">AD_UpdateAllDatabrowser</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ad2fba114640a1e2276ebfb4c2e9607a4" compoundref="_m_i_e_s___utilities_8ipf" startline="3353" endline="3373">CheckIfClose</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a681079b41d468e38ebf82c73c5fd31d9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="84" endline="94">EnableControls</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3d9a7dac997770aae6869bfb40ec9bb2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6136" endline="6142">GetTotalOnsetDelay</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1071" endline="1092">MSQ_CommonPreDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a206e82b7dffadc950c7a258a419d8b6b" compoundref="_m_i_e_s___constants_8ipf" startline="1178">MSQ_FMT_LBN_ACTIVE_HS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b02f6c88aeb366a485f2ad79ae9e828" compoundref="_m_i_e_s___constants_8ipf" startline="1162">MSQ_FMT_LBN_DASCALE_EXC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014e3fe2bc524b26b4b04ceb35b046f8" compoundref="_m_i_e_s___constants_8ipf" startline="1167">MSQ_FMT_LBN_FINAL_SCALE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5d3e61769581649df5350644ba39707d" compoundref="_m_i_e_s___constants_8ipf" startline="1174">MSQ_FMT_LBN_HEADSTAGE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a629bb1152e2be9c0dd601b3f288461d0" compoundref="_m_i_e_s___constants_8ipf" startline="1176">MSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae988e272b9da17b23b7f0805b93c7d55" compoundref="_m_i_e_s___constants_8ipf" startline="1164">MSQ_FMT_LBN_SPIKE_DETECT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a03a945baabfcc3d023f24063646413c8" compoundref="_m_i_e_s___constants_8ipf" startline="1163">MSQ_FMT_LBN_STEPSIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a81fb0d638961b3bb053996f1727605b0" compoundref="_m_i_e_s___constants_8ipf" startline="1175">MSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a78d65262a77669cce3387a1d008ead0e" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1057" endline="1068">MSQ_ForceSetEvent</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad69b14b5569d8e05be7d627f6f92a438" compoundref="_m_i_e_s___constants_8ipf" startline="1126">MSQ_FRE_INIT_AMP_m50</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0f19c9a3f43bee333430d7929fdd1115" compoundref="_m_i_e_s___constants_8ipf" startline="1128">MSQ_FRE_INIT_AMP_p10</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a39db1c6ab33bb4c93420a18dffc3c9d8" compoundref="_m_i_e_s___constants_8ipf" startline="1127">MSQ_FRE_INIT_AMP_p100</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aefc8fe3a8deb731576c4ce87824021a3" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="490" endline="508">MSQ_GetLBNEntryForHSSCIBool</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1add21c42a2768b6622953ed17a54f0700" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="86" endline="123">MSQ_GetPulseDurations</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abeec857866729bbf5ffff7d0ba309d42" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="239" endline="256">MSQ_NumPassesInSet</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ac70080f0dcfbfb6251c12fa7e5232859" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="375" endline="484">MSQ_SearchForSpikes</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6b3263191d1263241e32d5b706c9b49" compoundref="_m_i_e_s___constants_8ipf" startline="1639">PGC_MODE_FORCE_ON_DISABLED</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9f91b320a054dba75b455765737c4bb6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7114" endline="7122">SetAnalysisFunctionVersion</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adaeef1da64f41b086024acabf9847e59" compoundref="_m_i_e_s___constants_8ipf" startline="858">STIMSET_SCALE_FACTOR_KEY</references>
+        <references refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" compoundref="_m_i_e_s___structures_8ipf" startline="268">AnalysisFunction_V3::sweepNo</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5ef0c8ed413fe09dde5835f6aa2b8683" compoundref="_m_i_e_s___utilities_8ipf" startline="4348" endline="4352">ToPassFail</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a3a08792157f0f6f70ed03a2a39ff9a51" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave MSQ_DS_GetDAScaleOffset</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>MSQ_DS_GetDAScaleOffset</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the DAScale offset [pA] for MSQ_DaScale() </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>wave with <ref refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" kindref="member">LABNOTEBOOK_LAYER_COUNT</ref> entries, each holding the final DA Scale entry from the previous fast rheo estimate run. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="982" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="982" bodyend="1005"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a39d6e982a91c43f482b494b5cf1c17cb" compoundref="_m_i_e_s___constants_8ipf" startline="1132">MSQ_DS_OFFSETSCALE_FAKE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a014e3fe2bc524b26b4b04ceb35b046f8" compoundref="_m_i_e_s___constants_8ipf" startline="1167">MSQ_FMT_LBN_FINAL_SCALE</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae2e427402030ca80b53ee0b4edaf4f06" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1016" endline="1051">MSQ_GetLastPassingLongRHSweep</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ad301b893cd611f61e8534935bf8c5b57" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="516" endline="539">MSQ_GetLBNEntryForHeadstageSCI</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae2e427402030ca80b53ee0b4edaf4f06" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_GetLastPassingLongRHSweep</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>MSQ_GetLastPassingLongRHSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return a sweep number of an existing sweep matching the following conditions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>Acquired with Rheobase analysis function</para>
+</listitem><listitem><para>Sweep set was passing</para>
+</listitem><listitem><para>Pulse duration was longer than 500ms</para>
+</listitem></itemizedlist>
+</para>
+<para>And as usual we want the <emphasis>last</emphasis> matching sweep.</para>
+<para><simplesect kind="return"><para>existing sweep number or -1 in case no such sweep could be found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1016" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1016" bodyend="1051"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="group___labnotebook_query_functions_1ga54037f7c9b9d2034bf0ac71e2bde6a90" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1714" endline="1742">GetSweepsWithSetting</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa1bb01ee87fea178e5a6f87fe4bbd9e8" compoundref="_m_i_e_s___constants_8ipf" startline="1133">MSQ_DS_SWEEP_FAKE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a38237ef420fb395322f31d2001f7a8c1" compoundref="_m_i_e_s___constants_8ipf" startline="1070">MSQ_FAST_RHEO_EST</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0f1f7ab575e62b56be446d73576ce841" compoundref="_m_i_e_s___constants_8ipf" startline="1177">MSQ_FMT_LBN_PULSE_DUR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a629bb1152e2be9c0dd601b3f288461d0" compoundref="_m_i_e_s___constants_8ipf" startline="1176">MSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a3a08792157f0f6f70ed03a2a39ff9a51" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="982" endline="1005">MSQ_DS_GetDAScaleOffset</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a78d65262a77669cce3387a1d008ead0e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable MSQ_ForceSetEvent</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>MSQ_ForceSetEvent</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Manually force the pre/post set events. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Required to do before skipping sweeps. <xrefsect id="todo_1_todo000009"><xreftitle>Todo</xreftitle><xrefdescription><para>this hack must go away. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1057" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1057" bodyend="1068"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MSQ_CommonPreDAQ</definition>
+        <argsstring>(string device, variable headstage, variable clampMode=defaultValue)</argsstring>
+        <name>MSQ_CommonPreDAQ</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>clampMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Common pre DAQ calls for all multipatch analysis functions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1071" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1071" bodyend="1092"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a7e715249e608c975acba9a23df065604" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_DAScale_GetParams</definition>
+        <argsstring>()</argsstring>
+        <name>MSQ_DAScale_GetParams</name>
+        <briefdescription>
+<para>Require parameters from stimset. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1095" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1095" bodyend="1097"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a4a4867e7031597ddb03f57d566e60530" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_DAScale_GetHelp</definition>
+        <argsstring>(string name)</argsstring>
+        <name>MSQ_DAScale_GetHelp</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1099" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1099" bodyend="1110"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae9a99226c5f4702b18bcad159f0399fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string MSQ_DAScale_CheckParam</definition>
+        <argsstring>(string name, CheckParametersStruct *s)</argsstring>
+        <name>MSQ_DAScale_CheckParam</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1112" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1112" bodyend="1130"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</references>
+        <references refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" compoundref="_m_i_e_s___structures_8ipf" startline="584">CheckParametersStruct::params</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable MSQ_DAScale</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>MSQ_DAScale</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to apply a list of DAScale values to a range of sweeps. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decision logic flowchart:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. image:: /dot/multi-patch-seq-dascale.svg
+*  </verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" line="1140" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf" bodystart="1140" bodyend="1306"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a31329d00429cd9a90dade23507f4b005" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="13" endline="28">AD_UpdateAllDatabrowser</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a63713813b25ce5eeb00147d18f4051c5" compoundref="_m_i_e_s___constants_8ipf" startline="215">CHANNEL_CONTROL_CHECK</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9155c2b508b88fe1d5d5891d4a08579f" compoundref="_m_i_e_s___utilities_8ipf" startline="3379" endline="3388">CheckIfSmall</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2eefce0a688a00ce2676f58cf951b79c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="111" endline="121">DisableControls</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a681079b41d468e38ebf82c73c5fd31d9" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="84" endline="94">EnableControls</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae11df98795575034741f5ce2a7bd2fa4" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6178" endline="6194">GetAnalysisFuncIndexingHelper</references>
+        <references refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1071" endline="1092">MSQ_CommonPreDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a12e825674d33cb1085fd2123741dea7c" compoundref="_m_i_e_s___constants_8ipf" startline="1071">MSQ_DA_SCALE</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a3a08792157f0f6f70ed03a2a39ff9a51" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="982" endline="1005">MSQ_DS_GetDAScaleOffset</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a206e82b7dffadc950c7a258a419d8b6b" compoundref="_m_i_e_s___constants_8ipf" startline="1178">MSQ_FMT_LBN_ACTIVE_HS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5d3e61769581649df5350644ba39707d" compoundref="_m_i_e_s___constants_8ipf" startline="1174">MSQ_FMT_LBN_HEADSTAGE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a629bb1152e2be9c0dd601b3f288461d0" compoundref="_m_i_e_s___constants_8ipf" startline="1176">MSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a81fb0d638961b3bb053996f1727605b0" compoundref="_m_i_e_s___constants_8ipf" startline="1175">MSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aefc8fe3a8deb731576c4ce87824021a3" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="490" endline="508">MSQ_GetLBNEntryForHSSCIBool</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9f91b320a054dba75b455765737c4bb6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7114" endline="7122">SetAnalysisFunctionVersion</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</references>
+        <references refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" compoundref="_m_i_e_s___structures_8ipf" startline="268">AnalysisFunction_V3::sweepNo</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>MSQ</bold> Analysis functions for multi patch sequence </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The Multi Patch Seq analysis functions store various results in the labnotebook.</para>
+<para>For orientation the following table shows their relation. All labnotebook keys can and should be created via <ref refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" kindref="member">CreateAnaFuncLBNKey()</ref>.</para>
+<para><verbatim>embed:rst:leading-asterisk
+* 
+*  ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
+*  Naming constant                  Description                                                          Labnotebook Analysis      Per     Headstage  List?       Key-Value pairs? Values are lists?
+*                                                                                                                    function      chunk?  dependent? (semicolon) (colon)          (comma)
+*  ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
+*  MSQ_FMT_LBN_SPIKE_DETECT         The required number of spikes were detected on the sweep             Numerical   FRE           No      Yes        No          No                No
+*  MSQ_FMT_LBN_STEPSIZE             Current DAScale step size                                            Numerical   FRE           No      Yes        No          No                No
+*  MSQ_FMT_LBN_FINAL_SCALE          Final DAScale of the given headstage, only set on success            Numerical   FRE           No      Yes        No          No                No
+*  MSQ_FMT_LBN_HEADSTAGE_PASS       Pass/fail state of the headstage                                     Numerical   FRE, DS, SC   No      Yes        No          No                No
+*  MSQ_FMT_LBN_SWEEP_PASS           Pass/fail state of the complete sweep                                Numerical   FRE, DS, SC   No      No         No          No                No
+*  MSQ_FMT_LBN_SET_PASS             Pass/fail state of the complete set                                  Numerical   FRE, DS, SC   No      No         No          No                No
+*  MSQ_FMT_LBN_ACTIVE_HS            Active headstages in pre set event                                   Numerical   FRE, DS       No      Yes        No          No                No
+*  MSQ_FMT_LBN_DASCALE_EXC          Allowed DAScale exceeded given limit                                 Numerical   FRE           No      Yes        No          No                No
+*  MSQ_FMT_LBN_PULSE_DUR            Square pulse duration in ms                                          Numerical   FRE           No      Yes        No          No                No
+*  MSQ_FMT_LBN_SPIKE_POSITIONS      Spike positions with ``P{1}_R{2}``, pulse index (``{1}``) and        Textual     SC            No      Yes        Yes         Yes               Yes
+*                                   region (``{2}``), as key and the spike positions as value in pulse
+*                                   active coordinate system (0 - 100)
+*  MSQ_FMT_LBN_SPIKE_COUNTS         Spike count with ``P{1}_R{2}``, pulse index (``{1}``) and            Textual     SC            No      Yes        Yes         Yes               No
+*                                   region (``{2}``), as key and the spike counts as value
+*  MSQ_FMT_LBN_SPIKE_POSITION_PASS  Pass/fail state of the spike positions                               Numerical   SC            No      Yes        No          No                No
+*  MSQ_FMT_LBN_SPIKE_COUNTS_STATE   Result of the spike count check:                                     Textual     SC            No      Yes        No          No                No
+*                                   ``Too few``/``Too many``/``Pass``/``Mixed``
+*  MSQ_FMT_LBN_SPONT_SPIKE_PASS     Pass/fail state of the complete baseline                             Numerical   SC            No      Yes        No          No                No
+*  MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS   Ideal number of spikes (-1 for not present)                          Numerical   SC            No      No         No          No                No
+*  MSQ_FMT_LBN_FAILED_PULSE_LEVEL   Failed pulse level                                                   Numerical   SC            No      No         No          No                No
+*  MSQ_FMT_LBN_RERUN_TRIAL          Number of repetitions of given stimulus set sweep due to relevant    Numerical   SC            No      Yes        No          No                No
+*                                   QC failures (spike count or baseline)
+*  MSQ_FMT_LBN_RERUN_TRIAL_EXC      Number of repetitions was exceeded for that stimulus sweep set count Numerical   SC            No      Yes        No          No                No
+*  FMT_LBN_ANA_FUNC_VERSION         Integer version of the analysis function                             Numerical   All           No      Yes        No          No                No
+*  ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
+* 
+*  </verbatim></para>
+<para>Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale. </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq.ipf"/>
+  </compounddef>
+</doxygen>

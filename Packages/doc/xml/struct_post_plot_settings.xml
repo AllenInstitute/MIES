@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_post_plot_settings" kind="struct" language="C++" prot="public">
+    <compoundname>PostPlotSettings</compoundname>
+      <sectiondef kind="user-defined">
+      <header>Trace averaging settings</header>
+      <memberdef kind="variable" id="struct_post_plot_settings_1a8a959dd6abfac23a3550d474061324b1" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::averageTraces</definition>
+        <argsstring></argsstring>
+        <name>averageTraces</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="23" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="23" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1a90b1fd8dd9704d092b52ebbd9efbecc8" prot="public" static="no" mutable="no">
+        <type>DFREF</type>
+        <definition>DFREF PostPlotSettings::averageDataFolder</definition>
+        <argsstring></argsstring>
+        <name>averageDataFolder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="24" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="24" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="user-defined">
+      <header>Time alignment settings</header>
+      <memberdef kind="variable" id="struct_post_plot_settings_1aeb13435df126b6cc6130ae3e1da34112" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::timeAlignment</definition>
+        <argsstring></argsstring>
+        <name>timeAlignment</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="34" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="34" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a45b6979b36e332bb1edccea05b0441a0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3738" endline="3748">TimeAlignMainWindow</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1ab7cd695c80a7f5b4653d5a7a22725b56" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::timeAlignMode</definition>
+        <argsstring></argsstring>
+        <name>timeAlignMode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="35" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="35" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a45b6979b36e332bb1edccea05b0441a0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3738" endline="3748">TimeAlignMainWindow</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1a28181d7649a618e79689715c2e8484ef" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string PostPlotSettings::timeAlignRefTrace</definition>
+        <argsstring></argsstring>
+        <name>timeAlignRefTrace</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="36" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="36" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a45b6979b36e332bb1edccea05b0441a0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3738" endline="3748">TimeAlignMainWindow</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1aa1a5f5506f1fc87b563b3c31a420a08e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::timeAlignLevel</definition>
+        <argsstring></argsstring>
+        <name>timeAlignLevel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="37" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="37" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a45b6979b36e332bb1edccea05b0441a0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3738" endline="3748">TimeAlignMainWindow</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_post_plot_settings_1a73e720a435225146b16c643ea4b2a809" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::hideSweep</definition>
+        <argsstring></argsstring>
+        <name>hideSweep</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="27" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="27" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1a1b5f11195f2ba66d61383a84a191bb4e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::zeroTraces</definition>
+        <argsstring></argsstring>
+        <name>zeroTraces</name>
+        <briefdescription>
+<para>Zero traces settings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="30" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="30" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1ac823d4387339402182fe63074aecbb62" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable PostPlotSettings::visualizeEpochs</definition>
+        <argsstring></argsstring>
+        <name>visualizeEpochs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="40" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="40" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aeda80cc819f630d2683413da1d99f9ba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3712" endline="3729">InitPostPlotSettings</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_post_plot_settings_1a02713df4f7605a49af29a5a9f5b3546d" prot="public" static="no" mutable="no">
+        <type><ref refid="struct_pulse_average_settings" kindref="compound">PulseAverageSettings</ref></type>
+        <definition>PulseAverageSettings PostPlotSettings::pulseAverSett</definition>
+        <argsstring></argsstring>
+        <name>pulseAverSett</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="42" column="23" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>PostPlotSettings</label>
+        <link refid="struct_post_plot_settings"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>pulseAverSett</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>PulseAverageDeconvSettings</label>
+        <link refid="struct_pulse_average_deconv_settings"/>
+      </node>
+      <node id="2">
+        <label>PulseAverageSettings</label>
+        <link refid="struct_pulse_average_settings"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>deconvolution</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" line="20" column="1" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Structures.ipf" bodystart="20" bodyend="43"/>
+    <listofallmembers>
+      <member refid="struct_post_plot_settings_1a90b1fd8dd9704d092b52ebbd9efbecc8" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>averageDataFolder</name></member>
+      <member refid="struct_post_plot_settings_1a8a959dd6abfac23a3550d474061324b1" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>averageTraces</name></member>
+      <member refid="struct_post_plot_settings_1a73e720a435225146b16c643ea4b2a809" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>hideSweep</name></member>
+      <member refid="struct_post_plot_settings_1a02713df4f7605a49af29a5a9f5b3546d" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>pulseAverSett</name></member>
+      <member refid="struct_post_plot_settings_1aa1a5f5506f1fc87b563b3c31a420a08e" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>timeAlignLevel</name></member>
+      <member refid="struct_post_plot_settings_1aeb13435df126b6cc6130ae3e1da34112" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>timeAlignment</name></member>
+      <member refid="struct_post_plot_settings_1ab7cd695c80a7f5b4653d5a7a22725b56" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>timeAlignMode</name></member>
+      <member refid="struct_post_plot_settings_1a28181d7649a618e79689715c2e8484ef" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>timeAlignRefTrace</name></member>
+      <member refid="struct_post_plot_settings_1ac823d4387339402182fe63074aecbb62" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>visualizeEpochs</name></member>
+      <member refid="struct_post_plot_settings_1a1b5f11195f2ba66d61383a84a191bb4e" prot="public" virt="non-virtual"><scope>PostPlotSettings</scope><name>zeroTraces</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

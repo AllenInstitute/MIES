@@ -1,0 +1,1151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_i_p_n_w_b___reader_8ipf" kind="file" language="C++">
+    <compoundname>IPNWB_Reader.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1ab51db6232b7e07acd85f86af35359e36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadDevices</definition>
+        <argsstring>(variable fileID, variable version)</argsstring>
+        <name>ReadDevices</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>List devices in given hdf5 file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier of open HDF5 file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>comma separated list of devices </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="19" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="19" bodyend="41"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17c1365703f8f4cc83bf51d9027b8ec6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="644" endline="656">H5_ListGroupMembers</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="662" endline="674">H5_ListGroups</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a2b0666d83f5bab30e34588623d171828" compoundref="_i_p_n_w_b___constants_8ipf" startline="25">NWB_DEVICES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5cd391792250dd9f3c445e6e535e0b6c" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="415" endline="429">ReadTextAttributeAsString</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ad686192dcb0a7481dab14d30ef46dc96" compoundref="_i_p_n_w_b___utils_8ipf" startline="215" endline="237">RemovePrefixFromListItem</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadElectrodeName</definition>
+        <argsstring>(string discLocation, string seriesPath, variable version)</argsstring>
+        <name>ReadElectrodeName</name>
+        <param>
+          <type>string</type>
+          <declname>discLocation</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>seriesPath</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>return name of electrode </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___writer_8ipf_1a7ff3532616c5bd4627ed116891baf86a" kindref="member">AddElectrode</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>discLocation</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>full path to file in Igor disc path notation </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>seriesPath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Full Path inside HDF5 structure to TimeSeries group </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the name of the electrode or &quot;&quot; for unassociated channels </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="51" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="51" bodyend="81"/>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" compoundref="_i_p_n_w_b___reader_8ipf" startline="146" endline="171">AnalyseChannelName</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad21bc4c409cdef354fb9be5b3427f789" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="333" endline="343">H5_CloseFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a4aa8a2cd844ec06a3cd5fee1d526952e" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="716" endline="730">H5_GetLinkTarget</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ac227eec0e6b466b0c125e0b08c090fcf" compoundref="_i_p_n_w_b___constants_8ipf" startline="44">NWB_ELECTRODE_PREFIX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1acb72b03e031c4de78c044873568528b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadLabNoteBooks</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>ReadLabNoteBooks</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>List groups inside /general/labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier of open HDF5 file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>list with name of all groups inside /general/labnotebook/* </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="87" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="87" bodyend="97"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="662" endline="674">H5_ListGroups</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a3d8831c61cc19bbbe1a66b7fb45c5b34" compoundref="_i_p_n_w_b___constants_8ipf" startline="27">NWB_LABNOTEBOOK</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab12d94631ac0ee4bf7932aeab7a23fdf" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1061" endline="1106">AB_LoadLabNotebookFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1ac394fef4530d1d1a82ea66f99934548a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadAcquisition</definition>
+        <argsstring>(variable fileID, variable version)</argsstring>
+        <name>ReadAcquisition</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>List all acquisition channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier of open HDF5 file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NWB major version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>comma separated list of channels </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="104" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="104" bodyend="114"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae06ce11a65d995a76c4c8a66b95285fe" compoundref="_i_p_n_w_b___utils_8ipf" startline="500" endline="512">AddPrefixToEachListItem</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="662" endline="674">H5_ListGroups</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a5ba3d88f87a9c2e87feca6ed9785cfc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadStimulus</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>ReadStimulus</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>List all stimulus channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier of open HDF5 file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>comma separated list of channels </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="120" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="120" bodyend="124"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae06ce11a65d995a76c4c8a66b95285fe" compoundref="_i_p_n_w_b___utils_8ipf" startline="500" endline="512">AddPrefixToEachListItem</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad9e59a7222432c57db7cd092bcd73867" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="662" endline="674">H5_ListGroups</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a6f76073b81942c20d381417e82adf8d1" compoundref="_i_p_n_w_b___constants_8ipf" startline="31">NWB_STIMULUS_PRESENTATION</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1ab2d6f7500a839886c17bff6557895566" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="616" endline="640">AB_LoadSweepsFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1aace3a482f6a59a082ab0d78c78f8db44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadStimsets</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>ReadStimsets</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>List all stimsets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier of open HDF5 file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>comma separated list of contents of the stimset group </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="130" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="130" bodyend="140"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a0652f259c686d0d553f22917f5d02d16" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="348" endline="353">H5_IsFileOpen</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a17c1365703f8f4cc83bf51d9027b8ec6" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="644" endline="656">H5_ListGroupMembers</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a80e46d37050f48522575dc3caef15f68" compoundref="_i_p_n_w_b___constants_8ipf" startline="26">NWB_STIMULUS</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a1c2e9ab4125f06f82e43ee5283e34546" compoundref="_i_p_n_w_b___reader_8ipf" startline="352" endline="356">StimsetPathExists</references>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a4ccf836fa8759e1c56aeded297ed1289" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AnalyseChannelName</definition>
+        <argsstring>(string channel, ReadChannelParams *p)</argsstring>
+        <name>AnalyseChannelName</name>
+        <param>
+          <type>string</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_read_channel_params" kindref="compound">ReadChannelParams</ref> *</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+<para>Try to extract information from channel name string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input channel name in form data_00000_TTL1_3 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_read_channel_params" kindref="compound">ReadChannelParams</ref> structure to get filled </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="146" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="146" bodyend="171"/>
+        <references refid="struct_read_channel_params_1ad5dd35126fab64a86a7c6b4c20142e08" compoundref="_i_p_n_w_b___structures_8ipf" startline="55">ReadChannelParams::channelNumber</references>
+        <references refid="struct_read_channel_params_1a963213ddf67bff221e09fe70507bbc53" compoundref="_i_p_n_w_b___structures_8ipf" startline="52">ReadChannelParams::channelSuffix</references>
+        <references refid="struct_read_channel_params_1afa027d82186b7229cf79777335f10ce2" compoundref="_i_p_n_w_b___structures_8ipf" startline="54">ReadChannelParams::channelType</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae282b7c6bca56413716cb947a7361891" compoundref="_i_p_n_w_b___utils_8ipf" startline="319" endline="327">GetBaseName</references>
+        <references refid="struct_read_channel_params_1ab04e0260174d0b80b43896f61c8e22f2" compoundref="_i_p_n_w_b___structures_8ipf" startline="57">ReadChannelParams::groupIndex</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1adaeb9a1e231b07bd0dcb8e2d764cd8e9" compoundref="_i_p_n_w_b___constants_8ipf" startline="50">IPNWB_CHANNEL_TYPE_OTHER</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9eafda3ac592a5fe959c1c3a17ec5e1d" compoundref="_i_p_n_w_b___constants_8ipf" startline="53">IPNWB_CHANNEL_TYPE_TTL</references>
+        <references refid="struct_read_channel_params_1a8c6b57af365703d9dc957954f3b9758a" compoundref="_i_p_n_w_b___structures_8ipf" startline="58">ReadChannelParams::ttlBit</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a885581fbf4cb2c86ccfb3754fe6b4e59" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1776" endline="1879">AB_LoadSweepFromNWBgeneric</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aa2cf65710e96f5bdf4578804604c747e" compoundref="_i_p_n_w_b___reader_8ipf" startline="51" endline="81">ReadElectrodeName</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LoadSourceAttribute</definition>
+        <argsstring>(variable locationID, string channel, ReadChannelParams *p)</argsstring>
+        <name>LoadSourceAttribute</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_read_channel_params" kindref="compound">ReadChannelParams</ref> *</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+<para>Read parameters from source attribute. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Function is NWBv1 specific <simplesect kind="see"><para><ref refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" kindref="member">LoadSweepNumber</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 group specified channel is a member of </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel to load </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_read_channel_params" kindref="compound">ReadChannelParams</ref> structure to get filled </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="180" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="180" bodyend="233"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="struct_read_channel_params_1ad5dd35126fab64a86a7c6b4c20142e08" compoundref="_i_p_n_w_b___structures_8ipf" startline="55">ReadChannelParams::channelNumber</references>
+        <references refid="struct_read_channel_params_1afa027d82186b7229cf79777335f10ce2" compoundref="_i_p_n_w_b___structures_8ipf" startline="54">ReadChannelParams::channelType</references>
+        <references refid="struct_read_channel_params_1a6467de6fdfbdf20d310d3ea4b9674c3f" compoundref="_i_p_n_w_b___structures_8ipf" startline="50">ReadChannelParams::device</references>
+        <references refid="struct_read_channel_params_1ad75dbe148248470cdcfa721292707e39" compoundref="_i_p_n_w_b___structures_8ipf" startline="56">ReadChannelParams::electrodeNumber</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a391c59098fd3d902e29890e28fa6a00f" compoundref="_i_p_n_w_b___constants_8ipf" startline="51">IPNWB_CHANNEL_TYPE_ADC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a97103d2c927785c28d857e7a3347eb73" compoundref="_i_p_n_w_b___constants_8ipf" startline="52">IPNWB_CHANNEL_TYPE_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a9eafda3ac592a5fe959c1c3a17ec5e1d" compoundref="_i_p_n_w_b___constants_8ipf" startline="53">IPNWB_CHANNEL_TYPE_TTL</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="struct_read_channel_params_1a3f0406f51ffee8fcf858432d45a26f7d" compoundref="_i_p_n_w_b___structures_8ipf" startline="53">ReadChannelParams::sweep</references>
+        <references refid="struct_read_channel_params_1a8c6b57af365703d9dc957954f3b9758a" compoundref="_i_p_n_w_b___structures_8ipf" startline="58">ReadChannelParams::ttlBit</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" compoundref="_i_p_n_w_b___reader_8ipf" startline="241" endline="256">LoadSweepNumber</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LoadSweepNumber</definition>
+        <argsstring>(variable locationID, string channel, variable version)</argsstring>
+        <name>LoadSweepNumber</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Load sweep number from specified channel name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group containing channel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of channel for which sweep number is loaded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NWB maior version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>sweep number </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="241" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="241" bodyend="256"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1ab1149d8bb7507dac8fe6bc343cdda406" compoundref="_i_p_n_w_b___reader_8ipf" startline="180" endline="233">LoadSourceAttribute</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab8b22d722ff06f9a2c77d05c027b64df" compoundref="_i_p_n_w_b___constants_8ipf" startline="16">NWB_VERSION_LATEST</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a837437408ad33ce51c762657250e7281" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="437" endline="451">ReadAttributeAsNumber</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="645" endline="690">AB_StoreChannelsBySweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a30ecdc03c0ff98b170cce380b202cd2c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LoadDataWave</definition>
+        <argsstring>(variable locationID, string channel, string path=defaultValue)</argsstring>
+        <name>LoadDataWave</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Load data wave from specified path. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group containing channel id can also be of an open nwb file. In this case specify (optional) path. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of channel for which data attribute is loaded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>use path to specify group inside hdf5 file where ./channel/data is located. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to free wave containing loaded data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="265" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="265" bodyend="278"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1acaca5f044fa38c8405e13925f3b19273" compoundref="_i_p_n_w_b___reader_8ipf" startline="303" endline="310">LoadStimulus</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a941f83fbb1d5320ae9c8bbd535ddb620" compoundref="_i_p_n_w_b___reader_8ipf" startline="286" endline="296">LoadTimeseries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a941f83fbb1d5320ae9c8bbd535ddb620" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LoadTimeseries</definition>
+        <argsstring>(variable locationID, string path, variable version)</argsstring>
+        <name>LoadTimeseries</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Load single TimeSeries data as a wave from <computeroutput>NWB_PATCHCLAMPSERIES_V</computeroutput>[12]. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group or file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name or path of TimeSeries for which data is loaded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NWB major version </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to wave containing loaded data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="286" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="286" bodyend="296"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae282b7c6bca56413716cb947a7361891" compoundref="_i_p_n_w_b___utils_8ipf" startline="319" endline="327">GetBaseName</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a30ecdc03c0ff98b170cce380b202cd2c" compoundref="_i_p_n_w_b___reader_8ipf" startline="265" endline="278">LoadDataWave</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a885581fbf4cb2c86ccfb3754fe6b4e59" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1776" endline="1879">AB_LoadSweepFromNWBgeneric</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1acaca5f044fa38c8405e13925f3b19273" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LoadStimulus</definition>
+        <argsstring>(variable locationID, string path)</argsstring>
+        <name>LoadStimulus</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Load single TimeSeries data as a wave from <computeroutput>NWB_STIMULUS_PRESENTATION</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group or file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name or path of TimeSeries for which data is loaded </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to wave containing loaded data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="303" column="7" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="303" bodyend="310"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ae282b7c6bca56413716cb947a7361891" compoundref="_i_p_n_w_b___utils_8ipf" startline="319" endline="327">GetBaseName</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a30ecdc03c0ff98b170cce380b202cd2c" compoundref="_i_p_n_w_b___reader_8ipf" startline="265" endline="278">LoadDataWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a6f76073b81942c20d381417e82adf8d1" compoundref="_i_p_n_w_b___constants_8ipf" startline="31">NWB_STIMULUS_PRESENTATION</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a885581fbf4cb2c86ccfb3754fe6b4e59" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1776" endline="1879">AB_LoadSweepFromNWBgeneric</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a1411e1af86fe7b8f83a1f951db0cab0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OpenAcquisition</definition>
+        <argsstring>(variable fileID, variable version)</argsstring>
+        <name>OpenAcquisition</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Open hdf5 group containing acquisition channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group or file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>NWB major version</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>id of hdf5 group </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="318" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="318" bodyend="325"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1abaf7b690f61499ff0320c3a90989ac4e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="571" endline="581">GetNWBgroupPatchClampSeries</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1ae003d29746a956c2e7d2e9c9e7d4630c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OpenStimulus</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>OpenStimulus</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Open hdf5 group containing stimulus channels. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group or file</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>id of hdf5 group </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="332" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="332" bodyend="336"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a6f76073b81942c20d381417e82adf8d1" compoundref="_i_p_n_w_b___constants_8ipf" startline="31">NWB_STIMULUS_PRESENTATION</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a619dbec6a09da6401e5ace3b8c969e31" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1720" endline="1774">AB_LoadSweepFromNWB</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1af0678448c2bdb1636d630a7f577817cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable OpenStimset</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>OpenStimset</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Open hdf5 group containing stimsets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of an open hdf5 group or file</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>id of hdf5 group </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="343" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="343" bodyend="349"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a80e46d37050f48522575dc3caef15f68" compoundref="_i_p_n_w_b___constants_8ipf" startline="26">NWB_STIMULUS</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a1c2e9ab4125f06f82e43ee5283e34546" compoundref="_i_p_n_w_b___reader_8ipf" startline="352" endline="356">StimsetPathExists</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a1c2e9ab4125f06f82e43ee5283e34546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable StimsetPathExists</definition>
+        <argsstring>(variable fileID)</argsstring>
+        <name>StimsetPathExists</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <briefdescription>
+<para>Check if the path to the stimsets exist in the NWB file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="352" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="352" bodyend="356"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a80e46d37050f48522575dc3caef15f68" compoundref="_i_p_n_w_b___constants_8ipf" startline="26">NWB_STIMULUS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a3dd7c441d361290797b18c5864f02060" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1669" endline="1718">AB_LoadStimsetFromFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1af0678448c2bdb1636d630a7f577817cd" compoundref="_i_p_n_w_b___reader_8ipf" startline="343" endline="349">OpenStimset</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1aace3a482f6a59a082ab0d78c78f8db44" compoundref="_i_p_n_w_b___reader_8ipf" startline="130" endline="140">ReadStimsets</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a9d75129197337771a6aa3a9b8ccec312" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadTopLevelInfo</definition>
+        <argsstring>(variable fileID, ToplevelInfo *toplevelInfo)</argsstring>
+        <name>ReadTopLevelInfo</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_toplevel_info" kindref="compound">ToplevelInfo</ref> *</type>
+          <declname>toplevelInfo</declname>
+        </param>
+        <briefdescription>
+<para>Read in all NWB datasets from the root group (&apos;/&apos;) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="359" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="359" bodyend="374"/>
+        <references refid="struct_toplevel_info_1aefaf98ba303a4a294885a25298b3e65a" compoundref="_i_p_n_w_b___structures_8ipf" startline="146">ToplevelInfo::file_create_date</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="struct_toplevel_info_1a9a646feee53d0681e33b83351a76cc7d" compoundref="_i_p_n_w_b___structures_8ipf" startline="145">ToplevelInfo::identifier</references>
+        <references refid="struct_toplevel_info_1a318816b161bf8fcf8841ade50f156bff" compoundref="_i_p_n_w_b___structures_8ipf" startline="144">ToplevelInfo::nwb_version</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a49ecc9f1818e470856fcbe8ea26f4306" compoundref="_i_p_n_w_b___utils_8ipf" startline="388" endline="427">ParseISO8601TimeStamp</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a2f3acf3bf0df85add3bf642e1ca55968" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="458" endline="472">ReadTextDataSet</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</references>
+        <references refid="struct_toplevel_info_1ad462d108ef668d23d06497a7261ad41e" compoundref="_i_p_n_w_b___structures_8ipf" startline="140">ToplevelInfo::session_description</references>
+        <references refid="struct_toplevel_info_1aaa66c183278d539a36827db7335e67c2" compoundref="_i_p_n_w_b___structures_8ipf" startline="143">ToplevelInfo::session_start_time</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a10c1bbfd998735db47c6c550c065e131" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadGeneralInfo</definition>
+        <argsstring>(variable fileID, GeneralInfo *generalinfo)</argsstring>
+        <name>ReadGeneralInfo</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_general_info" kindref="compound">GeneralInfo</ref> *</type>
+          <declname>generalinfo</declname>
+        </param>
+        <briefdescription>
+<para>Read in all standard NWB datasets from the group &apos;/general&apos;. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="377" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="377" bodyend="401"/>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a6dfeb6d6185c680fad362bae3408065b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadSubjectInfo</definition>
+        <argsstring>(variable fileID, SubjectInfo *subjectInfo)</argsstring>
+        <name>ReadSubjectInfo</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_subject_info" kindref="compound">SubjectInfo</ref> *</type>
+          <declname>subjectInfo</declname>
+        </param>
+        <briefdescription>
+<para>Read in all NWB datasets from the root group &apos;/general/subject&apos;. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="404" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="404" bodyend="422"/>
+        <references refid="struct_subject_info_1abae4b140b0ab09c14a869fb674b33ce9" compoundref="_i_p_n_w_b___structures_8ipf" startline="114">SubjectInfo::age</references>
+        <references refid="struct_subject_info_1a480d92e80f286ed4ffbd0e31ea09438e" compoundref="_i_p_n_w_b___structures_8ipf" startline="116">SubjectInfo::date_of_birth</references>
+        <references refid="struct_subject_info_1a156b6c289104a1674cd5d37b97597a94" compoundref="_i_p_n_w_b___structures_8ipf" startline="117">SubjectInfo::description</references>
+        <references refid="struct_subject_info_1a2f286610675f846e7fa140ffb96fed4d" compoundref="_i_p_n_w_b___structures_8ipf" startline="118">SubjectInfo::genotype</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a0424d9aa12147ab8190394200e700f78" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="478" endline="492">ReadTextDataSetAsString</references>
+        <references refid="struct_subject_info_1abcb26a10b4e18d653c7c33ecd3ba7f0a" compoundref="_i_p_n_w_b___structures_8ipf" startline="119">SubjectInfo::sex</references>
+        <references refid="struct_subject_info_1a05e66316a055f8a0d80570184db5eb38" compoundref="_i_p_n_w_b___structures_8ipf" startline="120">SubjectInfo::species</references>
+        <references refid="struct_subject_info_1a3da983efccd26d99b1bb2172847c0282" compoundref="_i_p_n_w_b___structures_8ipf" startline="121">SubjectInfo::subject_id</references>
+        <references refid="struct_subject_info_1a78547157ececda86ce1a0db5482fd52e" compoundref="_i_p_n_w_b___structures_8ipf" startline="122">SubjectInfo::weight</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable ReadTimeSeriesProperties</definition>
+        <argsstring>(variable locationID, string channel, TimeSeriesProperties *tsp)</argsstring>
+        <name>ReadTimeSeriesProperties</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>channel</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> *</type>
+          <declname>tsp</declname>
+        </param>
+        <briefdescription>
+<para>Read the TimeSeries properties from the given group in locationID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>TimeSeries group ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">channel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>TimeSeries group name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">tsp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref> structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="429" column="11" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="429" bodyend="474"/>
+        <references refid="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" compoundref="_i_p_n_w_b___structures_8ipf" startline="190">TimeSeriesProperties::data</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a58f884ced9ff53d7b20ef9fdd752807e" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="184" endline="202">GetChannelTypeFromNeurodataType</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a56ede05860e92adacc2da87393adbe54" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="209" endline="227">GetClampModeFromNeurodataType</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</references>
+        <references refid="struct_time_series_properties_1a887273c24eb25544ccc4a7c556ad8ae3" compoundref="_i_p_n_w_b___structures_8ipf" startline="192">TimeSeriesProperties::isCustom</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" compoundref="_i_p_n_w_b___structures_8ipf" startline="193">TimeSeriesProperties::missing_fields</references>
+        <references refid="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" compoundref="_i_p_n_w_b___structures_8ipf" startline="188">TimeSeriesProperties::names</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a6c2f4f8904430aac5c6182c2b73a5460" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="498" endline="511">ReadDataSetAsNumber</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" compoundref="_i_p_n_w_b___reader_8ipf" startline="484" endline="503">ReadNeuroDataType</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a07f977bf847318adc5386687575e9aaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string ReadNeuroDataType</definition>
+        <argsstring>(variable fileID, string name)</argsstring>
+        <name>ReadNeuroDataType</name>
+        <param>
+          <type>variable</type>
+          <declname>fileID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Read nwb data type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_i_p_n_w_b___writer_8ipf_1a1ce67de3bb44b87b62fe61855f6bc18b" kindref="member">WriteNeuroDataType</ref></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier of file (not group) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to element who&apos;s DataType is queried</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>string with data type (e.g. uint, <ref refid="struct_dynamic_table" kindref="compound">DynamicTable</ref>, SweepTable) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="484" column="9" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="484" bodyend="503"/>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a568de585a669e593a309f68b34a7bd86" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="328" endline="332">EnsureValidNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a9ffb6a466a49ababb683752519158108" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="267" endline="283">ReadNWBVersion</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a4073d87b5409e8b4a03c92e360901be5" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="379" endline="384">ReadTextAttributeAsList</references>
+        <references refid="_i_p_n_w_b___n_w_b_utils_8ipf_1a5cd391792250dd9f3c445e6e535e0b6c" compoundref="_i_p_n_w_b___n_w_b_utils_8ipf" startline="415" endline="429">ReadTextAttributeAsString</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a46ef6aed821bc9f61a6eba6a3673af0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveOrNull, WaveTextOrNull &gt;</type>
+        <definition>std::tuple&lt; WaveOrNull, WaveTextOrNull &gt; LoadSweepTable</definition>
+        <argsstring>(variable locationID, variable version)</argsstring>
+        <name>LoadSweepTable</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Return the two SweepTable data columns <computeroutput>sweep_number</computeroutput> and <computeroutput>series</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000002"><xreftitle>Todo</xreftitle><xrefdescription><para>Allow Executions for files with missing SweepTable entry using <ref refid="_i_p_n_w_b___reader_8ipf_1a71f81b0af8b2b665faf0b252eebe5cc7" kindref="member">LoadSweepNumber</ref></para>
+</xrefdescription></xrefsect></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>locationID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HDF5 identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>major NWB version</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>sweep_number and path to TimeSeries as waves </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="514" column="12" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="514" bodyend="532"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a24e15bd9f8c9dcf554f5728c1bbf35bb" compoundref="_i_p_n_w_b___constants_8ipf" startline="29">NWB_INTRACELLULAR_EPHYS</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a07affc9e2fca1efef424614dc02d1451" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="645" endline="690">AB_StoreChannelsBySweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave LoadEpochTable</definition>
+        <argsstring>(string nwbFilePath)</argsstring>
+        <name>LoadEpochTable</name>
+        <param>
+          <type>string</type>
+          <declname>nwbFilePath</declname>
+        </param>
+        <briefdescription>
+<para>Return the epoch table as wave reference wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Due to IP limitations, the NWB file path of the closed file must be passed.</para>
+<para>See <ref refid="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" kindref="member">GetEpochsWaveInternal()</ref> for the wave layout. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="539" column="6" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="539" bodyend="639"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb3c53d4a4acb32629af52b46ab81c78" compoundref="_m_i_e_s___constants_8ipf" startline="1600">EPOCHTIME_PRECISION</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1ab2f451fcfe3dadcd188beac9a8b73676" compoundref="_i_p_n_w_b___reader_8ipf" startline="702" endline="730">ExpandRuggedVector</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" compoundref="_i_p_n_w_b___reader_8ipf" startline="678" endline="697">GetEpochsWaveInternal</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_i_p_n_w_b___reader_8ipf_1a4452d82971b44d32bd0b1f88747fb693" compoundref="_i_p_n_w_b___reader_8ipf" startline="642" endline="668">GetTimeseriesProperties</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a96bce9fe68faa625f250f51788bfcd00" compoundref="_i_p_n_w_b___utils_8ipf" startline="884" endline="888">GetWindowsPath</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a1922af1e133476db8052cb445951afa2" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="564" endline="585">H5_GroupExists</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a465aab5ca555b1eb98d7fa125bd56649" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="306" endline="327">H5_OpenFile</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a3b2a8fe533a81bcc98f370dde7ea242c" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="683" endline="705">H5_OpenGroup</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a451140a4408ee517d7c814e1c2ac5e51" compoundref="_i_p_n_w_b___constants_8ipf" startline="37">NWB_TIME_INTERVALS_EPOCHS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1a946088a6b91030bd0991d8e0d1ced7da" compoundref="_i_p_n_w_b___constants_8ipf" startline="38">NWB_TIME_INTERVALS_TIMESERIES_EPOCHS</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a4452d82971b44d32bd0b1f88747fb693" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetTimeseriesProperties</definition>
+        <argsstring>(variable locationID, WaveText timeseries, string name, string attrName=defaultValue)</argsstring>
+        <name>GetTimeseriesProperties</name>
+        <param>
+          <type>variable</type>
+          <declname>locationID</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>timeseries</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>attrName</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return timeseries properties which can be a dataset or attribute as wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="642" column="13" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="642" bodyend="668"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1ad7e05038d64fea844221b7a23a80ddb0" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="528" endline="557">H5_LoadAttribute</references>
+        <references refid="_i_p_n_w_b___h_d_f5_helpers_8ipf_1a5843102ecc437c89203ab579da86a778" compoundref="_i_p_n_w_b___h_d_f5_helpers_8ipf" startline="426" endline="453">H5_LoadDataset</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1a63ec95751fd741fc6c0c6436b29611e0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave GetEpochsWaveInternal</definition>
+        <argsstring>(WaveText timeseries)</argsstring>
+        <name>GetEpochsWaveInternal</name>
+        <param>
+          <type>WaveText</type>
+          <declname>timeseries</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave reference wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>ROWS:<itemizedlist>
+<listitem><para>One entry for each unique timeseries path, with dimension label</para>
+</listitem></itemizedlist>
+</para>
+<para>Each row will hold a Nx4 wave for the epoch info of each row.</para>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1af467907940c95ed8f7e61985ae7e9e10" kindref="member">GetEpochsWave()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="678" column="13" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="678" bodyend="697"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a89ad121c35e550252ef0abbf24d93a67" compoundref="_i_p_n_w_b___utils_8ipf" startline="900" endline="932">GetUniqueEntries</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a528eadc1627b0d61f183d4919144fa56" compoundref="_m_i_e_s___constants_8ipf" startline="114">MINIMUM_WAVE_SIZE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aded7c1fd764336bdbdc8a8f3ce2ea541" compoundref="_i_p_n_w_b___utils_8ipf" startline="890" endline="895">SetEpochsDimensionLabels</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_i_p_n_w_b___reader_8ipf_1ab2f451fcfe3dadcd188beac9a8b73676" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave ExpandRuggedVector</definition>
+        <argsstring>(WaveText data_rugged, wave index, string sep)</argsstring>
+        <name>ExpandRuggedVector</name>
+        <param>
+          <type>WaveText</type>
+          <declname>data_rugged</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>sep</declname>
+        </param>
+        <briefdescription>
+<para>Expand data from rugged <ref refid="struct_dynamic_table" kindref="compound">DynamicTable</ref> column entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See also <ulink url="https://github.com/hdmf-dev/hdmf-common-schema/blob/main/common/table.yaml#L4">https://github.com/hdmf-dev/hdmf-common-schema/blob/main/common/table.yaml#L4</ulink>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" line="702" column="13" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf" bodystart="702" bodyend="730"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a0a49d76f42df45c26e2023f4c9f7f5a4" compoundref="_i_p_n_w_b___reader_8ipf" startline="539" endline="639">LoadEpochTable</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Generic functions related to import from the NeuroDataWithoutBorders format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Reader.ipf"/>
+  </compounddef>
+</doxygen>

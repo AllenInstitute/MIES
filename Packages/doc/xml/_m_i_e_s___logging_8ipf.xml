@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___logging_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Logging.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1a8292f14f4dc031dc9500c7ee099cc01b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string LOG_GetFile</definition>
+        <argsstring>(string package)</argsstring>
+        <name>LOG_GetFile</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <briefdescription>
+<para>Get the absolute path to the log file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="17" column="9" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="17" bodyend="23"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a49b580dc3d88ce2762277af042d0a439" compoundref="_m_i_e_s___constants_8ipf" startline="1524">LOGFILE_NAME</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1ac5304191aa7828af37bdc9a5f3bbb6b0" compoundref="_m_i_e_s___package_settings_8ipf" startline="78" endline="85">PS_GetSettingsFolder_TS</references>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1ad6d94e092f873bf46737dab2da3f1709" compoundref="_m_i_e_s___logging_8ipf" startline="74" endline="92">LOG_AddEntryWithoutChecks</referencedby>
+        <referencedby refid="_m_i_e_s___menu_8ipf_1a1bf2b4857e20faf976336ae98a2c76d1" compoundref="_m_i_e_s___menu_8ipf" startline="216" endline="236">MEN_OpenMIESLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad70d23e317fab72056a5d868939b05d1" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1954" endline="1985">NWB_AppendIgorHistoryAndLogFile</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ac5b405e9cd0d943c5f66d8b1fc3c7530" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7204" endline="7273">UploadLogFiles</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1a68611b59a610c84d7fe861573939f9ab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LOG_HasRequiredKeys</definition>
+        <argsstring>(variable JSONid)</argsstring>
+        <name>LOG_HasRequiredKeys</name>
+        <param>
+          <type>variable</type>
+          <declname>JSONid</declname>
+        </param>
+        <briefdescription>
+<para>Check that the given JSON document has the required top level keys. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Currently we require:<itemizedlist>
+<listitem><para><computeroutput>ts</computeroutput>: ISO8601 timestamp</para>
+</listitem><listitem><para><computeroutput>source</computeroutput>: Source of the log entry, usually the function issuing the add entry</para>
+</listitem><listitem><para><computeroutput>exp</computeroutput>: Name of the Igor Pro experiment </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="31" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="31" bodyend="43"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" compoundref="_m_i_e_s___logging_8ipf" startline="153" endline="172">LOG_AddEntryImp</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1ab73e67d9110aeb54cb90765dcdaeb7a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LOG_GenerateEntryTemplate</definition>
+        <argsstring>(string source)</argsstring>
+        <name>LOG_GenerateEntryTemplate</name>
+        <param>
+          <type>string</type>
+          <declname>source</declname>
+        </param>
+        <briefdescription>
+<para>Generate a JSON text with all required entries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Caller is responsible for the JSON text memory. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="48" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="48" bodyend="57"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aa301aa0e6c4715ed621f25202714eec4" compoundref="_m_i_e_s___utilities_8ipf" startline="6017" endline="6019">GetIgorInstanceID</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acab06495a61c5016a5fe156ad388c50e" compoundref="_i_p_n_w_b___utils_8ipf" startline="78" endline="112">GetISO8601TimeStamp</references>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" compoundref="_m_i_e_s___logging_8ipf" startline="153" endline="172">LOG_AddEntryImp</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae7063c66534829ef09e5830e604a5f68" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7362" endline="7372">UpdateZeroMQXOPLoggingTemplate</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1ac3693a6ab51beddaf0a8491c6473ec68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LOG_MarkSessionStart</definition>
+        <argsstring>(string package)</argsstring>
+        <name>LOG_MarkSessionStart</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <briefdescription>
+<para>Adds a special entry to the logfile to mark the start of a session. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Should be called from <ref refid="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69" kindref="member">IgorBeforeNewHook()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="62" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="62" bodyend="71"/>
+        <references refid="_m_i_e_s___logging_8ipf_1ad6d94e092f873bf46737dab2da3f1709" compoundref="_m_i_e_s___logging_8ipf" startline="74" endline="92">LOG_AddEntryWithoutChecks</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1ae06d342cb72b42fe335659c4bcaaf5e4" compoundref="_m_i_e_s___package_settings_8ipf" startline="16" endline="24">PS_Initialize</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="247" endline="269">IgorStartOrNewHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1ad6d94e092f873bf46737dab2da3f1709" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LOG_AddEntryWithoutChecks</definition>
+        <argsstring>(string package, variable JSONid)</argsstring>
+        <name>LOG_AddEntryWithoutChecks</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>JSONid</declname>
+        </param>
+        <briefdescription>
+<para>Adds the JSONid text to the logfile without any checks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para><xrefsect id="todo_1_todo000021"><xreftitle>Todo</xreftitle><xrefdescription><para>IP9-only: Remove precision specifier </para>
+</xrefdescription></xrefsect></para>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="74" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="74" bodyend="92"/>
+        <references refid="_m_i_e_s___logging_8ipf_1a8292f14f4dc031dc9500c7ee099cc01b" compoundref="_m_i_e_s___logging_8ipf" startline="17" endline="23">LOG_GetFile</references>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" compoundref="_m_i_e_s___logging_8ipf" startline="153" endline="172">LOG_AddEntryImp</referencedby>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1ac3693a6ab51beddaf0a8491c6473ec68" compoundref="_m_i_e_s___logging_8ipf" startline="62" endline="71">LOG_MarkSessionStart</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LOG_AddEntry</definition>
+        <argsstring>(string package, string action, WaveText keys=defaultValue, WaveText values=defaultValue)</argsstring>
+        <name>LOG_AddEntry</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>values</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add entry for the current function into the log file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Usage: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*      Function DoWork()
+* 
+*          LOG_AddEntry(&quot;my package&quot;, &quot;start&quot;)
+* 
+*          // ...
+* 
+*          LOG_AddEntry(&quot;my package&quot;, &quot;end&quot;)
+*      End
+*  </verbatim></para>
+<para>Result: <verbatim>embed:rst:leading-asterisk
+*  .. code-block:: js
+* 
+*     {&quot;action&quot;:&quot;start&quot;,&quot;exp&quot;:&quot;HardwareTests&quot;,&quot;source&quot;:&quot;DoWork&quot;,&quot;ts&quot;:&quot;2021-03-09T17:20:10.252+01:00&quot;}
+*     {&quot;action&quot;:&quot;end&quot;,&quot;exp&quot;:&quot;HardwareTests&quot;,&quot;source&quot;:&quot;DoWork&quot;,&quot;ts&quot;:&quot;2021-03-09T17:20:10.298+01:00&quot;}
+* 
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>package</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>package name, this determines the log file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>action</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>additional string, can be something like <computeroutput>start</computeroutput> or <computeroutput>end</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>keys</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to $&quot;&quot;] Additional key-value pairs to be written into the log file. Same size as values. Either both <computeroutput>keys</computeroutput> and <computeroutput>values</computeroutput> are present or none. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to $&quot;&quot;] Additional key-value pairs to be written into the log file. Same size as keys. Either both <computeroutput>keys</computeroutput> and <computeroutput>values</computeroutput> are present or none. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="125" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="125" bodyend="138"/>
+        <references refid="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" compoundref="_m_i_e_s___logging_8ipf" startline="153" endline="172">LOG_AddEntryImp</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a22b90fc672f1dd73cfcadc1a5ce4630c" compoundref="_m_i_e_s___package_settings_8ipf" startline="91" endline="104">PS_GetSettingsFolder</references>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="285" endline="302">AfterCompiledHook</referencedby>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a681d45105260785ecc6ab3ef82f2185c" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="122" endline="145">BeforeExperimentSaveHook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1a2209db930184c30ed4eeb01015561768" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="2978" endline="3013">BeforeFileOpenHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1ae44d37d110115372a6318b15bb15bbaa" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="271" endline="283">BeforeUncompiledHook</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4831" endline="4944">DAP_LockDevice</referencedby>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1ae824bbf81f8b7d16b36b53e3f3d85f69" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="218" endline="244">IgorBeforeNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a1289f5b73d08710832e8d874837319a9" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="187" endline="204">IgorBeforeQuitHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a6fcae5eafc97bca9a637bd7800b13e25" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="206" endline="214">IgorQuitHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1adb5b8abab4b70c03cd25b070212b9986" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="247" endline="269">IgorStartOrNewHook</referencedby>
+        <referencedby refid="_m_i_e_s___igor_hooks_8ipf_1a87cc453c2cea87123e98ceea5a618d67" compoundref="_m_i_e_s___igor_hooks_8ipf" startline="151" endline="185">IH_Cleanup</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1ad00b850cb195fcc5eee17ff81c99a9a5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="514" endline="670">NWB_ExportAllData</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="746" endline="783">NWB_ExportAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1629" endline="1714">NWB_LoadAllStimsets</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ab3ca90236953ba7b52431f4176030084" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2489" endline="2559">P_ButtonProc_UserPressure</referencedby>
+        <referencedby refid="_m_i_e_s___pressure_control_8ipf_1ae16de58da2e96e34b4223c65acbd6e6b" compoundref="_m_i_e_s___pressure_control_8ipf" startline="2083" endline="2121">P_Enable</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a0414cff718e25a971298bbd1e8a500d8" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1039" endline="1140">TP_RecordTP</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1a84a17f151d373ec9e0090bc84a8fd788" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable LOG_AddEntry_TS</definition>
+        <argsstring>(string package, string action, string caller, WaveText keys=defaultValue, WaveText values=defaultValue)</argsstring>
+        <name>LOG_AddEntry_TS</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>caller</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>keys</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>values</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Threadsafe version of <ref refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" kindref="member">LOG_AddEntry()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Callers need to write the calling function name into <computeroutput>caller</computeroutput>. <xrefsect id="todo_1_todo000022"><xreftitle>Todo</xreftitle><xrefdescription><para>IP9-only: merge with LOG_AddEntry </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="144" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="144" bodyend="151"/>
+        <references refid="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" compoundref="_m_i_e_s___logging_8ipf" startline="153" endline="172">LOG_AddEntryImp</references>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1a4413298bd6761f265591befead0ea3b8" compoundref="_m_i_e_s___utilities_8ipf" startline="211" endline="265">ASSERT_TS</referencedby>
+        <referencedby refid="_m_i_e_s___debugging_8ipf_1a5a976aabc6746b44d530faa62ee1273b" compoundref="_m_i_e_s___debugging_8ipf" startline="539" endline="569">BUG_TS</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___logging_8ipf_1a0a6d7c46a878d99eaf932eae9165cf06" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable LOG_AddEntryImp</definition>
+        <argsstring>(string package, string action, string caller, WaveTextOrNull keys, WaveTextOrNull values)</argsstring>
+        <name>LOG_AddEntryImp</name>
+        <param>
+          <type>string</type>
+          <declname>package</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>caller</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" line="153" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf" bodystart="153" bodyend="172"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___logging_8ipf_1ad6d94e092f873bf46737dab2da3f1709" compoundref="_m_i_e_s___logging_8ipf" startline="74" endline="92">LOG_AddEntryWithoutChecks</references>
+        <references refid="_m_i_e_s___logging_8ipf_1ab73e67d9110aeb54cb90765dcdaeb7a2" compoundref="_m_i_e_s___logging_8ipf" startline="48" endline="57">LOG_GenerateEntryTemplate</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a68611b59a610c84d7fe861573939f9ab" compoundref="_m_i_e_s___logging_8ipf" startline="31" endline="43">LOG_HasRequiredKeys</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</referencedby>
+        <referencedby refid="_m_i_e_s___logging_8ipf_1a84a17f151d373ec9e0090bc84a8fd788" compoundref="_m_i_e_s___logging_8ipf" startline="144" endline="151">LOG_AddEntry_TS</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Logging.ipf"/>
+  </compounddef>
+</doxygen>

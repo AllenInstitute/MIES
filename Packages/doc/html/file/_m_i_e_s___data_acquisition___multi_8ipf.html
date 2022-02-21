@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_DataAcquisition_Multi.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_DataAcquisition_Single.ipf" href="_m_i_e_s___data_acquisition___single_8ipf.html" />
+    <link rel="prev" title="File MIES_DataAcquisition.ipf" href="_m_i_e_s___data_acquisition_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___single_8ipf.html" title="File MIES_DataAcquisition_Single.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition_8ipf.html" title="File MIES_DataAcquisition.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataAcquisition_Multi.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-dataacquisition-multi-ipf">
+<span id="id1"></span><h1>File MIES_DataAcquisition_Multi.ipf<a class="headerlink" href="#file-mies-dataacquisition-multi-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>DQM</strong> Routines for Multi Device Data acquisition </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQM_FIFOMonitorP18WMBackgroundStruct">
+<span id="_CPPv315DQM_FIFOMonitorP18WMBackgroundStruct"></span><span id="_CPPv215DQM_FIFOMonitorP18WMBackgroundStruct"></span><span id="DQM_FIFOMonitor__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_FIFOMonitor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQM_FIFOMonitorP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fifo monitor for DAQ Multi Device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429DQM_TerminateOngoingDAQHelper6string">
+<span id="_CPPv329DQM_TerminateOngoingDAQHelper6string"></span><span id="_CPPv229DQM_TerminateOngoingDAQHelper6string"></span><span id="DQM_TerminateOngoingDAQHelper__string"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a2fe5a288f4c1f29520b7bf092caf3c63"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_TerminateOngoingDAQHelper</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DQM_TerminateOngoingDAQHelper6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stop ongoing multi device DAQ. </p>
+<p>Follower handling for yoked devices is done by the caller. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DQM_StartDAQMultiDevice6string8variable">
+<span id="_CPPv323DQM_StartDAQMultiDevice6string8variable"></span><span id="_CPPv223DQM_StartDAQMultiDevice6string8variable"></span><span id="DQM_StartDAQMultiDevice__string.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a8298008dd3f3a61d8652cf8183eea7ae"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_StartDAQMultiDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialSetupReq</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DQM_StartDAQMultiDevice6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s. </p>
+<p>Handles the calls to the data configurator (DC) functions and BackgroundMD it is required because of the special handling syncronous ITC1600s require</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>initialSetupReq</strong> – [optional, defaults to true] performs initialization routines at the very beginning of DAQ, turn off for RA </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427DQM_CallFuncForDevicesYoked6string28CALL_FUNCTION_LIST_PROTOTYPE">
+<span id="_CPPv327DQM_CallFuncForDevicesYoked6string28CALL_FUNCTION_LIST_PROTOTYPE"></span><span id="_CPPv227DQM_CallFuncForDevicesYoked6string28CALL_FUNCTION_LIST_PROTOTYPE"></span><span id="DQM_CallFuncForDevicesYoked__string.CALL_FUNCTION_LIST_PROTOTYPE"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_CallFuncForDevicesYoked</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="_m_i_e_s___utilities_8ipf.html#_CPPv428CALL_FUNCTION_LIST_PROTOTYPE6string" title="CALL_FUNCTION_LIST_PROTOTYPE"><span class="n"><span class="pre">CALL_FUNCTION_LIST_PROTOTYPE</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DQM_CallFuncForDevicesYoked6string28CALL_FUNCTION_LIST_PROTOTYPE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Call a function for a device and if this device is a leader with followers for all follower too. </p>
+<p>Handles also non-yoked devices in multi device mode correctly. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424DQM_StartBackgroundTimer6string8variable6string">
+<span id="_CPPv324DQM_StartBackgroundTimer6string8variable6string"></span><span id="_CPPv224DQM_StartBackgroundTimer6string8variable6string"></span><span id="DQM_StartBackgroundTimer__string.variable.string"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a8882c7a341e46800beb58e049a206d21"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_StartBackgroundTimer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">funcList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DQM_StartBackgroundTimer6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start the background timer for the inter trial interval (ITI) </p>
+<p>Multi device variant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device </p></li>
+<li><p><strong>runTime</strong> – left over time to wait in seconds </p></li>
+<li><p><strong>funcList</strong> – list of functions to execute at the end of the ITI </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423DQM_StopBackgroundTimer6string">
+<span id="_CPPv323DQM_StopBackgroundTimer6string"></span><span id="_CPPv223DQM_StopBackgroundTimer6string"></span><span id="DQM_StopBackgroundTimer__string"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a0080f2e57fff2a826140d55de7b588b6"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_StopBackgroundTimer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DQM_StopBackgroundTimer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stop the background timer used for ITI tracking. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49DQM_TimerP18WMBackgroundStruct">
+<span id="_CPPv39DQM_TimerP18WMBackgroundStruct"></span><span id="_CPPv29DQM_TimerP18WMBackgroundStruct"></span><span id="DQM_Timer__WMBackgroundStructP"></span><span class="target" id="group___background_functions_1gad4c7bb1b11846190bd5407eeeef33ef5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_Timer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMBackgroundStruct</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49DQM_TimerP18WMBackgroundStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Background function for tracking ITI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425DQM_StartBckrdFIFOMonitorv">
+<span id="_CPPv325DQM_StartBckrdFIFOMonitorv"></span><span id="_CPPv225DQM_StartBckrdFIFOMonitorv"></span><span id="DQM_StartBckrdFIFOMonitor"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a9998f59d4e139bebda0e6a4b29c76cab"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_StartBckrdFIFOMonitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DQM_StartBckrdFIFOMonitorv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQM_StopDataAcq6string8variable">
+<span id="_CPPv315DQM_StopDataAcq6string8variable"></span><span id="_CPPv215DQM_StopDataAcq6string8variable"></span><span id="DQM_StopDataAcq__string.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1aee3e965b761fec19c6fe605dd547d4ba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_StopDataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQM_StopDataAcq6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415DQM_BkrdDataAcq6string8variable">
+<span id="_CPPv315DQM_BkrdDataAcq6string8variable"></span><span id="_CPPv215DQM_BkrdDataAcq6string8variable"></span><span id="DQM_BkrdDataAcq__string.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a436940fbf181bf03b56ef8e0766c225e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_BkrdDataAcq</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">triggerMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415DQM_BkrdDataAcq6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416DQM_RemoveDevice6string8variable">
+<span id="_CPPv316DQM_RemoveDevice6string8variable"></span><span id="_CPPv216DQM_RemoveDevice6string8variable"></span><span id="DQM_RemoveDevice__string.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a3f51af366a4071590981706f95763c0d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_RemoveDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DQM_RemoveDevice6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Removes a device from the ActiveDeviceList. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – panel title </p></li>
+<li><p><strong>deviceID</strong> – id of the device to be removed </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422DQM_GetActiveDeviceRow8variable">
+<span id="_CPPv322DQM_GetActiveDeviceRow8variable"></span><span id="_CPPv222DQM_GetActiveDeviceRow8variable"></span><span id="DQM_GetActiveDeviceRow__variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1af6f4ac96a64b0135ed1cec86b11aa4dd"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_GetActiveDeviceRow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deviceID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DQM_GetActiveDeviceRow8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the row into <code class="docutils literal notranslate"><span class="pre">ActiveDeviceList</span></code> for the given deviceID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413DQM_AddDevice6string">
+<span id="_CPPv313DQM_AddDevice6string"></span><span id="_CPPv213DQM_AddDevice6string"></span><span id="DQM_AddDevice__string"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1ada01495c829f891afd7143552f7ed485"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_AddDevice</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413DQM_AddDevice6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adds a device to the ActiveDeviceList. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> – panel title </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430DQM_MakeOrUpdateTimerParamWave6string6string8variable8variable8variable8variable">
+<span id="_CPPv330DQM_MakeOrUpdateTimerParamWave6string6string8variable8variable8variable8variable"></span><span id="_CPPv230DQM_MakeOrUpdateTimerParamWave6string6string8variable8variable8variable8variable"></span><span id="DQM_MakeOrUpdateTimerParamWave__string.string.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1ab7c15a006304880c25332bffa8a839f4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_MakeOrUpdateTimerParamWave</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listOfFunctions</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">RunTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">EndTime</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">addOrRemoveDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DQM_MakeOrUpdateTimerParamWave6string6string8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427DQM_MakeOrUpdtDevTimerTxtWv6string6string8variable8variable">
+<span id="_CPPv327DQM_MakeOrUpdtDevTimerTxtWv6string6string8variable8variable"></span><span id="_CPPv227DQM_MakeOrUpdtDevTimerTxtWv6string6string8variable8variable"></span><span id="DQM_MakeOrUpdtDevTimerTxtWv__string.string.variable.variable"></span><span class="target" id="_m_i_e_s___data_acquisition___multi_8ipf_1a0dbb86d69f1e76e7dc6ba75557dc72f5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DQM_MakeOrUpdtDevTimerTxtWv</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listOfFunctions</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowToRemove</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">addOrRemoveDevice</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DQM_MakeOrUpdtDevTimerTxtWv6string6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_acquisition_8ipf.html"
+                          title="previous chapter">File MIES_DataAcquisition.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___data_acquisition___single_8ipf.html"
+                          title="next chapter">File MIES_DataAcquisition_Single.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition___single_8ipf.html" title="File MIES_DataAcquisition_Single.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___data_acquisition_8ipf.html" title="File MIES_DataAcquisition.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DataAcquisition_Multi.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,633 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___data_browser_8ipf" kind="file" language="C++">
+    <compoundname>MIES_DataBrowser.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1acbc72304ac3c399129ef21c3f5772af9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DB_OpenDataBrowser</definition>
+        <argsstring>()</argsstring>
+        <name>DB_OpenDataBrowser</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="12" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="12" bodyend="36"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac752b8be19afa877493a6ebdda385db0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5740" endline="5745">AddVersionToPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a33772ce2f8a2dccf417641e0612960ae" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="77" endline="88">BSP_InitPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ace174b0885237870b83570c3fc3e3932" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="452" endline="456">BSP_SetDataBrowser</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac62d5afe93679f7bfd3d43577b11924b" compoundref="_m_i_e_s___constants_8ipf" startline="632">DATA_SWEEP_BROWSER_PANEL_VERSION</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1aee11810f932eef5d7d7f2152f7400ece" compoundref="_m_i_e_s___data_browser_8ipf" startline="572" endline="580">DB_GetAllDevicesWithData</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9f72dcccf06f59c4cad222fb018931e2" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1147" endline="1151">GetCurrentWindow</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <referencedby refid="_m_i_e_s___configuration_8ipf_1a0c62f527bf02abe0b8113ec8af51f537" compoundref="_m_i_e_s___configuration_8ipf" startline="411" endline="486">CONF_RestoreWindow</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_ResetAndStoreCurrentDBPanel</definition>
+        <argsstring>()</argsstring>
+        <name>DB_ResetAndStoreCurrentDBPanel</name>
+        <briefdescription>
+<para>Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser) after GUI editor adapted controls in development process. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="40" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="40" bodyend="242"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac752b8be19afa877493a6ebdda385db0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5740" endline="5745">AddVersionToPanel</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aee11435894941c9d4fe7234cf9b414ac" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="56" endline="60">BSP_GetSFFormula</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a09a849b7629ff51558703b6ced9c18d0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="62" endline="66">BSP_GetSFJSON</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a33772ce2f8a2dccf417641e0612960ae" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="77" endline="88">BSP_InitPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a572991c79778e7b4146b78725214f19f" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1483" endline="1493">BSP_UnsetDynamicSettingsHistory</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aea2116e83cfad4c04c22bd8607f8f1eb" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="255" endline="276">BSP_UnsetDynamicStartupSettingsOfDataBrowser</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a2901daa6bc236c1eb10fc9d5feb4ecd5" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="165" endline="174">BSP_UnsetDynamicSweepControlOfDataBrowser</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac62d5afe93679f7bfd3d43577b11924b" compoundref="_m_i_e_s___constants_8ipf" startline="632">DATA_SWEEP_BROWSER_PANEL_VERSION</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1fec43adb36ab42ca72571560279060d" compoundref="_m_i_e_s___constants_8ipf" startline="34">DATABROWSER_WINDOW_TITLE</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1af47dca84e84d79d25de5be62310e68dd" compoundref="_m_i_e_s___data_browser_8ipf" startline="250" endline="277">DB_ClearAllGraphs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2baae91581d80abcd60e4920f49f799b" compoundref="_m_i_e_s___constants_8ipf" startline="521">DISABLE_CONTROL_BIT</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9f72dcccf06f59c4cad222fb018931e2" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1147" endline="1151">GetCurrentWindow</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0822c204e344c3bb09650dc354b60775" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5748" endline="5761">HasPanelLatestVersion</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae15df74da825d07b5e697e02437556c2" compoundref="_m_i_e_s___constants_8ipf" startline="522">HIDDEN_CONTROL_BIT</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1af44674ebf3ecddce5764b42fd4d227fb" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="361" endline="378">LBV_ClearGraph</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a947af2a3c5c9d148a736baff30ca2947" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="33" endline="36">LBV_GetDescriptionNotebook</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1a9b5cea00d403d5fbbd304bd2d47f4062" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="23" endline="26">LBV_GetSettingsHistoryPanel</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae25a2a2e24980410bee5fa0dbadd2d82" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1609" endline="1618">ReplaceNotebookText</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a0132cf186f32238930ec7f3439cf4a1b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1404" endline="1488">SearchForInvalidControlProcs</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a6928b66709263cbb38c08b33239ec014" compoundref="_m_i_e_s___utilities_8ipf" startline="6065" endline="6071">StoreCurrentPanelsResizeInfo</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a9cb80b402b771e3af61066a10931f811" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DB_GetMainGraph</definition>
+        <argsstring>(string win)</argsstring>
+        <name>DB_GetMainGraph</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="244" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="244" bodyend="248"/>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1af47dca84e84d79d25de5be62310e68dd" compoundref="_m_i_e_s___data_browser_8ipf" startline="250" endline="277">DB_ClearAllGraphs</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1af47dca84e84d79d25de5be62310e68dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DB_ClearAllGraphs</definition>
+        <argsstring>()</argsstring>
+        <name>DB_ClearAllGraphs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="250" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="250" bodyend="277"/>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a9cb80b402b771e3af61066a10931f811" compoundref="_m_i_e_s___data_browser_8ipf" startline="244" endline="248">DB_GetMainGraph</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a84aaf20149b706a3696cda50fb4b3e94" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5168" endline="5187">RemoveFreeAxisFromGraph</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ab3bfacd902970ebbe0293bcfdf515136" compoundref="_m_i_e_s___data_browser_8ipf" startline="40" endline="242">DB_ResetAndStoreCurrentDBPanel</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab3a93ef755ff17e507633dfc14c03648" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3389" endline="3520">SaveExperimentSpecial</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1ad05f4bbf0381ac2d0047f07d1cbcc476" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string DB_LockToDevice</definition>
+        <argsstring>(string win, string device)</argsstring>
+        <name>DB_LockToDevice</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="279" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="279" bodyend="314"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a1875f962a9c7410f6ef51eec893b19dd" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1472" endline="1480">BSP_DynamicSettingsHistory</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a4c4d89498fdf5ddba75a80a593b184a6" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="179" endline="226">BSP_DynamicStartupSettings</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a6a11a2cbeac0f5ed3a27da9860e0884f" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1364" endline="1374">BSP_FirstAndLastSweepAcquired</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a572991c79778e7b4146b78725214f19f" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1483" endline="1493">BSP_UnsetDynamicSettingsHistory</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aea2116e83cfad4c04c22bd8607f8f1eb" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="255" endline="276">BSP_UnsetDynamicStartupSettingsOfDataBrowser</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1fec43adb36ab42ca72571560279060d" compoundref="_m_i_e_s___constants_8ipf" startline="34">DATABROWSER_WINDOW_TITLE</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1ad6a9b04b54a9f1a720412c4168bf8b59" compoundref="_m_i_e_s___data_browser_8ipf" startline="316" endline="329">DB_SetUserData</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2" compoundref="_m_i_e_s___data_browser_8ipf" startline="354" endline="379">DB_UpdateLastSweepControls</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a3103b5420e9c3fa46ba4edfea6de5652" compoundref="_m_i_e_s___data_browser_8ipf" startline="533" endline="546">DB_PopMenuProc_LockDBtoDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1ad6a9b04b54a9f1a720412c4168bf8b59" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DB_SetUserData</definition>
+        <argsstring>(string win, string device)</argsstring>
+        <name>DB_SetUserData</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="316" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="316" bodyend="329"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a611a7b75821d24c2505ee30beda6b84d" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="404" endline="414">BSP_SetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1abc09c491b6f446b8dd78ba5ff2fef0e7" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="365" endline="376">BSP_SetFolder</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a0d15631ce9f26850ea84761a5c592133" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="622" endline="625">GetDevicePath</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a880635d68b536768486818064c4efa2c" compoundref="_m_i_e_s___utilities_8ipf" startline="1508" endline="1524">UniqueDataFolder</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ad05f4bbf0381ac2d0047f07d1cbcc476" compoundref="_m_i_e_s___data_browser_8ipf" startline="279" endline="314">DB_LockToDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a705e179ed50b62022aaa4391d1850bba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DB_GetPlainSweepList</definition>
+        <argsstring>(string win)</argsstring>
+        <name>DB_GetPlainSweepList</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="331" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="331" bodyend="352"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a60793481cd9de181d4e9139a6c93a725" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5809" endline="5817">GetPlainSweepList</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_UpdateLastSweepControls</definition>
+        <argsstring>(string win, variable first, variable last)</argsstring>
+        <name>DB_UpdateLastSweepControls</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>first</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>last</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="354" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="354" bodyend="379"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa7514ad38d3d0f085520024bd264280b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="43" endline="76">AD_Update</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a01dcb431f34baf10604d98e4239192bf" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="510" endline="517">GetValDisplayAsNum</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a02181c92e359df5d62958592a088e68b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="321" endline="343">SetSetVariable</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aeaf50fe0998b62c3a49d46999f9c982b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="389" endline="398">SetSetVariableLimits</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a9ee72e5425aaf90ea132d07dfb8a3508" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="552" endline="581">SetValDisplay</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___browser_settings_panel_8ipf_1aa9c2ccd56dc51a338fcb5a1bf349a721" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1376" endline="1407">BSP_ButtonProc_ChangeSweep</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1ad05f4bbf0381ac2d0047f07d1cbcc476" compoundref="_m_i_e_s___data_browser_8ipf" startline="279" endline="314">DB_LockToDevice</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" compoundref="_m_i_e_s___data_browser_8ipf" startline="480" endline="514">DB_UpdateToLastSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_UpdateSweepPlot</definition>
+        <argsstring>(string win)</argsstring>
+        <name>DB_UpdateSweepPlot</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+<para>Update the sweep plotting facility. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Only outside callers are generic external panels which must update the graph. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>locked databrowser </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="385" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="385" bodyend="463"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ad70363b99af78ba09599894693a651de" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1341" endline="1361">BSP_FetchSelectedChannels</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a053a889471f7ee71ad1807b801feffb3" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1121" endline="1140">BSP_GatherTiledGraphSettings</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a9f789c4ad2499bea7b62709502fffe66" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="41" endline="45">BSP_GetNotebookSubWindow</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a8e8d1bd2f08c9e97149a98a244e32543" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1416" endline="1470">BSP_UpdateSweepNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac62d5afe93679f7bfd3d43577b11924b" compoundref="_m_i_e_s___constants_8ipf" startline="632">DATA_SWEEP_BROWSER_PANEL_VERSION</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045" compoundref="_m_i_e_s___data_browser_8ipf" startline="472" endline="478">DB_GetLBNWave</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a9cb80b402b771e3af61066a10931f811" compoundref="_m_i_e_s___data_browser_8ipf" startline="244" endline="248">DB_GetMainGraph</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a2397109e9b43838da390fe528c725570" compoundref="_m_i_e_s___data_browser_8ipf" startline="634" endline="682">DB_SplitSweepsIfReq</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="231" endline="234">DEBUG_TIMER_START</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" compoundref="_i_p_n_w_b___debugging_8ipf" startline="238" endline="242">DEBUGPRINT_ELAPSED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a88866a4cca53639d6318fcbb67eebf8c" compoundref="_m_i_e_s___utilities_8ipf" startline="4128" endline="4145">DoAbortNow</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae56b24e39586b92ee4b675a4c0888baa" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="866" endline="908">GetAxesRanges</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3f0bd8952e92a0359c61aef422c879b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6085" endline="6095">GetAxisLabelCacheWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a6846713f219acea52981e42fca776418" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1168" endline="1178">GetCursorInfos</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1acef9080de18c3031de55d8803620fad0" compoundref="_i_p_n_w_b___utils_8ipf" startline="858" endline="860">GetExperimentName</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0822c204e344c3bb09650dc354b60775" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5748" endline="5761">HasPanelLatestVersion</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ae6a16f8aa22f5d9138b54ae64ea327ed" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="353" endline="387">OVS_GetSelectedSweeps</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7ae1ed1e6a848dcd5f0f5cca3350f764" compoundref="_m_i_e_s___constants_8ipf" startline="941">OVS_SWEEP_SELECTION_SWEEPNO</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adee6420ad3550ce7a475368919f57a56" compoundref="_m_i_e_s___constants_8ipf" startline="1418">POST_PLOT_FULL_UPDATE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a028670475c4f39d2422525d3f1de8543" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3657" endline="3710">PostPlotTransformations</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a84aaf20149b706a3696cda50fb4b3e94" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5168" endline="5187">RemoveFreeAxisFromGraph</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1afc20d0365aecbf0e91c75564531bf0eb" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1181" endline="1217">RestoreCursors</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa455b67d24670c1949d1385e2d4aef24" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="921" endline="994">SetAxesRanges</references>
+        <references refid="_m_i_e_s___trace_user_data_8ipf_1ae9bd42fec32bfedf8eff82ae90de0cca" compoundref="_m_i_e_s___trace_user_data_8ipf" startline="34" endline="61">TUD_Clear</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave DB_GetLBNWave</definition>
+        <argsstring>(string win, variable type)</argsstring>
+        <name>DB_GetLBNWave</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Return the labnotebook waves. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The databrowser only knows about one experiment/device at a time so we don&apos;t need to specify what we return further.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1LabnotebookWaveTypes" kindref="member">LabnotebookWaveTypes</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="472" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="472" bodyend="478"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1abbae0fc823afc2e0cdec5008484aa36a" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="115" endline="163">GetLogbookWaves</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abd7267ba9466bebd228486622b41235e" compoundref="_m_i_e_s___constants_8ipf" startline="1572">LBT_LABNOTEBOOK</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474" compoundref="_m_i_e_s___data_browser_8ipf" startline="586" endline="632">DB_AddSweepToGraph</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a2397109e9b43838da390fe528c725570" compoundref="_m_i_e_s___data_browser_8ipf" startline="634" endline="682">DB_SplitSweepsIfReq</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1aba7e9b24eab9ce307215de91d3049354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_UpdateToLastSweep</definition>
+        <argsstring>(string win)</argsstring>
+        <name>DB_UpdateToLastSweep</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="480" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="480" bodyend="514"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a6a11a2cbeac0f5ed3a27da9860e0884f" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1364" endline="1374">BSP_FirstAndLastSweepAcquired</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad5319aeac6ad45a4b13790c5b1b7da91" compoundref="_m_i_e_s___constants_8ipf" startline="350">CHECKBOX_UNSELECTED</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac62d5afe93679f7bfd3d43577b11924b" compoundref="_m_i_e_s___constants_8ipf" startline="632">DATA_SWEEP_BROWSER_PANEL_VERSION</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3da6be412c5fdc62f76639d38de18ee2" compoundref="_m_i_e_s___data_browser_8ipf" startline="354" endline="379">DB_UpdateLastSweepControls</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a85815694b3f9d76222bb8bc8d2f96e62" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="310" endline="318">GetCheckBoxState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a0822c204e344c3bb09650dc354b60775" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5748" endline="5761">HasPanelLatestVersion</references>
+        <references refid="_m_i_e_s___logbook_viewer_8ipf_1abbda01a561f390708ffef5d77e2ad40d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="586" endline="613">LBV_UpdateTagsForTextualLBNEntries</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a02181c92e359df5d62958592a088e68b" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="321" endline="343">SetSetVariable</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a3bb966a6ab8f912b719bf36bbcdde11d" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="838" endline="921">AD_SelectResult</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="79" endline="104">SWS_AfterSweepDataChangeHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a12227fbc2f4decaa01d5033263345f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_ButtonProc_Panel</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>DB_ButtonProc_Panel</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+<para>procedure for the open button of the side panel </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="517" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="517" bodyend="531"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a8a4e3958e3d8eb53dcbe1f9eb1127077" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="695" endline="708">BSP_ButtonProc_Panel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a6e69ba8b13be479c6f5589f2bcb83330" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1495" endline="1506">BSP_UnHideSettingsHistory</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a3103b5420e9c3fa46ba4edfea6de5652" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_PopMenuProc_LockDBtoDevice</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>DB_PopMenuProc_LockDBtoDevice</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="533" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="533" bodyend="546"/>
+        <references refid="_m_i_e_s___data_browser_8ipf_1ad05f4bbf0381ac2d0047f07d1cbcc476" compoundref="_m_i_e_s___data_browser_8ipf" startline="279" endline="314">DB_LockToDevice</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1ad35722387426fcb200c458dc20c73c16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_SetVarProc_SweepNo</definition>
+        <argsstring>(WMSetVariableAction *sva)</argsstring>
+        <name>DB_SetVarProc_SweepNo</name>
+        <param>
+          <type>WMSetVariableAction *</type>
+          <declname>sva</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="548" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="548" bodyend="570"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a822cff98c657b972ae5f56be7318c35a" compoundref="_m_i_e_s___constants_8ipf" startline="349">CHECKBOX_SELECTED</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1aabed0e8073458c1ce198f0f773dfdb6b" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="401" endline="473">OVS_ChangeSweepSelectionState</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1ac291682eb164669d98543ca491f52224" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="476" endline="480">OVS_IsActive</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a85494752ebe68a04fecd625d1ecec574" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5787" endline="5795">UpdateSweepPlot</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1aee11810f932eef5d7d7f2152f7400ece" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DB_GetAllDevicesWithData</definition>
+        <argsstring>()</argsstring>
+        <name>DB_GetAllDevicesWithData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="572" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="572" bodyend="580"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1afb2222dc632722e0575ede5de2f65675" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1953" endline="1994">GetAllDevicesWithContent</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1f323243e6ec2a784c275eb8591571c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4566" endline="4570">GetListOfLockedDevices</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbb12c8f7017e87111a47119f61a21ab" compoundref="_m_i_e_s___constants_8ipf" startline="149">NONE</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1acbc72304ac3c399129ef21c3f5772af9" compoundref="_m_i_e_s___data_browser_8ipf" startline="12" endline="36">DB_OpenDataBrowser</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_AddSweepToGraph</definition>
+        <argsstring>(string win, variable index, BufferedDrawInfo *bdi=defaultValue)</argsstring>
+        <name>DB_AddSweepToGraph</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_buffered_draw_info" kindref="compound">BufferedDrawInfo</ref> *</type>
+          <declname>bdi</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Adds traces of a sweep to the databrowser graph. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>win</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the DataBrowser </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Index of the sweep </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>bdi</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = n/a] <ref refid="struct_buffered_draw_info" kindref="compound">BufferedDrawInfo</ref> structure, when given buffered draw is used. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="586" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="586" bodyend="632"/>
+        <references refid="_m_i_e_s___artefact_removal_8ipf_1a531651544249e6431cd22402f362e1fb" compoundref="_m_i_e_s___artefact_removal_8ipf" startline="372" endline="392">AR_UpdateTracesIfReq</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ad70363b99af78ba09599894693a651de" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1341" endline="1361">BSP_FetchSelectedChannels</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a053a889471f7ee71ad1807b801feffb3" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="1121" endline="1140">BSP_GatherTiledGraphSettings</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045" compoundref="_m_i_e_s___data_browser_8ipf" startline="472" endline="478">DB_GetLBNWave</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a2397109e9b43838da390fe528c725570" compoundref="_m_i_e_s___data_browser_8ipf" startline="634" endline="682">DB_SplitSweepsIfReq</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3f0bd8952e92a0359c61aef422c879b7" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6085" endline="6095">GetAxisLabelCacheWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aad828f793b5801b611434e6af8b3c10d" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="1140" endline="1144">GetMainWindow</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af8d83286a1dc5c1d0db84d97496f20b8" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2548" endline="2565">GetNextTraceIndex</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af359cb8004bf03ea7429e95e773da6b0" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6083" endline="6100">IsValidSweepAndConfig</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa98983840fc577eb197f9454484bf035" compoundref="_m_i_e_s___constants_8ipf" startline="1583">LBN_TEXTUAL_VALUES</references>
+        <references refid="_m_i_e_s___overlay_sweeps_8ipf_1a8a5264610ec0c4e51fe70769f57a7a49" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="699" endline="729">OVS_GetSweepAndExperiment</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a233d8bb76517bdcee7233bc685527aef" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6923" endline="6944">AddSweepToGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a2397109e9b43838da390fe528c725570" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DB_SplitSweepsIfReq</definition>
+        <argsstring>(string win, variable sweepNo)</argsstring>
+        <name>DB_SplitSweepsIfReq</name>
+        <param>
+          <type>string</type>
+          <declname>win</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="634" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="634" bodyend="682"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7cc997a42285f300b58fe49496cef123" compoundref="_m_i_e_s___constants_8ipf" startline="162">COUNTOBJECTS_WAVES</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a253fa56322bdafe7266022791f857045" compoundref="_m_i_e_s___data_browser_8ipf" startline="472" endline="478">DB_GetLBNWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a411a73dca443af9c93614cba8d4dfc86" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="702" endline="707">GetSingleSweepFolder</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aeb32368c0e4d2a8af3ab5dbf3e5a52f9" compoundref="_m_i_e_s___constants_8ipf" startline="1581">LBN_NUMERICAL_VALUES</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7f5debab11c7cf20c9d118bc0d7f4478" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5697" endline="5737">SplitSweepIntoComponents</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aca183500f0ff8122756096a6d0092db6" compoundref="_m_i_e_s___constants_8ipf" startline="1278">TTL_RESCALE_ON</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aad2653c094424c401b9d07b2ad375eac" compoundref="_m_i_e_s___constants_8ipf" startline="425">WAVE_BACKUP_SUFFIX</references>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1aa8d8fe0aa28477a8c477699d56ef9474" compoundref="_m_i_e_s___data_browser_8ipf" startline="586" endline="632">DB_AddSweepToGraph</referencedby>
+        <referencedby refid="_m_i_e_s___data_browser_8ipf_1a4e4a5046be9dcc36692ed439207d4943" compoundref="_m_i_e_s___data_browser_8ipf" startline="385" endline="463">DB_UpdateSweepPlot</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string DB_FindDataBrowser</definition>
+        <argsstring>(string device)</argsstring>
+        <name>DB_FindDataBrowser</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Find a Databrowser which is locked to the given DAEphys panel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="685" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="685" bodyend="708"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a16b0d099ac827ab409b67d5c1caafcb0" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="383" endline="398">BSP_GetDevice</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a97fd1cb98a42cc894ae848986a0026e1" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="473" endline="477">BSP_IsDataBrowser</references>
+        <references refid="_m_i_e_s___downsample_8ipf_1a846b84604b197f993226a0c310d67062" compoundref="_m_i_e_s___downsample_8ipf" startline="35">panel</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6883094f16e1866ac14c44068f8c0ba8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="242" endline="253">SC_GetPulseAveragePropertiesWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a8c1d9b935132d109dc21ed2cc422feb8" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="79" endline="104">SWS_AfterSweepDataChangeHook</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___data_browser_8ipf_1a4e12f2b2d06bdf99f2b312270a092364" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable DB_WindowHook</definition>
+        <argsstring>(WMWinHookStruct *s)</argsstring>
+        <name>DB_WindowHook</name>
+        <param>
+          <type>WMWinHookStruct *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" line="710" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf" bodystart="710" bodyend="743"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ae7ad1c2b0e3e1ba2816c8ea215c450e9" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1997" endline="2008">KillOrMoveToTrash</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <references refid="_m_i_e_s___package_settings_8ipf_1a3fb317ccd37c832917b2c54b8cb677f8" compoundref="_m_i_e_s___package_settings_8ipf" startline="186" endline="205">PS_StoreWindowCoordinate</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>DB</bold> Panel for browsing acquired data during acquisition </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_DataBrowser.ipf"/>
+  </compounddef>
+</doxygen>

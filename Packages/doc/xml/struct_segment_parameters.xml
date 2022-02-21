@@ -1,0 +1,443 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_segment_parameters" kind="struct" language="C++" prot="public">
+    <compoundname>SegmentParameters</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_segment_parameters_1ae7763edbaa8e423efe4315904bfc028d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::duration</definition>
+        <argsstring></argsstring>
+        <name>duration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="762" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="761" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a4514df7058817dc87e4629c1a7b3d41f" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1739" endline="1746">WB_CustomWaveSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a90831d482828beb9df4d7ae78280ecb1" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1716" endline="1737">WB_PSCSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a7bf7169d622d32d77fd3ed08d5404a41" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1216" endline="1223">WB_RampSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a89624648d9f473ccd8ed333e3a38d783" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1350" endline="1356">WB_SawToothSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a93cf127a2b9bf58304fdb98c351aabea" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1209" endline="1214">WB_SquareSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a54113acc3753ff432bfdcb04ace5a27b" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::deltaDur</definition>
+        <argsstring></argsstring>
+        <name>deltaDur</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="763" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="763" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a4908a0f2d6c27040735acacaa7639197" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::amplitude</definition>
+        <argsstring></argsstring>
+        <name>amplitude</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="764" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="764" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1ac3d30cc734f425e82bb8781cb8900798" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1358" endline="1369">WB_CreatePulse</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a90831d482828beb9df4d7ae78280ecb1" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1716" endline="1737">WB_PSCSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a7bf7169d622d32d77fd3ed08d5404a41" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1216" endline="1223">WB_RampSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a89624648d9f473ccd8ed333e3a38d783" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1350" endline="1356">WB_SawToothSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a93cf127a2b9bf58304fdb98c351aabea" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1209" endline="1214">WB_SquareSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1ad5610912ceea2cbab775c330ec987fbd" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::deltaAmp</definition>
+        <argsstring></argsstring>
+        <name>deltaAmp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="765" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="765" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1aa58b4fd459911f6f84aeb63b957dddc6" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="766" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="766" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1943ee7443c999582074a0c5b8bd6912" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1148" endline="1158">WB_ApplyOffset</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a3b707d067d7b4c7509a5661041ea9fd9" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::frequency</definition>
+        <argsstring></argsstring>
+        <name>frequency</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="767" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="767" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a89624648d9f473ccd8ed333e3a38d783" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1350" endline="1356">WB_SawToothSegment</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1aec35834ec7a02c7e32130553359ce884" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::deltaFreq</definition>
+        <argsstring></argsstring>
+        <name>deltaFreq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="768" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="768" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1afb43cc6ff42be7436649b5f8793029e0" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::pulseDuration</definition>
+        <argsstring></argsstring>
+        <name>pulseDuration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="769" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="769" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a5207d7a64936642ff07cc2fe956efa1e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::tauRise</definition>
+        <argsstring></argsstring>
+        <name>tauRise</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="770" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="770" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1aeb295e448f8214e246a51eec943b28bf" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::tauDecay1</definition>
+        <argsstring></argsstring>
+        <name>tauDecay1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="771" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="771" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a5f700ca729daff56acc596fa3739a462" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::tauDecay2</definition>
+        <argsstring></argsstring>
+        <name>tauDecay2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="772" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="772" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a2d84aa4c79e602c3edb358c653ea313c" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::tauDecay2Weight</definition>
+        <argsstring></argsstring>
+        <name>tauDecay2Weight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="773" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="773" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1ac9ee9d4657943895e85562f5618149af" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::lowPassCutOff</definition>
+        <argsstring></argsstring>
+        <name>lowPassCutOff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="774" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="774" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a330299fb280890932d9914a7c617c584" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::highPassCutOff</definition>
+        <argsstring></argsstring>
+        <name>highPassCutOff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="775" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="775" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a0adc8b61ef4505694ab4cd4c9aba9a31" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::filterOrder</definition>
+        <argsstring></argsstring>
+        <name>filterOrder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="776" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="776" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a44ab52db2fd1c81dc5e10a37aca03e2e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::endFrequency</definition>
+        <argsstring></argsstring>
+        <name>endFrequency</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="777" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="777" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a8f183b02568b3842437856f09bf5c47a" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::numberOfPulses</definition>
+        <argsstring></argsstring>
+        <name>numberOfPulses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="778" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="778" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a6ea8c1e6094dbb4fe90c272f7999130e" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::poisson</definition>
+        <argsstring></argsstring>
+        <name>poisson</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="780" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="780" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a7322f76ace2948e5e8df0f14bf179d2d" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::logChirp</definition>
+        <argsstring></argsstring>
+        <name>logChirp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="781" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="781" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a429bd8b32216b6093950b640437768ba" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::randomSeed</definition>
+        <argsstring></argsstring>
+        <name>randomSeed</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="782" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="782" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a73b316c458ef08c5ac6888b05736c772" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1161" endline="1205">WB_InitializeSeed</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1acbbb1c6742c761975c1326a9b43c8472" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::trigFuncType</definition>
+        <argsstring></argsstring>
+        <name>trigFuncType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="784" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="784" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a03a48fba9510901e2497d9a176a04c07" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1318" endline="1348">WB_TrigSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a14185bd46278ed1e83e327ac35adf829" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::noiseType</definition>
+        <argsstring></argsstring>
+        <name>noiseType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="785" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="785" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a96f6d13f137e5509f22876087227f993" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::buildResolution</definition>
+        <argsstring></argsstring>
+        <name>buildResolution</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="786" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="786" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a1423a027b02ed31bb9abbc37916285ab" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1241" endline="1316">WB_NoiseSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1add5383a4241438b25d6f66297dac895c" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::pulseType</definition>
+        <argsstring></argsstring>
+        <name>pulseType</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="787" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="787" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1ac3d30cc734f425e82bb8781cb8900798" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1358" endline="1369">WB_CreatePulse</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a40d1db6d1f6f0ba01d550ae90376e59f" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::mixedFreq</definition>
+        <argsstring></argsstring>
+        <name>mixedFreq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="788" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="788" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a460b7d01c201a44c183a22ad65147530" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::mixedFreqShuffle</definition>
+        <argsstring></argsstring>
+        <name>mixedFreqShuffle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="789" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="789" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a90cec55781c83e837e340372594bd3af" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::firstFreq</definition>
+        <argsstring></argsstring>
+        <name>firstFreq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="790" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="790" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_segment_parameters_1a9187b21ed655b6af5f9bed419851c379" prot="public" static="no" mutable="no">
+        <type>variable</type>
+        <definition>variable SegmentParameters::lastFreq</definition>
+        <argsstring></argsstring>
+        <name>lastFreq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="791" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="791" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a8035f990b51bfef1a5ba5ef73253467d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="1578" endline="1714">WB_PulseTrainSegment</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" line="761" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_WaveBuilder.ipf" bodystart="761" bodyend="792"/>
+    <listofallmembers>
+      <member refid="struct_segment_parameters_1a4908a0f2d6c27040735acacaa7639197" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>amplitude</name></member>
+      <member refid="struct_segment_parameters_1a96f6d13f137e5509f22876087227f993" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>buildResolution</name></member>
+      <member refid="struct_segment_parameters_1ad5610912ceea2cbab775c330ec987fbd" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>deltaAmp</name></member>
+      <member refid="struct_segment_parameters_1a54113acc3753ff432bfdcb04ace5a27b" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>deltaDur</name></member>
+      <member refid="struct_segment_parameters_1aec35834ec7a02c7e32130553359ce884" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>deltaFreq</name></member>
+      <member refid="struct_segment_parameters_1ae7763edbaa8e423efe4315904bfc028d" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>duration</name></member>
+      <member refid="struct_segment_parameters_1a44ab52db2fd1c81dc5e10a37aca03e2e" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>endFrequency</name></member>
+      <member refid="struct_segment_parameters_1a0adc8b61ef4505694ab4cd4c9aba9a31" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>filterOrder</name></member>
+      <member refid="struct_segment_parameters_1a90cec55781c83e837e340372594bd3af" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>firstFreq</name></member>
+      <member refid="struct_segment_parameters_1a3b707d067d7b4c7509a5661041ea9fd9" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>frequency</name></member>
+      <member refid="struct_segment_parameters_1a330299fb280890932d9914a7c617c584" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>highPassCutOff</name></member>
+      <member refid="struct_segment_parameters_1a9187b21ed655b6af5f9bed419851c379" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>lastFreq</name></member>
+      <member refid="struct_segment_parameters_1a7322f76ace2948e5e8df0f14bf179d2d" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>logChirp</name></member>
+      <member refid="struct_segment_parameters_1ac9ee9d4657943895e85562f5618149af" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>lowPassCutOff</name></member>
+      <member refid="struct_segment_parameters_1a40d1db6d1f6f0ba01d550ae90376e59f" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>mixedFreq</name></member>
+      <member refid="struct_segment_parameters_1a460b7d01c201a44c183a22ad65147530" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>mixedFreqShuffle</name></member>
+      <member refid="struct_segment_parameters_1a14185bd46278ed1e83e327ac35adf829" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>noiseType</name></member>
+      <member refid="struct_segment_parameters_1a8f183b02568b3842437856f09bf5c47a" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>numberOfPulses</name></member>
+      <member refid="struct_segment_parameters_1aa58b4fd459911f6f84aeb63b957dddc6" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>offset</name></member>
+      <member refid="struct_segment_parameters_1a6ea8c1e6094dbb4fe90c272f7999130e" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>poisson</name></member>
+      <member refid="struct_segment_parameters_1afb43cc6ff42be7436649b5f8793029e0" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>pulseDuration</name></member>
+      <member refid="struct_segment_parameters_1add5383a4241438b25d6f66297dac895c" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>pulseType</name></member>
+      <member refid="struct_segment_parameters_1a429bd8b32216b6093950b640437768ba" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>randomSeed</name></member>
+      <member refid="struct_segment_parameters_1aeb295e448f8214e246a51eec943b28bf" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>tauDecay1</name></member>
+      <member refid="struct_segment_parameters_1a5f700ca729daff56acc596fa3739a462" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>tauDecay2</name></member>
+      <member refid="struct_segment_parameters_1a2d84aa4c79e602c3edb358c653ea313c" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>tauDecay2Weight</name></member>
+      <member refid="struct_segment_parameters_1a5207d7a64936642ff07cc2fe956efa1e" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>tauRise</name></member>
+      <member refid="struct_segment_parameters_1acbbb1c6742c761975c1326a9b43c8472" prot="public" virt="non-virtual"><scope>SegmentParameters</scope><name>trigFuncType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

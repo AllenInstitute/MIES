@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File MIES_Include.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Indexing.ipf" href="_m_i_e_s___indexing_8ipf.html" />
+    <link rel="prev" title="File MIES_IgorHooks.ipf" href="_m_i_e_s___igor_hooks_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___indexing_8ipf.html" title="File MIES_Indexing.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___igor_hooks_8ipf.html" title="File MIES_IgorHooks.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Include.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-mies-include-ipf">
+<span id="id1"></span><h1>File MIES_Include.ipf<a class="headerlink" href="#file-mies-include-ipf" title="Permalink to this headline">¶</a></h1>
+<p>Main include. </p>
+<p>Developer instructions for raising the required nightly versions:</p>
+<p><ul class="simple">
+<li><p>Update the revision numbers for IP8 and or IP9 below in the expression involving “BUILD”</p></li>
+<li><p>Upload the nightly zip package to the FTP (Thomas’ job). Don’t delete the old zip packages, we still need them.</p></li>
+<li><p>Update the below URLs </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TOO_OLD_IGOR">
+<span class="target" id="_m_i_e_s___include_8ipf_1a8fa9508322c055f232a2ae0594df11dc"></span><span class="sig-name descname"><span class="n"><span class="pre">TOO_OLD_IGOR</span></span></span><a class="headerlink" href="#c.TOO_OLD_IGOR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430OpenPanelWithDocumentationLinkv">
+<span id="_CPPv330OpenPanelWithDocumentationLinkv"></span><span id="_CPPv230OpenPanelWithDocumentationLinkv"></span><span id="OpenPanelWithDocumentationLink"></span><span class="target" id="_m_i_e_s___include_8ipf_1a3defc21c06386f31b14a27f42abd0de4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OpenPanelWithDocumentationLink</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430OpenPanelWithDocumentationLinkv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436ButtonProc_OpenMiesDocuUpdateNightlyP14WMButtonAction">
+<span id="_CPPv336ButtonProc_OpenMiesDocuUpdateNightlyP14WMButtonAction"></span><span id="_CPPv236ButtonProc_OpenMiesDocuUpdateNightlyP14WMButtonAction"></span><span id="ButtonProc_OpenMiesDocuUpdateNightly__WMButtonActionP"></span><span class="target" id="_m_i_e_s___include_8ipf_1aceb182c03721753a4961abea757539fe"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_OpenMiesDocuUpdateNightly</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436ButtonProc_OpenMiesDocuUpdateNightlyP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415GetDownloadLinkv">
+<span id="_CPPv315GetDownloadLinkv"></span><span id="_CPPv215GetDownloadLinkv"></span><span id="GetDownloadLink"></span><span class="target" id="_m_i_e_s___include_8ipf_1af1903565668ef860cd0030d377310f95"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDownloadLink</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415GetDownloadLinkv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GetFileNameFromURL6string">
+<span id="_CPPv318GetFileNameFromURL6string"></span><span id="_CPPv218GetFileNameFromURL6string"></span><span id="GetFileNameFromURL__string"></span><span class="target" id="_m_i_e_s___include_8ipf_1aa0203843ac5558f7644783b7ff4736e0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFileNameFromURL</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">url</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GetFileNameFromURL6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422GetDestinationIgorPathv">
+<span id="_CPPv322GetDestinationIgorPathv"></span><span id="_CPPv222GetDestinationIgorPathv"></span><span id="GetDestinationIgorPath"></span><span class="target" id="_m_i_e_s___include_8ipf_1a1823f54d87a84e6a67a4d754f0f7a46a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDestinationIgorPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GetDestinationIgorPathv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426ButtonProc_DownloadNightlyP14WMButtonAction">
+<span id="_CPPv326ButtonProc_DownloadNightlyP14WMButtonAction"></span><span id="_CPPv226ButtonProc_DownloadNightlyP14WMButtonAction"></span><span id="ButtonProc_DownloadNightly__WMButtonActionP"></span><span class="target" id="_m_i_e_s___include_8ipf_1a5d3fa885a2a9740a01fdc25abce77db5"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonProc_DownloadNightly</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">WMButtonAction</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ba</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426ButtonProc_DownloadNightlyP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417AfterCompiledHookv">
+<span id="_CPPv317AfterCompiledHookv"></span><span id="_CPPv217AfterCompiledHookv"></span><span id="AfterCompiledHook"></span><span class="target" id="_m_i_e_s___include_8ipf_1a8e4eacc6efacf2c65615c1ea72d722ed"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AfterCompiledHook</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AfterCompiledHookv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_m_i_e_s___igor_hooks_8ipf.html"
+                          title="previous chapter">File MIES_IgorHooks.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_m_i_e_s___indexing_8ipf.html"
+                          title="next chapter">File MIES_Indexing.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___indexing_8ipf.html" title="File MIES_Indexing.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___igor_hooks_8ipf.html" title="File MIES_IgorHooks.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_Include.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

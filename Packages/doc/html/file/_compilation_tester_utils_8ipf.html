@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>File CompilationTesterUtils.ipf &#8212; MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File DR_MIES_TangoInteract.ipf" href="_d_r___m_i_e_s___tango_interact_8ipf.html" />
+    <link rel="prev" title="File CompilationTester.ipf" href="_compilation_tester_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_d_r___m_i_e_s___tango_interact_8ipf.html" title="File DR_MIES_TangoInteract.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_compilation_tester_8ipf.html" title="File CompilationTester.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File CompilationTesterUtils.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-compilationtesterutils-ipf">
+<span id="id1"></span><h1>File CompilationTesterUtils.ipf<a class="headerlink" href="#file-compilationtesterutils-ipf" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv417CompilationTester">
+<span id="_CPPv317CompilationTester"></span><span id="_CPPv217CompilationTester"></span><span id="CompilationTester"></span><span class="target" id="namespace_compilation_tester"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CompilationTester</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester12LoadTextFileE6string8variable">
+<span id="_CPPv3N17CompilationTester12LoadTextFileE6string8variable"></span><span id="_CPPv2N17CompilationTester12LoadTextFileE6string8variable"></span><span id="CompilationTester::LoadTextFile__string.variable"></span><span class="target" id="namespace_compilation_tester_1a9bb3e5b4519964fe7e41eb6f2fd3c8cc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadTextFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filePath</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">required</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester12LoadTextFileE6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load the contents of the given file into data. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePath</strong> – absolute path to a text file </p></li>
+<li><p><strong>required</strong> – [optional, defaults to false] decides if we abort on a failure to load the file (true) or return an empty string </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester15GetNVARAsStringE5dfref6string8variable">
+<span id="_CPPv3N17CompilationTester15GetNVARAsStringE5dfref6string8variable"></span><span id="_CPPv2N17CompilationTester15GetNVARAsStringE5dfref6string8variable"></span><span id="CompilationTester::GetNVARAsString__dfref.string.variable"></span><span class="target" id="namespace_compilation_tester_1a72f2002ad856f225ff0099440a342fd7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNVARAsString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">dfref</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dfr</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">globalVarName</span></span>, <span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">initialValue</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">defaultValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester15GetNVARAsStringE5dfref6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the full path to a global variable. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfr</strong> – location of the global variable, must exist </p></li>
+<li><p><strong>globalVarName</strong> – name of the global variable </p></li>
+<li><p><strong>initialValue</strong> – initial value of the variable. Will only be used if it is created. 0 by default. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester19GetCompilationStateEv">
+<span id="_CPPv3N17CompilationTester19GetCompilationStateEv"></span><span id="_CPPv2N17CompilationTester19GetCompilationStateEv"></span><span id="CompilationTester::GetCompilationState"></span><span class="target" id="namespace_compilation_tester_1a57d7c639b49b329f5be4a56f95aff6b0"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCompilationState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester19GetCompilationStateEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the compilation state variable. </p>
+<p>-NaN: Not initialized -0x0: Initialization done -0x1: input.txt could be read from disk and has contents -0x2: Compilation was started -0x4: Compilation was successfull -0x8: Compilation was <em>not</em> successfull (Requires Igor Pro 7, build 30097) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester20IsProcGlobalCompiledEv">
+<span id="_CPPv3N17CompilationTester20IsProcGlobalCompiledEv"></span><span id="_CPPv2N17CompilationTester20IsProcGlobalCompiledEv"></span><span id="CompilationTester::IsProcGlobalCompiled"></span><span class="target" id="namespace_compilation_tester_1a6e30997426d22887954ca54ff0a8ad80"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsProcGlobalCompiled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester20IsProcGlobalCompiledEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return true if ProcGlobal is compiled, false if not. </p>
+<p>Observed behaviour:<ul class="simple">
+<li><p>ProcGlobal is compiled after all independent modules</p></li>
+<li><p>FunctionInfo returns an empty string for a non existing function, but an error message if ProcGlobal is not compiled </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester7IsEmptyEP6string">
+<span id="_CPPv3N17CompilationTester7IsEmptyEP6string"></span><span id="_CPPv2N17CompilationTester7IsEmptyEP6string"></span><span id="CompilationTester::IsEmpty__stringP"></span><span class="target" id="namespace_compilation_tester_1a6de1e283f32aad2f709498699db3a0c3"></span><span class="n"><span class="pre">variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsEmpty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester7IsEmptyEP6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns one if str is empty or null, zero otherwise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> – must not be a SVAR </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17CompilationTester14NormalizeToEOLE6string6string">
+<span id="_CPPv3N17CompilationTester14NormalizeToEOLE6string6string"></span><span id="_CPPv2N17CompilationTester14NormalizeToEOLE6string6string"></span><span id="CompilationTester::NormalizeToEOL__string.string"></span><span class="target" id="namespace_compilation_tester_1adcae1024c057f10ccbbfeae8b4b697bc"></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NormalizeToEOL</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eol</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17CompilationTester14NormalizeToEOLE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (<code class="docutils literal notranslate"><span class="pre">\r</span></code>) or Unix EOLs (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="_compilation_tester_8ipf.html"
+                          title="previous chapter">File CompilationTester.ipf</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="_d_r___m_i_e_s___tango_interact_8ipf.html"
+                          title="next chapter">File DR_MIES_TangoInteract.ipf</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_d_r___m_i_e_s___tango_interact_8ipf.html" title="File DR_MIES_TangoInteract.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_compilation_tester_8ipf.html" title="File CompilationTester.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (feature/1282-update-documentation-toolchain) Release_2.4_20211216-266-g4005ba6ec documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File CompilationTesterUtils.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0+/2d61a7802.
+    </div>
+  </body>
+</html>

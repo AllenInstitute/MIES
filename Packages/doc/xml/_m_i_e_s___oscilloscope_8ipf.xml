@@ -1,0 +1,708 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___oscilloscope_8ipf" kind="file" language="C++">
+    <compoundname>MIES_Oscilloscope.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___oscilloscope_8ipf_1ab22e8f3396d4cddea1be2ad37535b61e" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SCOPE_TIMEAXIS_RESISTANCE_RANGE</definition>
+        <argsstring></argsstring>
+        <name>SCOPE_TIMEAXIS_RESISTANCE_RANGE</name>
+        <initializer>= 120</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="12" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="12" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="65" endline="94">SCOPE_GetTPTopAxisStart</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___oscilloscope_8ipf_1abd64fa17c9b83c9d304d8fec6c9ae398" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SCOPE_GREEN</definition>
+        <argsstring></argsstring>
+        <name>SCOPE_GREEN</name>
+        <initializer>= 26122</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="13" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="13" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___oscilloscope_8ipf_1a09748674cba6c037a8250fd39fc812a3" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double SCOPE_BLUE</definition>
+        <argsstring></argsstring>
+        <name>SCOPE_BLUE</name>
+        <initializer>= 39168</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___oscilloscope_8ipf_1aa7634629992af48581fd68b3f4f2bf58" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string RES_FORMAT_STR</definition>
+        <argsstring></argsstring>
+        <name>RES_FORMAT_STR</name>
+        <initializer>= &quot;\\[1\\K(%d, %d, %d)\\{\&quot;%%s\&quot;, FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___oscilloscope_8ipf_1a40010112d1c7c4113d55f2df04231f3a" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double PRESSURE_SPECTRUM_PERCENT</definition>
+        <argsstring></argsstring>
+        <name>PRESSURE_SPECTRUM_PERCENT</name>
+        <initializer>= 0.05</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="16" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="16" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SCOPE_GetGraph</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SCOPE_GetGraph</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="18" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="18" bodyend="22"/>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a91e63e3274c608b5e7ba14fffd38b56b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="24" endline="28">SCOPE_GetPanel</references>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1ac460c639d4bf52f10cef831b2ccc5263" compoundref="_m_i_e_s___data_configurator_8ipf" startline="390" endline="492">DC_MakeHelperWaves</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</referencedby>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1aa4c29a6a627a7bdbc0ae7caaec52c11b" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="60" endline="82">RA_WaitUntiIITIDone</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ab3a93ef755ff17e507633dfc14c03648" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3389" endline="3520">SaveExperimentSpecial</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="65" endline="94">SCOPE_GetTPTopAxisStart</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ae1957ac3a266c36be2c9a7bb5ffab48b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="30" endline="49">SCOPE_OpenScopeWindow</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="391" endline="444">SCOPE_SetADAxisLabel</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="140" endline="187">TPS_StartTestPulseForeground</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a91e63e3274c608b5e7ba14fffd38b56b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SCOPE_GetPanel</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SCOPE_GetPanel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="24" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="24" bodyend="28"/>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ae75c2dade88b290680abb2a70122927e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="51" endline="59">SCOPE_KillScopeWindowIfRequest</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ae1957ac3a266c36be2c9a7bb5ffab48b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="30" endline="49">SCOPE_OpenScopeWindow</referencedby>
+        <referencedby refid="_m_i_e_s___regenerate-_screenshots_8ipf_1acd4bc7bd49fda1e5bd28f3cd24880396" compoundref="_m_i_e_s___regenerate-_screenshots_8ipf" startline="86" endline="109">ScreenShotsForDAEphys</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1ae1957ac3a266c36be2c9a7bb5ffab48b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_OpenScopeWindow</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SCOPE_OpenScopeWindow</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="30" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="30" bodyend="49"/>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a91e63e3274c608b5e7ba14fffd38b56b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="24" endline="28">SCOPE_GetPanel</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aca7ee625018066a9ed93252923032c78" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1502" endline="1522">DAP_CheckProc_ShowScopeWin</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa41a427ad050ba65c71d195bcc21bcce" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4525" endline="4549">DAP_CreateDAEphysPanel</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1ae75c2dade88b290680abb2a70122927e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_KillScopeWindowIfRequest</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SCOPE_KillScopeWindowIfRequest</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="51" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="51" bodyend="59"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a91e63e3274c608b5e7ba14fffd38b56b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="24" endline="28">SCOPE_GetPanel</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aca7ee625018066a9ed93252923032c78" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1502" endline="1522">DAP_CheckProc_ShowScopeWin</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a2f896d5f60ac36cd0eb244cd7046abb6" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="152">DAP_EphysPanelStartUpSettings</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_GetTPTopAxisStart</definition>
+        <argsstring>(string device, variable *axisMin)</argsstring>
+        <name>SCOPE_GetTPTopAxisStart</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable *</type>
+          <declname>axisMin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="65" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="65" bodyend="94"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ab22e8f3396d4cddea1be2ad37535b61e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="12">SCOPE_TIMEAXIS_RESISTANCE_RANGE</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_UpdateGraph</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>SCOPE_UpdateGraph</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="96" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="96" bodyend="187"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af62794f71558a6fae2c2732c1f56eb7a" compoundref="_m_i_e_s___constants_8ipf" startline="476">AXIS_SCOPE_AD</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1db05364d940c84f4539dd8daf3bfe3d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="373" endline="377">GetADCTypesFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a42cd91a9a66c26f756b13996326d9f24" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2804" endline="2817">GetTPOscilloscopeWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a79398a1df6cf09e38737f9a143e5fd12" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="420" endline="427">GotTPChannelsOnADCs</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af8e01f4b9e92ee76d73181cd6e77e259" compoundref="_m_i_e_s___constants_8ipf" startline="1262">GUI_SETTING_OSCI_SCALE_INTERVAL</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a0d5a4deeefdbc33ae5401309958666d7" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="189" endline="194">SCOPE_GetCheckBoxesForAddons</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="65" endline="94">SCOPE_GetTPTopAxisStart</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ab22e8f3396d4cddea1be2ad37535b61e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="12">SCOPE_TIMEAXIS_RESISTANCE_RANGE</references>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</referencedby>
+        <referencedby refid="group___background_functions_1ga180063aa9185bc1412cda48d5aee95ef" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="135" endline="170">DQS_FIFOMonitor</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="140" endline="187">TPS_StartTestPulseForeground</referencedby>
+        <referencedby refid="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="35" endline="71">TPS_TestPulseFunc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a0d5a4deeefdbc33ae5401309958666d7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable, variable &gt; SCOPE_GetCheckBoxesForAddons</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>SCOPE_GetCheckBoxesForAddons</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="189" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="189" bodyend="194"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_CreateGraph</definition>
+        <argsstring>(string device, variable dataAcqOrTP)</argsstring>
+        <name>SCOPE_CreateGraph</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="196" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="196" bodyend="389"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7891437f7c2630099b414543725147fc" compoundref="_m_i_e_s___constants_8ipf" startline="461">AXIS_ORIENTATION_LEFT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9112178f43de1e2087e75e1a812bcff4" compoundref="_m_i_e_s___constants_8ipf" startline="470">AXIS_RANGE_INC_AUTOSCALED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aab2b2045e3e3b8020e588e74493cbe55" compoundref="_m_i_e_s___constants_8ipf" startline="469">AXIS_RANGE_USE_MINMAX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af62794f71558a6fae2c2732c1f56eb7a" compoundref="_m_i_e_s___constants_8ipf" startline="476">AXIS_SCOPE_AD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a389938c14a4301b8da34f5f9b4867001" compoundref="_m_i_e_s___constants_8ipf" startline="477">AXIS_SCOPE_AD_REGEXP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a73993e76ba091612e0a57588e6612cf0" compoundref="_m_i_e_s___constants_8ipf" startline="478">AXIS_SCOPE_TP_TIME</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1aaa8fb37fbf314f0973ad060873d8f55c" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1819" endline="1850">DAP_GetSampInt</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1db05364d940c84f4539dd8daf3bfe3d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="373" endline="377">GetADCTypesFromConfig</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1ae56b24e39586b92ee4b675a4c0888baa" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="866" endline="908">GetAxesRanges</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a2fcf7dc2d209f0a6903ed2f2784f5045" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="795" endline="827">GetAxisRange</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a42cd91a9a66c26f756b13996326d9f24" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2804" endline="2817">GetTPOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a60fce6292ea2f796960d62ff60dc2b13" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2853" endline="2886">GetTPResults</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aeffe559aca7930f6ddc57ed8f683354c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2644" endline="2724">GetTPStorage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1acc2597ee5ab54c9467be00f9a8eafa35" compoundref="_m_i_e_s___constants_8ipf" startline="1261">GUI_SETTING_OSCI_SCALE_FIXED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0cc26ea00b335a5104f8eb68a1f53768" compoundref="_m_i_e_s___constants_8ipf" startline="70">MAX_REGULATOR_PRESSURE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a75bdaa3e3539c3c58a9e1aa7c1f82606" compoundref="_m_i_e_s___constants_8ipf" startline="71">MIN_REGULATOR_PRESSURE</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ae5d586330576bdc27b93734f03b3b2c1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="4486" endline="4540">P_GetPressureDataWaveRef</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a40010112d1c7c4113d55f2df04231f3a" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="16">PRESSURE_SPECTRUM_PERCENT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a176a9327d7af68da7d6973f9b587365b" compoundref="_m_i_e_s___utilities_8ipf" startline="1443" endline="1447">RemoveAnnotationsFromGraph</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aacbbdbe2b064f15947381c226bfb500b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5225" endline="5288">RemoveTracesFromGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aa7634629992af48581fd68b3f4f2bf58" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="15">RES_FORMAT_STR</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a09748674cba6c037a8250fd39fc812a3" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="14">SCOPE_BLUE</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a0d5a4deeefdbc33ae5401309958666d7" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="189" endline="194">SCOPE_GetCheckBoxesForAddons</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1adf37d8732e1297decafb84ef8c3984dc" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="65" endline="94">SCOPE_GetTPTopAxisStart</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1abd64fa17c9b83c9d304d8fec6c9ae398" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="13">SCOPE_GREEN</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ae1957ac3a266c36be2c9a7bb5ffab48b" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="30" endline="49">SCOPE_OpenScopeWindow</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="391" endline="444">SCOPE_SetADAxisLabel</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ab22e8f3396d4cddea1be2ad37535b61e" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="12">SCOPE_TIMEAXIS_RESISTANCE_RANGE</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1aa455b67d24670c1949d1385e2d4aef24" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="921" endline="994">SetAxesRanges</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a127ac38892a0dfffd31866f96a539d40" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5582" endline="5604">DAP_PopMenuProc_OsciUpdMode</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_SetADAxisLabel</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable activeHeadStage)</argsstring>
+        <name>SCOPE_SetADAxisLabel</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>activeHeadStage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="391" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="391" bodyend="444"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a99929d493e5a521d045d67adf77851b6" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="161" endline="175">AFH_GetChannelUnit</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af62794f71558a6fae2c2732c1f56eb7a" compoundref="_m_i_e_s___constants_8ipf" startline="476">AXIS_SCOPE_AD</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1af2cd422bb3566dfda8623fa58286e6b1" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3244" endline="3261">GetHeadstageColor</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1af072ceee101b549f8d43926d7f9ee938" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="18" endline="22">SCOPE_GetGraph</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a6cb733efb1cae0717bb28e2e2e00862d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="3938" endline="3966">DAP_SliderProc_MIESHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1adeff8725bb08d05b254c184bf27987d6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable DoFFT</definition>
+        <argsstring>(wave input, wave output, variable col)</argsstring>
+        <name>DoFFT</name>
+        <param>
+          <type>wave</type>
+          <declname>input</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>output</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>col</declname>
+        </param>
+        <briefdescription>
+<para>Perform FFT on input[col] and write the result into output[col]. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="447" column="18" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="447" bodyend="456"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1af34112da898a78b2808eff374b1f0b5f" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1676" endline="1678">TP_GetPowerSpectrumLength</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SCOPE_UpdatePowerSpectrum</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SCOPE_UpdatePowerSpectrum</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="458" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="458" bodyend="478"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1adeff8725bb08d05b254c184bf27987d6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="447" endline="456">DoFFT</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a5190903488649e2d5940a6b8808cb10d" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="320" endline="324">GetADChannelToMonitor</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a42cd91a9a66c26f756b13996326d9f24" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2804" endline="2817">GetTPOscilloscopeWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="699" endline="776">SCOPE_ITC_UpdateOscilloscope</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="637" endline="697">SCOPE_NI_UpdateOscilloscope</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SCOPE_UpdateOscilloscopeData</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable chunk=defaultValue, variable fifoPos=defaultValue, variable deviceID=defaultValue)</argsstring>
+        <name>SCOPE_UpdateOscilloscopeData</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>chunk</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fifoPos</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceID</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Prepares a subset/copy of <computeroutput>DAQDataWave</computeroutput> for displaying it in the oscilloscope panel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>panel title </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dataAcqOrTP</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" kindref="member">DATA_ACQUISITION_MODE</ref> or <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>chunk</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Only for <ref refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" kindref="member">TEST_PULSE_MODE</ref> and multi device mode; Selects the testpulse to extract </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fifoPos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Position of the hardware DAQ fifo to keep track of the position which will be written next </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>deviceID</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="490" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="490" bodyend="635"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___async_8ipf_1ab01ac3210d8b52b2f1bffbe8015ded95" compoundref="_m_i_e_s___async_8ipf" startline="175" endline="266">ASYNC_ThreadReadOut</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a76aa2d81e9dceb8cb59f5a401606c285" compoundref="_m_i_e_s___constants_8ipf" startline="98">DAQ_CHANNEL_TYPE_TP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a1db05364d940c84f4539dd8daf3bfe3d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="373" endline="377">GetADCTypesFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3a545275f0a2005846d9d20b34915194" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="544" endline="570">GetHSProperties</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a70ae74ef1b34bd8a17dd03f3b969274b" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="348" endline="363">GetNrOfTypedChannels</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a42cd91a9a66c26f756b13996326d9f24" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2804" endline="2817">GetTPOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3c7536b8b83ea48fb52a19ae5d77bcdc" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7158" endline="7181">GetTPSettings</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a467799116fdc00550dbd538b68888ae2" compoundref="_m_i_e_s___utilities_8ipf" startline="2451" endline="2453">GetUniqueInteger</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7772fd99baab9df21eb31b087d2d7818" compoundref="_i_p_n_w_b___utils_8ipf" startline="529" endline="533">NewRandomSeed</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a3e8bcdfc89fa981f432d8d2235e47570" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="784" endline="808">SCOPE_ITC_AdjustFIFOPos</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="699" endline="776">SCOPE_ITC_UpdateOscilloscope</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="637" endline="697">SCOPE_NI_UpdateOscilloscope</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a285b95d3cc0012b59693f0aac5460a1b" compoundref="_m_i_e_s___constants_8ipf" startline="188">TICKS_TO_SECONDS</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a0311b4ce42c9bb65445916af3ba2c9d0" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1543" endline="1547">TP_SendToAnalysis</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a18665dbcb88c55fab81be186b1af6504" compoundref="_m_i_e_s___test_pulse_8ipf" startline="53" endline="82">TP_StoreTP</references>
+        <referencedby refid="group___background_functions_1ga76c2058c54566af29fefe66c1fc7dbef" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="19" endline="124">DQM_FIFOMonitor</referencedby>
+        <referencedby refid="_m_i_e_s___data_acquisition___single_8ipf_1a35927802209b663a50c73aa75d86acf0" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="51" endline="88">DQS_DataAcq</referencedby>
+        <referencedby refid="group___background_functions_1ga180063aa9185bc1412cda48d5aee95ef" compoundref="_m_i_e_s___data_acquisition___single_8ipf" startline="135" endline="170">DQS_FIFOMonitor</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___single_8ipf_1a196bd39339e874d3da354993ebbbbecc" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="140" endline="187">TPS_StartTestPulseForeground</referencedby>
+        <referencedby refid="group___background_functions_1ga7df595d0c0af52c7295b9d185f3485c4" compoundref="_m_i_e_s___test_pulse___single_8ipf" startline="35" endline="71">TPS_TestPulseFunc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a5f798a123e2cba8b75c508574de23f6c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SCOPE_NI_UpdateOscilloscope</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable deviceiD, variable fifoPos)</argsstring>
+        <name>SCOPE_NI_UpdateOscilloscope</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>deviceiD</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fifoPos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="637" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="637" bodyend="697"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1ab5f10a4e73b5ab56d4b9222059b94926" compoundref="_i_p_n_w_b___constants_8ipf" startline="78">COLS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a812e0e1939895c5c828978819ef58396" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6311" endline="6428">DecimateWithMethod</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7134875f4018a2b77af011b836a29f3f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6248">DECIMATION_NONE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a00b5630e82d91a4ad23208597bacc998" compoundref="_m_i_e_s___constants_8ipf" startline="1292">GAIN_AFTER_DAQ</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad0ad23d804fe6d2c4de44fb74d8aba1d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6129" endline="6133">GetNIFIFOName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="311" endline="315">GetStopCollectionPoint</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</references>
+        <references refid="_m_i_e_s___sweep_saving_8ipf_1a4dad46a54274e70a3f0590d43d98d727" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="135" endline="199">SWS_GetChannelGains</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a1c7da60dc7d6564ee0deac521c91174d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SCOPE_ITC_UpdateOscilloscope</definition>
+        <argsstring>(string device, variable dataAcqOrTP, variable chunk, variable fifoPos)</argsstring>
+        <name>SCOPE_ITC_UpdateOscilloscope</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>dataAcqOrTP</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>chunk</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fifoPos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="699" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="699" bodyend="776"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a812e0e1939895c5c828978819ef58396" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6311" endline="6428">DecimateWithMethod</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a7134875f4018a2b77af011b836a29f3f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6248">DECIMATION_NONE</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a00b5630e82d91a4ad23208597bacc998" compoundref="_m_i_e_s___constants_8ipf" startline="1292">GAIN_AFTER_DAQ</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="292" endline="296">GetADCListFromConfig</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="299" endline="303">GetDACListFromConfig</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a541c78952b41fbb04f3a97a2f6353967" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2781" endline="2794">GetOscilloscopeWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="311" endline="315">GetStopCollectionPoint</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37720661ee8ec2710bad92d87ab71b52" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="7186" endline="7206">GetTPSettingsCalculated</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1ac292f063b6136e005477ec7258c7c395" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="458" endline="478">SCOPE_UpdatePowerSpectrum</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9d34d63c03290b6608d7f099baf660d3" compoundref="_m_i_e_s___utilities_8ipf" startline="272" endline="276">WindowExists</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___oscilloscope_8ipf_1a3e8bcdfc89fa981f432d8d2235e47570" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SCOPE_ITC_AdjustFIFOPos</definition>
+        <argsstring>(string device, variable fifopos)</argsstring>
+        <name>SCOPE_ITC_AdjustFIFOPos</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fifopos</declname>
+        </param>
+        <briefdescription>
+<para>Adjusts the fifo position when using ITC. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fifopos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>fifo position</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>adjusted fifo position </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" line="784" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf" bodystart="784" bodyend="808"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afeda2850a00c3c8d70f87d17d866e6bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="914" endline="954">GetDAQConfigWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acbf34ecc18b0b79e5cd64187be6a2c12" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2181" endline="2191">GetDataOffset</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a3e889067d82e37a7b80fc8b35b3f32cd" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="311" endline="315">GetStopCollectionPoint</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SCOPE</bold> Scope window handling for data acquisition and testpulse results </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_Oscilloscope.ipf"/>
+  </compounddef>
+</doxygen>

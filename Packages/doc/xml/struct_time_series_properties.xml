@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="struct_time_series_properties" kind="struct" language="C++" prot="public">
+    <compoundname>TimeSeriesProperties</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText TimeSeriesProperties::names</definition>
+        <argsstring></argsstring>
+        <name>names</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="189" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="188" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86" compoundref="_i_p_n_w_b___writer_8ipf" startline="313" endline="329">AddCustomProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE TimeSeriesProperties::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="190" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="190" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86" compoundref="_i_p_n_w_b___writer_8ipf" startline="313" endline="329">AddCustomProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_time_series_properties_1a9e9fd3b46e294c03fffeb15814021112" prot="public" static="no" mutable="no">
+        <type>WaveText</type>
+        <definition>WaveText TimeSeriesProperties::unit</definition>
+        <argsstring></argsstring>
+        <name>unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="191" column="10" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="191" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_time_series_properties_1a887273c24eb25544ccc4a7c556ad8ae3" prot="public" static="no" mutable="no">
+        <type>WAVE</type>
+        <definition>WAVE TimeSeriesProperties::isCustom</definition>
+        <argsstring></argsstring>
+        <name>isCustom</name>
+        <briefdescription>
+<para>NWBv1: 1 if the entry should be marked as NWB custom. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="192" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="192" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1abed1242d30a804f55b15907947a62b86" compoundref="_i_p_n_w_b___writer_8ipf" startline="313" endline="329">AddCustomProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string TimeSeriesProperties::missing_fields</definition>
+        <argsstring></argsstring>
+        <name>missing_fields</name>
+        <briefdescription>
+<para>keep track of missing fields while reading </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="193" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="193" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1a48314be8daba13a549223855b48ebc4f" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1791" endline="1842">NWB_GetTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" compoundref="_i_p_n_w_b___reader_8ipf" startline="429" endline="474">ReadTimeSeriesProperties</referencedby>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" compoundref="_i_p_n_w_b___writer_8ipf" startline="378" endline="522">WriteSingleChannel</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_time_series_properties_1a45dade7abd5887a478b7bce50f1f48a2" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string TimeSeriesProperties::neurodata_type</definition>
+        <argsstring></argsstring>
+        <name>neurodata_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="194" column="8" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="194" bodyend="-1"/>
+        <referencedby refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" compoundref="_i_p_n_w_b___writer_8ipf" startline="286" endline="308">AddProperty</referencedby>
+        <referencedby refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" compoundref="_i_p_n_w_b___structures_8ipf" startline="202" endline="223">InitTimeSeriesProperties</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Holds class specific entries for TimeSeries objects. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Usage for writers <programlisting><codeline><highlight class="normal">STRUCT<sp/><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref><sp/>tsp</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" kindref="member">InitTimeSeriesProperties</ref>(tsp,<sp/>channelType,<sp/>clampMode)</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="_i_p_n_w_b___writer_8ipf_1a0577d52c544f02cb980c2c8e9a6459f5" kindref="member">AddProperty</ref>(tsp,<sp/></highlight><highlight class="stringliteral">&quot;gain&quot;</highlight><highlight class="normal">,<sp/>1.23456)</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="comment">//<sp/>more<sp/>calls<sp/>tp<sp/>AddProperty()</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><ref refid="_i_p_n_w_b___writer_8ipf_1aed573e6d249cdd6f53fe87b8c3f8f12f" kindref="member">WriteSingleChannel</ref>(locationID,<sp/>path,<sp/>p,<sp/>tsp)</highlight></codeline>
+</programlisting></para>
+<para>and for readers <programlisting><codeline><highlight class="normal">STRUCT<sp/><ref refid="struct_time_series_properties" kindref="compound">TimeSeriesProperties</ref><sp/>tsp</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="_i_p_n_w_b___structures_8ipf_1a2a2c1607ad0090d453ab7d97e14b0883" kindref="member">InitTimeSeriesProperties</ref>(tsp,<sp/>channelType,<sp/>clampMode)</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="_i_p_n_w_b___reader_8ipf_1a5c7ff7897fc3969ed29e056b94120885" kindref="member">ReadTimeSeriesProperties</ref>(groupID,<sp/>channel,<sp/>tsp)</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" line="188" column="1" bodyfile="/home/firma/devel/mies/Packages/IPNWB/IPNWB_Structures.ipf" bodystart="188" bodyend="195"/>
+    <listofallmembers>
+      <member refid="struct_time_series_properties_1ade0932aa98893986319744e40fbcf634" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>data</name></member>
+      <member refid="struct_time_series_properties_1a887273c24eb25544ccc4a7c556ad8ae3" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>isCustom</name></member>
+      <member refid="struct_time_series_properties_1a830260d07f0d6e8c5e4c780bb4fd8a67" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>missing_fields</name></member>
+      <member refid="struct_time_series_properties_1a7414f8f1e5ea086ae91530e299bc3ed4" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>names</name></member>
+      <member refid="struct_time_series_properties_1a45dade7abd5887a478b7bce50f1f48a2" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>neurodata_type</name></member>
+      <member refid="struct_time_series_properties_1a9e9fd3b46e294c03fffeb15814021112" prot="public" virt="non-virtual"><scope>TimeSeriesProperties</scope><name>unit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

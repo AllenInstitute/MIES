@@ -1,0 +1,1726 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_function_helpers_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctionHelpers.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetHeadstageFromADC</definition>
+        <argsstring>(string device, variable AD)</argsstring>
+        <name>AFH_GetHeadstageFromADC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>AD</declname>
+        </param>
+        <briefdescription>
+<para>Return the headstage the AD channel is assigned to. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>AD</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>AD channel in the range [0,8[ or [0,16[ depending on the hardware</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>headstage or NaN (for non-associated channels) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="32" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="32" bodyend="39"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6a79aff1627fced5be033a9d86be2b75" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="509" endline="539">GetChannelClampMode</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab0f38ebefe9ce38e68099af8a0ffd443" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="63" endline="77">AFH_GetADCFromHeadstage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a849bc902b343c7ffeb8ed9cc7d6e9d3a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1177" endline="1227">DAP_AdaptAssocHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40a0c18605f4ac77129adcf2968a31f1" compoundref="_m_i_e_s___data_configurator_8ipf" startline="607" endline="711">DC_PlaceDataInDAQConfigWave</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="120" endline="145">DC_UpdateHSProperties</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1ac272e4a2a25d79cb4b7324cbad287246" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="196" endline="389">SCOPE_CreateGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="391" endline="444">SCOPE_SetADAxisLabel</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetHeadstageFromDAC</definition>
+        <argsstring>(string device, variable DA)</argsstring>
+        <name>AFH_GetHeadstageFromDAC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>DA</declname>
+        </param>
+        <briefdescription>
+<para>Return the headstage the DA channel is assigned to. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DA</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DA channel in the range [0,4[ or [0,8[ depending on the hardware</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>headstage or NaN (for non-associated channels) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="48" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="48" bodyend="55"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a6a79aff1627fced5be033a9d86be2b75" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="509" endline="539">GetChannelClampMode</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a849bc902b343c7ffeb8ed9cc7d6e9d3a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1177" endline="1227">DAP_AdaptAssocHeadstageState</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa08130a2b4edcef8144cba8670366374" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2657" endline="2875">DAP_CheckHeadStage</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af055d8fb68971b1c10a3cf7e4362c143" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1084" endline="1113">DAP_DACHasExpectedClampMode</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a73d19177ac094c33e6b85a3035ad4307" compoundref="_m_i_e_s___data_configurator_8ipf" startline="538" endline="601">DC_GetFilteredChannelState</referencedby>
+        <referencedby refid="_m_i_e_s___epochs_8ipf_1a9fb7ad840cb0cac17dfe692282f94e46" compoundref="_m_i_e_s___epochs_8ipf" startline="569" endline="600">EP_WriteEpochInfoIntoSweepSettings</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="170" endline="181">SC_LastSweepInSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab0f38ebefe9ce38e68099af8a0ffd443" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetADCFromHeadstage</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>AFH_GetADCFromHeadstage</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the AD channel assigned to the headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage in the range [0,8[</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>AD channel or NaN (for non-associated channels) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="63" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="63" bodyend="77"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab5f381c59e3deef8517ce91736d13d6b" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="32" endline="39">AFH_GetHeadstageFromADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aea93bf89e525dc49202692d5d48b3fc7" compoundref="_m_i_e_s___constants_8ipf" startline="19">NUM_AD_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetDACFromHeadstage</definition>
+        <argsstring>(string device, variable headstage)</argsstring>
+        <name>AFH_GetDACFromHeadstage</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return the DA channel assigned to the headstage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage in the range [0,8[</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>DA channel or NaN (for non-associated channels) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="85" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="85" bodyend="99"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="48" endline="55">AFH_GetHeadstageFromDAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e57682151e3850b3f6667c387fcdcc" compoundref="_m_i_e_s___constants_8ipf" startline="17">NUM_DA_TTL_CHANNELS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="15" endline="168">AFM_CallAnalysisFunctions</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a0adb90455a369fd191b080a3100a7fbe" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="173" endline="220">AFM_UpdateAnalysisFunctionWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ae940104cec1b05730323bf86b683b00a" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5359" endline="5406">DAP_AllChanDASettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a78d0a45831f0f048229b6004ab300aec" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1249" endline="1340">DAP_OneTimeCallBeforeDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3453ae7ca195d44ee5ba25f74ea24c1b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1350" endline="1387">DAP_ResetGUIAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2109" endline="2125">DC_GetChannelTypefromHS</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a40244fd2f38d0b9c83a22ba19724432d" compoundref="_m_i_e_s___data_configurator_8ipf" startline="120" endline="145">DC_UpdateHSProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a531d7094ed6c42f450f3e6c2c569ef24" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="317" endline="335">Enforce_IC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1f9eb5cf83246d34c10fbb4731dc49f8" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="296" endline="315">Enforce_VC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="321" endline="360">MSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a78d65262a77669cce3387a1d008ead0e" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1057" endline="1068">MSQ_ForceSetEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abc03b32335ca9fd9d7aab739e0580c5e" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="261" endline="277">MSQ_GetDAStimsetLength</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="936" endline="993">PSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a8c10f74765d6e5d24d4732b45c1a0950" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4152" endline="4163">PSQ_ForceSetEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af21d4f0ca894c6d9ee0672176dcf12b5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="831" endline="847">PSQ_GetDAStimsetLength</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a649434ef3cdb363c86e5f049ced3d5cc" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4547" endline="4629">PSQ_PB_CreateTestpulseEpochs</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae2415cec650043d3217816015b8f7104" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4532" endline="4540">PSQ_PB_GetPrePulseBaselineDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1abc9e4fbc6f6056cad7fea876eeab14b1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3145" endline="3155">PSQ_Ramp_AddEpoch</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1817b04b7db07ece0a1fd99e3c35c147" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="936" endline="974">SetDAScale</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetDAQDataColumn</definition>
+        <argsstring>(wave DAQConfigWave, variable channelNumber, variable channelType)</argsstring>
+        <name>AFH_GetDAQDataColumn</name>
+        <param>
+          <type>wave</type>
+          <declname>DAQConfigWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return the column index into <computeroutput>DAQDataWave</computeroutput> for the given channel/type combination. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DAQConfigWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DAQ configuration wave, most users need to call <computeroutput>GetDAQConfigWave(device)</computeroutput> to get that wave. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel number (0-based) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel type, one of <ref refid="_m_i_e_s___constants_8ipf_1XopChannelConstants" kindref="member">XopChannelConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="108" column="11" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="108" bodyend="135"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1ae1b4dbcdd945014c38601021c67cb4ec" compoundref="_m_i_e_s___debugging_8ipf" startline="263" endline="303">DEBUGPRINT_TS</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a99929d493e5a521d045d67adf77851b6" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="161" endline="175">AFH_GetChannelUnit</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1ae0f79975754bf6d7dc4a61a21583cae4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5886" endline="5981">CalculateTPLikePropsFromSweep</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a8830b0524b8751928a9fdcc6889cc7b6" compoundref="_m_i_e_s___data_configurator_8ipf" startline="2109" endline="2125">DC_GetChannelTypefromHS</referencedby>
+        <referencedby refid="_m_i_e_s___neuro_data_without_borders_8ipf_1acdb1b63a20cd2c4ae5ec028d755f5259" compoundref="_m_i_e_s___neuro_data_without_borders_8ipf" startline="1052" endline="1326">NWB_AppendSweepLowLevel</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a8e55ee76c22efa74fc858f4337c11c89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetChannelUnits</definition>
+        <argsstring>(wave DAQConfigWave)</argsstring>
+        <name>AFH_GetChannelUnits</name>
+        <param>
+          <type>wave</type>
+          <declname>DAQConfigWave</declname>
+        </param>
+        <briefdescription>
+<para>Return all channel units as free text wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DAQConfigWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DAQ configuration wave, most users need to call <computeroutput>GetDAQConfigWave(device)</computeroutput> to get that wave. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="141" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="141" bodyend="153"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a47e10950cdb6aa7653fe774b4d66e738" compoundref="_m_i_e_s___constants_8ipf" startline="1198">CHANNEL_UNIT_KEY</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ab9782bb9eaa585669198f9dfa56d6d9c" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6032" endline="6058">IsValidConfigWave</references>
+        <referencedby refid="_m_i_e_s___analysis_browser_8ipf_1af11c3c7d507644e9925ef3eaa782031b" compoundref="_m_i_e_s___analysis_browser_8ipf" startline="1884" endline="1909">AB_SortConfigSweeps</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a99929d493e5a521d045d67adf77851b6" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="161" endline="175">AFH_GetChannelUnit</referencedby>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1aa1ea8b1ce92091ca4aaa3f914affe2cc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3615" endline="3640">ExtractOneDimDataFromSweep</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a99929d493e5a521d045d67adf77851b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetChannelUnit</definition>
+        <argsstring>(wave DAQConfigWave, variable channelNumber, variable channelType)</argsstring>
+        <name>AFH_GetChannelUnit</name>
+        <param>
+          <type>wave</type>
+          <declname>DAQConfigWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelNumber</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return the channel unit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>DAQConfigWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>DAQ configuration wave, most users need to call <computeroutput>GetDAQConfigWave(device)</computeroutput> to get that wave. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelNumber</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel number (0-based) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel type, one of <ref refid="_m_i_e_s___constants_8ipf_1XopChannelConstants" kindref="member">XopChannelConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="161" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="161" bodyend="175"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a8e55ee76c22efa74fc858f4337c11c89" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="141" endline="153">AFH_GetChannelUnits</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="108" endline="135">AFH_GetDAQDataColumn</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___mies_utilities_8ipf_1a471752dccf4869a9380e6539f44c105e" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2592" endline="3070">CreateTiledChannelGraph</referencedby>
+        <referencedby refid="_m_i_e_s___oscilloscope_8ipf_1adde38e3e5ec86c750e7c7ffc587fc6a6" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="391" endline="444">SCOPE_SetADAxisLabel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetLastSweepAcquired</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AFH_GetLastSweepAcquired</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the sweep number of the last acquired sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles sweep number rollback properly.</para>
+<para><simplesect kind="return"><para>a non-negative integer sweep number or NaN if there is no data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="182" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="182" bodyend="202"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a30c606e8723475594023ba5da61ae39c" compoundref="_m_i_e_s___constants_8ipf" startline="53">DATA_SWEEP_REGEXP</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aaa6e9a758c888e73a8b0a54adb95d51d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4545" endline="4557">ExtractSweepNumber</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1ac1adc39b4052f520c6a3032523724a3c" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="659" endline="662">GetDeviceDataPath</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a04c9b33b1a7cc1fdd65d07602c35c3df" compoundref="_m_i_e_s___utilities_8ipf" startline="290" endline="346">GetListOfObjects</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a72b806ad560d940a643efe10064a846d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="207" endline="211">AFH_GetLastSweepWaveAcquired</referencedby>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a86eb47df3b781c65f74709d9b4938c85" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="142" endline="182">AS_GetSweepNumber</referencedby>
+        <referencedby refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ac799588e399954739f1026dee1dba511" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4389" endline="4417">DAP_AddUserComment</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1aa7d41a9e35c6030ee6dc0e696dd3a08b" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1693" endline="1717">DAP_SetVarProc_NextSweepLimit</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1af3eb049dc1e1c8e847fcfb521967f6ab" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1748" endline="1809">DAP_UpdateSweepLimitsAndDisplay</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___experiment_documentation_8ipf_1a16f60c8d9941dc9fc5f10b4f9a48d2c8" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="768" endline="862">ED_TPDocumentation</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a0c892ac46643e77fa26e24efd9d2a68c" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="555" endline="588">LastStimSetRun</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a72b806ad560d940a643efe10064a846d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetLastSweepWaveAcquired</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AFH_GetLastSweepWaveAcquired</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the sweep wave of the last acquired sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>an existing sweep wave or an invalid wave reference if there is no data </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="207" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="207" bodyend="211"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab037c2c7b118e2107ef0bd19fb1dd90c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="182" endline="202">AFH_GetLastSweepAcquired</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetStimSetName</definition>
+        <argsstring>(string device, variable chanNo, variable channelType)</argsstring>
+        <name>AFH_GetStimSetName</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>chanNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <briefdescription>
+<para>Return the stimset for the given channel. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>chanNo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel number (0-based) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>one of the type constants from <ref refid="_m_i_e_s___constants_8ipf_1ChannelTypeAndControlConstants" kindref="member">ChannelTypeAndControlConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>an existing stimulus set name for a DA channel </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="219" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="219" bodyend="232"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a31fa4935538b5646025ac970672a38a2" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="674" endline="758">AdjustDAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a531d7094ed6c42f450f3e6c2c569ef24" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="317" endline="335">Enforce_IC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a1f9eb5cf83246d34c10fbb4731dc49f8" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="296" endline="315">Enforce_VC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a0a95cd387f17109277ce76a0d8f94467" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="321" endline="360">MSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abc03b32335ca9fd9d7aab739e0580c5e" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="261" endline="277">MSQ_GetDAStimsetLength</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae60d9e13e2547849c056cf3488aefae4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="936" endline="993">PSQ_CreateOverrideResults</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af21d4f0ca894c6d9ee0672176dcf12b5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="831" endline="847">PSQ_GetDAStimsetLength</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="170" endline="181">SC_LastSweepInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a0d9ba5617fc8d23c50213e3a98bf3b91" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave AFH_GetSweepsFromSameRACycleNC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo)</argsstring>
+        <name>AFH_GetSweepsFromSameRACycleNC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave with all sweep numbers (in ascending order) which belong to the same RA cycle. Uncached version, general users should prefer <ref refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" kindref="member">AFH_GetSweepsFromSameRACycle()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an invalid wave reference if not all required labnotebook entries are available </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="239" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="239" bodyend="259"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="group___labnotebook_query_functions_1gaaeb8e71885194bd016698fbb183988df" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="705" endline="723">GetLastSettingIndep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a25a79be59dd43aa08b97f861e11becb9" compoundref="_m_i_e_s___constants_8ipf" startline="920">RA_ACQ_CYCLE_ID_KEY</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="265" endline="296">AFH_GetSweepsFromSameRACycle</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1af375fa034a8f4bbdf5959317b0730e82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetSweepsFromSameRACycle</definition>
+        <argsstring>(wave numericalValues, variable sweepNo)</argsstring>
+        <name>AFH_GetSweepsFromSameRACycle</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave with all sweep numbers (in ascending order) which belong to the same RA cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an invalid wave reference if not all required labnotebook entries are available </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="265" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="265" bodyend="296"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a0d9ba5617fc8d23c50213e3a98bf3b91" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="239" endline="259">AFH_GetSweepsFromSameRACycleNC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a131298416b3d634366394c298774f309" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="763" endline="898">FitResistance</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga93ab37b6d9b4bbbd21676ef059dda999" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1395" endline="1426">GetLastSettingEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga4beed703a25c190467dc724a61c6d96d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1321" endline="1347">GetLastSettingIndepEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga31b4cc4c6079e5962f8f3de35fe27778" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1288" endline="1311">GetLastSettingRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1436" endline="1469">GetLastSettingTextEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gade836af69ad469c2c7401af393376c2d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1357" endline="1385">GetLastSettingTextIndepEachRAC</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga97d548734a1242647c804cf369e9a917" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1258" endline="1282">GetLastSettingTextRAC</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetSweepsFromSameSCI</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AFH_GetSweepsFromSameSCI</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave with all sweep numbers (in ascending order) which belong to the same stimset cycle. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an invalid wave reference if not all required labnotebook entries are available </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="302" column="7" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="302" bodyend="333"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ad03b3295acb97de96f481fe078969b3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="340" endline="361">AFH_GetSweepsFromSameSCINC</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9dd7c517e7942a0e37c0f6f28841f222" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1973" endline="2019">GetLBNidCache</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a977256070a5b6c9116f28d870c22b852" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2118" endline="2122">IsValidSweepNumber</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1adb6253ed542f366d828b2373c258c75f" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="161" endline="342">AD_FillWaves</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1ae836faef2ac9e4d7f2940141355a0a5b" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="687" endline="835">AD_GetPerSweepFailMessage</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga16f474f839dfe1041c8fcddea7fb8961" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1538" endline="1564">GetLastSettingIndepEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gab844c29989d2e24e8882e9be6c8568b4" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1505" endline="1528">GetLastSettingSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga3d79a377c5eb8689c43d346367ad8f09" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1653" endline="1686">GetLastSettingTextEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1ga0423691e2aa695e83c96f647c68202de" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1574" endline="1602">GetLastSettingTextIndepEachSCI</referencedby>
+        <referencedby refid="group___labnotebook_query_functions_1gad111b2ba70447e45e67656279a5d4d84" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1475" endline="1499">GetLastSettingTextSCI</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae8abbca08e17ffd871d3e0207775a87f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="222" endline="235">MSQ_NumAcquiredSweepsInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1abeec857866729bbf5ffff7d0ba309d42" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="239" endline="256">MSQ_NumPassesInSet</referencedby>
+        <referencedby refid="_m_i_e_s___overlay_sweeps_8ipf_1ad0a9603288cb05c4c80aa25a6284c8a1" compoundref="_m_i_e_s___overlay_sweeps_8ipf" startline="187" endline="269">OVS_UpdatePanel</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a2ff74f4981c3ae1160a4c800baaaed39" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4631" endline="4657">PSQ_AddLabnotebookEntriesToJSON</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59ff831f14713137c4fda652830891a5" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1222" endline="1273">PSQ_GetLastPassingLongRHSweep</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a59f3b02b11a7c02b64b28efe11237f6b" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="792" endline="805">PSQ_NumAcquiredSweepsInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aaf9ac438db2183bc5afe53ac82027101" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="809" endline="826">PSQ_NumPassesInSet</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1ad03b3295acb97de96f481fe078969b3c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave AFH_GetSweepsFromSameSCINC</definition>
+        <argsstring>(wave numericalValues, variable sweepNo, variable headstage)</argsstring>
+        <name>AFH_GetSweepsFromSameSCINC</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return a free wave with all sweep numbers (in ascending order) which belong to the same stimset cycle id. Uncached version, general users should prefer <ref refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" kindref="member">AFH_GetSweepsFromSameSCI()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an invalid wave reference if not all required labnotebook entries are available </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="340" column="14" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="340" bodyend="361"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1aff3fd239b0eb0234d08375bc95715f82" compoundref="_i_p_n_w_b___debugging_8ipf" startline="35" endline="89">ASSERT_TS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3bd687338235e2975163affaca2b354f" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="625" endline="654">GetSweepColumn</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af53360d13dc4251fd2fa82a32dc88f6b" compoundref="_m_i_e_s___constants_8ipf" startline="921">STIMSET_ACQ_CYCLE_ID_KEY</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_ExtractOneDimDataFromSweep</definition>
+        <argsstring>(string device, wave sweep, variable headstageOrChannelNum, variable channelType, wave config=defaultValue)</argsstring>
+        <name>AFH_ExtractOneDimDataFromSweep</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstageOrChannelNum</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>channelType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>config</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a free 1D wave from the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extract the AD channel data from headstage 1:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   variable sweepNo = 5
+*   WAVE sweep = GetSweepWave(device, sweepNo)
+*   variable headstage = 1
+*   WAVE data = AFH_ExtractOneDimDataFromSweep(device, sweep, headstage, XOP_CHANNEL_TYPE_ADC)
+*  </verbatim></para>
+<para>Extract the TTL channel 1:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*   variable sweepNo = 6
+*   WAVE sweep = GetSweepWave(device, sweepNo)
+*   variable ttlChannel = 1
+*   WAVE data = AFH_ExtractOneDimDataFromSweep(device, sweep, ttlChannel, XOP_CHANNEL_TYPE_TTL)
+*  </verbatim></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sweep</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sweep wave </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headstageOrChannelNum</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>channelType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One of <ref refid="_m_i_e_s___constants_8ipf_1XopChannelConstants" kindref="member">XopChannelConstants</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to config wave of the sweep returned by <ref refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" kindref="member">GetConfigWave()</ref>] config wave </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="392" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="392" bodyend="422"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1ab0f38ebefe9ce38e68099af8a0ffd443" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="63" endline="77">AFH_GetADCFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1afdb01f0cee3f65ee2087486779a5b907" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="108" endline="135">AFH_GetDAQDataColumn</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1aa1ea8b1ce92091ca4aaa3f914affe2cc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="3615" endline="3640">ExtractOneDimDataFromSweep</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a153dd06df490d380528493d930199248" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2132" endline="2138">GetConfigWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3fb9bbb8ba05c7c03d9cb5e966febda9" compoundref="_m_i_e_s___constants_8ipf" startline="89">XOP_CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4933ebaafde644c8cf8d1d2b30eab861" compoundref="_m_i_e_s___constants_8ipf" startline="90">XOP_CHANNEL_TYPE_TTL</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a6a8a67bf9bcc2577a58698d7c0b43048" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="128" endline="176">MSQ_DeterminePulseDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ac70080f0dcfbfb6251c12fa7e5232859" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="375" endline="484">MSQ_SearchForSpikes</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ab9363b975f33f7169bdcebeedfd2fda4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3326" endline="3485">PSQ_CR_DetermineBoundsAction</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a95c6b1d082bf5c57a758e28c3a9685df" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3532" endline="3563">PSQ_CR_DetermineCycles</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad51a46ca2e3642920a3150f01dc31627" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="186" endline="247">PSQ_DeterminePulseDuration</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a26d80e8dbcc50a676e7cbfa5cbf4a493" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1031" endline="1210">PSQ_SearchForSpikes</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1aff8c9bf1e0d9ec122dc131bc876e131d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetAnalysisFunctions</definition>
+        <argsstring>(variable versionBitMask)</argsstring>
+        <name>AFH_GetAnalysisFunctions</name>
+        <param>
+          <type>variable</type>
+          <declname>versionBitMask</declname>
+        </param>
+        <briefdescription>
+<para>Get list of possible analysis functions. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>versionBitMask</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>bitmask of different analysis function versions which should be returned, one of <ref refid="_m_i_e_s___constants_8ipf_1AnalysisFunctionVersions" kindref="member">AnalysisFunctionVersions</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="428" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="428" bodyend="467"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a655393dd14d5eea9112c0503f3787b8d" compoundref="_m_i_e_s___constants_8ipf" startline="593">ANALYSIS_FUNCTION_VERSION_V1</references>
+        <references refid="_m_i_e_s___constants_8ipf_1adac4b422506bc87ac4e7e8f6a073e91a" compoundref="_m_i_e_s___constants_8ipf" startline="594">ANALYSIS_FUNCTION_VERSION_V2</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a748380b31bf4a1bfba4e40326bc5fc99" compoundref="_m_i_e_s___constants_8ipf" startline="595">ANALYSIS_FUNCTION_VERSION_V3</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <referencedby refid="_m_i_e_s___analysis_function_management_8ipf_1a0adb90455a369fd191b080a3100a7fbe" compoundref="_m_i_e_s___analysis_function_management_8ipf" startline="173" endline="220">AFM_UpdateAnalysisFunctionWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a2c7f73b2f3f89880a4bdc29afdb98023" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1359" endline="1363">WBP_GetAnalysisFunctions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1af817353585cc6f1a862d661e4200ee9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetListOfAnalysisParams</definition>
+        <argsstring>(string func, variable mode)</argsstring>
+        <name>AFH_GetListOfAnalysisParams</name>
+        <param>
+          <type>string</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Return the list of required/optional analysis function parameters, possibly including the type, as specified by the function <computeroutput>$func_GetParams</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Analysis function <computeroutput>V3</computeroutput> which must be valid and existing </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Bit mask values from <ref refid="_m_i_e_s___constants_8ipf_1GetListOfParamsModeFlags" kindref="member">GetListOfParamsModeFlags</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="475" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="475" bodyend="503"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0cee3fc07a0f5ad67971476fa771e7cd" compoundref="_m_i_e_s___constants_8ipf" startline="1254">OPTIONAL_PARAMS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad2f98a947d2ef0fd5af554a63bfa1ad1" compoundref="_m_i_e_s___constants_8ipf" startline="1253">REQUIRED_PARAMS</references>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="817" endline="891">AFH_CheckAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1746" endline="1803">WBP_UpdateParameterWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a0cd12b699c35b03799af6ce6041ad429" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetHelpForAnalysisParameter</definition>
+        <argsstring>(string func, string name)</argsstring>
+        <name>AFH_GetHelpForAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get help string from optional <computeroutput>$func_GetHelp</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Analysis function <computeroutput>V3</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Parameter name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="509" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="509" bodyend="526"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1746" endline="1803">WBP_UpdateParameterWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetListOfAnalysisParamNames</definition>
+        <argsstring>(string params)</argsstring>
+        <name>AFH_GetListOfAnalysisParamNames</name>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Return a semicolon separated list of user parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="534" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="534" bodyend="556"/>
+        <referencedby refid="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="817" endline="891">AFH_CheckAnalysisParameter</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="720" endline="753">AFH_GetAnalysisParamTextWave</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a5c76bf1a8c26396418556e1f2b973d0c" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1733" endline="1742">WBP_GetAnalysisParameterNames</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1746" endline="1803">WBP_UpdateParameterWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetAnalysisParamType</definition>
+        <argsstring>(string name, string params, variable typeCheck=defaultValue, string expectedType=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParamType</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>typeCheck</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>expectedType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return the type of the user parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>typeCheck</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] Check with an assertion that the readout type is one of <ref refid="_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693" kindref="member">ANALYSIS_FUNCTION_PARAMS_TYPES</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expectedType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to nothing] Expected type, one of <ref refid="_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693" kindref="member">ANALYSIS_FUNCTION_PARAMS_TYPES</ref>, aborts if the type does not match. Implies <computeroutput>typeCheck = true</computeroutput>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>one of <ref refid="_m_i_e_s___constants_8ipf_1AnalysisFunctionParameterTypes" kindref="member">AnalysisFunctionParameterTypes</ref> or an empty string </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="568" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="568" bodyend="608"/>
+        <references refid="group___analysis_function_parameter_helpers_1gabf106e2fc04288afbd02155c75706e22" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="767" endline="771">AFH_IsValidAnalysisParamType</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="781" endline="794">AFH_GetAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1746" endline="1803">WBP_UpdateParameterWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetAnalysisParamNumerical</definition>
+        <argsstring>(string name, string params, variable defValue=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParamNumerical</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a numerical user parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to <computeroutput>NaN</computeroutput>] return this value if the parameter could not be found </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="617" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="617" bodyend="636"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="781" endline="794">AFH_GetAnalysisParameter</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="758" endline="762">AFH_IsValidAnalysisParameter</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1aa4d0023165e44117fe586ffcec856042" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="926" endline="990">AD_PlotBounds</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1aaac8103d1d989aeb3956c7f58e76266c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="643" endline="976">MSQ_FastRheoEst</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a1af1b8887d50095d551c310ae519d364" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="579" endline="606">MSQ_FastRheoEst_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1af237766ed17503d9d0d6ea483f3f932b" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1447" endline="1473">PSQ_CheckParamCommon</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad32acb7ac80f5b12efe480f155ceb4e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1402" endline="1429">PSQ_CheckSamplingFrequencyAndStoreInLabnotebook</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb69c65d8bfa27945b975b853b45dd64" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1522" endline="1616">PSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1102434ce55e679279c4cf8e56a6f8b0" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="364" endline="703">PSQ_EvaluateBaselineProperties</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a1233deb73a578b926721eebbd9c1ab61" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="250" endline="256">PSQ_GetBaselineRMSThresholds</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad94fecccb373c89ccf766f9291c8b4a7" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2839" endline="3143">PSQ_Ramp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb3600c2335841ed276f1fc2412922e1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2779" endline="2799">PSQ_Ramp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1aae106f5ae7263b652a872491b9a41a8d" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2414" endline="2742">PSQ_Rheobase</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ad5502b446bab709bc19b5fd7a4e2b8d4" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="2170" endline="2343">PSQ_SquarePulse</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a42a359d53411eab3114bc93ed771f00a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="995" endline="1020">ReachTargetVoltage_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6325beac1cbb2aad0ac53dbc9e5923ec" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="675" endline="683">SC_CanStillSkip</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac0d85137db9fe732dd7b4fa1e66f266d" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="686" endline="691">SC_SkipsExhausted</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4ea6c398b14ac7a5bb3db352f7a293a0" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="842" endline="919">SC_SpikeControl_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1977" endline="2043">WBP_ListBoxProc_AnalysisParams</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetAnalysisParamTextual</definition>
+        <argsstring>(string name, string params, string defValue=defaultValue, variable percentDecoded=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParamTextual</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>percentDecoded</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a textual user parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to an empty string] return this value if the parameter could not be found </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>percentDecoded</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] if the return value should be percent decoded or not. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="646" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="646" bodyend="676"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="781" endline="794">AFH_GetAnalysisParameter</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="758" endline="762">AFH_IsValidAnalysisParameter</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a7f45bdcfea7774eb6b47d0594b1ed6c1" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3763" endline="4133">PSQ_Chirp</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a9d66a4a3f46ae44a55a118402f0b8430" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="3624" endline="3690">PSQ_Chirp_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb69c65d8bfa27945b975b853b45dd64" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1522" endline="1616">PSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1ae8ddbddfdabe954afda91715bff3eeca" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4290" endline="4530">PSQ_PipetteInBath</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a76dbc4bed59ca6ae7d534bf69b967d5f" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4173" endline="4218">PSQ_PipetteInBath_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1ae3eb33b5e068bb8fdc7ebc34c7810192" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1032" endline="1242">ReachTargetVoltage</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a42a359d53411eab3114bc93ed771f00a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="995" endline="1020">ReachTargetVoltage_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4ea6c398b14ac7a5bb3db352f7a293a0" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="842" endline="919">SC_SpikeControl_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1977" endline="2043">WBP_ListBoxProc_AnalysisParams</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetAnalysisParamWave</definition>
+        <argsstring>(string name, string params, wave defValue=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParamWave</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a numerical wave user parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to an invalid wave ref] return this value if the parameter could not be found</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>wave reference to free numeric wave, or invalid wave ref in case the parameter could not be found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="688" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="688" bodyend="707"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="781" endline="794">AFH_GetAnalysisParameter</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="758" endline="762">AFH_IsValidAnalysisParameter</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a025fc9d179fcb8fb8b34a5e155702cbe" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="412" endline="456">AD_GetDAScaleFailMsg</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a362b90891b53450e972aa4e438bbd513" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1140" endline="1306">MSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1ae9a99226c5f4702b18bcad159f0399fd" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1112" endline="1130">MSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a19973302dadabf325d9280ca755f319c" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1697" endline="2099">PSQ_DAScale</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1acb69c65d8bfa27945b975b853b45dd64" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="1522" endline="1616">PSQ_DAScale_CheckParam</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1977" endline="2043">WBP_ListBoxProc_AnalysisParams</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave AFH_GetAnalysisParamTextWave</definition>
+        <argsstring>(string name, string params, WaveText defValue=defaultValue, variable percentDecoded=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParamTextWave</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>defValue</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>percentDecoded</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return a textual wave user parameter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>defValue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to an invalid wave ref] return this value if the parameter could not be found </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>percentDecoded</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to true] if the return value should be percent decoded or not.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>wave reference to free text wave, or invalid wave ref in case the parameter could not be found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="720" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="720" bodyend="753"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="781" endline="794">AFH_GetAnalysisParameter</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="758" endline="762">AFH_IsValidAnalysisParameter</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1aa578491b2cd2157c52cb7efa17af77b9" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="1268" endline="1420">SetControlInEvent</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions_8ipf_1a91a20802057919358c1a50a5b739597a" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="196" endline="266">TestAnalysisFunction_V3</referencedby>
+        <referencedby refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a1371fec5f5ca6d470e8fae6a76538819" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="3673" endline="3738">UpgradeWaveTextParam</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1977" endline="2043">WBP_ListBoxProc_AnalysisParams</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_IsValidAnalysisParameter</definition>
+        <argsstring>(string name)</argsstring>
+        <name>AFH_IsValidAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given name is a valid user parameter name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="758" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="758" bodyend="762"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1ace5a028c689ab80d1f533ccecc886b59" compoundref="_m_i_e_s___utilities_8ipf" startline="3507" endline="3509">IsValidObjectName</references>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="720" endline="753">AFH_GetAnalysisParamTextWave</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga97364b5855c3e95be4bd98a383ab7f72" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="804" endline="809">AFH_RemoveAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a95439f3f24dea29f20f669321c8e9141" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1908" endline="1959">WBP_ButtonProc_AddParam</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1gabf106e2fc04288afbd02155c75706e22" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_IsValidAnalysisParamType</definition>
+        <argsstring>(string type)</argsstring>
+        <name>AFH_IsValidAnalysisParamType</name>
+        <param>
+          <type>string</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given type is a valid user parameter type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="767" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="767" bodyend="771"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693" compoundref="_m_i_e_s___constants_8ipf" startline="579">ANALYSIS_FUNCTION_PARAMS_TYPES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="568" endline="608">AFH_GetAnalysisParamType</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_GetAnalysisParameter</definition>
+        <argsstring>(string name, string params, string expectedType=defaultValue)</argsstring>
+        <name>AFH_GetAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>expectedType</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Return an user parameter&apos;s value as string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expectedType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, defaults to nothing] Expected type, one of <ref refid="_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693" kindref="member">ANALYSIS_FUNCTION_PARAMS_TYPES</ref>, aborts if the type does not match. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="781" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="781" bodyend="794"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="568" endline="608">AFH_GetAnalysisParamType</references>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="720" endline="753">AFH_GetAnalysisParamTextWave</referencedby>
+        <referencedby refid="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="688" endline="707">AFH_GetAnalysisParamWave</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___patch_seq_8ipf_1a4fd75c0b0deb89cdeed24d55140c3717" compoundref="_m_i_e_s___analysis_functions___patch_seq_8ipf" startline="4135" endline="4146">PSQ_CR_FindDependentAnalysisParameter</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1746" endline="1803">WBP_UpdateParameterWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___analysis_function_parameter_helpers_1ga97364b5855c3e95be4bd98a383ab7f72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_RemoveAnalysisParameter</definition>
+        <argsstring>(string name, string params)</argsstring>
+        <name>AFH_RemoveAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Delete the given user parameter name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>parameter name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>serialized parameters, usually just <ref refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" kindref="member">AnalysisFunction_V3.params</ref></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>serialized parameters with <computeroutput>name</computeroutput> removed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="804" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="804" bodyend="809"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="758" endline="762">AFH_IsValidAnalysisParameter</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___wave_builder_panel_8ipf_1a40420374c3a6dffd6fac657cffb3a497" compoundref="_m_i_e_s___wave_builder_panel_8ipf" startline="1698" endline="1708">WBP_DeleteAnalysisParameter</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a1ad0d595e906e5632de596ef05f2ede9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AFH_CheckAnalysisParameter</definition>
+        <argsstring>(string genericFunc, CheckParametersStruct *s)</argsstring>
+        <name>AFH_CheckAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>genericFunc</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Check the analysis parameters according to the optionally present check function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>genericFunc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of an analysis V3 function </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>struct <ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> with additional info</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>multiline error messages, an empty string on success </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="817" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="817" bodyend="891"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="534" endline="556">AFH_GetListOfAnalysisParamNames</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1af817353585cc6f1a862d661e4200ee9e" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="475" endline="503">AFH_GetListOfAnalysisParams</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae96078d18c5710629bd2d4b7920e4c9a" compoundref="_m_i_e_s___utilities_8ipf" startline="43" endline="48">IsNull</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a0cee3fc07a0f5ad67971476fa771e7cd" compoundref="_m_i_e_s___constants_8ipf" startline="1254">OPTIONAL_PARAMS</references>
+        <references refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" compoundref="_m_i_e_s___structures_8ipf" startline="584">CheckParametersStruct::params</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad2f98a947d2ef0fd5af554a63bfa1ad1" compoundref="_m_i_e_s___constants_8ipf" startline="1253">REQUIRED_PARAMS</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a3b49f0cfcae4809a1e89c096ab3e5f0d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2877" endline="3021">DAP_CheckAnalysisFunctionAndParameter</referencedby>
+        <referencedby refid="_m_i_e_s___wave_builder_8ipf_1a3dc331ccd70ddb58407379b28b5de782" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2444" endline="2499">WB_SaveStimSet</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a4bca60887ac721a99a960cb00abd1dec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_AddAnalysisParameter</definition>
+        <argsstring>(string setName, string name, variable var=defaultValue, string str=defaultValue, wave wv=defaultValue)</argsstring>
+        <name>AFH_AddAnalysisParameter</name>
+        <param>
+          <type>string</type>
+          <declname>setName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>var</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>str</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>wv</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add an analysis function parameter to the given stimset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function adds the parameter to the <computeroutput>WPT</computeroutput> wave and checks that it is valid.</para>
+<para>Exactly one of <computeroutput>var</computeroutput>/<computeroutput>str</computeroutput>/<computeroutput>wv</computeroutput> must be given.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>setName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stimset name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] numeric parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] string parameter </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] wave parameter can be numeric or text </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="904" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="904" bodyend="918"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a30e266efff04630ca3e1e784c1ee9b82" compoundref="_m_i_e_s___wave_builder_8ipf" startline="2378" endline="2423">WB_AddAnalysisParameterIntoWPT</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1a0219ef623934f1f341134dbaec836735" compoundref="_m_i_e_s___wave_builder_8ipf" startline="152" endline="172">WB_GetWaveTextParamForSet</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_helpers_8ipf_1a5b22a6d115805ba2f7b31c4243d27a32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFH_GetHeadstageFromActiveADC</definition>
+        <argsstring>(WaveOrNull statusADC, variable activeADCount)</argsstring>
+        <name>AFH_GetHeadstageFromActiveADC</name>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>statusADC</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>activeADCount</declname>
+        </param>
+        <briefdescription>
+<para>Return the headstage from the given active AD count. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>statusADC</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>channel status as returned by <ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>activeADCount</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>running number of active ADC&apos;s, starting at zero</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>headstage in the range [0, NUM_HEADSTAGES], or NaN if nothing could be found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" line="926" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf" bodystart="926" bodyend="945"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aea93bf89e525dc49202692d5d48b3fc7" compoundref="_m_i_e_s___constants_8ipf" startline="19">NUM_AD_CHANNELS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a72133d674e9897f8fbc9ce25c4f1a216" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="615" endline="746">LBV_AddTraceToLBGraphTPStorage</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AFH</bold> Helper functions for analysis function writers </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Additionally the following functions might be useful</para>
+<para><table rows="9" cols="2"><row>
+<entry thead="yes"><para>Function   </para>
+</entry><entry thead="yes"><para>Return value    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="_m_i_e_s___mies_utilities_8ipf_1acb428863d97fbb3b084560c96f3740b5" kindref="member">GetADCListFromConfig()</ref>   </para>
+</entry><entry thead="no"><para>Free wave with all active AD channels as entries    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="_m_i_e_s___mies_utilities_8ipf_1a8b4bbe3be50df78fbadd36893fba67d6" kindref="member">GetDACListFromConfig()</ref>   </para>
+</entry><entry thead="no"><para>Free wave with all active DA channels as entries    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" kindref="member">GetLBNumericalValues()</ref>   </para>
+</entry><entry thead="no"><para>Wave reference to the labnotebook (numerical version)    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" kindref="member">GetLBTextualValues()</ref>   </para>
+</entry><entry thead="no"><para>Wave reference to the labnotebook (textual version)    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" kindref="member">GetLastSetting()</ref>   </para>
+</entry><entry thead="no"><para>Last documented value for headstages of a specific setting in the labnotebook for a given sweep number.    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="group___labnotebook_query_functions_1ga9d3d5d1aaeb2e20f055f5b41c236b662" kindref="member">GetLastSweepWithSetting()</ref>   </para>
+</entry><entry thead="no"><para>Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="group___labnotebook_query_functions_1gafbf540fa1c319197615bd6c73ad2a34c" kindref="member">GetLastSweepWithSettingText()</ref>   </para>
+</entry><entry thead="no"><para>Last documented textual value for headstages of a specific setting in the labnotebook and the sweep number it was set last.    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ref refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" kindref="member">ED_AddEntryToLabnotebook()</ref>   </para>
+</entry><entry thead="no"><para>Add a user entry to the numerical/textual labnotebook   </para>
+</entry></row>
+</table>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionHelpers.ipf"/>
+  </compounddef>
+</doxygen>

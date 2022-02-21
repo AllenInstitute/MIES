@@ -1,0 +1,1161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a815ae6ac47bbce6c0fd916673292faa3" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string SC_PULSE_PREFIX_RE</definition>
+        <argsstring></argsstring>
+        <name>SC_PULSE_PREFIX_RE</name>
+        <initializer>= &quot;^[^:]+:&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pulse information in the labnotebook is stored as <computeroutput>PX_RY:...</computeroutput>. This regular expression can be used to match the prefix in order to remove it with RemovePrefix. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="500" endline="550">SC_SpikePositionQC</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; variable, variable &gt;</type>
+        <definition>static std::tuple&lt; variable, variable &gt; SC_GetTrials</definition>
+        <argsstring>(string device, variable sweepNo, variable headstage)</argsstring>
+        <name>SC_GetTrials</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Store the newly calculated rerun trials in the labnotebook and return the minimum and maximum of it. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="17" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="17" bodyend="62"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gafa905829f2a8ca5827a115b0bc10e260" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1612" endline="1643">GetLastSettingEachSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5eeb2b518a9b75ab37c88cea31f10612" compoundref="_m_i_e_s___constants_8ipf" startline="1183">MSQ_FMT_LBN_RERUN_TRIAL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0a8e6851be4b382e98aade298cc69b0d" compoundref="_m_i_e_s___utilities_8ipf" startline="5624" endline="5643">WaveMinAndMaxWrapper</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_GetHeadstageQCForSetCount</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>SC_GetHeadstageQCForSetCount</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return a 2D wave with the headstage QC result as a function of the set sweep count. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function <emphasis>does</emphasis> return the result for all active headstages. The <computeroutput>headstage</computeroutput> argument is needed for fetching all sweeps from the current SCI.</para>
+<para>Value:<itemizedlist>
+<listitem><para>Cumulated headstage QC result</para>
+</listitem></itemizedlist>
+</para>
+<para>Rows:<itemizedlist>
+<listitem><para>Headstage</para>
+</listitem></itemizedlist>
+</para>
+<para>Cols:<itemizedlist>
+<listitem><para>Stimulus set sweep count </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="77" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="77" bodyend="124"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a5e55fc3b2299398122fc3cfbe0eba81c" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="302" endline="333">AFH_GetSweepsFromSameSCI</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5d3e61769581649df5350644ba39707d" compoundref="_m_i_e_s___constants_8ipf" startline="1174">MSQ_FMT_LBN_HEADSTAGE_PASS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a1d43c89e235162a4318171792171b9a2" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="127" endline="138">SC_GetSetSweepCount</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab3b00095c1a90d018810b292c7982da4" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="143" endline="150">SC_GetSetPassed</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8c84d1a55125b3006b43eccb7c18b26c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="155" endline="167">SC_GetSweepPassed</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a1d43c89e235162a4318171792171b9a2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_GetSetSweepCount</definition>
+        <argsstring>(wave numericalValues, variable sweepNo)</argsstring>
+        <name>SC_GetSetSweepCount</name>
+        <param>
+          <type>wave</type>
+          <declname>numericalValues</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the stimulus set sweep count for the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="127" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="127" bodyend="138"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a55022802c4ff371d9ba636f540e5a8b2" compoundref="_m_i_e_s___utilities_8ipf" startline="5830" endline="5865">IsConstant</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</referencedby>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8c84d1a55125b3006b43eccb7c18b26c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="155" endline="167">SC_GetSweepPassed</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab3b00095c1a90d018810b292c7982da4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_GetSetPassed</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>SC_GetSetPassed</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return pass/fail state of the set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is true iff we have for very stimulus set sweep count a passing headstage </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="143" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="143" bodyend="150"/>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8c84d1a55125b3006b43eccb7c18b26c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_GetSweepPassed</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>SC_GetSweepPassed</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return pass/fail state of the sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is true iff we have for the current stimulus set sweep count a passing headstage </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="155" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="155" bodyend="167"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a084a7d8639b438ddc074b505a258faff" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="77" endline="124">SC_GetHeadstageQCForSetCount</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a1d43c89e235162a4318171792171b9a2" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="127" endline="138">SC_GetSetSweepCount</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_LastSweepInSet</definition>
+        <argsstring>(string device, variable sweepNo, variable headstage)</argsstring>
+        <name>SC_LastSweepInSet</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <briefdescription>
+<para>Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="170" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="170" bodyend="181"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a43ffe4155206c9e2ef25f1482c6ccabe" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="48" endline="55">AFH_GetHeadstageFromDAC</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___indexing_8ipf_1adca12144aebb4924e26eca38d6aa22e8" compoundref="_m_i_e_s___indexing_8ipf" startline="388" endline="405">IDX_NumberOfSweepsInSet</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa7e1deed4447980b4a35e0c0eb795665" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_FilterPulses</definition>
+        <argsstring>(WaveRefWave propertiesWaves, WaveOrNull indizesAll, WaveOrNull indizesSweep)</argsstring>
+        <name>SC_FilterPulses</name>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>propertiesWaves</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>indizesAll</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>indizesSweep</declname>
+        </param>
+        <briefdescription>
+<para>Given a list of pulses by their indizes, this function return only the diagonal ones which are matching the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="185" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="185" bodyend="216"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acfc5d4925cd0994cb07a49555de94964" compoundref="_m_i_e_s___utilities_8ipf" startline="3867" endline="3936">GetSetIntersection</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd80c5c1edbe0f564ee0aa9195a52a6f" compoundref="_m_i_e_s___constants_8ipf" startline="828">NOTE_KEY_PULSE_IS_DIAGONAL</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa4fe23ab29374eef4e8298b3ed9d0126" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="256" endline="272">SC_GetPulseIndizes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6c572cdefedd9177038ec8cd6f798077" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_AddPulseRegionLBNEntries</definition>
+        <argsstring>(WaveText inputLBN, variable pulseIndex, variable region, variable headstage, WaveOrNull data=defaultValue)</argsstring>
+        <name>SC_AddPulseRegionLBNEntries</name>
+        <param>
+          <type>WaveText</type>
+          <declname>inputLBN</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>pulseIndex</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>region</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headstage</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>data</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Add a new <computeroutput>PX_PY:..</computeroutput> entry in to the wave <computeroutput>inputLBN</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The value part after the <computeroutput>:</computeroutput> is only present if <computeroutput>data</computeroutput> is passed in </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="221" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="221" bodyend="239"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a1fb4d79c126207e9ec0536df2682a25c" compoundref="_i_p_n_w_b___utils_8ipf" startline="207" endline="211">IsNumericWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aa3af8db33a71413dd5cf4545eba30348" compoundref="_i_p_n_w_b___utils_8ipf" startline="200" endline="204">IsTextWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6883094f16e1866ac14c44068f8c0ba8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WAVE, WaveRefWave &gt;</type>
+        <definition>static std::tuple&lt; WAVE, WaveRefWave &gt; SC_GetPulseAveragePropertiesWaves</definition>
+        <argsstring>(string device)</argsstring>
+        <name>SC_GetPulseAveragePropertiesWaves</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Return the PA plot waves from the databrowser connected to the given device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="242" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="242" bodyend="253"/>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1aba2a61b74ca823d4d542ca932debcba2" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="336" endline="358">BSP_GetFolder</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" compoundref="_m_i_e_s___data_browser_8ipf" startline="685" endline="708">DB_FindDataBrowser</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a37ad93ec0574fec26d4a45eb987105bb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5650" endline="5654">GetDevicePulseAverageHelperFolder</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a2bd37c8d6727735897766d852fa77f7e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5796" endline="5826">GetPulseAverageProperties</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a9842d989f6353ca81ce7d93958248396" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5832" endline="5851">GetPulseAveragePropertiesWaves</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a1c9ab9c6134edda9d80686365bd5f447" compoundref="_m_i_e_s___constants_8ipf" startline="392">MIES_BSP_PANEL_FOLDER</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa4fe23ab29374eef4e8298b3ed9d0126" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_GetPulseIndizes</definition>
+        <argsstring>(wave properties, WaveRefWave propertiesWaves, variable sweepNo)</argsstring>
+        <name>SC_GetPulseIndizes</name>
+        <param>
+          <type>wave</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>WaveRefWave</type>
+          <declname>propertiesWaves</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the diagonal pulses for the given sweep. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="256" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="256" bodyend="272"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa7e1deed4447980b4a35e0c0eb795665" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="185" endline="216">SC_FilterPulses</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a836b54540c09f52d8212171052b9ce52" compoundref="_m_i_e_s___utilities_8ipf" startline="5740" endline="5746">SelectWave</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::tuple&lt; WaveText, WaveText &gt;</type>
+        <definition>static std::tuple&lt; WaveText, WaveText &gt; SC_GetSpikeNumbersAndPositions</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>SC_GetSpikeNumbersAndPositions</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return the spike numbers and positions in waves prepared for labnotebook writing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="275" column="19" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="275" bodyend="336"/>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a451c052a26e5bf5ffe0d0afedd9c4de9" compoundref="_m_i_e_s___constants_8ipf" startline="830">NOTE_KEY_PULSE_END</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5166d0d7474a24ecf8f4cb7088bb6b87" compoundref="_m_i_e_s___constants_8ipf" startline="837">NOTE_KEY_PULSE_SPIKE_POSITIONS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af802011bfff29339c90144def6762b46" compoundref="_m_i_e_s___constants_8ipf" startline="829">NOTE_KEY_PULSE_START</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac1e8e0f0c6c685f9af2276884fcef2fc" compoundref="_m_i_e_s___constants_8ipf" startline="1486">PA_PROPERTIESWAVES_INDEX_PULSENOTE</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6c572cdefedd9177038ec8cd6f798077" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="221" endline="239">SC_AddPulseRegionLBNEntries</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6883094f16e1866ac14c44068f8c0ba8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="242" endline="253">SC_GetPulseAveragePropertiesWaves</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa4fe23ab29374eef4e8298b3ed9d0126" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="256" endline="272">SC_GetPulseIndizes</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="339" endline="358">SC_ProcessPulses</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_ProcessPulses</definition>
+        <argsstring>(string device, variable sweepNo, variable minimumSpikePosition, variable idealNumberOfSpikes)</argsstring>
+        <name>SC_ProcessPulses</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>minimumSpikePosition</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idealNumberOfSpikes</declname>
+        </param>
+        <briefdescription>
+<para>Fetch the pulses from the PA plot and write the results into the labnotebooks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="339" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="339" bodyend="358"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aeff517342d701734f3927894088d0087" compoundref="_m_i_e_s___utilities_8ipf" startline="4363" endline="4383">HasOneValidEntry</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac881d343d9a3e2e5755145d3fe8e47e3" compoundref="_m_i_e_s___constants_8ipf" startline="1166">MSQ_FMT_LBN_SPIKE_COUNTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8605ca53ddca17f68d297a607ee8d84c" compoundref="_m_i_e_s___constants_8ipf" startline="1165">MSQ_FMT_LBN_SPIKE_POSITIONS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8ad468868a17b118fe24f26ce6ae2152" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="275" endline="336">SC_GetSpikeNumbersAndPositions</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a0252def140e52f4bd25a24ce1e0df747" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>static string SC_SpikeCountStateToString</definition>
+        <argsstring>(variable countState)</argsstring>
+        <name>SC_SpikeCountStateToString</name>
+        <param>
+          <type>variable</type>
+          <declname>countState</declname>
+        </param>
+        <briefdescription>
+<para>Convert a numeric spike counts state to its string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns &quot;&quot; for unknown state variables </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="363" column="15" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="363" bodyend="381"/>
+        <references refid="_m_i_e_s___constants_8ipf_1a8baf5f098906e705d2bc92304b29516a" compoundref="_m_i_e_s___constants_8ipf" startline="1147">SC_SPIKE_COUNT_NUM_GOOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e51d4057b9273e29381453cf80b450" compoundref="_m_i_e_s___constants_8ipf" startline="1150">SC_SPIKE_COUNT_NUM_MIXED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae46e4a8a79e1f3900dc9075d7e48cc36" compoundref="_m_i_e_s___constants_8ipf" startline="1148">SC_SPIKE_COUNT_NUM_TOO_FEW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a34f610fc643a3464d1211b735eeb8d05" compoundref="_m_i_e_s___constants_8ipf" startline="1149">SC_SPIKE_COUNT_NUM_TOO_MANY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbc5d2e3fda78f832097672ca15bbfc9" compoundref="_m_i_e_s___constants_8ipf" startline="1152">SC_SPIKE_COUNT_STATE_STR_GOOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9dd28ed23ac07b170d87c23ab630f9e0" compoundref="_m_i_e_s___constants_8ipf" startline="1155">SC_SPIKE_COUNT_STATE_STR_MIXED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad68c11de7db52d5fcde5f37d2b14920a" compoundref="_m_i_e_s___constants_8ipf" startline="1153">SC_SPIKE_COUNT_STATE_STR_TOO_FEW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9bc5918544d0261c13ac458920321a03" compoundref="_m_i_e_s___constants_8ipf" startline="1154">SC_SPIKE_COUNT_STATE_STR_TOO_MANY</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a29c9180102946b0c5aa320b485d2fe86" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_SpikeCountsCalcDetail</definition>
+        <argsstring>(variable minimum, variable maximum, variable idealNumberOfSpikes)</argsstring>
+        <name>SC_SpikeCountsCalcDetail</name>
+        <param>
+          <type>variable</type>
+          <declname>minimum</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>maximum</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idealNumberOfSpikes</declname>
+        </param>
+        <briefdescription>
+<para>Determine the spike counts state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>Minimum[HS] == Maximum[HS] == idealNumberOfSpikes -&gt; Pass</para>
+</listitem><listitem><para>idealNumberOfSpikes &gt;= Maximum[HS] -&gt; Too few</para>
+</listitem><listitem><para>idealNumberOfSpikes &lt;= Mininum[HS] -&gt; Too many</para>
+</listitem><listitem><para>If nothing else matched -&gt; Mixed</para>
+</listitem></itemizedlist>
+</para>
+<para>We assume:<itemizedlist>
+<listitem><para>minimum &lt; maximum</para>
+</listitem><listitem><para>idealNumberOfSpikes &gt;= 1</para>
+</listitem><listitem><para>All numbers are integers </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="394" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="394" bodyend="409"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a907650c83bf62d17af01f8c90674692c" compoundref="_i_p_n_w_b___utils_8ipf" startline="31" endline="35">IsNaN</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8baf5f098906e705d2bc92304b29516a" compoundref="_m_i_e_s___constants_8ipf" startline="1147">SC_SPIKE_COUNT_NUM_GOOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad8e51d4057b9273e29381453cf80b450" compoundref="_m_i_e_s___constants_8ipf" startline="1150">SC_SPIKE_COUNT_NUM_MIXED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae46e4a8a79e1f3900dc9075d7e48cc36" compoundref="_m_i_e_s___constants_8ipf" startline="1148">SC_SPIKE_COUNT_NUM_TOO_FEW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a34f610fc643a3464d1211b735eeb8d05" compoundref="_m_i_e_s___constants_8ipf" startline="1149">SC_SPIKE_COUNT_NUM_TOO_MANY</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1afa72c2d751afa1d476db7d07b430b8e5" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="412" endline="431">SC_SpikeCountsCalc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1afa72c2d751afa1d476db7d07b430b8e5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_SpikeCountsCalc</definition>
+        <argsstring>(string device, wave minimum, wave maximum, variable idealNumberOfSpikes)</argsstring>
+        <name>SC_SpikeCountsCalc</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>minimum</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>maximum</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idealNumberOfSpikes</declname>
+        </param>
+        <briefdescription>
+<para>Determine the spike counts state for all headstages. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="412" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="412" bodyend="431"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a29c9180102946b0c5aa320b485d2fe86" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="394" endline="409">SC_SpikeCountsCalcDetail</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_SpikeCountsQC</definition>
+        <argsstring>(string device, WaveText spikeNumbersLBN, variable idealNumberOfSpikes)</argsstring>
+        <name>SC_SpikeCountsQC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>spikeNumbersLBN</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idealNumberOfSpikes</declname>
+        </param>
+        <briefdescription>
+<para>Check that the we have found the expected number of spikes per pulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Spike counts state according to <ref refid="_m_i_e_s___constants_8ipf_1SpikeCountsStateConstants" kindref="member">SpikeCountsStateConstants</ref> stringified </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="436" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="436" bodyend="477"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___debug_panel_8ipf_1a9bcb056e7856192f9c0593ab2e0f751b" compoundref="_m_i_e_s___debug_panel_8ipf" startline="37" endline="52">DP_DebuggingEnabledForCaller</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1ad686192dcb0a7481dab14d30ef46dc96" compoundref="_i_p_n_w_b___utils_8ipf" startline="215" endline="237">RemovePrefixFromListItem</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a815ae6ac47bbce6c0fd916673292faa3" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="14">SC_PULSE_PREFIX_RE</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1afa72c2d751afa1d476db7d07b430b8e5" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="412" endline="431">SC_SpikeCountsCalc</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a0252def140e52f4bd25a24ce1e0df747" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="363" endline="381">SC_SpikeCountStateToString</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac5c38809cec9801ab74f27a90f20d8eb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_SpikePositionsCalcDetail</definition>
+        <argsstring>(wave spikePositions, variable minimumSpikePosition)</argsstring>
+        <name>SC_SpikePositionsCalcDetail</name>
+        <param>
+          <type>wave</type>
+          <declname>spikePositions</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>minimumSpikePosition</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the QC state of a list of spike positions from one pulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All are in <computeroutput>Pulse active coordinate system</computeroutput></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spikePositions</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>spike position </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>minimumSpikePosition</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>minimum allowed spike position </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="485" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="485" bodyend="491"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="500" endline="550">SC_SpikePositionQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_SpikePositionQC</definition>
+        <argsstring>(string device, WaveTextOrNull spikePositionsLBN, variable minimumSpikePosition)</argsstring>
+        <name>SC_SpikePositionQC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>spikePositionsLBN</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>minimumSpikePosition</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the QC state of the spike positions of each pulse. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All values are in PA crd, see <ref refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" kindref="member">SC_SpikeControl()</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spikePositionsLBN</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>spike position of each pulse, ordered per headstage, for the current sweep </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>minimumSpikePosition</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>minimum allowed spike position </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="500" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="500" bodyend="550"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a55022802c4ff371d9ba636f540e5a8b2" compoundref="_m_i_e_s___utilities_8ipf" startline="5830" endline="5865">IsConstant</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1af736a259593597875ea229dfda364b68" compoundref="_m_i_e_s___utilities_8ipf" startline="3278" endline="3289">ListToNumericWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a917432b29be2c52c30113efdaf85694e" compoundref="_m_i_e_s___utilities_8ipf" startline="1609" endline="1649">RemovePrefix</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a815ae6ac47bbce6c0fd916673292faa3" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="14">SC_PULSE_PREFIX_RE</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac5c38809cec9801ab74f27a90f20d8eb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="485" endline="491">SC_SpikePositionsCalcDetail</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a683093a94f7e41603e27bf2496047d9b" compoundref="_i_p_n_w_b___utils_8ipf" startline="430" endline="446">TextWaveToList</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1adcc045cad1e4a89ab2c216bc2c9975ed" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_RegionBlanked</definition>
+        <argsstring>(wave data, variable totalOnsetDelay, WaveText oodDAQRegion)</argsstring>
+        <name>SC_RegionBlanked</name>
+        <param>
+          <type>wave</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>totalOnsetDelay</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>oodDAQRegion</declname>
+        </param>
+        <briefdescription>
+<para>Replace all points inside an oodDAQ region with NaN in the data wave. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="553" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="553" bodyend="569"/>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a620c8e142f6e2bbaec04d681a8ad51e1" compoundref="_m_i_e_s___utilities_8ipf" startline="5926" endline="5946">ZapNaNs</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_SpontaneousSpikingCheckQC</definition>
+        <argsstring>(string device, variable sweepNo)</argsstring>
+        <name>SC_SpontaneousSpikingCheckQC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <briefdescription>
+<para>Return a wave ready for the labnotebook with the spontaneous spike check QC entries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="572" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="572" bodyend="630"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a926c55816dba8fdefc4cb6d147e9b78d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="392" endline="422">AFH_ExtractOneDimDataFromSweep</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adc79297c184f6837c17bab78b4a5237f" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6933" endline="6938">GetOverrideResults</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1aefe60e71c601f92a6ee7d64340a3f2e4" compoundref="_m_i_e_s___utilities_8ipf" startline="1847" endline="1891">GetRowIndex</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a3d9a7dac997770aae6869bfb40ec9bb2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6136" endline="6142">GetTotalOnsetDelay</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02a1f6033e131b47a7b3e22677b3edf9" compoundref="_m_i_e_s___constants_8ipf" startline="1179">MSQ_FMT_LBN_FAILED_PULSE_LEVEL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1adcc045cad1e4a89ab2c216bc2c9975ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="553" endline="569">SC_RegionBlanked</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ac4b605eb566b55d15a674f01bb8a7e10" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7745" endline="7761">TestOverrideActive</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a78882ff4b75b0ca78ebb877f526a3322" compoundref="_m_i_e_s___constants_8ipf" startline="88">XOP_CHANNEL_TYPE_ADC</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ae031ad77659e691b06f9734b59d326bf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>static wave SC_HeadstageQC</definition>
+        <argsstring>(string device, WaveText spikeCountStateLBN, wave spontaneousSpikingCheckLBN)</argsstring>
+        <name>SC_HeadstageQC</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>WaveText</type>
+          <declname>spikeCountStateLBN</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>spontaneousSpikingCheckLBN</declname>
+        </param>
+        <briefdescription>
+<para>Determine the headstage QC result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="633" column="13" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="633" bodyend="647"/>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a5351ed884ea7e7526ab85ac9cb6021e2" compoundref="_m_i_e_s___utilities_8ipf" startline="3231" endline="3268">NumericWaveToList</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbc5d2e3fda78f832097672ca15bbfc9" compoundref="_m_i_e_s___constants_8ipf" startline="1152">SC_SPIKE_COUNT_STATE_STR_GOOD</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="650" endline="672">SC_DetermineQCState</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a60f3528776f2065d06c7513a4ef104fb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_DetermineQCState</definition>
+        <argsstring>(string device, variable sweepNo, wave spikeNumbersLBN, WaveOrNull spikePositionsLBN, variable minimumSpikePosition, variable idealNumberOfSpikes)</argsstring>
+        <name>SC_DetermineQCState</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>spikeNumbersLBN</declname>
+        </param>
+        <param>
+          <type>WaveOrNull</type>
+          <declname>spikePositionsLBN</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>minimumSpikePosition</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>idealNumberOfSpikes</declname>
+        </param>
+        <briefdescription>
+<para>Determine and write the QC states to the labnotebook. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="650" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="650" bodyend="672"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5d3e61769581649df5350644ba39707d" compoundref="_m_i_e_s___constants_8ipf" startline="1174">MSQ_FMT_LBN_HEADSTAGE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a13b68155044f08eba79a7f270ed50ec7" compoundref="_m_i_e_s___constants_8ipf" startline="1181">MSQ_FMT_LBN_SPIKE_COUNTS_STATE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcdf4689a40cc418aae690a3b78d3b4f" compoundref="_m_i_e_s___constants_8ipf" startline="1180">MSQ_FMT_LBN_SPIKE_POSITION_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac95ea1b998d108dc91ef0ae3ffe89912" compoundref="_m_i_e_s___constants_8ipf" startline="1173">MSQ_FMT_LBN_SPONT_SPIKE_PASS</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ae031ad77659e691b06f9734b59d326bf" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="633" endline="647">SC_HeadstageQC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4cfe949cf4092d078f6c8b9be48f4f80" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="436" endline="477">SC_SpikeCountsQC</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1acde6d4643169ee97dd819480855f87ed" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="500" endline="550">SC_SpikePositionQC</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab112d332353b38324aee03533c380a2f" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="572" endline="630">SC_SpontaneousSpikingCheckQC</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="339" endline="358">SC_ProcessPulses</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6325beac1cbb2aad0ac53dbc9e5923ec" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_CanStillSkip</definition>
+        <argsstring>(variable maxTrials, string params)</argsstring>
+        <name>SC_CanStillSkip</name>
+        <param>
+          <type>variable</type>
+          <declname>maxTrials</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Check if we can still skip sweeps without running more than <computeroutput>maxTrials</computeroutput> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="675" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="675" bodyend="683"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac0d85137db9fe732dd7b4fa1e66f266d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_SkipsExhausted</definition>
+        <argsstring>(variable minTrials, string params)</argsstring>
+        <name>SC_SkipsExhausted</name>
+        <param>
+          <type>variable</type>
+          <declname>minTrials</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Check if we have exhausted the available trials on all headstages. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="686" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="686" bodyend="691"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a2768b775c34c6e7149bef6a2f25f952d" compoundref="_i_p_n_w_b___debugging_8ipf" startline="115" endline="126">DEBUGPRINTv</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable SC_ReactToQCFailures</definition>
+        <argsstring>(string device, variable sweepNo, string params)</argsstring>
+        <name>SC_ReactToQCFailures</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>sweepNo</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Perform various actions on QC failures. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="694" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="694" bodyend="787"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a96ad657bd5d3c18e158bfa93f7ffa274" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6519" endline="6666">FindIndizes</references>
+        <references refid="group___labnotebook_query_functions_1ga3dd0ae60e2c8a9ed617e24a650c9e346" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="971" endline="1042">GetLastSetting</references>
+        <references refid="group___labnotebook_query_functions_1ga92dce4f1be728e252cfce6ed5f41cfba" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="1436" endline="1469">GetLastSettingTextEachRAC</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afcc884182f3d638b9d3bcb34b601287d" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1127" endline="1157">GetLBTextualValues</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a6b352cafe35c8af19a48ee99c23714d8" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="520" endline="527">GetSliderPositionIndex</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5d3e61769581649df5350644ba39707d" compoundref="_m_i_e_s___constants_8ipf" startline="1174">MSQ_FMT_LBN_HEADSTAGE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a13b68155044f08eba79a7f270ed50ec7" compoundref="_m_i_e_s___constants_8ipf" startline="1181">MSQ_FMT_LBN_SPIKE_COUNTS_STATE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afcdf4689a40cc418aae690a3b78d3b4f" compoundref="_m_i_e_s___constants_8ipf" startline="1180">MSQ_FMT_LBN_SPIKE_POSITION_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac95ea1b998d108dc91ef0ae3ffe89912" compoundref="_m_i_e_s___constants_8ipf" startline="1173">MSQ_FMT_LBN_SPONT_SPIKE_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afbc5d2e3fda78f832097672ca15bbfc9" compoundref="_m_i_e_s___constants_8ipf" startline="1152">SC_SPIKE_COUNT_STATE_STR_GOOD</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9dd28ed23ac07b170d87c23ab630f9e0" compoundref="_m_i_e_s___constants_8ipf" startline="1155">SC_SPIKE_COUNT_STATE_STR_MIXED</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad68c11de7db52d5fcde5f37d2b14920a" compoundref="_m_i_e_s___constants_8ipf" startline="1153">SC_SPIKE_COUNT_STATE_STR_TOO_FEW</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9bc5918544d0261c13ac458920321a03" compoundref="_m_i_e_s___constants_8ipf" startline="1154">SC_SPIKE_COUNT_STATE_STR_TOO_MANY</references>
+        <references refid="_m_i_e_s___analysis_functions_8ipf_1a6c40d0849cb625af8d16816a492c6756" compoundref="_m_i_e_s___analysis_functions_8ipf" startline="901" endline="926">SetDAScaleModOp</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+        <referencedby refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="964" endline="1164">SC_SpikeControl</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a65d59bc7b7aaac2d4061737eacc88bd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SC_SpikeControl_GetParams</definition>
+        <argsstring>()</argsstring>
+        <name>SC_SpikeControl_GetParams</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="789" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="789" bodyend="794"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a914765023c3469d68f52d94cd9153246" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SC_SpikeControl_GetHelp</definition>
+        <argsstring>(string name)</argsstring>
+        <name>SC_SpikeControl_GetHelp</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="796" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="796" bodyend="840"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4ea6c398b14ac7a5bb3db352f7a293a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string SC_SpikeControl_CheckParam</definition>
+        <argsstring>(string name, CheckParametersStruct *s)</argsstring>
+        <name>SC_SpikeControl_CheckParam</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="842" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="842" bodyend="919"/>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="646" endline="676">AFH_GetAnalysisParamTextual</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a72d9059712b62572474a3ba3c26f6733" compoundref="_i_p_n_w_b___utils_8ipf" startline="67" endline="71">IsInteger</references>
+        <references refid="struct_check_parameters_struct_1aab8c655a0859aa060199688a93c590b2" compoundref="_m_i_e_s___structures_8ipf" startline="584">CheckParametersStruct::params</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1aa60978a8d7d5eb014037f8b650bb7fe8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable SC_SpikeControl</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>SC_SpikeControl</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Analysis function to check sweeps for failed pulses and rerun them if the pulses failed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decision logic flowchart:</para>
+<para><verbatim>embed:rst:leading-asterisk
+ *  .. image:: /dot/multi-patch-seq-spike-control.svg
+ *  </verbatim></para>
+<para>For judging the quality of the spike positions we have introduced a new coordinate system which we call pulse active coordinate system (<computeroutput>PA crd</computeroutput>).</para>
+<para>Consider the following pulse on the DA wave and the response spike in the AD wave</para>
+<para><verbatim>///
+///        +---------+
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+/// -------+         +----------------------
+///
+///                   X
+///                  XXX
+///                 X   XX
+///                X      XX
+///               X         X
+///              X           X
+///             X             X
+///            X               X
+///           X                X
+///          X                  X
+///         X                   X
+/// -------X                    X--------
+///
+/// </verbatim> <verbatim>and the let pulse active start at 5ms and end at 15ms. We define the start as 0 and the end as 100.
+Therefore the spike position will be 110 in `PA crd` which is one point after the end of the pulse.
+
+The graphs were made with http://asciiflow.com. 
+</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" line="964" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf" bodystart="964" bodyend="1164"/>
+        <references refid="_m_i_e_s___analysis_functions___dashboard_8ipf_1a31329d00429cd9a90dade23507f4b005" compoundref="_m_i_e_s___analysis_functions___dashboard_8ipf" startline="13" endline="28">AD_UpdateAllDatabrowser</references>
+        <references refid="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="617" endline="636">AFH_GetAnalysisParamNumerical</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aeff11e1a6e47d5400d82d144422247c2" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="219" endline="232">AFH_GetStimSetName</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1af1d8914d7aba0763461d944bfe54371a" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="34" endline="38">BSP_GetPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1a05d8173849a3e13013c83b6d4a009250" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="50" endline="54">BSP_GetSweepControlsPanel</references>
+        <references refid="_m_i_e_s___browser_settings_panel_8ipf_1ae33f1e860e4495bf2f44390849b03380" compoundref="_m_i_e_s___browser_settings_panel_8ipf" startline="483" endline="489">BSP_HasBoundDevice</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff" compoundref="_m_i_e_s___constants_8ipf" startline="208">CHANNEL_TYPE_TTL</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a451296bd18dd82f5d789c863ca9e584d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7022" endline="7082">CreateAnaFuncLBNKey</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1aeed6ba97f2a846086bd34b4408dbaf7e" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="316" endline="325">DAG_GetActiveHeadstages</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1af6350c134f930a55859aa4cb4672c45d" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="332" endline="348">DAG_HeadstageIsHighestActive</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1a3ff961ce1b582cca1406a08d7ec63f33" compoundref="_m_i_e_s___data_browser_8ipf" startline="685" endline="708">DB_FindDataBrowser</references>
+        <references refid="_m_i_e_s___data_browser_8ipf_1acbc72304ac3c399129ef21c3f5772af9" compoundref="_m_i_e_s___data_browser_8ipf" startline="12" endline="36">DB_OpenDataBrowser</references>
+        <references refid="_m_i_e_s___experiment_documentation_8ipf_1a4c7d1c69a9e26ce2822c811c622e35c7" compoundref="_m_i_e_s___experiment_documentation_8ipf" startline="242" endline="289">ED_AddEntryToLabnotebook</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="group___labnotebook_query_functions_1gac3cd9e047893c735d188326d267bb203" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="787" endline="805">GetLastSettingIndepSCI</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a485a4b90698bd5b238c0189156e2e05a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="1610" endline="1637">GetLBNumericalValues</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3b70b52d2eed69590f436fecd9501842" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="401" endline="408">GetSetVariable</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a7fbd71708aed336a2098df4dee3b4216" compoundref="_i_p_n_w_b___utils_8ipf" startline="935" endline="955">GetUniqueTextEntriesFromList</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af26688b2c78279151f374e62293655d7" compoundref="_i_p_n_w_b___constants_8ipf" startline="87">I_CLAMP_MODE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae08a9aac0f37d8f09640b45f973e2d4f" compoundref="_m_i_e_s___constants_8ipf" startline="603">INDEP_HEADSTAGE</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35f9ff86856f543385688779a022c6d7" compoundref="_m_i_e_s___constants_8ipf" startline="915">LABNOTEBOOK_BINARY_UNIT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1afd6b5dcc825866bbde3c49cef6bb2787" compoundref="_m_i_e_s___constants_8ipf" startline="600">LABNOTEBOOK_LAYER_COUNT</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf_1a533a14ebdefba38dd1b0d3d2066cdf9c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf" startline="1071" endline="1092">MSQ_CommonPreDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02a1f6033e131b47a7b3e22677b3edf9" compoundref="_m_i_e_s___constants_8ipf" startline="1179">MSQ_FMT_LBN_FAILED_PULSE_LEVEL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac7fe8d8c71efaba849008112cd33cd77" compoundref="_m_i_e_s___constants_8ipf" startline="1182">MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5eeb2b518a9b75ab37c88cea31f10612" compoundref="_m_i_e_s___constants_8ipf" startline="1183">MSQ_FMT_LBN_RERUN_TRIAL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a8830e48e6d1a2b28e708d9d3e5cf7bde" compoundref="_m_i_e_s___constants_8ipf" startline="1184">MSQ_FMT_LBN_RERUN_TRIAL_EXC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a629bb1152e2be9c0dd601b3f288461d0" compoundref="_m_i_e_s___constants_8ipf" startline="1176">MSQ_FMT_LBN_SET_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a81fb0d638961b3bb053996f1727605b0" compoundref="_m_i_e_s___constants_8ipf" startline="1175">MSQ_FMT_LBN_SWEEP_PASS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___programmatic_g_u_i_control_8ipf_1aab04a1f66bb38dbc7c2db68b4ef6133c" compoundref="_m_i_e_s___programmatic_g_u_i_control_8ipf" startline="161" endline="386">PGC_SetAndActivateControl</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_m_i_e_s___repeated_acquisition_8ipf_1abd46905589934f6c54ec92880882f0c8" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="453" endline="523">RA_SkipSweeps</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a6325beac1cbb2aad0ac53dbc9e5923ec" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="675" endline="683">SC_CanStillSkip</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ab3b00095c1a90d018810b292c7982da4" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="143" endline="150">SC_GetSetPassed</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a8c84d1a55125b3006b43eccb7c18b26c" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="155" endline="167">SC_GetSweepPassed</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac40eeddec22390ceee85c117a702ad36" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="17" endline="62">SC_GetTrials</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a3e0486bd8cb1778f0bac157e7682eb45" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="170" endline="181">SC_LastSweepInSet</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a4d651e4da77959f0a687af9e7ffdc520" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="339" endline="358">SC_ProcessPulses</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1a21c88684d5bd0854997515200fcac074" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="694" endline="787">SC_ReactToQCFailures</references>
+        <references refid="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf_1ac0d85137db9fe732dd7b4fa1e66f266d" compoundref="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf" startline="686" endline="691">SC_SkipsExhausted</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4b94034d51ff300117f595f8d35bc655" compoundref="_m_i_e_s___constants_8ipf" startline="1072">SC_SPIKE_CONTROL</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a9f91b320a054dba75b455765737c4bb6" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="7114" endline="7122">SetAnalysisFunctionVersion</references>
+        <references refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" compoundref="_m_i_e_s___structures_8ipf" startline="268">AnalysisFunction_V3::sweepNo</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6" compoundref="_m_i_e_s___constants_8ipf" startline="272">UNKNOWN_MODE</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>SC</bold> Spike Control analysis function for multi patch sequence </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf"/>
+  </compounddef>
+</doxygen>

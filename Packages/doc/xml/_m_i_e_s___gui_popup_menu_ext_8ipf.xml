@@ -1,0 +1,560 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___gui_popup_menu_ext_8ipf" kind="file" language="C++">
+    <compoundname>MIES_GuiPopupMenuExt.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab4fd6779bfa52d5574187f5d4c109ff1" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double MAX_SUBMENUS</definition>
+        <argsstring></argsstring>
+        <name>MAX_SUBMENUS</name>
+        <initializer>= 12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="114" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="114" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a942aabfa8f8a0458d71c695c67372f6d" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="577" endline="650">PEXT_SplitToSubMenus</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="534" endline="560">PEXT_VerifyAndSetMenuWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab1088ab110caf2a899a060f130d316f9" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string WAVE_NOTE_PROCNAME</definition>
+        <argsstring></argsstring>
+        <name>WAVE_NOTE_PROCNAME</name>
+        <initializer>= &quot;PROC&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="115" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="115" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3e88693a0571d2c0892862f0e8f30700" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string WAVE_NOTE_WINDOWNAME</definition>
+        <argsstring></argsstring>
+        <name>WAVE_NOTE_WINDOWNAME</name>
+        <initializer>= &quot;WINNAME&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="116" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="116" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a06a3a406e7d828a44cdfc650daa46207" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="445" endline="468">PEXT_Callback</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a2aa44207c4186abb65b70e54a105576a" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string WAVE_NOTE_CTRLNAME</definition>
+        <argsstring></argsstring>
+        <name>WAVE_NOTE_CTRLNAME</name>
+        <initializer>= &quot;CTRLNAME&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="117" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="117" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a06a3a406e7d828a44cdfc650daa46207" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="445" endline="468">PEXT_Callback</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3ba7ba362c6bcdd77ed6f4764c372a91" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string MENUNAME_UNUSED</definition>
+        <argsstring></argsstring>
+        <name>MENUNAME_UNUSED</name>
+        <initializer>= &quot;*** bug, report to dev ***&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="118" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="118" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a0b1a33f3467fa01223eae283d9c551a2" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="399" endline="417">PEXT_SubMenuName</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1aba7adefef13fd7f57cde984334a25f48" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string MENU_DISABLE_SPECIAL</definition>
+        <argsstring></argsstring>
+        <name>MENU_DISABLE_SPECIAL</name>
+        <initializer>= &quot;\\M0&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="119" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="119" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a0b1a33f3467fa01223eae283d9c551a2" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="399" endline="417">PEXT_SubMenuName</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="534" endline="560">PEXT_VerifyAndSetMenuWave</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a74688aafae410df7cd9de58309e5ae9f" prot="public" static="yes" mutable="no">
+        <type>const string</type>
+        <definition>const string LSEP</definition>
+        <argsstring></argsstring>
+        <name>LSEP</name>
+        <initializer>= &quot;;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="120" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="120" bodyend="-1"/>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="534" endline="560">PEXT_VerifyAndSetMenuWave</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a0b1a33f3467fa01223eae283d9c551a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string PEXT_SubMenuName</definition>
+        <argsstring>(variable subMenuNr)</argsstring>
+        <name>PEXT_SubMenuName</name>
+        <param>
+          <type>variable</type>
+          <declname>subMenuNr</declname>
+        </param>
+        <briefdescription>
+<para>Menu definition templates for up to MAX_SUBMENUS sub menus. The constant MAX_SUBMENUS stores the number of these definitions and must be updated if more definitions are added. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns sub menu names for all PEXT sub menus This is called on each menu click/compilation for all dynamic defined Menus where PEXT_SubMenuName is used.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>subMenuNr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of current sub menu </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="399" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="399" bodyend="417"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1aba7adefef13fd7f57cde984334a25f48" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="119">MENU_DISABLE_SPECIAL</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3ba7ba362c6bcdd77ed6f4764c372a91" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="118">MENUNAME_UNUSED</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a5eba42328ef91411e622f39e28f0131c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string PEXT_PopupMenuItems</definition>
+        <argsstring>(variable subMenuNr)</argsstring>
+        <name>PEXT_PopupMenuItems</name>
+        <param>
+          <type>variable</type>
+          <declname>subMenuNr</declname>
+        </param>
+        <briefdescription>
+<para>Returns menu items for all PEXT menus This is called on each menu click/compilation for all dynamic defined Menus where PEXT_PopupMenuItems is used. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Callled very often (MAX_SUBMENUS^2/2).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>subMenuNr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of current sub menu </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="426" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="426" bodyend="437"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a06a3a406e7d828a44cdfc650daa46207" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PEXT_Callback</definition>
+        <argsstring>(string popupStr, string text, variable itemNum)</argsstring>
+        <name>PEXT_Callback</name>
+        <param>
+          <type>string</type>
+          <declname>popupStr</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>itemNum</declname>
+        </param>
+        <briefdescription>
+<para>This callback is executed when the user selected a PEXT dynamic menu item. It is not called if the user aborted the menu by clicking somewhere else. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>popupStr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>popup string </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>text</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>selected menu item text </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>itemNum</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>selected item index in submenu </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="445" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="445" bodyend="468"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a412a5ca7de34c0544e28f45659dc61c0" compoundref="_m_i_e_s___utilities_8ipf" startline="1180" endline="1194">GetStringFromWaveNote</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a2aa44207c4186abb65b70e54a105576a" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="117">WAVE_NOTE_CTRLNAME</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3e88693a0571d2c0892862f0e8f30700" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="116">WAVE_NOTE_WINDOWNAME</references>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a43836207a7b7bdc33b583351eaac5e0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string PEXT_ITEMGETTER_LIST_PROTO</definition>
+        <argsstring>()</argsstring>
+        <name>PEXT_ITEMGETTER_LIST_PROTO</name>
+        <briefdescription>
+<para>Prototype for the menu item getter that allows user defined sub menu attribution of menu items. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="473" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="473" bodyend="474"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a8422324fefcd2b2c3f1e8162c90adfbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave PEXT_ITEMGETTER_WAVE_PROTO</definition>
+        <argsstring>(string device)</argsstring>
+        <name>PEXT_ITEMGETTER_WAVE_PROTO</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Prototype for the menu item getter that is compatible with the former popupmenu value=procedure definition. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="479" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="479" bodyend="481"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1aaa2522e0db1d38f897c07596f1b1e730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PEXT_POPUPACTION_PROTO</definition>
+        <argsstring>(WMPopupAction *pa)</argsstring>
+        <name>PEXT_POPUPACTION_PROTO</name>
+        <param>
+          <type>WMPopupAction *</type>
+          <declname>pa</declname>
+        </param>
+        <briefdescription>
+<para>Prototype for the former popupaction procedure, that is only called virtually now through the PopupContextualMenu callback. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pa</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>WMPopupAction structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="487" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="487" bodyend="489"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PEXT_ButtonProc</definition>
+        <argsstring>(WMButtonAction *ba)</argsstring>
+        <name>PEXT_ButtonProc</name>
+        <param>
+          <type>WMButtonAction *</type>
+          <declname>ba</declname>
+        </param>
+        <briefdescription>
+<para>Generic procedure for button actions from popup extension controls Fills the global popupExtMenuInfo wave with current menu setup information retrieved from the function defined in the buttons userdata through PEXT_UDATA_ITEMGETTER key. This getter function can either return a string or 1D text wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ba</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>WMButtonAction structure </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="497" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="497" bodyend="531"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ae96078d18c5710629bd2d4b7920e4c9a" compoundref="_m_i_e_s___utilities_8ipf" startline="43" endline="48">IsNull</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a06a3a406e7d828a44cdfc650daa46207" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="445" endline="468">PEXT_Callback</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a07bf80a6f54273060e2d918f8ee2068e" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="656" endline="717">PEXT_GenerateSubMenuNames</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a942aabfa8f8a0458d71c695c67372f6d" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="577" endline="650">PEXT_SplitToSubMenus</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a31b9d4845eb2d5c7821f007b4c772bb6" compoundref="_m_i_e_s___constants_8ipf" startline="1384">PEXT_UDATA_ITEMGETTER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a70f1776abd68e2f5e55f978dc51809c5" compoundref="_m_i_e_s___constants_8ipf" startline="1385">PEXT_UDATA_POPUPPROC</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="534" endline="560">PEXT_VerifyAndSetMenuWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a9a6705afcbe3be0d2b43cde352cbaf88" compoundref="_m_i_e_s___utilities_8ipf" startline="1223" endline="1231">SetStringInWaveNote</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a2aa44207c4186abb65b70e54a105576a" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="117">WAVE_NOTE_CTRLNAME</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab1088ab110caf2a899a060f130d316f9" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="115">WAVE_NOTE_PROCNAME</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a3e88693a0571d2c0892862f0e8f30700" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="116">WAVE_NOTE_WINDOWNAME</references>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable PEXT_VerifyAndSetMenuWave</definition>
+        <argsstring>(WaveTextOrNull menuWave)</argsstring>
+        <name>PEXT_VerifyAndSetMenuWave</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>menuWave</declname>
+        </param>
+        <briefdescription>
+<para>Verifies menu data input wave and transfers it to global. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="534" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="534" bodyend="560"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a74688aafae410df7cd9de58309e5ae9f" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="120">LSEP</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab4fd6779bfa52d5574187f5d4c109ff1" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="114">MAX_SUBMENUS</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1aba7adefef13fd7f57cde984334a25f48" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="119">MENU_DISABLE_SPECIAL</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a4c4a86d5c8e2ddd816156fd0bef577a8" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="563" endline="569">PEXT_SetDisabledMenu</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a4c4a86d5c8e2ddd816156fd0bef577a8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable PEXT_SetDisabledMenu</definition>
+        <argsstring>()</argsstring>
+        <name>PEXT_SetDisabledMenu</name>
+        <briefdescription>
+<para>Sets the menu to show a non selectable &quot;_none_&quot; entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="563" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="563" bodyend="569"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a3e5b5aba6a096e34a5f248022493c7d1" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6797" endline="6814">GetPopupExtMenuWave</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ace43325de9f33a9066b5cbe71a76ecc7" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="534" endline="560">PEXT_VerifyAndSetMenuWave</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a942aabfa8f8a0458d71c695c67372f6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>wave</type>
+        <definition>wave PEXT_SplitToSubMenus</definition>
+        <argsstring>(WaveTextOrNull menuList=defaultValue, variable method=defaultValue)</argsstring>
+        <name>PEXT_SplitToSubMenus</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>menuList</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>method</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Automatically splits a 1D text wave with menu items to submenus This function does not name submenus. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">menuList</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1d text wave with menu items </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = PEXT_SUBSPLIT_DEFAULT] sets how the menu items are split to sub menus </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>PEXT_SubMenuSplitting </para>
+</simplesect>
+<simplesect kind="return"><para>1d text wave where each element contains a list of menu items. Each element represents a sub menu. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="577" column="6" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="577" bodyend="650"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1ab4fd6779bfa52d5574187f5d4c109ff1" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="114">MAX_SUBMENUS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1abaa250be247beec3a2db80f3b4fc78a5" compoundref="_m_i_e_s___constants_8ipf" startline="1392">PEXT_SUBSPLIT_ALPHA</references>
+        <references refid="_m_i_e_s___constants_8ipf_1aa3257c182662691de78ce0b357c9d4a2" compoundref="_m_i_e_s___constants_8ipf" startline="1391">PEXT_SUBSPLIT_DEFAULT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="38" endline="44">LBV_PopupExtFormatEntries</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___gui_popup_menu_ext_8ipf_1a07bf80a6f54273060e2d918f8ee2068e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable PEXT_GenerateSubMenuNames</definition>
+        <argsstring>(WaveTextOrNull splitMenu=defaultValue, variable method=defaultValue)</argsstring>
+        <name>PEXT_GenerateSubMenuNames</name>
+        <param>
+          <type>WaveTextOrNull</type>
+          <declname>splitMenu</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>method</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Automatically generates submenu names and applies them on the given wave. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">splitMenu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>1d text wave with menu item lists for sub menus as returned by <ref refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a942aabfa8f8a0458d71c695c67372f6d" kindref="member">PEXT_SplitToSubMenus()</ref> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional, default = PEXT_SUBNAMEGEN_DEFAULT] sets how the sub menu names are generated </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>PEXT_SubMenuNameGeneration </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" line="656" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf" bodystart="656" bodyend="717"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1add5b5662ed0b49fcef198e415372bae4" compoundref="_m_i_e_s___utilities_8ipf" startline="56" endline="59">IsEmpty</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a572c52fbe51f220fea4c02bc3482c489" compoundref="_m_i_e_s___constants_8ipf" startline="1398">PEXT_SUBNAMEGEN_DEFAULT</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <referencedby refid="_m_i_e_s___logbook_viewer_8ipf_1a27a1c69f3918a1f8e0b0422aa1a4633d" compoundref="_m_i_e_s___logbook_viewer_8ipf" startline="38" endline="44">LBV_PopupExtFormatEntries</referencedby>
+        <referencedby refid="_m_i_e_s___gui_popup_menu_ext_8ipf_1a1ace56af0748717b664bac3f6d390d85" compoundref="_m_i_e_s___gui_popup_menu_ext_8ipf" startline="497" endline="531">PEXT_ButtonProc</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Helper functions related to GUI controls. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="_m_i_e_s___gui_popup_menu_ext_8ipf_1PopupMenuExtensionShortDescription"/> These procedures provide a way to replace popup menus with many entries with context menus. Context menus can provide submenus, that allow better organization of menu entries.</para>
+<para>Example:</para>
+<para><verbatim>embed:rst:leading-asterisk
+*  .. code-block:: igorpro
+* 
+*     Function SetupPopupMenuExt()
+*         KillWindow/Z panel0
+*         NewPanel/N=$&quot;panel0&quot;/K=1
+*         Button popupext_menu1, pos={3.00, 20.00}, size={200,20},proc=PEXT_ButtonProc,title=&quot;DropDownMenu1 ▼&quot;, userdata($PEXT_UDATA_POPUPPROC)=&quot;DemoProc&quot;, userdata($PEXT_UDATA_ITEMGETTER)=&quot;GetMenuList1&quot;
+*         Button popupext_menu2, pos={3.00, 55.00}, size={200,20},proc=PEXT_ButtonProc,title=&quot;DropDownMenu2 ▼&quot;, userdata($PEXT_UDATA_POPUPPROC)=&quot;DemoProc&quot;, userdata($PEXT_UDATA_ITEMGETTER)=&quot;GetMenuList2&quot;
+*         Button popupext_menu3, pos={3.00, 90.00}, size={200,20},proc=PEXT_ButtonProc,title=&quot;DropDownMenu3 ▼&quot;, userdata($PEXT_UDATA_POPUPPROC)=&quot;DemoProc&quot;, userdata($PEXT_UDATA_ITEMGETTER)=&quot;GetMenuList3&quot;
+*     End
+* 
+*     Function DemoProc(pa) : PopupMenuControl
+*         STRUCT WMPopupAction &amp;pa
+* 
+*         print &quot;EventCode/Win/Selected/ctrlName: &quot;, pa.eventCode, pa.win, pa.popStr, pa.ctrlName
+*     End
+* 
+*     Function/S GetMenuList1()
+* 
+*         Make/FREE/T/N=300 testItems = num2char(97 + mod(p, 26)) + &quot;_&quot; + num2str(p)
+*         return TextWaveToList(testItems, &quot;;&quot;)
+*     End
+* 
+*     Function/WAVE GetMenuList2(device)
+*         string device
+* 
+*         Make/FREE/T/N=(2) menus
+*         menus[0] = &quot;Kriemhild;Brünhild&quot;
+*         menus[1] = &quot;Siegfried;Gunther&quot;
+*         SetDimLabel ROWS, 0, $&quot;Women&quot;, menus
+*         SetDimLabel ROWS, 1, $&quot;Men&quot;, menus
+* 
+*         return menus
+*     End
+* 
+*     Function/WAVE GetMenuList3(device)
+*         string device
+* 
+*         Make/FREE/T menus = {&quot;Kriemhild&quot;, &quot;Brünhild&quot;, &quot;Siegfried&quot;, &quot;Gunther&quot;}
+*         WAVE/T splitMenu = PEXT_SplitToSubMenus(menus, method = PEXT_SUBSPLIT_ALPHA)
+*         PEXT_GenerateSubMenuNames(splitMenu)
+*         return splitMenu
+*     End
+*  </verbatim></para>
+<para>The original popupmenu has to be replaced by a button with the PEXT_ButtonProc as procedure. The userdata of the button stores as list with key value pairs a function that returns the menu item list and a function that is the PopupMenuControl procecure of the former popupmenu. The function for the menu item list corresponds to the function given for a popupmenu as e.g. value=GetMenuList1() that returns a string with semicolon separated list of menu items. The names for the submenus are generated automatically in that case. If one wants to disable the menu, return &quot;&quot; as menu item list. Then a disabled &quot;_none_&quot; is shown that can not be selected.</para>
+<para>The constants PEXT_UDATA_ITEMGETTER and PEXT_UDATA_POPUPPROC were defined for the keys in the userdata string.</para>
+<para>When a user selects an entry in the context menu the PopupMenuControl control defined through PEXT_UDATA_POPUPPROC is called. So the proc of the previous popupmenu can be used without further adaptations.</para>
+<para>User defined sub menus:</para>
+<para>User defined submenus can be created as well. Therefore an extension was added to the function that returns the menu items. Instead of a string as described before a function can be defined that returns a 1D text wave, e.g. GetMenuList2() in the example. Each element contains a semicolon separated list of menu items. Each rows DimLabel is used as submenu name, where the elements menu items are put. The DimLabels must not be empty. The wave can have up to MAX_SUBMENUS elements. The button popupext_menu2 shows this extension in the example.</para>
+<para>Half automatic generation:</para>
+<para>Example 3 from Button popupext_menu3 shows how a menu is created by defining a wave with menu items first. Then the menu items are split to sub menus with PEXT_SplitToSubMenus using the method PEXT_SUBSPLIT_ALPHA. In the second step the sub menu named are generated with the default algorithm by calling PEXT_GenerateSubMenuNames.</para>
+<para>Method Description</para>
+<para>PEXT_SUBSPLIT_DEFAULT</para>
+<para>In each sub menu up to NUM_SUBENTRIES menu items are placed. If MAX_SUBMENUS number of sub menus are reached then the remaining menu items are placed in the last sub menu.</para>
+<para>PEXT_SUBSPLIT_ALPHA</para>
+<para>In each sub menu up to NUM_SUBENTRIES menu items are placed. If the beginning letter of the last menu item in the sub menu differs from the beginning letter of the first menu item then the menu items in the sub menu get reduced. All menu item beginning with the letter of the last menu item are moved to the next sub menu. If the beginning letters match then no menu items get moved. If MAX_SUBMENUS number of sub menus are reached then the remaining menu items are placed in the last sub menu.</para>
+<para>PEXT_SUBNAMEGEN_DEFAULT</para>
+<para>In a sub menu from the first and last menu item the number of letters from the beginning is counted until the letters do not match. This part of the menu item is used and taken as a sub menu name in a range notation: Alfons, Aluminium -&gt; Alf .. Alu This is also applied between different sub menus, so the last menu item and the first menu item of the next sub menu. If in the previous sub menu the number of letters determined for the last menu item is higher then for the first name component the higher amount is taken: e.g. Balalaika, Cembalo -&gt; B .. C -&gt; Bal .. C (because Alu were three letters) </para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_GuiPopupMenuExt.ipf"/>
+  </compounddef>
+</doxygen>

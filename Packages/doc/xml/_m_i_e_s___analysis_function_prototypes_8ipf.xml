@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_function_prototypes_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctionPrototypes.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1a3aea15648a8f41b97ebcda0fdf8a3acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AF_PROTO_ANALYSIS_FUNC_V1</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage)</argsstring>
+        <name>AF_PROTO_ANALYSIS_FUNC_V1</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="deprecated_1_deprecated000001"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Use <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a78dc389f009803ae3a77989b6caca05e" kindref="member">AF_PROTO_ANALYSIS_FUNC_V3()</ref> instead</para>
+</xrefdescription></xrefsect></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>eventType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>eventType, one of <ref refid="_m_i_e_s___constants_8ipf_1EVENT_TYPE_ANALYSIS_FUNCTIONS" kindref="member">EVENT_TYPE_ANALYSIS_FUNCTIONS</ref>, always compare <computeroutput>eventType</computeroutput> with the constants, never use the current numerical value directly </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DAQDataWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data wave (locked to prevent changes using <computeroutput>SetWaveLock</computeroutput>) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>active headstage index</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>ignored </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="23" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="23" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1a2fc942ef7859be14a68a6451e6ffadcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AF_PROTO_ANALYSIS_FUNC_V2</definition>
+        <argsstring>(string device, variable eventType, wave DAQDataWave, variable headStage, variable realDataLength)</argsstring>
+        <name>AF_PROTO_ANALYSIS_FUNC_V2</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <param>
+          <type>wave</type>
+          <declname>DAQDataWave</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>headStage</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>realDataLength</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="deprecated_1_deprecated000002"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Use <ref refid="_m_i_e_s___analysis_function_prototypes_8ipf_1a78dc389f009803ae3a77989b6caca05e" kindref="member">AF_PROTO_ANALYSIS_FUNC_V3()</ref> instead</para>
+</xrefdescription></xrefsect></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>eventType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>eventType, one of <ref refid="_m_i_e_s___constants_8ipf_1EVENT_TYPE_ANALYSIS_FUNCTIONS" kindref="member">EVENT_TYPE_ANALYSIS_FUNCTIONS</ref>, always compare <computeroutput>eventType</computeroutput> with the constants, never use the current numerical value directly </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>DAQDataWave</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data wave (locked to prevent changes using <computeroutput>SetWaveLock</computeroutput>) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>headStage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>active headstage index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>realDataLength</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of rows in <computeroutput>DAQDataWave</computeroutput> with data, the total number of rows in <computeroutput>DAQDataWave</computeroutput> might be higher due to alignment requirements of the data acquisition hardware. <computeroutput>NaN</computeroutput> for <ref refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" kindref="member">PRE_DAQ_EVENT</ref> events.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>see <ref refid="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunction_V3DescriptionTable" kindref="member">AnalysisFunction_V3DescriptionTable</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="41" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="41" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1a78dc389f009803ae3a77989b6caca05e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AF_PROTO_ANALYSIS_FUNC_V3</definition>
+        <argsstring>(string device, AnalysisFunction_V3 *s)</argsstring>
+        <name>AF_PROTO_ANALYSIS_FUNC_V3</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_analysis_function___v3" kindref="compound">AnalysisFunction_V3</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>device </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>analysis event structure</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>see <ref refid="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunction_V3DescriptionTable" kindref="member">AnalysisFunction_V3DescriptionTable</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="54" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="54" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1ac233b6e78e1fd205f5085c201b2e8d0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AF_PROTO_PARAM_GETTER_V3</definition>
+        <argsstring>()</argsstring>
+        <name>AF_PROTO_PARAM_GETTER_V3</name>
+        <briefdescription>
+<para>Prototype function for the user supplied parameter getter functions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="63" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1ae2e5a13686c14b1c2a5044d3b1577d6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AF_PROTO_PARAM_HELP_GETTER_V3</definition>
+        <argsstring>(string name)</argsstring>
+        <name>AF_PROTO_PARAM_HELP_GETTER_V3</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Prototype function for the user supplied parameter help functions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="69" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="69" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1a8352152e956561d52f709da2710a1340" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AF_PROTO_PARAM_CHECK_V1</definition>
+        <argsstring>(string name, string params)</argsstring>
+        <name>AF_PROTO_PARAM_CHECK_V1</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Prototype function for the user supplied parameter check function (legacy signature) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="76" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="76" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_prototypes_8ipf_1a11ab91ebb0417cda5153b99d3d77c3b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string AF_PROTO_PARAM_CHECK_V2</definition>
+        <argsstring>(string name, CheckParametersStruct *s)</argsstring>
+        <name>AF_PROTO_PARAM_CHECK_V2</name>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="struct_check_parameters_struct" kindref="compound">CheckParametersStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Prototype function for the user supplied parameter check function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" line="81" column="8" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf" bodystart="81" bodyend="82"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AF</bold> Analysis functions prototypes to be called during data acquisition </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="_m_i_e_s___analysis_functions_8ipf" kindref="compound">MIES_AnalysisFunctions.ipf</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionPrototypes.ipf"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___analysis_function_management_8ipf" kind="file" language="C++">
+    <compoundname>MIES_AnalysisFunctionManagement.ipf</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_management_8ipf_1a94b94ef8ad7f4fea81dc0f3078a4fa78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFM_CallAnalysisFunctions</definition>
+        <argsstring>(string device, variable eventType)</argsstring>
+        <name>AFM_CallAnalysisFunctions</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>eventType</declname>
+        </param>
+        <briefdescription>
+<para>Call the analysis function associated with the stimset from the wavebuilder. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Valid analysis function return types, zero otherwise, see also <ref refid="_m_i_e_s___analysis_functions_8ipf_1AnalysisFunctionReturnTypes" kindref="member">AnalysisFunctionReturnTypes</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionManagement.ipf" line="15" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionManagement.ipf" bodystart="15" bodyend="168"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a269a3df6c5dd5dcceee108e70e4a3a37" compoundref="_m_i_e_s___constants_8ipf" startline="587">ANALYSIS_FUNC_RET_EARLY_STOP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a02ec7a478feb7ddacfa5e2a0ede89b5d" compoundref="_m_i_e_s___constants_8ipf" startline="586">ANALYSIS_FUNC_RET_REPURP_TIME</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a995937d9303dc63e6dc964d7cbfa4037" compoundref="_m_i_e_s___constants_8ipf" startline="566">ANALYSIS_FUNCTION_PARAMS</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_m_i_e_s___debugging_8ipf_1a6ad7b384356907f7ca25e1e6b30bde81" compoundref="_m_i_e_s___debugging_8ipf" startline="509" endline="534">BUG</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a0963283a75a5eb42369e6b9d553f4e8e" compoundref="_m_i_e_s___utilities_8ipf" startline="4534" endline="4558">ChangeWaveLock</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a334a3eae03e67bd94f1d9b34b310c5e4" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="356" endline="369">DAG_GetChannelTextual</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a447c81569730757599e6565d1942fe3f" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="178" endline="219">DAG_GetNumericalValue</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5bb33bb9a1a55bcf24efd37ee4173785" compoundref="_m_i_e_s___constants_8ipf" startline="273">DATA_ACQUISITION_MODE</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a28163a6f7ba1a79dd48f36d0824ba121" compoundref="_m_i_e_s___constants_8ipf" startline="572">EVENT_NAME_LIST</references>
+        <references refid="struct_analysis_function___v3_1a98dbd3485ee5eedd32a8eb47869cf53a" compoundref="_m_i_e_s___structures_8ipf" startline="238">AnalysisFunction_V3::eventType</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a8a4283ac24ef15cfe852824163fa535d" compoundref="_m_i_e_s___utilities_8ipf" startline="2524" endline="2534">FuncRefIsAssigned</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a35fd4c4f3c44373d8325c027d6e1d3b8" compoundref="_m_i_e_s___constants_8ipf" startline="558">GENERIC_EVENT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe70457faa70d9f0d34f4be7711f808a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6427" endline="6446">GetAnalysisFunctionStorage</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1a9c4ad4ffcf65b83e3f2b6a297bb2a14e" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="538" endline="542">GetFifoPosition</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1aff5ebdf5a5982fde53916c19ce1e7a45" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="2763" endline="2776">GetScaledDataWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a7b78e354871c8577b7a05294bd972bfb" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6457" endline="6478">GetSetEventFlag</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a856ff2cac3c10fff1b8e9e6e0ab341be" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2141" endline="2148">GetSweepWave</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1aee93cf596187b0e4f321fd928b2100cc" compoundref="_i_p_n_w_b___utils_8ipf" startline="54" endline="59">isEmpty</references>
+        <references refid="struct_analysis_function___v3_1a1fe69365499bd53bfd25268f88a3a0e3" compoundref="_m_i_e_s___structures_8ipf" startline="264">AnalysisFunction_V3::lastKnownRowIndex</references>
+        <references refid="struct_analysis_function___v3_1a57ffb42fa405a342eedc14851c632811" compoundref="_m_i_e_s___structures_8ipf" startline="259">AnalysisFunction_V3::lastValidRowIndex</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af6c566b50845275d4f9cea2f05b263b0" compoundref="_m_i_e_s___constants_8ipf" startline="550">MID_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574" compoundref="_m_i_e_s___structures_8ipf" startline="275">AnalysisFunction_V3::params</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a55c6ccdb23e689a788334b680762f272" compoundref="_m_i_e_s___constants_8ipf" startline="553">POST_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7c80f2de7b1afbd0daffbaecb1ec2c5c" compoundref="_m_i_e_s___constants_8ipf" startline="552">POST_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9c48d473b8ca316a8456836209bbbaf6" compoundref="_m_i_e_s___constants_8ipf" startline="551">POST_SWEEP_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae48ec0d3fedbdecdcd8689acc8ff7a77" compoundref="_m_i_e_s___constants_8ipf" startline="549">PRE_DAQ_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9faf4d8b6c7aa67835f944ea31311c20" compoundref="_m_i_e_s___constants_8ipf" startline="555">PRE_SET_EVENT</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ae783c50bc0940785b522670d69dbc73d" compoundref="_m_i_e_s___constants_8ipf" startline="554">PRE_SWEEP_CONFIG_EVENT</references>
+        <references refid="struct_analysis_function___v3_1ab77f46e9935064af498ee2e4d7487754" compoundref="_m_i_e_s___structures_8ipf" startline="245">AnalysisFunction_V3::rawDACWave</references>
+        <references refid="_m_i_e_s___global_string_and_variable_access_8ipf_1ad51f8728c74d59d8c1338a27566c4633" compoundref="_m_i_e_s___global_string_and_variable_access_8ipf" startline="107" endline="114">ROVar</references>
+        <references refid="struct_analysis_function___v3_1a01b5476b9a5dbe2aee1cf1b9cfdc6799" compoundref="_m_i_e_s___structures_8ipf" startline="249">AnalysisFunction_V3::scaledDACWave</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7bc4e685a9e5f879ddc1bbae24748598" compoundref="_m_i_e_s___constants_8ipf" startline="451">STIMSET_TP_WHILE_DAQ</references>
+        <references refid="struct_analysis_function___v3_1ab2c24ba7bc87fae5cc96525f69326fe4" compoundref="_m_i_e_s___structures_8ipf" startline="268">AnalysisFunction_V3::sweepNo</references>
+        <references refid="struct_analysis_function___v3_1a15a0fdc47e6b7c83602fb9c78526584c" compoundref="_m_i_e_s___structures_8ipf" startline="271">AnalysisFunction_V3::sweepsInSet</references>
+        <referencedby refid="_m_i_e_s___acquisition_state_handling_8ipf_1a92d4d49ab968e2c7161cfbaffb394790" compoundref="_m_i_e_s___acquisition_state_handling_8ipf" startline="55" endline="119">AS_HandlePossibleTransition</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a979ecb7392a91bc75ff4f7e3e471e6b0" compoundref="_m_i_e_s___data_configurator_8ipf" startline="44" endline="118">DC_Configure</referencedby>
+        <referencedby refid="_m_i_e_s___sweep_saving_8ipf_1a723660ecd4d61948ecc79b0e415cf5e5" compoundref="_m_i_e_s___sweep_saving_8ipf" startline="16" endline="74">SWS_SaveAcquiredData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___analysis_function_management_8ipf_1a0adb90455a369fd191b080a3100a7fbe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable AFM_UpdateAnalysisFunctionWave</definition>
+        <argsstring>(string device)</argsstring>
+        <name>AFM_UpdateAnalysisFunctionWave</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Update the analysis function storage wave from the stimset waves notes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>We are called earlier than <ref refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" kindref="member">DAP_CheckSettings()</ref> so we can not rely on anything setup in a sane way. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionManagement.ipf" line="173" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionManagement.ipf" bodystart="173" bodyend="220"/>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1aff8c9bf1e0d9ec122dc131bc876e131d" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="428" endline="467">AFH_GetAnalysisFunctions</references>
+        <references refid="_m_i_e_s___analysis_function_helpers_8ipf_1a580c1559ee11ddfdc70435b923d65ed4" compoundref="_m_i_e_s___analysis_function_helpers_8ipf" startline="85" endline="99">AFH_GetDACFromHeadstage</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a995937d9303dc63e6dc964d7cbfa4037" compoundref="_m_i_e_s___constants_8ipf" startline="566">ANALYSIS_FUNCTION_PARAMS</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4125130f18bfdbc3c074bf1bc332cd7c" compoundref="_m_i_e_s___constants_8ipf" startline="596">ANALYSIS_FUNCTION_VERSION_ALL</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7183642476e2b6de44f87db3aa95d010" compoundref="_m_i_e_s___constants_8ipf" startline="210">CHANNEL_CONTROL_WAVE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2" compoundref="_m_i_e_s___constants_8ipf" startline="207">CHANNEL_TYPE_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6f9b557218840adafa580c86300a5acb" compoundref="_m_i_e_s___constants_8ipf" startline="216">CHANNEL_TYPE_HEADSTAGE</references>
+        <references refid="_m_i_e_s___d_a_ephys___gui_state_8ipf_1a7121e93f087d403309f4ec4e48f41289" compoundref="_m_i_e_s___d_a_ephys___gui_state_8ipf" startline="275" endline="312">DAG_GetChannelState</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a21d644d231eebe938a1290cbc56b4bcc" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="4986" endline="4996">ExtractAnalysisFuncFromStimSet</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a07d80ebdac59750e08f80685381f35b7" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5001" endline="5005">ExtractAnalysisFunctionParams</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1afe70457faa70d9f0d34f4be7711f808a" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="6427" endline="6446">GetAnalysisFunctionStorage</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="439" endline="496">GetPanelControl</references>
+        <references refid="_m_i_e_s___gui_utilities_8ipf_1a3f2122b83c2dce5a09a66c497ef04d1c" compoundref="_m_i_e_s___gui_utilities_8ipf" startline="421" endline="428">GetPopupMenuString</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5c7b8b8aa3ac758be3ee4e1ba1aa5a8" compoundref="_m_i_e_s___constants_8ipf" startline="18">NUM_HEADSTAGES</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a2abbe37fe8586b53a19d4a3bbdd9c1bf" compoundref="_m_i_e_s___constants_8ipf" startline="562">TOTAL_NUM_EVENTS</references>
+        <references refid="_m_i_e_s___wave_builder_8ipf_1aa9b659345aaec77ee09afb49f1c7aa6d" compoundref="_m_i_e_s___wave_builder_8ipf" startline="48" endline="93">WB_CreateAndGetStimSet</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a990dccb5694daaa0fcb7e8ba7663e681" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="5331" endline="5352">DAP_UpdateDAQControls</referencedby>
+        <referencedby refid="_m_i_e_s___data_configurator_8ipf_1a2f21897fc24af086935c7141fc5bf9e3" compoundref="_m_i_e_s___data_configurator_8ipf" startline="14" endline="35">DC_UpdateGlobals</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>AFM</bold> Analysis functions routines </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_AnalysisFunctionManagement.ipf"/>
+  </compounddef>
+</doxygen>

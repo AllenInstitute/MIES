@@ -1,0 +1,389 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.2" xml:lang="en-US">
+  <compounddef id="_m_i_e_s___test_pulse___multi_8ipf" kind="file" language="C++">
+    <compoundname>MIES_TestPulse_Multi.ipf</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse___multi_8ipf_1aff4edd2665648c8bf917561b2ba2405b" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TPM_NI_TASKTIMEOUT</definition>
+        <argsstring></argsstring>
+        <name>TPM_NI_TASKTIMEOUT</name>
+        <initializer>= 0.5</initializer>
+        <briefdescription>
+<para>After this time in s the background task reading data from the ADC device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>will not read multiple TP data sets subsequently to keep up if late</para>
+<para>it will however still update once per device</para>
+<para>so the gui thread can update at least every ~0.5 seconds (default value here)</para>
+<para>however the fifo may run full if the timeout is hit too often </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="14" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="14" bodyend="-1"/>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="_m_i_e_s___test_pulse___multi_8ipf_1a24e62ba784f3285567cebd48ae34533d" prot="public" static="yes" mutable="no">
+        <type>const double</type>
+        <definition>const double TPM_NI_FIFO_THRESHOLD_SIZE</definition>
+        <argsstring></argsstring>
+        <name>TPM_NI_FIFO_THRESHOLD_SIZE</name>
+        <initializer>= 1073741824</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="15" column="21" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="15" bodyend="-1"/>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPM_StartTPMultiDeviceLow</definition>
+        <argsstring>(string device, variable runModifier=defaultValue, variable fast=defaultValue)</argsstring>
+        <name>TPM_StartTPMultiDeviceLow</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>runModifier</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Start the test pulse when MD support is activated. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger. The external trigger is assumed to be a arduino device using the arduino squencer. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="24" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="24" bodyend="96"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac4727b7129dce25d21a0594823982e9e" compoundref="_m_i_e_s___constants_8ipf" startline="627">HARDWARE_DAC_EXTERNAL_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a742a8cdcd8bebd5675178f0b6123ec6b" compoundref="_m_i_e_s___constants_8ipf" startline="432">TEST_PULSE_BG_MULTI_DEVICE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1aff287a0cc8997a3ac99a0f7e91fbf8ee" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1297" endline="1339">TP_Setup</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a3a0451327c2b2e01b846ba7405d2985f" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="147" endline="176">TPM_BkrdTPMD</references>
+        <referencedby refid="_m_i_e_s___repeated_acquisition_8ipf_1a8c5417247ff4b73d5813794f5b07c4c9" compoundref="_m_i_e_s___repeated_acquisition_8ipf" startline="28" endline="58">RA_HandleITI_MD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a1749e191720dbe121f4bacdfde450ff8" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="99" endline="125">TPM_StartTestPulseMultiDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a1749e191720dbe121f4bacdfde450ff8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPM_StartTestPulseMultiDevice</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TPM_StartTestPulseMultiDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Start a multi device test pulse, always done in background mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="99" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="99" bodyend="125"/>
+        <references refid="_m_i_e_s___d_a_ephys_8ipf_1a670b50786477931e5a7a881fe02f74a2" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="2154" endline="2611">DAP_CheckSettings</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a3c161796838de2aa4e5c4e8a943a183c" compoundref="_m_i_e_s___constants_8ipf" startline="1540">DQ_STOP_REASON_TP_STARTED</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___pressure_control_8ipf_1a7163067ce52b5f19c86cd58a1e207fb5" compoundref="_m_i_e_s___pressure_control_8ipf" startline="1747" endline="1757">P_InitBeforeTP</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1a42da53999370e197b1ca563070976d11" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1442" endline="1448">TP_CheckIfTestpulseIsRunning</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</references>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="4249" endline="4302">DAP_ButtonProc_TPDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___d_a_ephys_8ipf_1a738cf94e6122279698dabdeb9b54cb6d" compoundref="_m_i_e_s___d_a_ephys_8ipf" startline="1395" endline="1461">DAP_OneTimeCallAfterDAQ</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a5c5fada37aab47e9caf5d7f7cd69fd44" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1268" endline="1291">TP_RestartTestPulse</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPM_StopTestPulseMultiDevice</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TPM_StopTestPulseMultiDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+<para>Stop the TP on yoked devices simultaneously. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles also non-yoked devices in multi device mode correctly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="130" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="130" bodyend="145"/>
+        <references refid="_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13" compoundref="_m_i_e_s___data_acquisition___multi_8ipf" startline="271" endline="277">DQM_CallFuncForDevicesYoked</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1aca57a53f70c13b73a7cd44569682905e" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="332" endline="336">TPM_StopTPMD</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1ad047d8b08eb7c324a9f642e66a134126" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="339" endline="343">TPM_StopTPMDFast</references>
+        <referencedby refid="_m_i_e_s___data_acquisition_8ipf_1af4d1d4925d3d47782b313760b656910e" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="50" endline="125">DQ_StopOngoingDAQHelper</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse_8ipf_1a18adc5fb71c6feefb03dbdedb1f4eba9" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1233" endline="1265">TP_StopTestPulseWrapper</referencedby>
+        <referencedby refid="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="181" endline="329">TPM_BkrdTPFuncMD</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a3a0451327c2b2e01b846ba7405d2985f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_BkrdTPMD</definition>
+        <argsstring>(string device, variable triggerMode=defaultValue)</argsstring>
+        <name>TPM_BkrdTPMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>triggerMode</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="147" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="147" bodyend="176"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a3a1abd152f148ce4bbefe05139720c34" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="1688" endline="1695">HW_ITC_ResetFifo</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a38e2539fd613af6c1e8cebe3ced7fff8" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="510" endline="527">HW_StartAcq</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1a2b9212df07b847c7a21ed240a043f30a" compoundref="_m_i_e_s___utilities_8ipf" startline="2386" endline="2391">IsBackgroundTaskRunning</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af09b1233411a5bc4d9c787334660abe1" compoundref="_m_i_e_s___constants_8ipf" startline="42">TASKNAME_TPMD</references>
+        <references refid="_m_i_e_s___threaded_f_i_f_o_handling_8ipf_1aba15c449b31b69bee97da31bfb16fcb9" compoundref="_m_i_e_s___threaded_f_i_f_o_handling_8ipf" startline="21" endline="25">TFH_StartFIFOResetDeamon</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a88443c3f326150e25470ce2014fe5e4d" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="406" endline="426">TPM_AddDevice</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a7fc52550fc667e6fc3bca638338d9917" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="24" endline="96">TPM_StartTPMultiDeviceLow</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="group___background_functions_1ga75c9949c8a065f6b705ae15ad7cd3753" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>variable TPM_BkrdTPFuncMD</definition>
+        <argsstring>(BackgroundStruct *s)</argsstring>
+        <name>TPM_BkrdTPFuncMD</name>
+        <param>
+          <type><ref refid="struct_background_struct" kindref="compound">BackgroundStruct</ref> *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Background TP Multi Device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="181" column="10" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="181" bodyend="329"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1acc314eba61e1d235b7d070d5a8d5482a" compoundref="_m_i_e_s___utilities_8ipf" startline="4460" endline="4471">AssertOnAndClearRTError</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1abac9cd30a7e94843c149393a967c4115" compoundref="_i_p_n_w_b___utils_8ipf" startline="755" endline="758">ClearRTError</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1ab419ee680d3adc6de1230fe9234640f5" compoundref="_m_i_e_s___utilities_8ipf" startline="3688" endline="3690">ControlWindowToFront</references>
+        <references refid="struct_background_struct_1a9581db220a0af538314cdd15a046804b" compoundref="_m_i_e_s___structures_8ipf" startline="16">BackgroundStruct::count</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1affad99c7844123d3460c5210da9409d9" compoundref="_i_p_n_w_b___debugging_8ipf" startline="231" endline="234">DEBUG_TIMER_START</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1a1b85d46a25553b71c9621635b9475fc5" compoundref="_i_p_n_w_b___debugging_8ipf" startline="238" endline="242">DEBUGPRINT_ELAPSED</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1a64d29f3be2a767d550e8a57deac11639" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="5520" endline="5530">DeviceHasFollower</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6ad42418c150ee8c780aec910dbd682a" compoundref="_m_i_e_s___constants_8ipf" startline="1539">DQ_STOP_REASON_ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a6def02b85e78c8469c6958f9893c2909" compoundref="_m_i_e_s___constants_8ipf" startline="1538">DQ_STOP_REASON_HW_ERROR</references>
+        <references refid="_m_i_e_s___data_acquisition_8ipf_1aa62adc53465e347286c107a0a218f0a8" compoundref="_m_i_e_s___data_acquisition_8ipf" startline="34" endline="47">DQ_StopOngoingDAQ</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad850c54987dddec38e7c05ceb55319c9" compoundref="_m_i_e_s___constants_8ipf" startline="612">ESCAPE_KEY</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1adae157a839fae778b9331f241414bc64" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="742" endline="779">GetDAQDataWave</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1ad0ad23d804fe6d2c4de44fb74d8aba1d" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="6129" endline="6133">GetNIFIFOName</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5986da7b25e8b0d271ba568611ecb08d" compoundref="_m_i_e_s___constants_8ipf" startline="626">HARDWARE_DAC_DEFAULT_TRIGGER</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ac5947fec230fa95d5c9ce28aec9e21ff" compoundref="_m_i_e_s___constants_8ipf" startline="678">HARDWARE_NI_DAC</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ae9499e6c6982499702a2583d32a91cdf" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="634" endline="647">HW_GetMainDeviceName</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a155ea80dc1c3c5e705b2305362c38492" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2861" endline="2869">HW_NI_PrepareAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a18adf025079d26b19b6f53986114346d" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2856" endline="2859">HW_NI_StartAcq</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a08a48b068a2d4c406c131b6195f32c5c" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="2919" endline="2923">HW_NI_StopAcq</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a096c8733076753f7b87aba2a96a70c38" compoundref="_i_p_n_w_b___utils_8ipf" startline="21" endline="25">IsFinite</references>
+        <references refid="_m_i_e_s___logging_8ipf_1a13a54cf6fd9396160720c21ba9a9e984" compoundref="_m_i_e_s___logging_8ipf" startline="125" endline="138">LOG_AddEntry</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad6abb3d5e6dde5f305ab27d96c1da79f" compoundref="_m_i_e_s___constants_8ipf" startline="1509">PACKAGE_MIES</references>
+        <references refid="_i_p_n_w_b___constants_8ipf_1af473e90f88b6d5512af2908298c4daa0" compoundref="_i_p_n_w_b___constants_8ipf" startline="77">ROWS</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1a524e36b7141250c0f9c79c5d44b0c035" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="96" endline="187">SCOPE_UpdateGraph</references>
+        <references refid="_m_i_e_s___oscilloscope_8ipf_1aecb53cf623c4d2e58db22bb2e6cecd1d" compoundref="_m_i_e_s___oscilloscope_8ipf" startline="490" endline="635">SCOPE_UpdateOscilloscopeData</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151" compoundref="_m_i_e_s___constants_8ipf" startline="274">TEST_PULSE_MODE</references>
+        <references refid="struct_background_struct_1aeedeee092103e0a955fb37fb37e1299f" compoundref="_m_i_e_s___structures_8ipf" startline="17">BackgroundStruct::threadDeadCount</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a5c7025bfc4a5bd76b3f55090202b9013" compoundref="_m_i_e_s___constants_8ipf" startline="1187">TP_MD_THREAD_DEAD_MAX_RETRIES</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a24e62ba784f3285567cebd48ae34533d" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="15">TPM_NI_FIFO_THRESHOLD_SIZE</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1aff4edd2665648c8bf917561b2ba2405b" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="14">TPM_NI_TASKTIMEOUT</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a0054e462dc7ede2e200490696364cfce" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="19" endline="61">TS_GetNewestFromThreadQueue</references>
+        <references refid="_m_i_e_s___threadsafe_utilities_8ipf_1a01f920490bb0a77bd611d828abef83b9" compoundref="_m_i_e_s___threadsafe_utilities_8ipf" startline="69" endline="122">TS_GetNewestFromThreadQueueMult</references>
+        <references refid="struct_background_struct_1a562d7a033f6f48eb8f059258c9f4622b" compoundref="_m_i_e_s___structures_8ipf" startline="14">BackgroundStruct::wmbs</references>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1ad79adac7bc94e272aaf2c6a27229316e" compoundref="_m_i_e_s___blowout_8ipf" startline="165" endline="215">BWO_CheckAndClearPipettes</referencedby>
+        <referencedby refid="_m_i_e_s___blowout_8ipf_1add21f24da570a913c3b6710820804a46" compoundref="_m_i_e_s___blowout_8ipf" startline="145" endline="162">BWO_InitParaPipetteClear</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1aca57a53f70c13b73a7cd44569682905e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_StopTPMD</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TPM_StopTPMD</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for <ref refid="_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13" kindref="member">DQM_CallFuncForDevicesYoked()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="332" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="332" bodyend="336"/>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="345" endline="372">TPM_StopTPMDWrapper</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1ad047d8b08eb7c324a9f642e66a134126" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_StopTPMDFast</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TPM_StopTPMDFast</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Wrapper for <ref refid="_m_i_e_s___data_acquisition___multi_8ipf_1afc069bd2c231ad47b0011b8396b8fa13" kindref="member">DQM_CallFuncForDevicesYoked()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="339" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="339" bodyend="343"/>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="345" endline="372">TPM_StopTPMDWrapper</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a161c7d3a36714adeaa83ee0802b49a32" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="130" endline="145">TPM_StopTestPulseMultiDevice</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_StopTPMDWrapper</definition>
+        <argsstring>(string device, variable fast=defaultValue)</argsstring>
+        <name>TPM_StopTPMDWrapper</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>variable</type>
+          <declname>fast</declname>
+          <defval>defaultValue</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="345" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="345" bodyend="372"/>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_m_i_e_s___constants_8ipf_1af03c1b3ec2cc6d3c298fefa363f37ea3" compoundref="_m_i_e_s___constants_8ipf" startline="666">HARDWARE_ABORT_ON_ERROR</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a14af8d1236439af567d722ed9717d3ae" compoundref="_m_i_e_s___constants_8ipf" startline="677">HARDWARE_ITC_DAC</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a7aa4e1b09704a717dc9baae18b5613e8" compoundref="_m_i_e_s___constants_8ipf" startline="668">HARDWARE_PREVENT_ERROR_MESSAGE</references>
+        <references refid="_m_i_e_s___constants_8ipf_1a9f3e189b24ff66bea00a2836828d5568" compoundref="_m_i_e_s___constants_8ipf" startline="667">HARDWARE_PREVENT_ERROR_POPUP</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1aa84ff338c72c60b071848ba55245ad71" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="395" endline="411">HW_IsRunning</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1a107b09f2042a4c7d1f7774f1c711dca4" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="123" endline="135">HW_SelectDevice</references>
+        <references refid="_m_i_e_s___d_a_c-_hardware_8ipf_1ac067ffc7897b56e751b7dfabdef4da00" compoundref="_m_i_e_s___d_a_c-_hardware_8ipf" startline="372" endline="386">HW_StopAcq</references>
+        <references refid="_m_i_e_s___test_pulse_8ipf_1ac482a2edae1ae583a0ee1191ca3c51c6" compoundref="_m_i_e_s___test_pulse_8ipf" startline="1379" endline="1411">TP_Teardown</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1a7b25551aedb085d46b44c1c7ffb86bcf" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="374" endline="378">TPM_HasActiveDevices</references>
+        <references refid="_m_i_e_s___test_pulse___multi_8ipf_1ae90573ff0296f168899e003048746db7" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="380" endline="404">TPM_RemoveDevice</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1aca57a53f70c13b73a7cd44569682905e" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="332" endline="336">TPM_StopTPMD</referencedby>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1ad047d8b08eb7c324a9f642e66a134126" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="339" endline="343">TPM_StopTPMDFast</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a7b25551aedb085d46b44c1c7ffb86bcf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_HasActiveDevices</definition>
+        <argsstring>()</argsstring>
+        <name>TPM_HasActiveDevices</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="374" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="374" bodyend="378"/>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="345" endline="372">TPM_StopTPMDWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1ae90573ff0296f168899e003048746db7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_RemoveDevice</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TPM_RemoveDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="380" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="380" bodyend="404"/>
+        <references refid="_m_i_e_s___utilities_8ipf_1a34d370fb776d339d7f60e24c364eff69" compoundref="_m_i_e_s___utilities_8ipf" startline="80" endline="189">ASSERT</references>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a0cf38fa97afd01db4ba3302dced6d315" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="345" endline="372">TPM_StopTPMDWrapper</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="_m_i_e_s___test_pulse___multi_8ipf_1a88443c3f326150e25470ce2014fe5e4d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>variable</type>
+        <definition>static variable TPM_AddDevice</definition>
+        <argsstring>(string device)</argsstring>
+        <name>TPM_AddDevice</name>
+        <param>
+          <type>string</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" line="406" column="17" bodyfile="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf" bodystart="406" bodyend="426"/>
+        <references refid="_i_p_n_w_b___debugging_8ipf_1ad1897c139bba71d6c0bf24acd348c067" compoundref="_i_p_n_w_b___debugging_8ipf" startline="179" endline="219">DEBUGPRINT</references>
+        <references refid="_m_i_e_s___utilities_8ipf_1abdb32751b52d03f1a2a231a6e297968f" compoundref="_m_i_e_s___utilities_8ipf" startline="474" endline="536">EnsureLargeEnoughWave</references>
+        <references refid="_m_i_e_s___wave_data_folder_getters_8ipf_1a8ff85b6cd20fc6dd27003ee2a84b6b0e" compoundref="_m_i_e_s___wave_data_folder_getters_8ipf" startline="5210" endline="5234">GetActiveDevicesTPMD</references>
+        <references refid="_m_i_e_s___mies_utilities_8ipf_1acc18973a3920de75d1658f698f76e9f2" compoundref="_m_i_e_s___mies_utilities_8ipf" startline="2209" endline="2222">GetHardwareType</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a5bb9c63f5cddda48388e3e5544ba7513" compoundref="_i_p_n_w_b___utils_8ipf" startline="1033" endline="1041">GetNumberFromWaveNote</references>
+        <references refid="_m_i_e_s___constants_8ipf_1ad55c47dd09283e521da179684c60b8e0" compoundref="_m_i_e_s___constants_8ipf" startline="193">NOTE_INDEX</references>
+        <references refid="_i_p_n_w_b___utils_8ipf_1a122df701dde7327663a1539c5f4881bd" compoundref="_i_p_n_w_b___utils_8ipf" startline="1009" endline="1027">SetNumberInWaveNote</references>
+        <referencedby refid="_m_i_e_s___test_pulse___multi_8ipf_1a3a0451327c2b2e01b846ba7405d2985f" compoundref="_m_i_e_s___test_pulse___multi_8ipf" startline="147" endline="176">TPM_BkrdTPMD</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para><bold>TPM</bold> Multi device background test pulse functionality </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/firma/devel/mies/Packages/MIES/MIES_TestPulse_Multi.ipf"/>
+  </compounddef>
+</doxygen>
