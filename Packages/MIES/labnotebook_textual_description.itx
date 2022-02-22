@@ -52,7 +52,7 @@ BEGIN
 	"ScaleFactorUnitsString"	""	"-"	""	"DEPEND"	""
 	"RawOutSignalString"	""	"-"	""	"DEPEND"	""
 	"RawScaleFactorUnitsString"	""	"-"	""	"DEPEND"	""
-	"HardwareTypeString"	""	"-"	""	"INDEP"	""
+	"HardwareTypeString"	""	"-"	""	"DEPEND"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"
