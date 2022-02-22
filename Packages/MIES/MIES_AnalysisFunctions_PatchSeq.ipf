@@ -4427,7 +4427,6 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				// will only be reached if PSQ_PB_NUM_SWEEPS_PASS is ever increased from 1
 				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_PB_NUM_SWEEPS_PASS - passesInSet))
 					PSQ_ForceSetEvent(device, s.headstage)
 					RA_SkipSweeps(device, inf)
