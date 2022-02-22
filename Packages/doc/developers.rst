@@ -7,7 +7,7 @@ Getting MIES
 Latest development version from main branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  ``git clone https://github.com/AllenInstitute/MIES``
+-  ``git clone --recurse-submodules https://github.com/AllenInstitute/MIES``
 -  ``./tools/initial-repo-config.sh`` (Requires a Git Bash shell, named
    Git terminal in SourceTree)
 
@@ -49,10 +49,9 @@ Usage
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(Currently only tested on Linux.)
-
-- Install `Docker <https://docker.io>`__
-- Execute ``tools/docker/build-documentation.sh``
+- The script ``tools/build-documentation.sh`` allows to build the documentation locally
+- This command also installs the required pip packages, so using a dedicated virtual environment is advised
+- Linux users might directly execute the docker version in ``tools/docker/build-documentation.sh``
 
 Updating documentation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +64,7 @@ scratch due to breathe.
 For fast read-write-view cycles while writing the user documentation do the following:
 
 - Start with a clean ``Packages/doc`` folder
-- Apply the :download:`patch <0001-WIP-fast-sphinx-rst-update-cyle.patch>`
+- Apply the :download:`patch <0001-WIP-fast-sphinx-rst-update-cycle.patch>`
   which temporarily removes breathe via ``git am ...``
 - Call ``make autobuild`` which opens a local webbrowser and rebuilds after
   every change. This time incremental updates work.
@@ -135,7 +134,9 @@ Compilation testing
 
 The full MIES installation and the partial installations are IGOR Pro
 compiled using a bamboo job. This allows to catch compile time errors
-early on. For testing compilation manually perform the following steps:
+early on.
+
+For testing compilation manually perform the following steps:
 
 -  Create in ``User Procedures`` a shortcut pointing to
    ``Packages\MIES_Include.ipf`` and ``Packages\unit-testing``
@@ -145,24 +146,24 @@ early on. For testing compilation manually perform the following steps:
 -  Execute ``tools\unit-testing\check_mies_compilation.sh``
 -  Watch the output
 
-Unit testing
-~~~~~~~~~~~~
+Testing
+~~~~~~~
 
-One of the bamboo jobs is responsible for executing our unit tests. All
+A couple of our bamboo jobs is responsible for executing our tests. All
 tests must be written using the `Igor Unit Testing
 Framework <https://docs.byte-physics.de/igor-unit-testing-framework>`__ and
-referenced in the main test experiment located in
-``tools\unit-testing\RunAllTests.pxp`` For executing the tests manually
-perform the followings steps:
+referenced in the main test experiments located in
+``tools\unit-testing``.
 
--  Create in ``User Procedures`` a shortcut pointing to
-   ``Packages\MIES_Include.ipf``, ``Packages\unit-testing`` and
-   ``Packages\Testing-MIES``
--  Remove the shortcut ``Packages\MIES_Include.ipf`` in
-   ``Igor Procedures``
--  Close all Igor Pro instances
--  Execute ``tools\unit-testing\autorun-test.bat``
--  Watch the output
+For executing the tests manually perform the followings steps:
+
+- Create in ``User Procedures`` a shortcut pointing to
+  ``Packages\MIES_Include.ipf``, ``Packages\unit-testing`` and
+  ``Packages\Testing-MIES``
+- Remove the shortcut ``Packages\MIES_Include.ipf`` in ``Igor Procedures``
+- Open one of the test experiments in ``tools\unit-testing``
+- Call ``run()``
+- Watch the output
 
 Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -251,7 +252,7 @@ Setting up a continous integration server (Windows)
    -  NIDAQ-mx driver package 19.0 or later
    -  NIDAQ-mx XOP from WaveMetrics
    -  HEKA Harware Drivers 2014-03 Windows.zip
-   -  Igor Pro 8 (and a possible nightly version on top of it)
+   -  Igor Pro (latest required versions)
    -  Install bamboo remote agent according to
       http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
 

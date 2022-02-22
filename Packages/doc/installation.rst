@@ -191,6 +191,8 @@ hardware related XOPs present.
       -  ``XOPs-IP9-64bit\JSON-64.xop``
       -  ``XOPs-IP9-64bit\MIESUtils-64.xop``
       -  ``XOPs-IP9-64bit\ZeroMQ-64.xop``
+      -  ``XOPs-IP9-64bit\TUFXOP-64.xop``
+      -  ``XOPs-IP9-64bit\mies-nwb2-compound-XOP-64.xop``
 
    -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
 
