@@ -1453,7 +1453,7 @@ Function/Wave GetLBTextualKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
