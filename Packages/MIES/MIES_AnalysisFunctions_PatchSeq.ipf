@@ -97,6 +97,7 @@
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
 static Constant PSQ_BL_POST_PULSE  = 0x1
+static Constant PSQ_BL_GENERIC     = 0x2
 
 static Constant PSQ_RMS_SHORT_TEST = 0x0
 static Constant PSQ_RMS_LONG_TEST  = 0x1
@@ -113,6 +114,8 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 	struct PSQ_PulseSettings &s
 
 	string msg
+
+	s.usesBaselineChunkEpochs = 0
 
 	switch(type)
 		case PSQ_DA_SCALE:
@@ -358,12 +361,14 @@ End
 /// @param s                 AnalysisFunction_V3 struct
 /// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
 /// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
+///                          for traditional baseline evaluation if PSQ_PulseSettings#usesBaselineChunkEpochs is false.
 /// @param fifoInStimsetTime Fifo position in ms *relative* to the start of the stimset (therefore ignoring the totalOnsetDelay)
 /// @param totalOnsetDelay   total onset delay in ms
 ///
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
 /// post pulse baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
+/// generic baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
 static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
 	variable , evalStartTime, evalRangeTime
@@ -379,23 +384,40 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	struct PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
 
-	if(chunk == 0) // pre pulse baseline
-		chunkStartTimeMax  = totalOnsetDelay
-		chunkLengthTime    = ps.prePulseChunkLength
-		baselineType       = PSQ_BL_PRE_PULSE
-	else // post pulse baseline
-		ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
+	if(!ps.usesBaselineChunkEpochs)
+		if(chunk == 0) // pre pulse baseline
+			chunkStartTimeMax  = totalOnsetDelay
+			chunkLengthTime    = ps.prePulseChunkLength
+			baselineType       = PSQ_BL_PRE_PULSE
+		else // post pulse baseline
+			ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
 
-		if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
-			WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
-		else
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
+			if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
+				WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
+			else
+				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
+			endif
+
+			// skip: onset delay, the pulse itself and one chunk of post pulse baseline
+			chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
+			chunkLengthTime   = ps.postPulseChunkLength
+			baselineType      = PSQ_BL_POST_PULSE
+		endif
+	else
+		WAVE numericalValues = GetLBNumericalValues(device)
+		WAVE textualValues   = GetLBTextualValues(device)
+
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL)
+		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
+
+		if(chunk >= DimSize(userChunkEpochs, ROWS))
+			return PSQ_BL_FAILED
 		endif
 
-		// skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
-		chunkLengthTime   = ps.postPulseChunkLength
-		baselineType      = PSQ_BL_POST_PULSE
+		// s -> ms
+		chunkStartTimeMax = str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME]) * 1e3
+		chunkLengthTime   = (str2num(userChunkEpochs[chunk][EPOCH_COL_ENDTIME]) - str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME])) * 1e3
+		baselineType      = PSQ_BL_GENERIC
 	endif
 
 	// not enough data to evaluate
@@ -418,6 +440,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// Rows: baseline types
 	// - 0: pre pulse
 	// - 1: post pulse
+	// - 2: generic
 	//
 	// Cols: checks
 	// - 0: short RMS
@@ -428,7 +451,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// Contents:
 	//  0: skip test
 	//  1: perform test
-	Make/FREE/N=(2, 4) testMatrix
+	Make/FREE/N=(3, 4) testMatrix
 
 	if(type == PSQ_PIPETTE_BATH)
 		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
@@ -501,6 +524,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			case PSQ_BL_POST_PULSE:
 				ASSERT(WaveExists(durations) && durations[i] != 0, "Invalid calculated durations")
 				chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
+				break
+			case PSQ_BL_GENERIC:
+				chunkStartTime = chunkStartTimeMax
 				break
 			default:
 				ASSERT(0, "Invalid baselineType")
@@ -701,7 +727,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		else
 			ASSERT(chunkPassed, "logic error")
 		endif
-	elseif(baselineType == PSQ_BL_POST_PULSE)
+	elseif(baselineType == PSQ_BL_POST_PULSE || baselineType == PSQ_BL_GENERIC)
 		if(chunkPassed)
 			return 0
 		else
