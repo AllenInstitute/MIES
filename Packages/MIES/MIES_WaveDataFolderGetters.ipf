@@ -1552,8 +1552,24 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		forceReload = !!forceReload
 	endif
 
+	return GetLBDescription_Impl(labnotebook_numerical_description, forceReload)
+End
+
+Function/WAVE GetLBTextualDescription([variable forceReload])
+
+	if(ParamIsDefault(forceReload))
+		forceReload = 0
+	else
+		forceReload = !!forceReload
+	endif
+
+	return GetLBDescription_Impl("labnotebook_textual_description", forceReload)
+End
+
+static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
+
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		if(forceReload)
@@ -1563,7 +1579,7 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		endif
 	endif
 
-	WAVE/T/Z wv = LoadWaveFromDisk("labnotebook_numerical_description")
+	WAVE/T/Z wv = LoadWaveFromDisk(name)
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
 
@@ -1574,27 +1590,36 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 	Duplicate/FREE/RMD=[0][] wv, labels
 	Redimension/N=(numpnts(labels)) labels
 	SetDimensionLabels(wv, TextWaveToList(labels, ";"), COLS)
-
-	return wv
 End
 
-Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
+static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
 
 Function SaveLBNumericalDescription()
+	SaveLBDescription_Impl("labnotebook_numerical_description", LBN_NUMERICAL_DESCRIPTION_VERSION)
+End
+
+static Constant LBN_TEXTUAL_DESCRIPTION_VERSION = 1
+
+Function SaveLBTextualDescription()
+	SaveLBDescription_Impl("labnotebook_textual_description", LBN_TEXTUAL_DESCRIPTION_VERSION)
+End
+
+Function SaveLBDescription_Impl(string name, variable version)
 
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 	ASSERT(WaveExists(wv), "Missing wave")
 
 	RemoveAllDimLabels(wv)
+	Note/K wv
 
 	Duplicate/FREE wv, dup
 
 	MatrixTranspose dup
 
-	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
+	SetWaveVersion(dup, version)
 
-	StoreWaveOnDisk(dup, "labnotebook_numerical_description")
+	StoreWaveOnDisk(dup, name)
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys

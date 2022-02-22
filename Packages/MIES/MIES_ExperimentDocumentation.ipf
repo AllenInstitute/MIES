@@ -480,7 +480,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		if(IsNumericWave(values))
 			WAVE/T desc = GetLBNumericalDescription()
 		else
-			// @todo not yet done for text waves
+			WAVE/T desc = GetLBTextualDescription()
 		endif
 	endif
 
