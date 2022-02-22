@@ -238,7 +238,7 @@ static Function/S GetStimset_IGNORE(string device)
 	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 End
 
-Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
+static Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
 
 	if(ParamIsDefault(incomplete))
 		incomplete = 0
