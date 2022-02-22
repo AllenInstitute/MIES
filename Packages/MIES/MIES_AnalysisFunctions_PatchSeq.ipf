@@ -4294,7 +4294,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
-	string key, ctrl, stimset, msg, databrowser, bsPanel, formula_nb, pipetteResistanceStr, sweepStr
+	string key, ctrl, stimset, msg, databrowser, bsPanel, formula_nb
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -4371,17 +4371,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-			pipetteResistanceStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [Steady state resistance]", SWEEP_FORMULA_RESULT)
-			sweepStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", SWEEP_FORMULA_RESULT)
-
-			if(IsEmpty(pipetteResistanceStr) || cmpstr(sweepStr, num2str(s.sweepNo) + ";"))
-				// no pipette resistance value for the current sweep
-				pipetteResistance = NaN
-			else
-				WAVE wv = ListToNumericWave(pipetteResistanceStr, ";")
-				ASSERT(DimSize(wv, ROWS) == 1, "Invalid steady state resistance from Sweep Formula")
-				pipetteResistance = wv[0]
-			endif
+			pipetteResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]", s.sweepNo)
 
 			// BEGIN TEST
 			if(TestOverrideActive())
@@ -4517,6 +4507,23 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			return ret
 		endif
 	endif
+End
+
+static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+	string valueStr, sweepStr
+
+	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
+	sweepStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", SWEEP_FORMULA_RESULT)
+
+	if(IsEmpty(valueStr) || cmpstr(sweepStr, num2str(sweepNo) + ";"))
+		// no value for the current sweep
+		return NaN
+	endif
+
+	WAVE wv = ListToNumericWave(valueStr, ";")
+	ASSERT(DimSize(wv, ROWS) == 1, "Invalid number of entries in wave from Sweep Formula")
+
+	return wv[0]
 End
 
 static Function PSQ_PB_GetPrePulseBaselineDuration(string device, variable headstage)
