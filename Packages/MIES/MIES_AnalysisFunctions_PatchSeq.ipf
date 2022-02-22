@@ -499,7 +499,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				chunkStartTime = totalOnsetDelay
 				break
 			case PSQ_BL_POST_PULSE:
-				ASSERT(durations[i] != 0, "Invalid calculated durations")
+				ASSERT(WaveExists(durations) && durations[i] != 0, "Invalid calculated durations")
 				chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
 				break
 			default:
