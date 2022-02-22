@@ -27,6 +27,7 @@ static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
+static StrConstant PSQ_SE_LBN_PREFIX = "Seal evaluation"
 
 static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
 static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
@@ -6991,6 +6992,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return PSQ_DA_SCALE
 		case "PSQ_PipetteInBath":
 			return PSQ_PIPETTE_BATH
+		case "PSQ_SealEvaluation":
+			return PSQ_SEAL_EVALUATION
 		case "PSQ_Rheobase":
 			return PSQ_RHEOBASE
 		case "PSQ_SquarePulse":
@@ -7042,6 +7045,8 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
+		case PSQ_SEAL_EVALUATION:
+			prefix = PSQ_SE_LBN_PREFIX
 			break
 		case PSQ_PIPETTE_BATH:
 			prefix = PSQ_PB_LBN_PREFIX
@@ -7091,6 +7096,8 @@ Function GetAnalysisFunctionVersion(variable type)
 			return PSQ_RHEOBASE_VERSION
 		case PSQ_SQUARE_PULSE:
 			return PSQ_SQUARE_PULSE_VERSION
+		case PSQ_SEAL_EVALUATION:
+			return PSQ_SEAL_EVALUATION_VERSION
 		// MSQ
 		case MSQ_FAST_RHEO_EST:
 			return MSQ_FAST_RHEO_EST_VERSION

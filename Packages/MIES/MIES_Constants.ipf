@@ -642,7 +642,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 55
+Constant LABNOTEBOOK_VERSION = 56
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -1030,21 +1030,27 @@ StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE      = "%s pipette resistance"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS = "%s pipette resistance QC"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_A    = "%s seal resistance A"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_B    = "%s seal resistance B"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_MAX  = "%s seal resistance max"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_PASS = "%s seal resistance QC"
+StrConstant PSQ_FMT_LBN_SE_TESTPULSE_GROUP = "%s test pulse group"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_PIPETTE_BATH_VERSION  = 0
-Constant PSQ_CHIRP_VERSION         = 6
-Constant PSQ_DA_SCALE_VERSION      = 3
-Constant PSQ_RAMP_VERSION          = 4
-Constant PSQ_RHEOBASE_VERSION      = 3
-Constant PSQ_SQUARE_PULSE_VERSION  = 1
-Constant MSQ_FAST_RHEO_EST_VERSION = 0
-Constant MSQ_DA_SCALE_VERSION      = 0
-Constant SC_SPIKE_CONTROL_VERSION  = 0
+Constant PSQ_PIPETTE_BATH_VERSION    = 0
+Constant PSQ_CHIRP_VERSION           = 6
+Constant PSQ_DA_SCALE_VERSION        = 3
+Constant PSQ_RAMP_VERSION            = 4
+Constant PSQ_RHEOBASE_VERSION        = 3
+Constant PSQ_SQUARE_PULSE_VERSION    = 1
+Constant PSQ_SEAL_EVALUATION_VERSION = 0
+Constant MSQ_FAST_RHEO_EST_VERSION   = 0
+Constant MSQ_DA_SCALE_VERSION        = 0
+Constant SC_SPIKE_CONTROL_VERSION    = 0
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
@@ -1057,12 +1063,13 @@ Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
 
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
-Constant PSQ_DA_SCALE      = 0x001
-Constant PSQ_SQUARE_PULSE  = 0x002
-Constant PSQ_RHEOBASE      = 0x004
-Constant PSQ_RAMP          = 0x008
-Constant PSQ_CHIRP         = 0x080
-Constant PSQ_PIPETTE_BATH  = 0x100
+Constant PSQ_DA_SCALE        = 0x001
+Constant PSQ_SQUARE_PULSE    = 0x002
+Constant PSQ_RHEOBASE        = 0x004
+Constant PSQ_RAMP            = 0x008
+Constant PSQ_CHIRP           = 0x080
+Constant PSQ_PIPETTE_BATH    = 0x100
+Constant PSQ_SEAL_EVALUATION = 0x200
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
@@ -1110,6 +1117,19 @@ Constant PSQ_CR_LIMIT_BAND_HIGH = 100 // mV
 /// @name PatchSeq Pipette
 /// @{
 Constant PSQ_PB_NUM_SWEEPS_PASS = 1
+/// @}
+
+/// @name PatchSeq SealCheck
+/// @{
+Constant PSQ_SE_NUM_SWEEPS_PASS = 1
+Constant PSQ_SE_REQUIRED_EPOCHS = 22
+/// @}
+
+/// @name Testpulse Group Selector values, see also PSQ_SE_ParseTestpulseGroupSelection()
+/// @{
+Constant PSQ_SE_TGS_FIRST  = 0x1
+Constant PSQ_SE_TGS_SECOND = 0x2
+Constant PSQ_SE_TGS_BOTH   = 0x3
 /// @}
 
 /// @name Bounds action values, see also PSQ_CR_BoundsActionToString()
@@ -1594,6 +1614,7 @@ StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
 StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
 StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
 StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
+StrConstant ANALYSIS_FUNCTION_SE          = "analysis function:seal evaluation"
 /// @}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
