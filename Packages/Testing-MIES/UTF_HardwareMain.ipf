@@ -1154,6 +1154,32 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	CheckPublishedMessage(device, type)
 
 	CheckUserEpochsFromChunks(device)
+
+	CheckForOtherUserLBNKeys(device, type)
+End
+
+static Function CheckForOtherUserLBNKeys(string device, variable type)
+	string prefix
+
+	WAVE numericalKeys = GetLBNumericalKeys(device)
+	WAVE textualKeys   = GetLBTextualKeys(device)
+
+	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
+	CHECK_WAVE(entries, TEXT_WAVE)
+
+	// check that all user entries are from our analysis function
+	WAVE/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
+
+	// remove legacy entries
+	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta I")
+	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta V")
+	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit")
+	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit_Err")
+
+	prefix = CreateAnaFuncLBNKey(type, "%s", query = 1)
+	WAVE/Z ourUserEntries = GrepTextWave(entries, prefix + ".*")
+
+	CHECK_EQUAL_TEXTWAVES(allUserEntries, ourUserEntries)
 End
 
 Function CheckPublishedMessage(string device, variable type)
