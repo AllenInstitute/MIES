@@ -1552,7 +1552,7 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		forceReload = !!forceReload
 	endif
 
-	return GetLBDescription_Impl(labnotebook_numerical_description, forceReload)
+	return GetLBDescription_Impl("labnotebook_numerical_description", forceReload)
 End
 
 Function/WAVE GetLBTextualDescription([variable forceReload])
@@ -1590,6 +1590,8 @@ static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 	Duplicate/FREE/RMD=[0][] wv, labels
 	Redimension/N=(numpnts(labels)) labels
 	SetDimensionLabels(wv, TextWaveToList(labels, ";"), COLS)
+
+	return wv
 End
 
 static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
