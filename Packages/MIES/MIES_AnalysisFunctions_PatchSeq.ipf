@@ -489,15 +489,22 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
 		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax / 1E3, (chunkStartTimeMax + chunkLengthTime) / 1E3, epName, shortname = epShortName)
 
-		if(chunk == 0) // pre pulse baseline
-			chunkStartTime = totalOnsetDelay
-
+		if(chunk == 0)
 			// store baseline RMS short/long analysis parameters in labnotebook on first use
 			PSQ_StoreRMSThresholdsInLabnotebook(device, type, s.sweepNo, i, rmsShortThreshold, rmsLongThreshold)
-		else
-			ASSERT(durations[i] != 0, "Invalid calculated durations")
-			chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
 		endif
+
+		switch(baselineType)
+			case PSQ_BL_PRE_PULSE:
+				chunkStartTime = totalOnsetDelay
+				break
+			case PSQ_BL_POST_PULSE:
+				ASSERT(durations[i] != 0, "Invalid calculated durations")
+				chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
+				break
+			default:
+				ASSERT(0, "Invalid baselineType")
+		endswitch
 
 		ADC = AFH_GetADCFromHeadstage(device, i)
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
