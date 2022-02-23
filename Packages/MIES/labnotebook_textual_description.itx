@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(53,6)	labnotebook_textual_description
+WAVES/T/N=(69,6)	labnotebook_textual_description
 BEGIN
 	"SweepNum"	""	""	""	"ALL"	""
 	"TimeStamp"	""	""	""	"ALL"	""
@@ -54,6 +54,22 @@ BEGIN
 	"RawScaleFactorUnitsString"	""	"-"	""	"DEPEND"	""
 	"User comment"	""	"-"	""	"INDEP"	""
 	"HardwareTypeString"	""	"-"	""	"DEPEND"	""
+	"Async AD0 Title"	""	""	""	"INDEP"	""
+	"Async AD1 Title"	""	""	""	"INDEP"	""
+	"Async AD2 Title"	""	""	""	"INDEP"	""
+	"Async AD3 Title"	""	""	""	"INDEP"	""
+	"Async AD4 Title"	""	""	""	"INDEP"	""
+	"Async AD5 Title"	""	""	""	"INDEP"	""
+	"Async AD6 Title"	""	""	""	"INDEP"	""
+	"Async AD7 Title"	""	""	""	"INDEP"	""
+	"Async AD0 Unit"	""	""	""	"INDEP"	""
+	"Async AD1 Unit"	""	""	""	"INDEP"	""
+	"Async AD2 Unit"	""	""	""	"INDEP"	""
+	"Async AD3 Unit"	""	""	""	"INDEP"	""
+	"Async AD4 Unit"	""	""	""	"INDEP"	""
+	"Async AD5 Unit"	""	""	""	"INDEP"	""
+	"Async AD6 Unit"	""	""	""	"INDEP"	""
+	"Async AD7 Unit"	""	""	""	"INDEP"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"
