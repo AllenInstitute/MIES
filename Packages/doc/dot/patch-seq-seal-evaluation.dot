@@ -1,0 +1,157 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	n3	 [label="Start DAQ/RA"];
+	n5	 [label="Pre Sweep Config Event"];
+	n3 -> n5;
+	n6	 [label="Pre DAQ Event"];
+	n3 -> n6;
+	n7	 [label="Post Set Event"];
+	n3 -> n7;
+	n8	 [label="Pre Set Event"];
+	n3 -> n8;
+	n9	 [label="Post Sweep Event"];
+	n3 -> n9;
+	n10	 [label="Post DAQ Event"];
+	n3 -> n10;
+	n36	 [label="Check that the stimset has\n PSQ_SE_REQUIRED_EPOCHS (22) epochs"];
+	n5 -> n36;
+	n21	 [label="Turn indexing off"];
+	n6 -> n21;
+	n29	 [label="Check that only one headstage is active"];
+	n6 -> n29;
+	n11	 [label="Update dashboard"];
+	n7 -> n11;
+	n15	 [label="Do we have PSQ_SE_NUM_SWEEPS_PASS\n passing sweeps in the stimset cycle?"];
+	n7 -> n15;
+	n19	 [label="Set analysis function version"];
+	n8 -> n19;
+	n47	 [label="Iterate over all baseline QC\n selection user epochs"];
+	n9 -> n47;
+	n55	 [label="Check used sampling frequency\n and store result in labnotebook"];
+	n9 -> n55;
+	n57	 [label="Read \"TestpulseGroupSelector\" analysis  parameter"];
+	n9 -> n57;
+	n10 -> n11;
+	n12	 [label="Read Set QC from labnotebook"];
+	n10 -> n12;
+	n13	 [label="Read \"NextStimsetName\" analysis parameter\n and set that as next stimulus set"];
+	n12 -> n13	 [label="Passed?"];
+	n16	 [label="Mark Set QC as failed"];
+	n15 -> n16	 [label=No];
+	n17	 [label="Mark Set QC as passed"];
+	n15 -> n17	 [label=Yes];
+	n18	 [label="Publish results via ZeroMQ"];
+	n16 -> n18;
+	n17 -> n18;
+	n20	 [label="Set sampling rate multiplier\n analysis parameter and check it"];
+	n19 -> n20;
+	n22	 [label="Turn multi device support on"];
+	n21 -> n22;
+	n23	 [label="Turn repeated acquisition on"];
+	n22 -> n23;
+	n24	 [label="Turn off oodDAQ"];
+	n23 -> n24;
+	n25	 [label="Turn off dDAQ"];
+	n24 -> n25;
+	n26	 [label="Turn on inserted Testpulse"];
+	n25 -> n26;
+	n27	 [label="Open and bind databrowser"];
+	n26 -> n27;
+	n28	 [label="Enable SweepFormula"];
+	n27 -> n28;
+	n35	 [label="Set SweepFormula respecting\n \"TestPulseGroupSelector\" analysis parameter"];
+	n28 -> n35;
+	n30	 [label="Check that no TTL channels are active"];
+	n29 -> n30;
+	n31	 [label="Check that the active headstage\n is in voltage clamp"];
+	n30 -> n31;
+	n32	 [label="Abort on failed check"];
+	n31 -> n32;
+	n37	 [label="Read \"TestPulseGroupSelector\" analysis parameter"];
+	n36 -> n37;
+	n38	 [label="Add user epochs for testpulse group A"];
+	n37 -> n38	 [label=First];
+	n39	 [label="Add user epochs for testpulse group B"];
+	n37 -> n39	 [label=Second];
+	n41	 [label="Add user epochs for testpulse group A and B"];
+	n37 -> n41	 [label=Both];
+	n42	 [label="Add baseline selection user epoch\n for stimulus set epoch before testpulse group A"];
+	n38 -> n42;
+	n43	 [label="Add baseline selection user epoch\n for stimulus set epoch before testpulse group B"];
+	n39 -> n43;
+	n44	 [label="Add baseline selection user epoch\n for stimulus set epoch before testpulse group A and B"];
+	n41 -> n44;
+	n45	 [label="Check that the baseline QC user epochs\n have the same length as the\n analysis parameter \"BaselineChunkLength\""];
+	n42 -> n45;
+	n43 -> n45;
+	n44 -> n45;
+	n46	 [label="Check that each Testpulse has three epochs\n and that the pulse has amplitude one."];
+	n45 -> n46;
+	n48	 [label="Read \"TestpulseGroupSelector\" analysis parameter"];
+	n47 -> n48	 [label="Done?"];
+	n49	 [label="Baseline chunk 0 and 1 passed?"];
+	n48 -> n49	 [label=Both];
+	n50	 [label="Baseline chunk 0 passed?"];
+	n48 -> n50	 [label=First];
+	n48 -> n50	 [label=Second];
+	n52	 [label="Mark baseline QC as passed"];
+	n49 -> n52	 [label=Passed];
+	n53	 [label="Mark baseline QC as failed"];
+	n49 -> n53	 [label=Failed];
+	n50 -> n52	 [label=Passed];
+	n50 -> n53	 [label=Failed];
+	n56	 [label="All three QC labnotebook\n entries are passing?"];
+	n52 -> n56;
+	n53 -> n56;
+	n55 -> n56;
+	n59	 [label="Mark Sweep QC as failed"];
+	n56 -> n59	 [label=No];
+	n60	 [label="Mark Sweep QC as passed"];
+	n56 -> n60	 [label=Yes];
+	n58	 [label="Read steady state resistance\n from results wave for group B"];
+	n57 -> n58	 [label=Second];
+	n63	 [label="Read steady state resistance\n from results wave for group A and group B"];
+	n57 -> n63	 [label=Both];
+	n64	 [label="Read steady state resistance\n from results wave for group A"];
+	n57 -> n64	 [label=First];
+	n65	 [label="Store resistances and its maximum\n in labnotebook"];
+	n58 -> n65;
+	n67	 [label="Is greater or equal to the  \"SealThreshold\"\n analysis parameter?"];
+	n58 -> n67;
+	n63 -> n65;
+	n68	 [label="Is one of them greater or equal\n to the  \"SealThreshold\" analysis parameter?"];
+	n63 -> n68;
+	n64 -> n65;
+	n64 -> n67;
+	n66	 [label="Mark Seal QC as passed"];
+	n66 -> n56;
+	n67 -> n66	 [label=Yes];
+	n69	 [label="Mark Seal QC as failed"];
+	n67 -> n69	 [label=No];
+	n68 -> n66;
+	n68 -> n69;
+	n69 -> n56;
+}

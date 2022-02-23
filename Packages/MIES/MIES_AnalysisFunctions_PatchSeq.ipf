@@ -4919,7 +4919,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. TODO image:: /dot/patch-seq-seal-evaluation.svg
+///	.. image:: /dot/patch-seq-seal-evaluation.svg
 /// \endrst
 ///
 /// @verbatim
