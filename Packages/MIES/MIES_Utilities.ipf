@@ -4686,7 +4686,7 @@ Function IsWindows10()
 
 	info = IgorInfo(3)
 	os = StringByKey("OS", info)
-	return GrepString(os, "^Windows 10 ")
+	return GrepString(os, "^(Microsoft)? Windows 10 ")
 End
 
 /// @brief Start a timer for performance measurements
