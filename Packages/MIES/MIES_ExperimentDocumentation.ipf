@@ -119,6 +119,22 @@ static Function ED_ParseHeadstageContigencyMode(string str)
 	return HCM_EMPTY
 End
 
+static Function/S ED_HeadstageContigencyModeToString(variable mode)
+
+	switch(mode)
+		case HCM_INDEP:
+			return "INDEP"
+		case HCM_DEPEND:
+			return "DEPEND"
+		case 0x03: // HCM_INDEP | HCM_DEPEND
+			return "ALL"
+		case HCM_EMPTY:
+			return ""
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
+End
+
 /// @brief Return the headstage contigency mode for values
 static Function ED_GetHeadstageContingency(WAVE values)
 
@@ -573,7 +589,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		endif
 
 		if(headstageCont != HCM_EMPTY && !(headstageCont & headstageContDesc))
-			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: %d", searchStr, desc[%HeadstageContingency][descIndex], headstageCont
+			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: \"%s\"", searchStr, desc[%HeadstageContingency][descIndex], ED_HeadstageContigencyModeToString(headstageCont)
 			BUG(msg)
 		endif
 
