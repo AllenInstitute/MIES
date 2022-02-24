@@ -320,7 +320,7 @@ static Function SetStimsetParameterWorks()
 	CHECK_EQUAL_STR(str, ref)
 End
 
-Structure ParamModCounts
+static Structure ParamModCounts
 	string stimSet
 	variable modCountWP
 	variable modCountWPT
