@@ -137,7 +137,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	variable sweepNo
 
 	key    = LABNOTEBOOK_USER_PREFIX + "some key"
-	keyTxt = "other key"
+	keyTxt = LABNOTEBOOK_USER_PREFIX + "other key"
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
