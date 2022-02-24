@@ -1578,7 +1578,7 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 	return wv
 End
 
-Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
+static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
 
 Function SaveLBNumericalDescription()
 
