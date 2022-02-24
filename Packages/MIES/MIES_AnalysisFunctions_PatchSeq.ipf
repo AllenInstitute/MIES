@@ -1529,14 +1529,20 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 	endswitch
 End
 
-static Function/S PSQ_CheckParamCommon(string name, string params)
+static Function/S PSQ_CheckParamCommon(string name, string params, [variable maxRMSThreshold])
 	variable val
+
+	if(ParamIsDefault(maxRMSThreshold))
+		maxRMSThreshold = 20
+	else
+		ASSERT(IsFinite(maxRMSThreshold), "Invalid value")
+	endif
 
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, params)
-			if(!(val > 0 && val <= 20))
+			if(!(val > 0 && val <= maxRMSThreshold))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -4836,7 +4842,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s.params, maxRMSThreshold = 100)
 		case "BaselineChunkLength":
 		case "SealThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
