@@ -1567,8 +1567,13 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		forceReload = !!forceReload
 	endif
 
+	return GetLBDescription_Impl("labnotebook_numerical_description", forceReload)
+End
+
+static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
+
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		if(forceReload)
@@ -1578,7 +1583,7 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		endif
 	endif
 
-	WAVE/T/Z wv = LoadWaveFromDisk("labnotebook_numerical_description")
+	WAVE/T/Z wv = LoadWaveFromDisk(name)
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
 
