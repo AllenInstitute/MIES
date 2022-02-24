@@ -1611,6 +1611,7 @@ static Function SaveLBDescription_Impl(string name, variable version)
 	ASSERT(WaveExists(wv), "Missing wave")
 
 	RemoveAllDimLabels(wv)
+	Note/K wv
 
 	Duplicate/FREE wv, dup
 
