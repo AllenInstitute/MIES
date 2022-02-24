@@ -1601,9 +1601,13 @@ End
 static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
 
 Function SaveLBNumericalDescription()
+	SaveLBDescription_Impl("labnotebook_numerical_description", LBN_NUMERICAL_DESCRIPTION_VERSION)
+End
+
+static Function SaveLBDescription_Impl(string name, variable version)
 
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 	ASSERT(WaveExists(wv), "Missing wave")
 
 	RemoveAllDimLabels(wv)
@@ -1612,9 +1616,9 @@ Function SaveLBNumericalDescription()
 
 	MatrixTranspose dup
 
-	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
+	SetWaveVersion(dup, version)
 
-	StoreWaveOnDisk(dup, "labnotebook_numerical_description")
+	StoreWaveOnDisk(dup, name)
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys
