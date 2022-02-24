@@ -4,10 +4,10 @@
 #pragma ModuleName=PatchSeqTestRamp
 
 // Time were we inject the spike
-Constant SPIKE_POSITION_MS = 10000
+static Constant SPIKE_POSITION_MS = 10000
 
 // Maximum time we accept it
-Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
+static Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])

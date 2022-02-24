@@ -13,12 +13,12 @@ static StrConstant LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME  = "Relative time [s]"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-StrConstant LBV_UD_VALUES_WAVE = "values"
-StrConstant LBV_UD_KEYS_WAVE   = "keys"
-StrConstant LBV_UD_HEADSTAGE   = "headstage"
-StrConstant LBV_UD_KEY         = "key"
-StrConstant LBV_UD_ISTEXT      = "text"
-StrConstant LBV_UD_YAXIS       = "yaxis"
+static StrConstant LBV_UD_VALUES_WAVE = "values"
+static StrConstant LBV_UD_KEYS_WAVE   = "keys"
+static StrConstant LBV_UD_HEADSTAGE   = "headstage"
+static StrConstant LBV_UD_KEY         = "key"
+static StrConstant LBV_UD_ISTEXT      = "text"
+static StrConstant LBV_UD_YAXIS       = "yaxis"
 
 Function/S LBV_GetSettingsHistoryPanel(string win)
 

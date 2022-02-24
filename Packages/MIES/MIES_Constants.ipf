@@ -1687,3 +1687,10 @@ Constant HCM_EMPTY  = 0x00
 Constant HCM_DEPEND = 0x01
 Constant HCM_INDEP  = 0x02
 /// @}
+
+/// @name Decimation methods
+/// @anchor DecimationMethods
+/// @{
+Constant DECIMATION_NONE   = 0x0
+Constant DECIMATION_MINMAX = 0x1
+/// @}
