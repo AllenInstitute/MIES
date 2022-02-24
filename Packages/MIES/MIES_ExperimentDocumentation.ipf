@@ -552,7 +552,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 			// retry as that might be a dynamic Async key, see the fifth column in
 			// GetAsyncSettingsKeyWave()
 
-			if(GrepString(searchStr, "^Async AD [[:digit:]] \[.+\]$"))
+			if(GrepString(searchStr, "^Async AD ?[[:digit:]] \[.+\]$"))
 				// continue as the entry is fully dynamic and we can't check anything
 				continue
 			endif
