@@ -6242,13 +6242,6 @@ threadsafe Function ZeroWaveImpl(WAVE wv)
 	Multithread wv = wv - offset
 End
 
-/// @name Decimation methods
-/// @anchor DecimationMethods
-/// @{
-Constant DECIMATION_NONE   = 0x0
-Constant DECIMATION_MINMAX = 0x1
-/// @}
-
 /// @brief Return the size of the decimated wave
 ///
 /// Query that to create the output wave before calling DecimateWithMethod().

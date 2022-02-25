@@ -18,63 +18,63 @@
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
-Constant OLD_IGOR                    = 10001
+static Constant OLD_IGOR                    = 10001
 
-Constant UNHANDLED_CPP_EXCEPTION     = 10002
+static Constant UNHANDLED_CPP_EXCEPTION     = 10002
 
 // DeviceID is locked to another thread.
-Constant SLOT_LOCKED_TO_OTHER_THREAD = 10003
+static Constant SLOT_LOCKED_TO_OTHER_THREAD = 10003
 // Tried to access an unused DeviceID.
-Constant SLOT_EMPTY                  = 10004
+static Constant SLOT_EMPTY                  = 10004
 // No DeviceIDs available to use.
-Constant COULDNT_FIND_EMPTY_SLOT     = 10005
+static Constant COULDNT_FIND_EMPTY_SLOT     = 10005
 
 // ITC DLL errors
-Constant ITC_DLL_ERROR               = 10006
+static Constant ITC_DLL_ERROR               = 10006
 
 // Invalid numeric device type (/DTN).
-Constant INVALID_DEVICETYPE_NUMERIC  = 10007
+static Constant INVALID_DEVICETYPE_NUMERIC  = 10007
 // Invalid string device type (/DTS).
-Constant INVALID_DEVICETYPE_STRING   = 10008
+static Constant INVALID_DEVICETYPE_STRING   = 10008
 // The device types specified by /DTN and /DTS do not agree.
-Constant DTN_DTS_DISAGREE            = 10009
+static Constant DTN_DTS_DISAGREE            = 10009
 
 // Invalid numeric channel type (/CHN).
-Constant INVALID_CHANNELTYPE_NUMERIC = 10010
+static Constant INVALID_CHANNELTYPE_NUMERIC = 10010
 // Invalid string channel type (/CHS).
-Constant INVALID_CHANNELTYPE_STRING  = 10011
+static Constant INVALID_CHANNELTYPE_STRING  = 10011
 // The channel types specified by /CHN and /CHS do not agree.
-Constant CHN_CHS_DISAGREE            = 10012
+static Constant CHN_CHS_DISAGREE            = 10012
 // Must specify /CHN or /CHS.
-Constant MUST_SPECIFY_CHN_OR_CHS     = 10013
+static Constant MUST_SPECIFY_CHN_OR_CHS     = 10013
 
 // ITCConfigChannel2 flags
 // Invalid value for /S flag.
-Constant ITCCONFIGCHANNEL2_BAD_S     = 10014
+static Constant ITCCONFIGCHANNEL2_BAD_S     = 10014
 // Invalid value for /M flag.
-Constant ITCCONFIGCHANNEL2_BAD_M     = 10015
+static Constant ITCCONFIGCHANNEL2_BAD_M     = 10015
 // Invalid value for /A flag.
-Constant ITCCONFIGCHANNEL2_BAD_A     = 10016
+static Constant ITCCONFIGCHANNEL2_BAD_A     = 10016
 // Invalid value for /O flag.
-Constant ITCCONFIGCHANNEL2_BAD_O     = 10017
+static Constant ITCCONFIGCHANNEL2_BAD_O     = 10017
 // Invalid value for /U flag.
-Constant ITCCONFIGCHANNEL2_BAD_U     = 10018
+static Constant ITCCONFIGCHANNEL2_BAD_U     = 10018
 
 // Wave does not have the minumum number of rows required
-Constant  NEED_MIN_ROWS              = 10019
+static Constant NEED_MIN_ROWS               = 10019
 
 // ITCInitialize2 errors
 // The /F flag requires an ITC18, ITC18USB or ITC1600
-Constant F_FLAG_REQ_ITC18_18USB_1600 = 10020
+static Constant F_FLAG_REQ_ITC18_18USB_1600 = 10020
 // The /D flag requires an ITC1600
-Constant D_FLAG_REQUIRES_ITC1600     = 10021
+static Constant D_FLAG_REQUIRES_ITC1600     = 10021
 // The /H flag requires an ITC1600
-Constant H_FLAG_REQUIRES_ITC1600     = 10022
+static Constant H_FLAG_REQUIRES_ITC1600     = 10022
 // The /R flag requires an ITC1600
-Constant R_FLAG_REQUIRES_ITC1600     = 10023
+static Constant R_FLAG_REQUIRES_ITC1600     = 10023
 
 // Tried to access the default device, but the default device has not been set.
-Constant THREAD_DEVICE_ID_NOT_SET    = 10024
+static Constant THREAD_DEVICE_ID_NOT_SET    = 10024
 /// @}
 
 static Constant HW_ITC_RUNNING_STATE = 0x10
