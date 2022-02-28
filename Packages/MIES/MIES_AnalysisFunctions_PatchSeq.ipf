@@ -4379,7 +4379,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
-	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
+	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed, ovsState
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
 	string key, ctrl, stimset, msg, databrowser, bsPanel, formula_nb
@@ -4417,6 +4417,9 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			bsPanel = BSP_GetPanel(databrowser)
 
 			formula_nb = BSP_GetSFFormula(databrowser)
+
+			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
+			/// this also then allows us to remove the OVS fiddling
 			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
@@ -4458,6 +4461,18 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			databrowser = DB_FindDataBrowser(device)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+
+			bsPanel = BSP_GetPanel(databrowser)
+			ovsState = GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS")
+
+			if(ovsState)
+				// redo SweepFormula execution, as we rely on it being off
+				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 0)
+				// select last acquired sweep
+				DB_UpdateSweepPlot(bsPanel)
+				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
+			endif
 
 			pipetteResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]", s.sweepNo)
 
