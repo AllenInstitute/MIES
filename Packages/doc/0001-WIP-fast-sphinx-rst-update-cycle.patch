@@ -1,0 +1,70 @@
+From 22d1a496a45e6e7acc71304dceaf18b5a377ba00 Mon Sep 17 00:00:00 2001
+From: Thomas Braun <thomas.braun@byte-physics.de>
+Date: Tue, 22 Feb 2022 18:39:44 +0100
+Subject: [PATCH 1/1] WIP: fast sphinx rst update cycle
+
+---
+ Packages/doc/conf.py         |  6 +++---
+ tools/build-documentation.sh | 20 ++++++++++----------
+ 2 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/Packages/doc/conf.py b/Packages/doc/conf.py
+index ec47543d6..18430884b 100644
+--- a/Packages/doc/conf.py
++++ b/Packages/doc/conf.py
+@@ -16,18 +16,18 @@ def get_version():
+     return "({branch}) {version}".format(branch=branchString.decode('ascii'), version=revString.decode('ascii'))
+
+ # sphinx config
+-extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', \
++extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo',            \
+               'sphinxcontrib.fulltoc', 'sphinxcontrib.images',    \
+               'sphinxembeddedvideos.youtube']
+
+-master_doc = "index"
++master_doc = "user"
+ project= "MIES Igor"
+
+ html_static_path = ['_static']
+
+ html_show_sourcelink = False
+
+-exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications']
++exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications', 'index.rst']
+
+ cpp_id_attributes = [ 'threadsafe' ]
+
+diff --git a/tools/build-documentation.sh b/tools/build-documentation.sh
+index 4b2d2fd6d..8e9afc827 100755
+--- a/tools/build-documentation.sh
++++ b/tools/build-documentation.sh
+@@ -102,16 +102,16 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
+ # bash "${top_level}/Packages/IPNWB/update_doc.sh"
+ # cd "${top_level}/Packages/doc" # submodule rev-parse
+
+-if hash breathe-apidoc 2>/dev/null; then
+-  echo "Start breathe-apidoc"
+-
+-  breathe-apidoc -f -o . xml
+-
+-else
+-  echo "Errors building the documentation" 1>&2
+-  echo "breathe-apidoc could not be found" 1>&2
+-  Failed
+-fi
++# if hash breathe-apidoc 2>/dev/null; then
++#   echo "Start breathe-apidoc"
++#
++#   breathe-apidoc -f -o . xml
++#
++# else
++#   echo "Errors building the documentation" 1>&2
++#   echo "breathe-apidoc could not be found" 1>&2
++#   Failed
++# fi
+
+ # Add labels to each group and each file
+ # can be referenced via :ref:`Group LabnotebookQueryFunctions`
+--
+2.35.1.windows.2.4.gbfc55a2345.20220215094111
+
