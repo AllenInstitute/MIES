@@ -1202,7 +1202,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			WAVE params.data        = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 		endif
 
@@ -1250,7 +1250,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
-		WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+		WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 
 		WAVE data = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
 
@@ -1308,7 +1308,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				break
 			case IPNWB_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
-				WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+				WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 				break
 			default:
 				ASSERT_TS(0, "Unexpected channel type")
@@ -1323,32 +1323,6 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 		NWB_ClearWriteChannelParams(params)
 	endfor
-End
-
-/// @brief Return free text wave with the epoch information of the given channel
-///
-/// See GetEpochsWave() for the wave layout.
-threadsafe static Function/WAVE NWB_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
-
-	variable index
-
-	/// @todo we don't yet write epoch info into the LBN
-	if(channelType != XOP_CHANNEL_TYPE_DAC)
-		return $""
-	endif
-
-	WAVE/Z setting
-	[setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
-
-	if(WaveExists(setting))
-		WAVE/T settingText = setting
-		WAVE/T epochs = EP_EpochStrToWave(settingText[index])
-		ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
-		SetEpochsDimensionLabels(epochs)
-		epochs[][%Tags] = RemoveEnding(epochs[p][%Tags], ";") + ";"
-	endif
-
-	return epochs
 End
 
 /// @brief Clear all entries which are channel specific

@@ -570,6 +570,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
+	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+
 	// all channels are acquired simultaneously we can just check if the last
 	// channel has NaN in the last element
 	if(IsNaN(sweepWave[inf][inf]))
@@ -577,9 +579,11 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		ASSERT(V_row >= 0, "Unexpected result")
 
 		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
-		plannedTime  = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
-		EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
+	else
+		acquiredTime = plannedTime
 	endif
+
+	EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 
 	EP_SortEpochs(device)
 
@@ -660,7 +664,6 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 		channel = configWave[i][%ChannelNumber]
 
 		epochCnt = EP_GetEpochCount(device, channel)
-		ASSERT(epochCnt > 0, "Unexpected epoch count of zero")
 
 		for(epoch = 0; epoch < epochCnt; epoch += 1)
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
@@ -681,7 +684,8 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 			endif
 		endfor
 
-		// Add unacquired epoch
+		// add unacquired epoch
+		// relies on EP_AddEpoch ignoring single point epochs
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
@@ -738,4 +742,57 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	SortColumns/KNDX={EPOCH_COL_STARTTIME} sortWaves={matches}
 
 	return matches
+End
+
+/// @brief Return free text wave with the epoch information of the given channel
+///
+/// See GetEpochsWave() for the wave layout.
+threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+	variable index
+
+	/// @todo we don't yet write epoch info into the LBN
+	if(channelType != XOP_CHANNEL_TYPE_DAC)
+		return $""
+	endif
+
+	WAVE/Z setting
+	[setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(setting))
+		return $""
+	endif
+
+	WAVE/T settingText = setting
+	WAVE/T epochs = EP_EpochStrToWave(settingText[index])
+	ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
+	SetEpochsDimensionLabels(epochs)
+	epochs[][%Tags] = RemoveEnding(epochs[p][%Tags], ";") + ";"
+
+	return epochs
+End
+
+/// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
+Function EP_AppendLBNEpochs(string device, variable sweepNo)
+	variable i, epochCnt, epochChannelCnt
+
+	EP_ClearEpochs(device)
+
+	WAVE/T epochWave = GetEpochsWave(device)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		WAVE/T/Z epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, i, XOP_CHANNEL_TYPE_DAC)
+
+		if(!WaveExists(epochChannel))
+			continue
+		endif
+
+		epochChannelCnt = DimSize(epochChannel, ROWS)
+
+		EnsureLargeEnoughWave(epochWave, dimension = ROWS, minimumSize = epochChannelCnt)
+
+		epochWave[0, epochChannelCnt - 1][][i] = epochChannel[p][q]
+	endfor
 End

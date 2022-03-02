@@ -55,6 +55,8 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(device, sweepNo)
 
+	EP_AppendLBNEpochs(device, sweepNo)
+
 	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
 		NWB_AppendSweepDuringDAQ(device, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
 	endif
@@ -71,6 +73,24 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(device, POST_SET_EVENT)
 	endif
+
+	EP_WriteEpochInfoIntoSweepSettings(device, sweepWave, configWave)
+	SWS_SweepSettingsEpochInfoToLBN(device, sweepNo)
+End
+
+static Function SWS_SweepSettingsEpochInfoToLBN(string device, variable sweepNo)
+	variable idx
+
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
+	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(device)
+
+	idx = FindDimLabel(sweepSettingsTxtWave, COLS, "Epochs")
+	ASSERT(idx >= 0, "Could not find epochs wave")
+
+	Duplicate/FREE/RMD=[idx] sweepSettingsTxtWave, values
+	Duplicate/FREE/RMD=[idx] sweepSettingsTxtKey, keys
+
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 End
 
 /// @brief General hook function which gets always executed after sweep data was added or removed

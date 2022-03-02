@@ -11,6 +11,8 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 		postInitializeFunc(device)
 	endif
 
+	EnsureMCCIsOpen()
+
 	string unlockedDevice = DAP_CreateDAEphysPanel()
 
 	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
@@ -20,12 +22,6 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device
-
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
-
-	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
 	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
@@ -238,7 +234,7 @@ static Function/S GetStimset_IGNORE(string device)
 	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 End
 
-Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
+static Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
 
 	if(ParamIsDefault(incomplete))
 		incomplete = 0

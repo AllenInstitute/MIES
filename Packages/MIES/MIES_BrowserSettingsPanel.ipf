@@ -1532,7 +1532,7 @@ Function BSP_AddTracesForEpochs(string win)
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
-	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name
+	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, epochInfoStr
 	string level_0_trace, level_1_trace, level_2_trace, level_3_trace, level_4_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
@@ -1573,8 +1573,20 @@ Function BSP_AddTracesForEpochs(string win)
 		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
-		WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-		WAVE/T epochs = EP_EpochStrToWave(epochLBEntries[headstage])
+		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
+		WAVE/T/Z epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(epochLBEntries))
+			continue
+		endif
+
+		epochInfoStr = epochLBEntries[headstage]
+
+		if(IsEmpty(epochInfoStr))
+			continue
+		endif
+
+		WAVE/T epochs = EP_EpochStrToWave(epochInfoStr)
 
 		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
 

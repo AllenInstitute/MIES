@@ -23,16 +23,18 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
+	string unlockedDevice, device
+	variable i, numEntries
+
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc(devices)
 	endif
 
-	string unlockedDevice, device
-	variable i, numEntries
-
 	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
 	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
 	analysisFunction = SelectString(ParamIsDefault(analysisFunction), analysisFunction, "")
+
+	EnsureMCCIsOpen()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -44,12 +46,6 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 		REQUIRE(WindowExists(device))
-
-		WAVE ampMCC = GetAmplifierMultiClamps()
-		WAVE ampTel = GetAmplifierTelegraphServers()
-
-		REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-		REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 		// Clear HS association
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)

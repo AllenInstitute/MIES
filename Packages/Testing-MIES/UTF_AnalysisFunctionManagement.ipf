@@ -193,6 +193,8 @@ static Function AcquireData(s, stimset, device, [numHeadstages, TTLStimset, post
 		numHeadstages = 1
 	endif
 
+	EnsureMCCIsOpen()
+
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 	KillOrMoveToTrash(wv = anaFuncTracker)
 
@@ -211,12 +213,6 @@ static Function AcquireData(s, stimset, device, [numHeadstages, TTLStimset, post
 	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 	REQUIRE(WindowExists(device))
-
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
-
-	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device
