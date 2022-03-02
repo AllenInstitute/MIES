@@ -28,6 +28,7 @@
 #include "UTF_PatchSeqPipetteInBath"
 #include "UTF_PatchSeqRamp"
 #include "UTF_PatchSeqRheobase"
+#include "UTF_PatchSeqSealEvaluation"
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_ReachTargetVoltage"
 #include "UTF_SetControls"
@@ -100,6 +101,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqChirp.ipf", list)
 	list = AddListItem("UTF_PatchSeqDAScale.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", inf)

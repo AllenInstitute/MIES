@@ -579,6 +579,11 @@ Structure PSQ_PulseSettings
 	variable prePulseChunkLength  // ms
 	variable pulseDuration      // ms
 	variable postPulseChunkLength // ms
+
+	/// Allows to define the baseline chunks by user epochs with shortname `U_BLS%d`
+	/// other members are ignored with this option.
+	/// The baseline chunks should be added in PRE_SWEEP_CONFIG_EVENT.
+	variable usesBaselineChunkEpochs
 EndStructure
 
 Structure CheckParametersStruct
