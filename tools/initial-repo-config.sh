@@ -9,8 +9,6 @@ rm -f .git/index
 # rescan index
 git reset --quiet HEAD -- .
 
-git checkout .
-
 # do initial smudging
 git checkout .
 
