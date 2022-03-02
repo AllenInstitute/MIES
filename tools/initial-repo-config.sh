@@ -7,7 +7,7 @@ git config --local filter.compress.smudge "gzip --decompress --stdout"
 rm -f .git/index
 
 # rescan index
-git reset HEAD -- .
+git reset --quiet HEAD -- .
 
 git checkout .
 
