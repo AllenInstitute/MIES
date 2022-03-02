@@ -4799,7 +4799,7 @@ Function ExportIntoNWBSweepBySweep_REENTRY([str])
 
 	CloseNwbFile()
 	experimentNwbFile = GetExperimentNWBFileForExport()
-	CHECK(FileExists(experimentNwbFile))
+	REQUIRE(FileExists(experimentNwbFile))
 
 	fileID = H5_OpenFile(experimentNWBFile)
 	nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
@@ -4840,7 +4840,7 @@ Function ExportOnlyCommentsIntoNWB([string str])
 	endtry
 
 	discLocation = TestNWBExportV2#TestFileExport()
-	CHECK(FileExists(discLocation))
+	REQUIRE(FileExists(discLocation))
 
 	fileID = H5_OpenFile(discLocation)
 	userComment = TestNWBExportV2#TestUserComment(fileID, str)

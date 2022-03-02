@@ -680,6 +680,7 @@ Function TestNwbExportV2()
 
 	WAVE/WAVE/Z epochs = LoadEpochTable(discLocation)
 
+	REQUIRE(FileExists(discLocation))
 	fileID = H5_OpenFile(discLocation)
 	CHECK_EQUAL_VAR(GetNWBMajorVersion(ReadNWBVersion(fileID)), NWB_VERSION)
 

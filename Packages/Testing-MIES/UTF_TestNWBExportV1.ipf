@@ -630,6 +630,7 @@ Function TestNwbExportV1()
 	WAVE/Z/T stimuluses = GetAnalysisChannelStimWave(entry[%DataFolder], device)
 	CHECK_WAVE(stimuluses, TEXT_WAVE)
 
+	REQUIRE(FileExists(discLocation))
 	fileID = H5_OpenFile(discLocation)
 	CHECK_EQUAL_VAR(GetNWBmajorVersion(ReadNWBVersion(fileID)), NWB_VERSION)
 
