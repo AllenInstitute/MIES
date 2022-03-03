@@ -24,8 +24,6 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
-static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
-
 // PCIe-6343 | PXI-6259 | PCIe-6341
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
 
@@ -1250,7 +1248,7 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 	string device
 	variable runMode
 
-	variable i, DAC, ADC, multiDevGUIEnState, hardwareType
+	variable i, DAC, ADC, hardwareType
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -1317,9 +1315,6 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 	dataAcqRunMode = runMode
 	hardwareType = GetHardwareType(device)
 	if(hardwareType == HARDWARE_NI_DAC)
-		multiDevGUIEnState = IsControlDisabled(device, "check_Settings_MD")
-		SetControlUserData(device, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED, num2str(multiDevGUIEnState))
-
 		HW_NI_ResetTaskIDs(device)
 	endif
 
@@ -1411,9 +1406,6 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 	hardwareType = GetHardwareType(device)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
-			if(str2num(GetUserData(device, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED)) > 0)
-				DisableControl(device, "check_Settings_MD")
-			endif
 			HW_NI_ResetTaskIDs(device)
 			break
 	endswitch
