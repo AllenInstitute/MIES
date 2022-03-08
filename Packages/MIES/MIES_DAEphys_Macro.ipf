@@ -9,6 +9,9 @@
 /// @file MIES_DAEphys_Macro.ipf
 /// @brief __DA__ DA_Ephys panel macro
 
+static Function IUTF_InstrumentationHelper()
+End
+
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(1315,92,1818,968)
