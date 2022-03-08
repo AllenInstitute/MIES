@@ -1206,21 +1206,20 @@ End
 ///
 /// @param wv   wave reference where the WaveNote is taken from
 /// @param key  search for the value at key:value;
-/// @param keySep  [optional, defaults to `:`] separation character for (key, value) pairs
-/// @param listSep [optional, defaults to `;`] list separation character
+/// @param keySep  [optional, defaults to #DEFAULT_KEY_SEP] separation character for (key, value) pairs
+/// @param listSep [optional, defaults to #DEFAULT_LIST_SEP] list separation character
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
 threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep])
-
-	if(ParamIsDefault(keySep) && ParamIsDefault(listSep))
-		return ExtractStringFromPair(note(wv), key)
-	elseif(ParamIsDefault(keySep))
-		return ExtractStringFromPair(note(wv), key, listSep = listSep)
-	elseif(ParamIsDefault(listSep))
-		return ExtractStringFromPair(note(wv), key, keySep = keySep)
-	else
-		return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+	if(ParamIsDefault(keySep))
+		keySep = DEFAULT_KEY_SEP
 	endif
+
+	if(ParamIsDefault(listSep))
+		listSep = DEFAULT_LIST_SEP
+	endif
+
+	return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
 End
 
 /// @brief Same functionality as GetStringFromWaveNote() but accepts a string
@@ -1228,10 +1227,11 @@ End
 /// @sa GetStringFromWaveNote()
 threadsafe Function/S ExtractStringFromPair(string str, string key, [string keySep, string listSep])
 	if(ParamIsDefault(keySep))
-		keySep = ":"
+		keySep = DEFAULT_KEY_SEP
 	endif
+
 	if(ParamIsDefault(listSep))
-		listSep = ";"
+		listSep = DEFAULT_LIST_SEP
 	endif
 
 	ASSERT_TS(!IsEmpty(key), "Empty key")
