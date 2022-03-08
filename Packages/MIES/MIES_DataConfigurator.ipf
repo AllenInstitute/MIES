@@ -352,7 +352,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
 			type = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
-			NIDataWave = DC_MakeNIChannelWave(device, numRows, samplingInterval, p, type[p])
+			NIDataWave = DC_MakeNIChannelWave(device, numRows, samplingInterval, p, type[p], dataAcqOrTP)
 
 			return [$"", NIDataWave]
 			break
@@ -368,13 +368,14 @@ End
 /// @param samplingInterval minimum sample intervall in microseconds
 /// @param index            number of NI channel
 /// @param type             numeric data type of NI channel
+/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 ///
 /// @return                 Wave Reference to NI Channel wave
-static Function/WAVE DC_MakeNIChannelWave(device, numRows, samplingInterval, index, type)
-	variable numRows, samplingInterval, index, type
+static Function/WAVE DC_MakeNIChannelWave(device, numRows, samplingInterval, index, type, dataAcqOrTP)
+	variable numRows, samplingInterval, index, type, dataAcqOrTP
 	string device
 
-	WAVE NIChannel = GetNIDAQChannelWave(device, index)
+	WAVE NIChannel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(type) NIChannel
 	FastOp NIChannel= 0
 	SetScale/P x 0, samplingInterval / 1000, "ms", NIChannel
@@ -1128,7 +1129,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 			if(IsWaveRefWave(DAQDataWave))
 				WAVE/WAVE DAQDataWaveRef = DAQDataWave
 				Redimension/N=(s.numActiveChannels) DAQDataWaveRef
-				DAQDataWaveRef[] = GetNIDAQChannelWave(device, p)
+				DAQDataWaveRef[] = GetNIDAQChannelWave(device, p, TEST_PULSE_MODE)
 			endif
 			SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
 			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
