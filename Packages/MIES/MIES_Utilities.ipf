@@ -1252,9 +1252,7 @@ End
 /// @brief Update the string value of `key` found in the wave note to `str`
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
-threadsafe Function SetStringInWaveNote(wv, key, str)
-	Wave wv
-	string key, str
+threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive])
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
