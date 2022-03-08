@@ -374,7 +374,7 @@ Function/S CA_HardwareDataTPKey(s)
 	crc = StringCRC(crc, num2str(s.testPulseLength))
 	crc = StringCRC(crc, num2str(s.baselineFrac))
 
-	return num2istr(crc) + "HW Datawave Testpulse Version 1"
+	return num2istr(crc) + "HW Datawave Testpulse Version 2"
 End
 
 /// @}

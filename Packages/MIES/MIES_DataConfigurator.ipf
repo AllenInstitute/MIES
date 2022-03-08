@@ -1110,7 +1110,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	if(WaveExists(result))
 		WAVE DAQDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-		if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
+		if(!cmpstr(GetStringFromWaveNoteRecursive(DAQDataWave, TP_PROPERTIES_HASH), key))
 			// clear the AD data only
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -1131,7 +1131,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				Redimension/N=(s.numActiveChannels) DAQDataWaveRef
 				DAQDataWaveRef[] = GetNIDAQChannelWave(device, p, TEST_PULSE_MODE)
 			endif
-			SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
+			SetStringInWaveNote(result, TP_PROPERTIES_HASH, key, recursive = 1)
 			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		endif
 	else
@@ -1161,7 +1161,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
 
-				SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
+				SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, ITCDataWave)
 				break
 			case HARDWARE_NI_DAC:
@@ -1175,7 +1175,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 						  NI_DAC_MAX); AbortOnRTE
 				endfor
 
-				SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
+				SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, NIDataWave)
 				break
 		endswitch

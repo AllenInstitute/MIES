@@ -813,6 +813,8 @@ Function/WAVE GetNIDAQChannelWave(device, channel, mode)
 	// type does not matter as we change it in DC_MakeNIChannelWave anyway
 	Make/N=(0) dfr:$name/WAVE=wv
 
+	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
+
 	return wv
 End
 
