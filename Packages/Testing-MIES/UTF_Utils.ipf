@@ -5975,3 +5975,90 @@ Function GSFWNR_Works()
 	str = GetStringFromWaveNoteRecursive(wref, "abcd")
 	CHECK_EMPTY_STR(str)
 End
+
+Function SeSt_CheckParams()
+	try
+		SetStringInWaveNote($"", "abcd", "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE wv
+		SetStringInWaveNote(wv, "", "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SeSt_Works()
+	string str, ref
+
+	// adds entry
+	Make/FREE plain
+
+	SetStringInWaveNote(plain, "abcd", "123")
+	str = note(plain)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// overwrites existing entry
+	Make/FREE plain
+	Note/K plain, "abcd:456;"
+
+	SetStringInWaveNote(plain, "abcd", "123")
+	str = note(plain)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// wave wref, non-recursive by default
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+
+	SetStringInWaveNote(wref, "abcd", "123")
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[0])
+	CHECK_EMPTY_STR(str)
+
+	str = note(wref[1])
+	CHECK_EMPTY_STR(str)
+
+	// wave wref, recursive but empty
+	Make/WAVE/FREE/N=0 wref
+
+	SetStringInWaveNote(wref, "abcd", "123")
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// wave wref 2D, recursive
+	Make/WAVE/FREE/N=(2, 2) wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+
+	SetStringInWaveNote(wref, "abcd", "123", recursive = 1)
+
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[0])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[1])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[2])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[3])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+End

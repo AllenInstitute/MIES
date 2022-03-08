@@ -1253,11 +1253,24 @@ End
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
 threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive])
+	variable numEntries = numpnts(wv)
+
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	Note/K wv, ReplaceStringByKey(key, note(wv), str)
+
+	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(numEntries) junk = SetStringInWaveNote(WaveRef(wv, row = p), key, str, recursive = 1)
 End
 
 /// @brief Remove the surrounding quotes from the string if they are present
