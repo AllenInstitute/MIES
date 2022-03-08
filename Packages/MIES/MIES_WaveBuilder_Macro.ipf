@@ -9,6 +9,9 @@
 /// @file MIES_WaveBuilder_Macro.ipf
 /// @brief __WBPM__ WaveBuilder panel macro
 
+static Function IUTF_InstrumentationHelper()
+End
+
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(136,360,1168,907)

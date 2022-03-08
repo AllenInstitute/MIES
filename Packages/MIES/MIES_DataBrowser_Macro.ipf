@@ -9,6 +9,9 @@
 /// @file MIES_DataBrowser_Macro.ipf
 /// @brief __DB__ Macro for DataBrowser
 
+static Function IUTF_InstrumentationHelper()
+End
+
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(487.5,83,918,420.5)/K=1  as "DataBrowser"
