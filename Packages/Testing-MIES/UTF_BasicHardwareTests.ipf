@@ -5244,3 +5244,52 @@ Function CheckTPEntriesFromLBN_REENTRY([string str])
 	Make/N=(DimSize(entries_S2_TP, ROWS)) validWaves = WaveExists(entries_S2_TP[p])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
+
+Function TPCachingWorks_IGNORE(string device)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=3)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val=CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str="4")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPCachingWorks([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_0")
+	AcquireData(s, str, startTPInstead=1, preAcquireFunc=TPCachingWorks_IGNORE)
+
+	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
+End
+
+Function TPCachingWorks_REENTRY([string str])
+	variable sweepNo, numEntries, samplingInterval, samplingIntervalMultiplier
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(str)
+	CHECK_WAVE(storedTP, WAVE_WAVE)
+	numEntries = DimSize(storedTP, ROWS)
+
+	Make/FREE/N=(numEntries) dimDeltas = WaveExists(storedTP[p]) ? DimDelta(storedTP[p], ROWS) : NaN
+
+	WAVE/Z dimDeltasClean = ZapNaNs(dimDeltas)
+	CHECK_WAVE(dimDeltasClean, NUMERIC_WAVE)
+
+	WAVE/Z dimDeltasUnique = GetUniqueEntries(dimDeltasClean)
+	CHECK_WAVE(dimDeltasUnique, NUMERIC_WAVE)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval", DATA_ACQUISITION_MODE)
+	samplingIntervalMultiplier = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval Multiplier", DATA_ACQUISITION_MODE)
+
+	CHECK_EQUAL_VAR(DimSize(dimDeltasUnique, ROWS), 1)
+	CHECK_CLOSE_VAR(samplingInterval / samplingIntervalMultiplier, dimDeltasUnique[0], tol = 1e-3)
+End
