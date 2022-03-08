@@ -874,6 +874,8 @@ End
 /// @brief Returns an unsorted free wave with all unique entries from wv
 ///
 /// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
+///
+/// @todo IP9-only Make threadsafe
 Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	Wave wv
 	variable caseSensitive
@@ -936,6 +938,8 @@ End
 /// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
 ///
 /// @return free wave with unique entries
+///
+/// @todo IP9-only make threadsafe
 static Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
 	Wave/T wv
 	variable caseSensitive
