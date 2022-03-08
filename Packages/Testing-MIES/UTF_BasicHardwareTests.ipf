@@ -2096,15 +2096,6 @@ Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
 	CheckDAQStopReason(str, DQ_STOP_REASON_TP_STARTED)
 End
 
-Function StartDAQDuringTP_IGNORE(device)
-	string device
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
-End
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function AbortTP([str])
 	string str
@@ -2140,6 +2131,15 @@ Function AbortTP_REENTRY([str])
 	else
 		PASS()
 	endif
+End
+
+Function StartDAQDuringTP_IGNORE(device)
+	string device
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
