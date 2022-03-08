@@ -5869,3 +5869,45 @@ Function FBD_Works()
 	WAVE/Z result = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 End
+
+Function ESFP_CheckParams()
+
+	try
+		ExtractStringFromPair("abcd", "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// These tests also cover GetStringFromWaveNote()
+Function ESFP_Works()
+	string ref, str
+
+	ref = "123"
+	str = ExtractStringFromPair("abcd:123;abcde:456", "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// ignores case
+	ref = "123"
+	str = ExtractStringFromPair("abcd:123;abcde:456", "ABCD")
+	CHECK_EQUAL_STR(ref, str)
+
+	// ignores space from AddEntryIntoWaveNoteAsList
+	ref = "123"
+	str = ExtractStringFromPair("abcd : 123;abcde : 456", "ABCD")
+	CHECK_EQUAL_STR(ref, str)
+
+	// supports custom separators
+	ref = "456"
+	str = ExtractStringFromPair("abcd=123|abcde=456|", "abcde", keySep = "=", listSep = "|")
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match
+	str = ExtractStringFromPair("abcd:123;abcde:456", "abcdef")
+	CHECK_EMPTY_STR(str)
+
+	// empty string
+	str = ExtractStringFromPair("", "abcdef")
+	CHECK_EMPTY_STR(str)
+End

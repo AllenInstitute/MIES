@@ -1208,7 +1208,6 @@ threadsafe Function/S ExtractStringFromPair(str, key, [keySep, listSep])
 		listSep = ";"
 	endif
 
-	ASSERT_TS(!IsEmpty(str), "Empty string")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	// AddEntryIntoWaveNoteAsList creates whitespaces "key = value;"
