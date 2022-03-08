@@ -284,11 +284,7 @@ Function IVS_finishInitAccessQCCheck(s)
 	return 1
 End
 
-/// @brief run the GigOhm seal QC check from the WSE
-///
-/// This will make sure the Steady State resistance must be > 1.0 GOhm.
-/// The EXTPCIIATT wave will also be run as a way of making sure the baseline
-/// is recorded into the data set for post-experiment analysis.
+/// @brief Run PSQ_SealEvaluation()
 Function IVS_RunGigOhmSealQC()
 	string device, ctrl
 	variable headstage
@@ -299,13 +295,7 @@ Function IVS_RunGigOhmSealQC()
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "EXTPCllATT*")
 
-	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(device))
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-	endif
-
-	CtrlNamedBackground IVS_finishGigOhmSealQCCheck, period=2, proc=IVS_finishGigOhmSealQCCheck
-	CtrlNamedBackground IVS_finishGigOhmSealQCCheck, start
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 /// @brief Loads a single stimulus for the user when using the ZMQ Proxy
@@ -345,66 +335,6 @@ static Function IVS_PublishQCState(variable result, string description)
 	JSON_AddString(jsonID, "Description", description)
 
 	FFI_Publish(jsonID, IVS_PUB_FILTER)
-End
-
-/// @brief finish the Gig Ohm Seal QC in the background
-///
-/// @ingroup BackgroundFunctions
-Function IVS_finishGigOhmSealQCCheck(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device
-	variable headstage, cycles
-	variable ssResistanceVal, qcResult
-
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
-
-	cycles = 10 //define how many times the test pulse must run
-	if(TP_TestPulseHasCycled(device, cycles))
-		print "Enough Cycles passed..."
-	else
-		IVS_PublishQCState(0, "Too few TP cycles")
-		return 0
-	endif
-
-	WAVE TPResults = GetTPResults(device)
-	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
-
-	printf "Steady State Resistance: %g\r", ssResistanceVal
-
-	// See if we pass the Steady State Resistance
-	// added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
-	AssertOnAndClearRTError()
-	try
-		if(ssResistanceVal > 1000) // ssResistance value is in MΩ
-			// and now run the EXTPCIIATT wave so that things are saved into the data record
-			PGC_SetAndActivateControl(device, "DataAcquireButton")
-			qcResult = ssResistanceVal
-			IVS_PublishQCState(qcResult, "Steady state resistance")
-		else
-			print "Below QC threshold...will repeat QC test..."
-			IVS_PublishQCState(0, "Below QC threshold")
-			Abort
-		endif
-	catch
-		ClearRTError()
-		ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
-
-		printf "Second Pass: Steady State Resistance: %g\r", ssResistanceVal
-
-		if(ssResistanceVal > 1000) // ssResistance value is in MΩ
-			qcResult = ssResistanceVal
-			IVS_PublishQCState(qcResult, "Second pass: Steady state resistance")
-		endif
-
-		// Run the EXTPCIIATT wave so that things are saved into the data record
-		PGC_SetAndActivateControl(device, "DataAcquireButton")
-	endtry
-
-	IVS_PublishQCState(qcResult, "Result before finishing")
-
-	return 1
 End
 
 Function IVS_ExportAllData(filePath)
