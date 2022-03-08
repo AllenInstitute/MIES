@@ -1171,6 +1171,35 @@ threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
 	endif
 End
 
+/// @brief Recursive version of GetStringFromWaveNote
+///
+/// Returns the extracted string for non-wave-reference waves.
+/// For wave-reference waves the string must be the same in the wave
+/// and all waves held in the wave reference wave.
+///
+/// @todo IP9-only Merge with GetStringFromWaveNote
+Function/S GetStringFromWaveNoteRecursive(WAVE wv, string key)
+	variable numEntries = numpnts(wv)
+	string str
+
+	str = GetStringFromWaveNote(wv, key)
+
+	if(!IsWaveRefWave(wv) || numEntries == 0)
+		return str
+	endif
+
+	Make/FREE/T/N=(numEntries) notes = GetStringFromWaveNoteRecursive(WaveRef(wv, row = p), key)
+
+	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
+	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
+
+	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], str))
+		return str
+	endif
+
+	return ""
+End
+
 /// @brief Return the string value of `key` found in the wave note
 /// default expected wave note format: `key1:val1;key2:str2;`
 /// counterpart of AddEntryIntoWaveNoteAsList when supplied with keySep = "="

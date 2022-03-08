@@ -5911,3 +5911,67 @@ Function ESFP_Works()
 	str = ExtractStringFromPair("", "abcdef")
 	CHECK_EMPTY_STR(str)
 End
+
+Function GSFWNR_Works()
+	string ref, str
+
+	// non-wave ref
+	Make/FREE plain
+	Note/K plain "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(plain, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// empty wave ref
+	Make/WAVE/FREE/N=0 wref
+	Note/K wref "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref, matching
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref 2D, matching
+	Make/WAVE/FREE/N=(2, 2) wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+	Note/K wref[2] "abcd:123"
+	Note/K wref[3] "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref, not-matching (wref has a different one)
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcde:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EMPTY_STR(str)
+
+	// wave ref, not-matching (first contained has a different one)
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcde:123"
+	Note/K wref[1] "abcd:123"
+
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EMPTY_STR(str)
+End
