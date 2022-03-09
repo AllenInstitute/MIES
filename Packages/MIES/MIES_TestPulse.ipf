@@ -56,11 +56,18 @@ Function TP_StoreTP(device, TPWave, tpMarker, hsList)
 	variable tpMarker
 	string hsList
 
-	variable index
+	variable index, ret
 
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-	EnsureLargeEnoughWave(storedTP, minimumSize=index)
+
+	ret = EnsureLargeEnoughWave(storedTP, minimumSize=index, checkFreeMemory = 1)
+
+	if(ret)
+		HandleOutOfMemory(device, NameOfWave(storedTP))
+		return NaN
+	endif
+
 	Note/K TPWave
 
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
