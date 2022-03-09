@@ -470,7 +470,7 @@ End
 /// @param initialValue    [optional, defaults to zero] initialValue of the new wave points
 /// @param checkFreeMemory [optional, defaults to false] check if the free memory is enough for increasing the size
 ///
-/// @return 0 on success, (only for checkFreeMemory = True) 1 if increasing the wave's size would fail due to little memory
+/// @return 0 on success, (only for checkFreeMemory = True) 1 if increasing the wave's size would fail due to out of memory
 threadsafe Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkFreeMemory])
 	Wave wv
 	variable minimumSize, dimension, initialValue, checkFreeMemory
