@@ -194,7 +194,7 @@ Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install `Docker <https://docker.io>`__
--  Misc required software: ``apt install git cron-apt``
+-  Misc required software: ``apt install git cron-apt xmllint``
 -  Enable automatic updates: ``echo "dist-upgrade -y -o APT::Get::Show-Upgraded=true" > /etc/cron-apt/action.d/4-upgrade``
 -  Install OpenJDK 8 by adding a file with the following
    sources in ``/etc/apt/sources.list.d/``:
