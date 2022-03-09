@@ -1065,12 +1065,8 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 
 	ret = EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
 
-	if(ret) // running out of memory
-		printf "The amount of free memory is too low to increase TPStorage, please create a new experiment.\r"
-		ControlWindowToFront()
-		LOG_AddEntry(PACKAGE_MIES, "out of memory")
-		DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
-		TP_StopTestPulse(device)
+	if(ret)
+		HandleOutOfMemory(device, NameOfWave(TPStorage))
 		return NaN
 	endif
 

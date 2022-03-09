@@ -7784,3 +7784,13 @@ Function GetHeadstageForChannel(WAVE numericalValues, variable sweep, variable c
 
 	return index
 End
+
+Function HandleOutOfMemory(string device, string name)
+	printf "The amount of free memory is too low to increase the %s wave, please create a new experiment.\r", name
+	ControlWindowToFront()
+
+	LOG_AddEntry(PACKAGE_MIES, "out of memory")
+
+	DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
+	TP_StopTestPulse(device)
+End
