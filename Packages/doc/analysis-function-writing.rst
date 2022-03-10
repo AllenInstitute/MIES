@@ -105,7 +105,8 @@ Thirty six hints for writing analysis functions
 
 #. Be sure to include documentation and tests if your analysis function
    publishes ZeroMQ messages. See ``CheckPipetteInBathPublishing`` and
-   :cpp:func:`PSQ_PB_Publish` for an example.
+   :cpp:func:`PSQ_PB_Publish` for an example. Add it also in
+   ``CheckPublishedMessage``.
 
 #. Tell your boss to test the current state.
 
