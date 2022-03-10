@@ -1127,9 +1127,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	variable type
 
 	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
-
-	sweepNo = AFH_GetLastSweepAcquired(device)
-	CHECK_EQUAL_VAR(sweepNo, sweepNo)
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
 
 	WAVE textualValues = GetLBTextualValues(device)
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
