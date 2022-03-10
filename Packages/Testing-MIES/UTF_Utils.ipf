@@ -5869,3 +5869,196 @@ Function FBD_Works()
 	WAVE/Z result = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 End
+
+Function ESFP_CheckParams()
+
+	try
+		ExtractStringFromPair("abcd", "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// These tests also cover GetStringFromWaveNote()
+Function ESFP_Works()
+	string ref, str
+
+	ref = "123"
+	str = ExtractStringFromPair("abcd:123;abcde:456", "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// ignores case
+	ref = "123"
+	str = ExtractStringFromPair("abcd:123;abcde:456", "ABCD")
+	CHECK_EQUAL_STR(ref, str)
+
+	// ignores space from AddEntryIntoWaveNoteAsList
+	ref = "123"
+	str = ExtractStringFromPair("abcd : 123;abcde : 456", "ABCD")
+	CHECK_EQUAL_STR(ref, str)
+
+	// supports custom separators
+	ref = "456"
+	str = ExtractStringFromPair("abcd=123|abcde=456|", "abcde", keySep = "=", listSep = "|")
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match
+	str = ExtractStringFromPair("abcd:123;abcde:456", "abcdef")
+	CHECK_EMPTY_STR(str)
+
+	// empty string
+	str = ExtractStringFromPair("", "abcdef")
+	CHECK_EMPTY_STR(str)
+End
+
+Function GSFWNR_Works()
+	string ref, str
+
+	// non-wave ref
+	Make/FREE plain
+	Note/K plain "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(plain, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// empty wave ref
+	Make/WAVE/FREE/N=0 wref
+	Note/K wref "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref, matching
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref 2D, matching
+	Make/WAVE/FREE/N=(2, 2) wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+	Note/K wref[2] "abcd:123"
+	Note/K wref[3] "abcd:123"
+
+	ref = "123"
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EQUAL_STR(ref, str)
+
+	// wave ref, not-matching (wref has a different one)
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcde:123"
+	Note/K wref[0] "abcd:123"
+	Note/K wref[1] "abcd:123"
+
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EMPTY_STR(str)
+
+	// wave ref, not-matching (first contained has a different one)
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+	Note/K wref "abcd:123"
+	Note/K wref[0] "abcde:123"
+	Note/K wref[1] "abcd:123"
+
+	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	CHECK_EMPTY_STR(str)
+End
+
+Function SeSt_CheckParams()
+	try
+		SetStringInWaveNote($"", "abcd", "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE wv
+		SetStringInWaveNote(wv, "", "123")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SeSt_Works()
+	string str, ref
+
+	// adds entry
+	Make/FREE plain
+
+	SetStringInWaveNote(plain, "abcd", "123")
+	str = note(plain)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// overwrites existing entry
+	Make/FREE plain
+	Note/K plain, "abcd:456;"
+
+	SetStringInWaveNote(plain, "abcd", "123")
+	str = note(plain)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// wave wref, non-recursive by default
+	Make/WAVE/FREE/N=2 wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+
+	SetStringInWaveNote(wref, "abcd", "123")
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[0])
+	CHECK_EMPTY_STR(str)
+
+	str = note(wref[1])
+	CHECK_EMPTY_STR(str)
+
+	// wave wref, recursive but empty
+	Make/WAVE/FREE/N=0 wref
+
+	SetStringInWaveNote(wref, "abcd", "123")
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	// wave wref 2D, recursive
+	Make/WAVE/FREE/N=(2, 2) wref
+	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
+
+	SetStringInWaveNote(wref, "abcd", "123", recursive = 1)
+
+	str = note(wref)
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[0])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[1])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[2])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = note(wref[3])
+	ref = "abcd:123;"
+	CHECK_EQUAL_STR(str, ref)
+End

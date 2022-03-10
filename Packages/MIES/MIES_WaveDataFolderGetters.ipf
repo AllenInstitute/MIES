@@ -782,13 +782,26 @@ End
 ///
 /// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
-Function/WAVE GetNIDAQChannelWave(device, channel)
+Function/WAVE GetNIDAQChannelWave(device, channel, mode)
 	string device
 	variable channel
+	variable mode
 
 	string name
 
 	name = "NI_Channel" + num2str(channel)
+
+	switch(mode)
+		case DATA_ACQUISITION_MODE:
+			name += "_DAQ"
+			break
+		case TEST_PULSE_MODE:
+			name += "_TP"
+			break
+		default:
+			ASSERT(0, "Invalid dataAcqOrTP")
+	endswitch
+
 	DFREF dfr = GetDevicePath(device)
 
 	WAVE/Z/SDFR=dfr wv = $name
@@ -799,6 +812,8 @@ Function/WAVE GetNIDAQChannelWave(device, channel)
 
 	// type does not matter as we change it in DC_MakeNIChannelWave anyway
 	Make/N=(0) dfr:$name/WAVE=wv
+
+	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
 
 	return wv
 End

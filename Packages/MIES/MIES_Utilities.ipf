@@ -874,6 +874,8 @@ End
 /// @brief Returns an unsorted free wave with all unique entries from wv
 ///
 /// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
+///
+/// @todo IP9-only Make threadsafe
 Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	Wave wv
 	variable caseSensitive
@@ -936,6 +938,8 @@ End
 /// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
 ///
 /// @return free wave with unique entries
+///
+/// @todo IP9-only make threadsafe
 static Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
 	Wave/T wv
 	variable caseSensitive
@@ -1167,48 +1171,69 @@ threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
 	endif
 End
 
+/// @brief Recursive version of GetStringFromWaveNote
+///
+/// Returns the extracted string for non-wave-reference waves.
+/// For wave-reference waves the string must be the same in the wave
+/// and all waves held in the wave reference wave.
+///
+/// @todo IP9-only Merge with GetStringFromWaveNote
+Function/S GetStringFromWaveNoteRecursive(WAVE wv, string key)
+	variable numEntries = numpnts(wv)
+	string str
+
+	str = GetStringFromWaveNote(wv, key)
+
+	if(!IsWaveRefWave(wv) || numEntries == 0)
+		return str
+	endif
+
+	Make/FREE/T/N=(numEntries) notes = GetStringFromWaveNoteRecursive(WaveRef(wv, row = p), key)
+
+	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
+	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
+
+	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], str))
+		return str
+	endif
+
+	return ""
+End
+
 /// @brief Return the string value of `key` found in the wave note
 /// default expected wave note format: `key1:val1;key2:str2;`
 /// counterpart of AddEntryIntoWaveNoteAsList when supplied with keySep = "="
 ///
 /// @param wv   wave reference where the WaveNote is taken from
 /// @param key  search for the value at key:value;
-/// @param keySep  [optional, defaults to `:`] separation character for (key, value) pairs
-/// @param listSep [optional, defaults to `;`] list separation character
+/// @param keySep  [optional, defaults to #DEFAULT_KEY_SEP] separation character for (key, value) pairs
+/// @param listSep [optional, defaults to #DEFAULT_LIST_SEP] list separation character
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
-threadsafe Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
-	Wave wv
-	string key
-	string keySep, listSep
-
-	if(ParamIsDefault(keySep) && ParamIsDefault(listSep))
-		return ExtractStringFromPair(note(wv), key)
-	elseif(ParamIsDefault(keySep))
-		return ExtractStringFromPair(note(wv), key, listSep = listSep)
-	elseif(ParamIsDefault(listSep))
-		return ExtractStringFromPair(note(wv), key, keySep = keySep)
-	else
-		return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep])
+	if(ParamIsDefault(keySep))
+		keySep = DEFAULT_KEY_SEP
 	endif
+
+	if(ParamIsDefault(listSep))
+		listSep = DEFAULT_LIST_SEP
+	endif
+
+	return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
 End
 
 /// @brief Same functionality as GetStringFromWaveNote() but accepts a string
 ///
 /// @sa GetStringFromWaveNote()
-threadsafe Function/S ExtractStringFromPair(str, key, [keySep, listSep])
-	string str
-	string key
-	string keySep, listSep
-
+threadsafe Function/S ExtractStringFromPair(string str, string key, [string keySep, string listSep])
 	if(ParamIsDefault(keySep))
-		keySep = ":"
-	endif
-	if(ParamIsDefault(listSep))
-		listSep = ";"
+		keySep = DEFAULT_KEY_SEP
 	endif
 
-	ASSERT_TS(!IsEmpty(str), "Empty string")
+	if(ParamIsDefault(listSep))
+		listSep = DEFAULT_LIST_SEP
+	endif
+
 	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	// AddEntryIntoWaveNoteAsList creates whitespaces "key = value;"
@@ -1220,14 +1245,25 @@ End
 /// @brief Update the string value of `key` found in the wave note to `str`
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
-threadsafe Function SetStringInWaveNote(wv, key, str)
-	Wave wv
-	string key, str
+threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive])
+	variable numEntries = numpnts(wv)
+
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	Note/K wv, ReplaceStringByKey(key, note(wv), str)
+
+	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(numEntries) junk = SetStringInWaveNote(WaveRef(wv, row = p), key, str, recursive = 1)
 End
 
 /// @brief Remove the surrounding quotes from the string if they are present

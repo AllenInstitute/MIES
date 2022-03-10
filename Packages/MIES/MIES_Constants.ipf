@@ -1715,3 +1715,6 @@ Constant HCM_INDEP  = 0x02
 Constant DECIMATION_NONE   = 0x0
 Constant DECIMATION_MINMAX = 0x1
 /// @}
+
+StrConstant DEFAULT_KEY_SEP = ":"
+StrConstant DEFAULT_LIST_SEP = ";"
