@@ -1192,6 +1192,9 @@ Function CheckPublishedMessage(string device, variable type)
 		case PSQ_PIPETTE_BATH:
 			expectedFilter = ANALYSIS_FUNCTION_PB
 			break
+		case PSQ_SEAL_EVALUATION:
+			expectedFilter = ANALYSIS_FUNCTION_SE
+			break
 		default:
 			PASS()
 			return NaN
