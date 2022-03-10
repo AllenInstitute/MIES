@@ -71,6 +71,11 @@
 /// PSQ_FMT_LBN_SE_RESISTANCE_B     Seal Resistance of TPs in group B                          Ω        Numerical                SE                          No                     No
 /// PSQ_FMT_LBN_SE_RESISTANCE_MAX   Maximum Seal Resistance of TPs in both groups              Ω        Numerical                SE                          No                     No
 /// PSQ_FMT_LBN_SE_RESISTANCE_PASS  Seal Resistance QC                                         On/Off   Numerical                SE                          No                     No
+/// LBN_DELTA_I                     Delta current in pulse                                     Amperes  Numerical                RV, AD, DA (Sub)            No                     Yes
+/// LBN_DELTA_V                     Delta voltage in pulse                                     Volts    Numerical                RV, AD, DA (Sub)            No                     Yes
+/// LBN_RESISTANCE_FIT              Fitted resistance from pulse                               Ohm      Numerical                RV, AD, DA (Sub)            No                     Yes
+/// LBN_RESISTANCE_FIT_ERR          Error of fitted resistance from pulse                      Ohm      Numerical                RV, AD, DA (Sub)            No                     Yes
+/// LBN_AUTOBIAS_TARGET_DIAG        Autobias target voltage from dialog                        mV       Numerical                RV                          No                     Yes
 /// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
 ///
 /// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
@@ -1752,7 +1757,7 @@ End
 ///
 ///    // get fitted resistance from last passing sweep
 ///    // resistance for the first headstage can be found in resistanceFitted[0]
-///    WAVE/Z resistanceFitted = GetLastSettingSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", headstage, UNKNOWN_MODE)
+///    WAVE/Z resistanceFitted = GetLastSettingSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, headstage, UNKNOWN_MODE)
 /// \endrst
 ///
 /// Decision logic flowchart:
@@ -1929,8 +1934,8 @@ Function PSQ_DAScale(device, s)
 
 					CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-					ED_AddEntryToLabnotebook(device, "Delta I", deltaI, unit = "A")
-					ED_AddEntryToLabnotebook(device, "Delta V", deltaV, unit = "V")
+					ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
+					ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
 					FitResistance(device, showPlot = showPlot)
 
@@ -3959,7 +3964,7 @@ Function PSQ_Chirp(device, s)
 					endif
 
 					// predates CreateAnaFuncLBNKey(), so we have to use a hardcoded name
-					WAVE/Z resistanceFromFit = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+					WAVE/Z resistanceFromFit = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 
 					if(!WaveExists(resistanceFromFit))
 						printf "(%s): The Resistance labnotebook entry could not be found.\r", device

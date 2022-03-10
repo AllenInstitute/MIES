@@ -1173,10 +1173,10 @@ static Function CheckForOtherUserLBNKeys(string device, variable type)
 	WAVE/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
 
 	// remove legacy entries
-	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta I")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta V")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit_Err")
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR)
 
 	prefix = CreateAnaFuncLBNKey(type, "%s", query = 1)
 	WAVE/Z ourUserEntries = GrepTextWave(entries, prefix + ".*")
