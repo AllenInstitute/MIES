@@ -1171,7 +1171,7 @@ Function MSQ_DAScale(device, s)
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_ACTIVE_HS)
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 			values[0, NUM_HEADSTAGES - 1] = statusHS[p]
-			ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
 
