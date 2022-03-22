@@ -3993,7 +3993,7 @@ Function PSQ_Chirp(device, s)
 				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_INITIAL_SCALE)
 				result[INDEP_HEADSTAGE] = initialDAScale
-				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = "Amperes")
+				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
 				SetDAScale(device, s.headstage, absolute=initialDAScale, roundTopA = 1)
 			endif
