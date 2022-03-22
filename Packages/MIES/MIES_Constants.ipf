@@ -1050,7 +1050,7 @@ Constant PSQ_SQUARE_PULSE_VERSION    = 1
 Constant PSQ_SEAL_EVALUATION_VERSION = 1
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
 Constant MSQ_DA_SCALE_VERSION        = 1
-Constant SC_SPIKE_CONTROL_VERSION    = 0
+Constant SC_SPIKE_CONTROL_VERSION    = 1
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions

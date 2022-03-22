@@ -345,7 +345,7 @@ static Function SC_ProcessPulses(string device, variable sweepNo, variable minim
 	[spikeNumbersLBN, spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(device, sweepNo)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS)
-	ED_AddEntryToLabnotebook(device, key, spikeNumbersLBN, unit = "a. u.")
+	ED_AddEntryToLabnotebook(device, key, spikeNumbersLBN)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_POSITIONS)
 	ED_AddEntryToLabnotebook(device, key, spikePositionsLBN, unit = "PA crd")
@@ -658,7 +658,7 @@ static Function SC_DetermineQCState(string device, variable sweepNo, WAVE spikeN
 	// spike counts
 	WAVE/T spikeCountStateLBN = SC_SpikeCountsQC(device, spikeNumbersLBN, idealNumberOfSpikes)
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE)
-	ED_AddEntryToLabnotebook(device, key, spikeCountStateLBN, unit = "a. u.")
+	ED_AddEntryToLabnotebook(device, key, spikeCountStateLBN)
 
 	// headstage QC
 	WAVE headstageQCLBN = SC_HeadstageQC(device, spikeCountStateLBN, spontaneousSpikingCheckLBN)
@@ -1014,7 +1014,7 @@ Function SC_SpikeControl(device, s)
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) settingsLBN = NaN
 			settingsLBN[INDEP_HEADSTAGE] = failedPulseLevel
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL)
-			ED_AddEntryToLabnotebook(device, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, settingsLBN, overrideSweepNo = s.sweepNo)
 
 			idealNumberOfSpikes = AFH_GetAnalysisParamNumerical("IdealNumberOfSpikesPerPulse", s.params)
 			PGC_SetAndActivateControl(bsPanel, "setvar_pulseAver_numberOfSpikes", val = idealNumberOfSpikes)
@@ -1022,7 +1022,7 @@ Function SC_SpikeControl(device, s)
 			settingsLBN = NaN
 			settingsLBN[INDEP_HEADSTAGE] = idealNumberOfSpikes
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS)
-			ED_AddEntryToLabnotebook(device, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, settingsLBN, overrideSweepNo = s.sweepNo)
 
 			// turn on PA plot at the end to skip expensive updating
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_PA", val = 1)
@@ -1072,7 +1072,7 @@ Function SC_SpikeControl(device, s)
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) trialsLBN = NaN
 			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
-			ED_AddEntryToLabnotebook(device, key, trialsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, trialsLBN, overrideSweepNo = s.sweepNo)
 
 			break
 		case POST_SWEEP_EVENT:
