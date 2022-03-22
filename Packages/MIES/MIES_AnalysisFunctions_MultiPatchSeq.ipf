@@ -735,7 +735,7 @@ Function MSQ_FastRheoEst(device, s)
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS)
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 			values[0, NUM_HEADSTAGES - 1] = statusHS[p]
-			ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(statusHS[i] && !statusHSIC[i]) // active non-IC headstage
