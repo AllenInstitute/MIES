@@ -5061,7 +5061,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			testpulseGroupSelLBN[INDEP_HEADSTAGE] = testpulseGroupSel
 
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP)
-			ED_AddEntryToLabnotebook(device, key, testpulseGroupSelLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, testpulseGroupSelLBN, overrideSweepNo = s.sweepNo)
 
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
