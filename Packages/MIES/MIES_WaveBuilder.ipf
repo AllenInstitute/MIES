@@ -1248,7 +1248,7 @@ static Function WB_NoiseSegment(pa)
 	ASSERT(IsInteger(pa.buildResolution) && pa.buildResolution > 0, "Invalid build resolution")
 
 	// duration is in ms
-	samples = pa.duration * pa.buildResolution * WAVEBUILDER_MIN_SAMPINT_HZ * 1e-3
+	samples = pa.duration * pa.buildResolution * WAVEBUILDER_MIN_SAMPINT_HZ * MILLI_TO_ONE
 
 	// even number of points for IFFT
 	samples = 2 * ceil(samples / 2)
@@ -1600,7 +1600,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			pa.duration = pa.numberOfPulses / pa.frequency * 1000
 		elseif(mode == PULSE_TRAIN_MODE_DUR)
 			// user defined duration
-			pa.numberOfPulses = pa.frequency * pa.duration / 1000
+			pa.numberOfPulses = pa.frequency * pa.duration * MILLI_TO_ONE
 		else
 			ASSERT(0, "Invalid mode")
 		endif

@@ -2652,7 +2652,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
 	switch(method[0])
 		case SF_APFREQUENCY_FULL:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
+			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE)
 			break
 		case SF_APFREQUENCY_INSTANTANEOUS:
 			Make/N=(numSets)/D/FREE outD
@@ -2663,7 +2663,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 				else
 					Make/FREE/D/N=(levelPerSet[i] - 1) distances
 					distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
-					outD[i] = 1.0 / Mean(distances) * 1e3
+					outD[i] = 1.0 / (Mean(distances) * MILLI_TO_ONE)
 				endif
 			endfor
 			break

@@ -5872,7 +5872,7 @@ Function UpdateLeftOverSweepTime(device, fifoPos)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(device)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
-	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
+	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
@@ -5952,7 +5952,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		// convert from mv to V
 		ASSERT(!cmpstr(ADunit[i], "mV"), "Unexpected AD Unit")
 
-		deltaV[i] = (elevated - baseline) * 1e-3
+		deltaV[i] = (elevated - baseline) * MILLI_TO_ONE
 
 		high = firstEdge - 1
 		low  = high - (firstEdge - onsetDelayPoint) * 0.1

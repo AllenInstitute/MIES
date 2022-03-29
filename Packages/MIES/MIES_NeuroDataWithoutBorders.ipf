@@ -55,7 +55,7 @@ threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variabl
 	// last time the wave was modified (UTC)
 	startingTime  = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
 	// we want the timestamp of the beginning of the measurement
-	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000
+	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
 
 	return startingTime
 End

@@ -284,11 +284,11 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
-		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
-		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
+		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * MILLI_TO_ONE
+		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * MILLI_TO_ONE
 
 		resistance = TPResults[%ResistanceSteadyState][headstage] * 1e6
-		setVoltage = TPResults[%BaselineSteadyState][headstage] * 1e-3
+		setVoltage = TPResults[%BaselineSteadyState][headstage] * MILLI_TO_ONE
 
 		DEBUGPRINT("resistance[Ohm]=", var=resistance)
 		DEBUGPRINT("setVoltage[V]=", var=setVoltage)

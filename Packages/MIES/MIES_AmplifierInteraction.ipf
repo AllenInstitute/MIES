@@ -132,18 +132,18 @@ Function AI_GetMCCScale(clampMode, func)
 	if(clampMode == V_CLAMP_MODE)
 		switch(func)
 			case MCC_SETHOLDING_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETHOLDING_FUNC:
 				return 1e+3
 			case MCC_SETPIPETTEOFFSET_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return 1e+3
 			case MCC_SETRSCOMPBANDWIDTH_FUNC:
 				return 1e+3
 			case MCC_GETRSCOMPBANDWIDTH_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
 				return 1e+6
 			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
@@ -168,7 +168,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_GETHOLDING_FUNC:
 				return ONE_TO_PICO
 			case MCC_SETPIPETTEOFFSET_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return 1e+3

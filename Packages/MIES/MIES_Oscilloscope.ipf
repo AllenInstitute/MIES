@@ -106,7 +106,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 	NVAR timestamp = $GetLastAcqHookCallTimeStamp(device)
 	updateInt = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdInt")
 	now = DateTime
-	if((now - timestamp) < updateInt / 1000)
+	if((now - timestamp) < updateInt * MILLI_TO_ONE)
 		return 0
 	endif
 	timestamp = now
@@ -467,7 +467,7 @@ static Function SCOPE_UpdatePowerSpectrum(device)
 		numADCs = DimSize(OscilloscopeData, COLS) - startOfADColumns
 
 		// FFT knows how to transform units without prefix so transform them temporarly
-		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * MILLI_TO_ONE, DimDelta(OscilloscopeData, ROWS) * MILLI_TO_ONE, "s", OscilloscopeData
 
 		Make/FREE/N=(numADCs) junk
 

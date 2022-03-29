@@ -570,7 +570,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
-	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) * MILLI_TO_ONE
 
 	// all channels are acquired simultaneously we can just check if the last
 	// channel has NaN in the last element
@@ -578,7 +578,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		FindValue/FNAN sweepWave
 		ASSERT(V_row >= 0, "Unexpected result")
 
-		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
+		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) * MILLI_TO_ONE
 	else
 		acquiredTime = plannedTime
 	endif

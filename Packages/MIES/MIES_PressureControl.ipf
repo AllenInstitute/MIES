@@ -1436,7 +1436,7 @@ static Function P_FillDAQWaves(device, headStage, p)
 			da[] = p.calPressure
 			da[DimSize(da, ROWS) - 1] = p.calPressureOffset
 
-			SetScale/P x, 0, HARDWARE_NI_6001_MIN_SAMPINT * 1e-3, "s", da, ad
+			SetScale/P x, 0, HARDWARE_NI_6001_MIN_SAMPINT * MILLI_TO_ONE, "s", da, ad
 			break
 		default:
 			ASSERT(0, "unsupported hardware")

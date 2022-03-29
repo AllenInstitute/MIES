@@ -874,12 +874,12 @@ static Function TestAPFrequency()
 
 	// works with 2D data and instantaneous
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
-	Make/FREE/D output_ref = {100, 94.59459459459458}
+	Make/FREE/D output_ref = {100, 94.59459459459457}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// x offset does not play any role
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
-	Make/FREE/D output_ref = {100, 94.59459459459458}
+	Make/FREE/D output_ref = {100, 94.59459459459457}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns 0 if nothing found for Full

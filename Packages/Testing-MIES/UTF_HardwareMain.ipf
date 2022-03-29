@@ -1572,8 +1572,8 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 				CHECK_NEQ_VAR(index, -1)
 				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
 				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
-				startRef = times[k << 1] / 1E3
-				endRef = times[k << 1 + 1] / 1E3
+				startRef = times[k << 1] * MILLI_TO_ONE
+				endRef = times[k << 1 + 1] * MILLI_TO_ONE
 
 				if(CheckIfSmall(startRef, tol = 1e-12))
 					CHECK_SMALL_VAR(startTime)

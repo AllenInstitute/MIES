@@ -284,12 +284,12 @@ static Function PSQ_StoreRMSThresholdsInLabnotebook(string device, variable type
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_THRESHOLD)
 	// mV -> V
-	values[headstage] = rmsShortThreshold * 1e-3
+	values[headstage] = rmsShortThreshold * MILLI_TO_ONE
 	ED_AddEntryToLabnotebook(device, key, values, unit = "V", overrideSweepNo = sweepNo)
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	// mV -> V
-	values[headstage] = rmsLongThreshold * 1e-3
+	values[headstage] = rmsLongThreshold * MILLI_TO_ONE
 	ED_AddEntryToLabnotebook(device, key, values, unit = "V", overrideSweepNo = sweepNo)
 End
 
@@ -535,7 +535,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		ASSERT(IsFinite(DAC), "Could not determine DAC channel number for HS " + num2istr(i) + " for device " + device)
 		epName = "Name=Baseline Chunk;Index=" + num2istr(chunk)
 		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax / 1E3, (chunkStartTimeMax + chunkLengthTime) / 1E3, epName, shortname = epShortName)
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
 
 		if(chunk == 0)
 			// store baseline RMS short/long analysis parameters in labnotebook on first use
@@ -679,7 +679,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	if(HasOneValidEntry(avgVoltage))
 		// mV -> V
-		avgVoltage[] *= 1e-3
+		avgVoltage[] *= MILLI_TO_ONE
 		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV, chunk = chunk)
 		ED_AddEntryToLabnotebook(device, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
@@ -1501,7 +1501,7 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	actual = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device) * 1e3
 #else
 	// dimension delta [ms]
-	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * 1e-3)
+	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * MILLI_TO_ONE)
 #endif
 
 	// samplingFrequency [kHz]
@@ -1985,7 +1985,7 @@ Function PSQ_DAScale(device, s)
 					WAVE pulseDuration = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(pulseDuration, ROWS) == acquiredSweepsInSet, "Mismatched row count")
 
-					spikeFrequencies[] = str2num(FloatWithMinSigDigits(spikeCount[p] / (pulseDuration[p] / 1000), numMinSignDigits = 2))
+					spikeFrequencies[] = str2num(FloatWithMinSigDigits(spikeCount[p] / (pulseDuration[p] * MILLI_TO_ONE), numMinSignDigits = 2))
 
 					WAVE DAScalesPlot = GetAnalysisFuncDAScales(device, s.headstage)
 					Redimension/N=(acquiredSweepsInSet) DAScalesPlot
@@ -3243,8 +3243,8 @@ static Function PSQ_Ramp_AddEpoch(string device, variable headstage, WAVE wv, st
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
 
 	ASSERT(!cmpstr(WaveUnits(wv, ROWS), "ms"), "Unexpected x unit")
-	epBegin = IndexToScale(wv, first, ROWS) / 1e3
-	epEnd   = IndexToScale(wv, last, ROWS) / 1e3
+	epBegin = IndexToScale(wv, first, ROWS) * MILLI_TO_ONE
+	epEnd   = IndexToScale(wv, last, ROWS)  * MILLI_TO_ONE
 
 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 End
@@ -4020,7 +4020,7 @@ Function PSQ_Chirp(device, s)
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_RESISTANCE)
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = "Ohm")
 
-				targetVoltage = ((outerRelativeBound + innerRelativeBound) / 2) * 1e-3
+				targetVoltage = ((outerRelativeBound + innerRelativeBound) / 2) * MILLI_TO_ONE
 				initialDAScale = targetVoltage / resistance
 
 				sprintf msg, "Initial DAScale: %g [Amperes]\r", initialDAScale
@@ -4707,7 +4707,7 @@ static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
 	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
 	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
 
-	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * 1e-3
+	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * MILLI_TO_ONE
 
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
@@ -4732,15 +4732,15 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	variable amplitude, epBegin, epEnd
 	string shortName, tags
 
-	prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex) * 1e-3
+	prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex)
 	ASSERT(amplitude == 0, "Invald amplitude")
 
-	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 1) * 1e-3
+	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 1) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 1)
 	ASSERT(amplitude != 0, "Invald amplitude")
 
-	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 2) * 1e-3
+	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 2) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 2)
 	ASSERT(amplitude == 0, "Invald amplitude")
 
@@ -5364,9 +5364,9 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
 
 	epBegin = 0
-	epEnd   = totalOnsetDelay * 1e-3
+	epEnd   = totalOnsetDelay * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
-		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * 1e-3
+		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
 		epBegin = epEnd
 		epEnd   = epBegin + duration
@@ -5383,7 +5383,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
 			ASSERT(amplitude == 0, "Invalid amplitude")
 
-			chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * 1e-3
+			chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
 			if(duration != chunkLength)
 				printf "The length of epoch %d (%g) is different from the expected one %g.\r", i, duration, chunkLength

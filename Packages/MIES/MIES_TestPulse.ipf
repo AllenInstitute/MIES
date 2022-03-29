@@ -572,8 +572,8 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 
 		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * PICO_TO_ONE)
 
-		targetVoltage    = TPSettings[%autoAmpVoltage][i] * 1e-3
-		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * 1e-3
+		targetVoltage    = TPSettings[%autoAmpVoltage][i] * MILLI_TO_ONE
+		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * MILLI_TO_ONE
 
 		resistance = TPResults[%ResistanceSteadyState][i] * 1e6
 
@@ -585,7 +585,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			indizes[i] += 1
 			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
 		else
-			voltage = TPResults[%AutoTPDeltaV][i] * 1e-3
+			voltage = TPResults[%AutoTPDeltaV][i] * MILLI_TO_ONE
 		endif
 
 		skipAutoBaseline = 0

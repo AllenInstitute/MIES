@@ -501,7 +501,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
-		CHECK_CLOSE_VAR(conversion, 1e-3, tol = 1e-5)
+		CHECK_CLOSE_VAR(conversion, MILLI_TO_ONE, tol = 1e-5)
 
 		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 
