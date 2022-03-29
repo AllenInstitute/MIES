@@ -134,14 +134,14 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETHOLDING_FUNC:
 				return MILLI_TO_ONE
 			case MCC_GETHOLDING_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETRSCOMPBANDWIDTH_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_GETRSCOMPBANDWIDTH_FUNC:
 				return MILLI_TO_ONE
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
@@ -171,7 +171,7 @@ Function AI_GetMCCScale(clampMode, func)
 				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
 				return PICO_TO_ONE
 			case MCC_GETNEUTRALIZATIONCAP_FUNC:
@@ -972,11 +972,11 @@ static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 
 	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
 
-	ADGain    = tds.ScaleFactor * tds.Alpha / 1000
+	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
 	clampMode = tds.OperatingMode
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
-		DAGain = tds.ExtCmdSens * 1000
+		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
 	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
 		DAGain = tds.ExtCmdSens * ONE_TO_PICO
 	endif

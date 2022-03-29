@@ -473,7 +473,7 @@ static Function SCOPE_UpdatePowerSpectrum(device)
 
 		MultiThread junk[] = DoFFT(OscilloscopeData, TPOscilloscopeData, (startOfADColumns + p))
 
-		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * ONE_TO_MILLI, DimDelta(OscilloscopeData, ROWS) * ONE_TO_MILLI, "ms", OscilloscopeData
 	endif
 End
 

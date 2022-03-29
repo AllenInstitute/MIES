@@ -469,12 +469,12 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 				endif
 
 				if(level == 2)
-					pulseInfos[idx][%Length] = (last - first) * 1000
+					pulseInfos[idx][%Length] = (last - first) * ONE_TO_MILLI
 
 					hasOneValidEntry = 1
 				elseif(level == 3 && (strsearch(tags, "Active", 0) != -1) || (strsearch(tags, "SubType=Pulse;", 0) != -1))
-					pulseInfos[idx][%PulseStart] = first * 1000
-					pulseInfos[idx][%PulseEnd]   = last  * 1000
+					pulseInfos[idx][%PulseStart] = first * ONE_TO_MILLI
+					pulseInfos[idx][%PulseEnd]   = last  * ONE_TO_MILLI
 
 					hasPerPulseInfo = 1
 					hasOneValidEntry = 1

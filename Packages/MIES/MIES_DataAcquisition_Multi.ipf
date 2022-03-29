@@ -58,7 +58,7 @@ Function DQM_FIFOMonitor(s)
 
 						FIFO2WAVE/R=[fifoPosGlobal, fifoLatest - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
 						multithread NIChannel[fifoPosGlobal, fifoLatest - 1] = wNIReadOut[p - fifoPosGlobal]
-						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * 1000, "ms", NIChannel
+						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * ONE_TO_MILLI, "ms", NIChannel
 
 					endfor
 				catch

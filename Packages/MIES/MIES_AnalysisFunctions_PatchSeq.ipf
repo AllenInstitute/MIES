@@ -437,8 +437,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		endif
 
 		// s -> ms
-		chunkStartTimeMax = str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME]) * 1e3
-		chunkLengthTime   = (str2num(userChunkEpochs[chunk][EPOCH_COL_ENDTIME]) - str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME])) * 1e3
+		chunkStartTimeMax = str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		chunkLengthTime   = (str2num(userChunkEpochs[chunk][EPOCH_COL_ENDTIME]) - str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
 		baselineType      = PSQ_BL_GENERIC
 	endif
 
@@ -3453,7 +3453,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE/Z baselineLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 		ASSERT(WaveExists(baselineLBN), "Missing targetV from LBN")
-		baselineVoltage = baselineLBN[headstage] * 1000 // V -> mV
+		baselineVoltage = baselineLBN[headstage] * ONE_TO_MILLI
 		ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
 	endif
 

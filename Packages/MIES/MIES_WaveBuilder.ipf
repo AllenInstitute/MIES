@@ -1292,7 +1292,7 @@ static Function WB_NoiseSegment(pa)
 
 	ASSERT(!cmpstr(WaveUnits(segmentWave, ROWS), "s"), "Unexpect wave unit")
 	ASSERT(DimOffset(segmentWave, ROWS) == 0, "Unexpected wave rows offset")
-	SetScale/P x, 0, DimDelta(segmentWave, ROWS) * 1000, "ms", segmentWave
+	SetScale/P x, 0, DimDelta(segmentWave, ROWS) * ONE_TO_MILLI, "ms", segmentWave
 
 	Redimension/N=(DimSize(segmentWave, ROWS) / pa.buildResolution) segmentWave
 
@@ -1597,7 +1597,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		if(mode == PULSE_TRAIN_MODE_PULSE)
 			// user defined number of pulses
-			pa.duration = pa.numberOfPulses / pa.frequency * 1000
+			pa.duration = pa.numberOfPulses / pa.frequency * ONE_TO_MILLI
 		elseif(mode == PULSE_TRAIN_MODE_DUR)
 			// user defined duration
 			pa.numberOfPulses = pa.frequency * pa.duration * MILLI_TO_ONE
@@ -1612,8 +1612,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	endif
 
 	if(pa.poisson)
-
-		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0
@@ -1622,7 +1621,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = 0
 
 		for(;;)
-			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
+			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * ONE_TO_MILLI
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
@@ -1640,7 +1639,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		firstStep = 1 / pa.firstFreq
 		lastStep  = 1 / pa.lastFreq
 		dist      = (lastStep / firstStep)^(1 / (pa.numberOfPulses - 1))
-		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * 1000 - pa.pulseDuration
+		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * ONE_TO_MILLI - pa.pulseDuration
 
 		if(pa.mixedFreqShuffle)
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_LINEAR_CONGRUENTIAL)
@@ -1670,7 +1669,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
 		endfor
 	else
-		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0

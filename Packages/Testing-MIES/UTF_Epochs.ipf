@@ -311,8 +311,8 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * 1000 + OTHER_EPOCHS_PRECISION
-		last  = endT[i] * 1000 - OTHER_EPOCHS_PRECISION
+		first = startT[i] * ONE_TO_MILLI + OTHER_EPOCHS_PRECISION
+		last  = endT[i] * ONE_TO_MILLI - OTHER_EPOCHS_PRECISION
 		range = last - first
 
 		if(range <= 0)
