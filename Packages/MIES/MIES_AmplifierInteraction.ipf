@@ -1578,7 +1578,7 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		ampSettingsWave[0][31][i] = tds.HardwareType
 		ampSettingsWave[0][32][i] = tds.SecondaryAlpha
 		ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
-		ampSettingsWave[0][34][i] = tds.SeriesResistance * 1e-6 // converts Ω to MΩ
+		ampSettingsWave[0][34][i] = tds.SeriesResistance * ONE_TO_MEGA // converts Ω to MΩ
 
 		ampSettingsTextWave[0][0][i] = tds.OperatingModeString
 		ampSettingsTextWave[0][1][i] = tds.ScaledOutSignalString
