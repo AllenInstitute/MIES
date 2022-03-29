@@ -1000,10 +1000,11 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	Make/O/N=2 dfr:chirpBoundLowerMax/WAVE=lowerMax
 	Make/O/N=2 dfr:chirpBoundLowerMin/WAVE=lowerMin
 
-	upperMax[] = baselineVoltage / 1e3 + outerRelativeBound
-	upperMin[] = baselineVoltage / 1e3 + innerRelativeBound
-	lowerMax[] = baselineVoltage / 1e3 - innerRelativeBound
-	lowerMin[] = baselineVoltage / 1e3 - outerRelativeBound
+	// V -> mV
+	upperMax[] = baselineVoltage * 1e3 + outerRelativeBound
+	upperMin[] = baselineVoltage * 1e3 + innerRelativeBound
+	lowerMax[] = baselineVoltage * 1e3 - innerRelativeBound
+	lowerMin[] = baselineVoltage * 1e3 - outerRelativeBound
 
 	GetAxis/W=$graph/Q bottom
 	lastX = V_max
