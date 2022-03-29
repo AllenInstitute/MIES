@@ -149,7 +149,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
 				return 1e-6
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETWHOLECELLCOMPCAP_FUNC:
 				return ONE_TO_PICO
 			default:
@@ -164,7 +164,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				return 1e-6
 			case MCC_SETHOLDING_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETHOLDING_FUNC:
 				return ONE_TO_PICO
 			case MCC_SETPIPETTEOFFSET_FUNC:
@@ -173,7 +173,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return 1e+3
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETNEUTRALIZATIONCAP_FUNC:
 				return ONE_TO_PICO
 			default:

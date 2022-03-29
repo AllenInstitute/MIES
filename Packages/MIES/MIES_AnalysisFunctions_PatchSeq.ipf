@@ -686,7 +686,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	if(HasOneValidEntry(avgCurrent))
 		// pA -> A
-		avgCurrent[] *= 1e-12
+		avgCurrent[] *= PICO_TO_ONE
 		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR, chunk = chunk)
 		ED_AddEntryToLabnotebook(device, key, avgCurrent, unit = "Amperes", overrideSweepNo = s.sweepNo)
 	endif
@@ -1993,7 +1993,7 @@ Function PSQ_DAScale(device, s)
 					WAVE DAScalesLBN = GetLastSettingEachSCI(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, \
 															 s.headstage, DATA_ACQUISITION_MODE)
 					ASSERT(DimSize(DAScalesLBN, ROWS) == acquiredSweepsInSet, "Mismatched row count")
-					DAScalesPlot[] = DAScalesLBN[p] * 1e-12
+					DAScalesPlot[] = DAScalesLBN[p] * PICO_TO_ONE
 
 					sprintf msg, "Spike frequency %.2W1PHz, DAScale %.2W1PA", spikeFrequencies[acquiredSweepsInSet - 1], DAScalesPlot[acquiredSweepsInSet - 1]
 					DEBUGPRINT(msg)
@@ -2169,7 +2169,7 @@ Function PSQ_DAScale(device, s)
 						ASSERT(0, "Invalid case")
 						break
 				endswitch
-				SetDAScale(device, i, absolute=DAScale * 1e-12)
+				SetDAScale(device, i, absolute=DAScale * PICO_TO_ONE)
 			endif
 		endfor
 	endif
@@ -2331,7 +2331,7 @@ Function PSQ_SquarePulse(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			WAVE DAScalesLBN = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-			DAScale = DAScalesLBN[s.headstage] * 1e-12
+			DAScale = DAScalesLBN[s.headstage] * PICO_TO_ONE
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SQUARE_PULSE, s)
 
@@ -2669,7 +2669,7 @@ Function PSQ_Rheobase(device, s)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
 
 			WAVE DAScalesLBN = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-			DAScale = DAScalesLBN[s.headstage] * 1e-12
+			DAScale = DAScalesLBN[s.headstage] * PICO_TO_ONE
 
 			if(numSweepsWithSpikeDetection >= 2)
 				lastSweepHasSpike = spikeDetectionRA[numSweepsWithSpikeDetection - 2]
@@ -3012,7 +3012,7 @@ Function PSQ_Ramp(device, s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(device, s.headstage, absolute=PSQ_RA_DASCALE_DEFAULT * 1e-12)
+			SetDAScale(device, s.headstage, absolute=PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
 
 			return 0
 

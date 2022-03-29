@@ -5972,7 +5972,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 
 		// convert from pA to A
 		ASSERT(!cmpstr(DAunit[i], "pA"), "Unexpected DA Unit")
-		deltaI[i] = (elevated - baseline) * 1e-12
+		deltaI[i] = (elevated - baseline) * PICO_TO_ONE
 
 		resistance[i] = deltaV[i] / deltaI[i]
 

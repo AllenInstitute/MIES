@@ -570,7 +570,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
-		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * 1e-12)
+		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * PICO_TO_ONE)
 
 		targetVoltage    = TPSettings[%autoAmpVoltage][i] * 1e-3
 		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * 1e-3
@@ -639,7 +639,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			sprintf msg, "headstage %d: current  %g, targetVoltage %g, resistance %g, scalar %g\r", i, current, targetVoltage, resistance, scalar
 			DEBUGPRINT(msg)
 
-			current = TPSettings[%amplitudeIC][i] * 1e-12 + current * scalar
+			current = TPSettings[%amplitudeIC][i] * PICO_TO_ONE + current * scalar
 
 			if(abs(current) > maximumCurrent)
 				printf "Headstage %d: Not applying new amplitude of %.0W0PA as that would exceed the maximum allowed current of %.0W0PA.\r", i, current, maximumCurrent

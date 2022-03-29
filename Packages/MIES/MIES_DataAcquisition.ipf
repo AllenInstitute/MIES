@@ -278,7 +278,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
 
-		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
+		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * PICO_TO_ONE)
 		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
 
 		/// all variables holding physical units use plain values without prefixes

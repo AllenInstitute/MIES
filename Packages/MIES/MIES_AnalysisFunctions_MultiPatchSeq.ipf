@@ -766,7 +766,7 @@ Function MSQ_FastRheoEst(device, s)
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_STEPSIZE, query = 1)
 			WAVE stepSize = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			WAVE DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-			DAScale[] *= 1e-12
+			DAScale[] *= PICO_TO_ONE
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
@@ -827,7 +827,7 @@ Function MSQ_FastRheoEst(device, s)
 
 				ASSERT(IsFinite(newDAScaleValue), "Unexpected newDAScaleValue")
 
-				maxDAScale = AFH_GetAnalysisParamNumerical("MaximumDAScale", s.params) * 1e-12
+				maxDAScale = AFH_GetAnalysisParamNumerical("MaximumDAScale", s.params) * PICO_TO_ONE
 
 				if(IsFinite(maxDAScale) && newDAScaleValue > maxDAScale)
 					rangeExceededNew[i] = 1
@@ -931,9 +931,9 @@ Function MSQ_FastRheoEst(device, s)
 					if(WaveExists(finalDAScaleAll))
 						WAVE finalDAScale = ZapNaNs(finalDAScaleAll)
 						ASSERT(DimSize(finalDAScale, ROWS) == 1, "Unexpected finalDAScale")
-						val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * 1e-12 + finalDAScale[0])
+						val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * PICO_TO_ONE + finalDAScale[0])
 					else
-						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * 1e-12
+						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
 					SetDAScale(device, i, absolute=val)
@@ -1299,7 +1299,7 @@ Function MSQ_DAScale(device, s)
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, i, absolute=(DAScales[index] + daScaleOffset[i]) * 1e-12)
+			SetDAScale(device, i, absolute=(DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
 			DAScalesIndex[i] += 1
 		endfor
 	endif

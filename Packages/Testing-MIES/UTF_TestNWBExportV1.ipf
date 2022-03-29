@@ -470,7 +470,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	if(!cmpstr(unit_ref, "pA"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
-		CHECK_CLOSE_VAR(conversion, 1e-12)
+		CHECK_CLOSE_VAR(conversion, PICO_TO_ONE)
 
 		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "A"
