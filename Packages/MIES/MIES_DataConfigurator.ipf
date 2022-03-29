@@ -339,7 +339,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
 			FastOp ITCDataWave = 0
-			SetScale/P x 0, samplingInterval / 1000, "ms", ITCDataWave
+			SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
 			break
@@ -347,7 +347,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			Redimension/N=(numActiveChannels) NIDataWave
 
-			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
+			SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", NIDataWave
 
 			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
@@ -378,7 +378,7 @@ static Function/WAVE DC_MakeNIChannelWave(device, numRows, samplingInterval, ind
 	WAVE NIChannel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(type) NIChannel
 	FastOp NIChannel= 0
-	SetScale/P x 0, samplingInterval / 1000, "ms", NIChannel
+	SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", NIChannel
 
 	return NIChannel
 End
@@ -520,7 +520,7 @@ static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, num
 	Redimension/N=(numRows, numDACs + numADCs + numTTLs)/Y=(type) wv
 
 	if(isFourierTransform)
-		SetScale/I x, 0, 1 / (2 * (sampleInterval / 1000)), "Hz", wv
+		SetScale/I x, 0, 1 / (2 * (sampleInterval * MICRO_TO_MILLI)), "Hz", wv
 	else
 		SetScale/P x, 0, sampleInterval, "ms", wv
 	endif
@@ -974,7 +974,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentChannelProperty(device, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(device, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(device, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * 1e-3)
+	DC_DocumentChannelProperty(device, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * MICRO_TO_MILLI)
 
 	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto"))
@@ -2012,10 +2012,10 @@ static Function DC_ReturnTotalLengthIncrease(device, [onsetDelayUser, onsetDelay
 	numActiveDACs          = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
 	samplingInterval       = DAP_GetSampInt(device, DATA_ACQUISITION_MODE)
 	distributedDAQ         = DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq")
-	onsetDelayUserVal      = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (samplingInterval / 1000))
-	onsetDelayAutoVal      = round(GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto") / (samplingInterval / 1000))
-	terminationDelayVal    = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (samplingInterval / 1000))
-	distributedDAQDelayVal = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (samplingInterval / 1000))
+	onsetDelayUserVal      = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (samplingInterval * MICRO_TO_MILLI))
+	onsetDelayAutoVal      = round(GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto") / (samplingInterval * MICRO_TO_MILLI))
+	terminationDelayVal    = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (samplingInterval * MICRO_TO_MILLI))
+	distributedDAQDelayVal = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (samplingInterval * MICRO_TO_MILLI))
 
 	if(!ParamIsDefault(onsetDelayUser))
 		onsetDelayUser = onsetDelayUserVal

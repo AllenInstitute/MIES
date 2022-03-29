@@ -1559,8 +1559,8 @@ Function TP_UpdateTPSettingsCalculated(string device)
 	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] / 100
 
 	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
-	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) / 1000))
-	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, DATA_ACQUISITION_MODE) / 1000))
+	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) * MICRO_TO_MILLI))
+	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI))
 
 	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
 	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))

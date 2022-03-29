@@ -2679,7 +2679,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	endif
 
 	if(tgs.dDAQDisplayMode)
-		samplingInt = GetSamplingInterval(config) * 1e-3
+		samplingInt = GetSamplingInterval(config) * MICRO_TO_MILLI
 
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)

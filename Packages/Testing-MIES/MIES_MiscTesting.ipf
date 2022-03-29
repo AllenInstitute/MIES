@@ -23,7 +23,7 @@ Function GetDimLabelVsCtrlInfo(win)
 	endfor
 
 	microSeconds = stopMSTimer(timerRefNum)
-	Print microSeconds/1000/numTrials, "milliseconds for dimLabelSearch"
+	Print microSeconds * MICRO_TO_MILLI / numTrials, "milliseconds for dimLabelSearch"
 
 	timerRefNum = startMSTimer
 	if (timerRefNum == -1)
@@ -35,7 +35,7 @@ Function GetDimLabelVsCtrlInfo(win)
 	endfor
 
 	microSeconds = stopMSTimer(timerRefNum)
-	Print microSeconds/1000/numTrials, "milliseconds for controlInfo"
+	Print microSeconds * MICRO_TO_MILLI / numTrials, "milliseconds for controlInfo"
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly

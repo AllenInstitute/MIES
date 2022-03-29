@@ -404,7 +404,7 @@ static Function TestEpochsGeneric(device)
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(samplInt, NUMERIC_WAVE)
-	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1e-3
+	samplingInterval = samplInt[INDEP_HEADSTAGE] * MICRO_TO_MILLI
 
 	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint
