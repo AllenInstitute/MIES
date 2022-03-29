@@ -6062,3 +6062,16 @@ Function SeSt_Works()
 	ref = "abcd:123;"
 	CHECK_EQUAL_STR(str, ref)
 End
+
+Function GMC_SomeVariants()
+
+	// 1 mA -> 1e-3A
+	CHECK_EQUAL_VAR(MILLI_TO_ONE, 1e-3)
+
+	// 1 MA -> 1e9 mA
+	CHECK_EQUAL_VAR(MEGA_TO_MILLI, 1e9)
+
+	CHECK_EQUAL_VAR(PETA_TO_FEMTO, 1e30)
+
+	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
+End
