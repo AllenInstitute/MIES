@@ -6075,3 +6075,13 @@ Function GMC_SomeVariants()
 
 	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
 End
+
+Function CSIR_Works()
+
+	CHECK_CLOSE_VAR(ConvertRateToSamplingInterval(200), 5)
+End
+
+Function CRTSI_Works()
+
+	CHECK_CLOSE_VAR(ConvertSamplingIntervalToRate(5), 200)
+End
