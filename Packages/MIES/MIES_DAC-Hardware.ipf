@@ -2040,7 +2040,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 			pos += strlen(noteID)
 			endpos = strsearch(FIFONote, "\r", pos)
 			channelTimeOffset = str2num(FIFONote[pos, endpos - 1])
-			DEBUGPRINT("Time offset between NI channels: " + num2str(channelTimeOffset*1E6) + " µs")
+			DEBUGPRINT("Time offset between NI channels: " + num2str(channelTimeOffset * ONE_TO_MICRO) + " µs")
 		endif
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()

@@ -1823,7 +1823,7 @@ Function DAP_GetSampInt(device, dataAcqOrTP, [valid])
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		fixedFreqkHzStr = DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")
 		if(cmpstr(fixedFreqkHzStr, "Maximum"))
-			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * 1e6
+			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * ONE_TO_MICRO
 
 			if(!ParamIsDefault(valid))
 				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE)

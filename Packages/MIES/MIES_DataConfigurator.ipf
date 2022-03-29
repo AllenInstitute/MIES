@@ -2056,7 +2056,7 @@ static Function DC_GetStopCollectionPoint(string device, variable dataAcqOrTP, W
 		FindValue/I=(DAQ_CHANNEL_TYPE_DAQ) DACmode
 
 		if(V_Value == -1)
-			return TIME_TP_ONLY_ON_DAQ * 1E6 / DAP_GetSampInt(device, dataAcqOrTP)
+			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / DAP_GetSampInt(device, dataAcqOrTP)
 		else
 			totalIncrease = DC_ReturnTotalLengthIncrease(device)
 			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)

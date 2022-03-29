@@ -502,7 +502,7 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(device, channelNumber, epBegin * 1e6, epEnd * 1e6, tags, shortName, EPOCH_USER_LEVEL)
+	return EP_AddEpoch(device, channelNumber, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave
@@ -687,7 +687,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 		// add unacquired epoch
 		// relies on EP_AddEpoch ignoring single point epochs
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
+		EP_AddEpoch(device, channel, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
 

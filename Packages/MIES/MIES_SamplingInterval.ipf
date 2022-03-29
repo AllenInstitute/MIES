@@ -459,7 +459,7 @@ static Function SI_TestSampInt(device)
 			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
 			// ITCGetAllChannelsConfig2 returns the sampling interval in Hz
 			// but we want it in microseconds
-			sampIntRead = 1/V_min * 1e6
+			sampIntRead = 1/V_min * ONE_TO_MICRO
 
 			if(sampIntRead == sampInt)
 				if(numConsecutive == -1)
