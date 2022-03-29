@@ -959,7 +959,7 @@ Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
 	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 
 	if(!ParamIsDefault(absolute))
-		amps = absolute / 1e-12
+		amps = absolute * ONE_TO_PICO
 	elseif(!ParamIsDefault(relative))
 		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		amps = DAG_GetNumericalValue(device, lbl, index = DAC) * relative

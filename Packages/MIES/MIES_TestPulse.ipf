@@ -646,7 +646,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 				continue
 			endif
 
-			TPSettings[%amplitudeIC][i] = RoundNumber(current / 1e-12, TP_SET_PRECISION)
+			TPSettings[%amplitudeIC][i] = RoundNumber(current * ONE_TO_PICO, TP_SET_PRECISION)
 		endif
 
 		sprintf msg, "headstage %d has failing auto TP amplitude and will use a new IC amplitude of %g", i, TPSettings[%amplitudeIC][i]

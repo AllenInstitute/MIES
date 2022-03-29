@@ -2011,7 +2011,7 @@ Function PSQ_DAScale(device, s)
 							Make/FREE/D/N=2 W_sigma = NaN
 						endif
 
-						fISlope[s.headstage] = coefWave[1]/1e12 * 100
+						fISlope[s.headstage] = coefWave[1]/ONE_TO_PICO * 100
 
 						WAVE fitWave = $(CleanupName("fit_" + NameOfWave(spikeFrequencies), 0))
 
@@ -2043,7 +2043,7 @@ Function PSQ_DAScale(device, s)
 							sprintf str, "a = %.3g +/- %.3g Hz\r", coefWave[0], W_sigma[0]
 							textBoxString += str
 
-							sprintf str, "b = %.3g +/- %.3g Hz/pA\r", coefWave[1]/1e12, W_sigma[1]/1e12
+							sprintf str, "b = %.3g +/- %.3g Hz/pA\r", coefWave[1]/ONE_TO_PICO, W_sigma[1]/ONE_TO_PICO
 							textBoxString += str
 
 							sprintf str, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]

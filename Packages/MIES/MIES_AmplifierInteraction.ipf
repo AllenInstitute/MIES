@@ -151,7 +151,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
 				return 1e-12
 			case MCC_GETWHOLECELLCOMPCAP_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			default:
 				return 1
 				break
@@ -166,7 +166,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETHOLDING_FUNC:
 				return 1e-12
 			case MCC_GETHOLDING_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return 1e-3
 			case MCC_GETPIPETTEOFFSET_FUNC:
@@ -175,7 +175,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
 				return 1e-12
 			case MCC_GETNEUTRALIZATIONCAP_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			default:
 				return 1
 				break
@@ -978,7 +978,7 @@ static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 	if(tds.OperatingMode == V_CLAMP_MODE)
 		DAGain = tds.ExtCmdSens * 1000
 	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
-		DAGain =tds.ExtCmdSens * 1e12
+		DAGain = tds.ExtCmdSens * ONE_TO_PICO
 	endif
 End
 
@@ -1570,7 +1570,7 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		ampSettingsWave[0][23][i] = tds.ScaleFactor
 		ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
 		ampSettingsWave[0][25][i] = tds.LPFCutoff
-		ampSettingsWave[0][26][i] = tds.MembraneCap * 1e+12 // converts F to pF
+		ampSettingsWave[0][26][i] = tds.MembraneCap * ONE_TO_PICO // converts F to pF
 		ampSettingsWave[0][27][i] = tds.ExtCmdSens
 		ampSettingsWave[0][28][i] = tds.RawOutSignal
 		ampSettingsWave[0][29][i] = tds.RawScaleFactor

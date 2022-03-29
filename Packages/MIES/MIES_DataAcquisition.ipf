@@ -331,7 +331,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		DEBUGPRINT("current[A] to send=", var=current)
 		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
-		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * ONE_TO_PICO,sendToAll=0)
 	endfor
 End
 

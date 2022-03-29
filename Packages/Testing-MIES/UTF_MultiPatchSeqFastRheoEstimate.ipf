@@ -150,11 +150,11 @@ static Function MSQ_FRE1_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -240,11 +240,11 @@ static Function MSQ_FRE2_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -332,11 +332,11 @@ static Function MSQ_FRE3_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320},  mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -425,11 +425,11 @@ static Function MSQ_FRE4_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -523,11 +523,11 @@ static Function MSQ_FRE5_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -628,7 +628,7 @@ static Function MSQ_FRE6_REENTRY([str])
 	CHECK_WAVE(stimScale, NULL_WAVE)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
@@ -729,11 +729,11 @@ static Function MSQ_FRE7_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -829,11 +829,11 @@ static Function MSQ_FRE8_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -931,11 +931,11 @@ static Function MSQ_FRE9_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200},  mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
@@ -1039,11 +1039,11 @@ static Function MSQ_FRE10_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
 	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
-	stepsizes *= 1e12
+	stepsizes *= ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)

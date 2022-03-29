@@ -999,7 +999,7 @@ static Function/WAVE MSQ_DS_GetDAScaleOffset(device, headstage)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	values[0, NUM_HEADSTAGES - 1] = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_FINAL_SCALE, p) * 1e12
+	values[0, NUM_HEADSTAGES - 1] = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_FINAL_SCALE, p) * ONE_TO_PICO
 
 	return values
 End
