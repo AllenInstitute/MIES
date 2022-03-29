@@ -1161,7 +1161,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	params.startingTime = NWB_GetStartTimeOfSweep(s.textualValues, s.sweep, s.DAQDataWave) - s.session_start_time
 	ASSERT_TS(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
-	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * 1000
+	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

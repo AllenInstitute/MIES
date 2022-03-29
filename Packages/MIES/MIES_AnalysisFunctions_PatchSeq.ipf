@@ -1498,14 +1498,14 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
 
 #ifdef EVIL_KITTEN_EATING_MODE
-	actual = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device) * 1e3
+	actual = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device) * KILO_TO_ONE
 #else
 	// dimension delta [ms]
 	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * MILLI_TO_ONE)
 #endif
 
 	// samplingFrequency [kHz]
-	expected = samplingFrequency * 1e3
+	expected = samplingFrequency * KILO_TO_ONE
 
 	samplingFrequencyPassed = CheckIfClose(expected, actual, tol = 1)
 
