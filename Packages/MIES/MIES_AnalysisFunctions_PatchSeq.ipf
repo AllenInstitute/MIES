@@ -4529,7 +4529,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			// END TEST
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
-			resistance[INDEP_HEADSTAGE] = pipetteResistance * 1e9
+			resistance[INDEP_HEADSTAGE] = pipetteResistance * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE)
 			ED_AddEntryToLabnotebook(device, key, resistance, unit = "Ω", overrideSweepNo = s.sweepNo)
 
