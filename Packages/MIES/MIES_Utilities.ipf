@@ -678,14 +678,14 @@ End
 threadsafe Function ConvertSamplingIntervalToRate(val)
 	variable val
 
-	return 1 / val * 1e3
+	return 1 / (val * MICRO_TO_ONE) * ONE_TO_KILO
 End
 
 /// @brief Convert the rate in kHz to the sampling interval in microseconds (1e-6s)
 threadsafe Function ConvertRateToSamplingInterval(val)
 	variable val
 
-	return 1 / val * 1e3
+	return 1 / (val * KILO_TO_ONE) * ONE_TO_MICRO
 End
 
 /// @brief Checks if the datafolder referenced by dfr exists.
