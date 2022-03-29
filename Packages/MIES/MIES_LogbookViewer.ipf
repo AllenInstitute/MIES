@@ -789,9 +789,9 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 	sweepCol   = GetSweepColumn(values)
 
 	if(isTimeAxis)
-		WAVE xPos = valuesSweep
-	else
 		WAVE xPos = valuesDat
+	else
+		WAVE xPos = valuesSweep
 	endif
 
 	numRows    = GetNumberFromWaveNote(values, NOTE_INDEX)
