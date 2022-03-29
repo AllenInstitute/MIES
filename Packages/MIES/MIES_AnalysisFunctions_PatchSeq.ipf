@@ -5231,7 +5231,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceMaxLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
 			// GOhm -> MOhm
-			sealThreshold = AFH_GetAnalysisParamNumerical("SealThreshold", s.params) * 1e3
+			sealThreshold = AFH_GetAnalysisParamNumerical("SealThreshold", s.params) * GIGA_TO_MEGA
 
 			switch(testpulseGroupSel)
 				case PSQ_SE_TGS_FIRST:
