@@ -3989,7 +3989,7 @@ Function PSQ_Chirp(device, s)
 				ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
 				if(TestOverrideActive())
-					resistance = PSQ_CR_RESISTANCE_FAKE * 1e9
+					resistance = PSQ_CR_RESISTANCE_FAKE * GIGA_TO_ONE
 				else
 					passingDaScaleSweep = PSQ_GetLastPassingDAScaleSub(device, s.headstage)
 
