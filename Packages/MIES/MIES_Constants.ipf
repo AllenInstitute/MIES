@@ -1745,3 +1745,37 @@ Constant DECIMATION_MINMAX = 0x1
 
 StrConstant DEFAULT_KEY_SEP = ":"
 StrConstant DEFAULT_LIST_SEP = ";"
+
+/// \rst
+///
+/// =====  ======  ===============
+/// Name   Symbol  Numerical value
+/// =====  ======  ===============
+/// yotta    Y        1e24
+/// zetta    Z        1e21
+/// exa      E        1e18
+/// peta     P        1e15
+/// tera     T        1e12
+/// giga     G        1e9
+/// mega     M        1e6
+/// kilo     k        1e3
+/// hecto    h        1e2
+/// deca     da       1e1
+/// deci     d        1e-1
+/// centi    c        1e-2
+/// milli    m        1e-3
+/// micro    mu       1e-6
+/// nano     n        1e-9
+/// pico     p        1e-12
+/// femto    f        1e-15
+/// atto     a        1e-18
+/// zepto    z        1e-21
+/// yocto    y        1e-24
+/// =====  ======  ===============
+///
+/// \endrst
+///
+/// From: 9th edition of the SI Brochure (2019), https://www.bipm.org/en/publications/si-brochure
+StrConstant PREFIX_SHORT_LIST = ";Y;Z;E;P;T;G;M;k;h;da;d;c;m;mu;n;p;f;a;z;y"
+StrConstant PREFIX_LONG_LIST  = "one;yotta;zetta;exa;peta;tera;giga;mega;kilo;hecto;deca;deci;centi;milli;micro;nano;pico;femto;atto;zepto;yocto"
+StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;1e-1;1e-2;1e-3;1e-6;1e-9;1e-12;1e-15;1e-18;1e-21;1e-24"
