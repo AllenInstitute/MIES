@@ -173,7 +173,7 @@ Function DQ_StopDAQDeviceTimer(device)
 	sprintf msg, "stopped timer %d", timerID
 	DEBUGPRINT(msg)
 
-	return stopmstimer(timerID) / 1000000
+	return stopmstimer(timerID) * MICRO_TO_ONE
 End
 
 /// @brief Stop any running background DAQ

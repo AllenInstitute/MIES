@@ -1332,13 +1332,13 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_Update = stopmstimer(-2) - execTime_Start
-	sprintf execTime_outStr, "PA exec time: PA_PreProcessPulses %.3f s.\r", execTime_PreProcess / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_PreProcessPulses %.3f s.\r", execTime_PreProcess * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ShowPulses %.3f s.\r", execTime_ShowPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ShowPulses %.3f s.\r", execTime_ShowPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ShowImage %.3f s.\r", execTime_ShowImage / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ShowImage %.3f s.\r", execTime_ShowImage * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_Update %.3f s.\r", execTime_Update / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_Update %.3f s.\r", execTime_Update * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
 #endif
 End
@@ -2064,19 +2064,19 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	endif
 
 #ifndef PA_HIDE_EXECUTION_TIME
-	sprintf execTime_outStr, "PA exec time: PA_GenerateAllPulseWaves %.3f s.\r", execTime_GenerateAllPulseWaves / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_GenerateAllPulseWaves %.3f s.\r", execTime_GenerateAllPulseWaves * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ApplyPulseSortingOrder %.3f s.\r", execTime_ApplyPulseSortingOrder / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ApplyPulseSortingOrder %.3f s.\r", execTime_ApplyPulseSortingOrder * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ResetWavesIfRequired %.3f s.\r", execTime_ResetWavesIfRequired / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ResetWavesIfRequired %.3f s.\r", execTime_ResetWavesIfRequired * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_MarkFailedPulses %.3f s.\r", execTime_MarkFailedPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_MarkFailedPulses %.3f s.\r", execTime_MarkFailedPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ZeroPulses %.3f s.\r", execTime_ZeroPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ZeroPulses %.3f s.\r", execTime_ZeroPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_AutomaticTimeAlignment %.3f s.\r", execTime_AutomaticTimeAlignment / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_AutomaticTimeAlignment %.3f s.\r", execTime_AutomaticTimeAlignment * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_CalculateAllAverages %.3f s.\r", execTime_CalculateAllAverages / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_CalculateAllAverages %.3f s.\r", execTime_CalculateAllAverages * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
 #endif
 

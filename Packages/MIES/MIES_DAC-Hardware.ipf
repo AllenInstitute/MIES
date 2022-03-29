@@ -2140,7 +2140,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 			endswitch
 		endfor
 
-		sampleIntervall = config[0][%SamplingInterval] * 1E-6
+		sampleIntervall = config[0][%SamplingInterval] * MICRO_TO_ONE
 		fifoSize = HW_NI_FIFOSIZE/sampleIntervall
 		NVAR fifopos = $GetFifoPosition(device)
 		fifopos = 0

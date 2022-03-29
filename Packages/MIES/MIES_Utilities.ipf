@@ -4283,7 +4283,7 @@ End
 /// @brief Return a time in seconds with high precision, microsecond resolution, using an
 ///        arbitrary zero point.
 Function RelativeNowHighPrec()
-	return stopmstimer(-2)/1e6
+	return stopmstimer(-2) * MICRO_TO_ONE
 End
 
 /// @brief High precision version of the builtin Sleep command
@@ -4716,7 +4716,7 @@ End
 Function GetElapsedTime(referenceTime)
 	variable referenceTime
 
-	return (stopmstimer(-2) - referenceTime) / 1e6
+	return (stopmstimer(-2) - referenceTime) * MICRO_TO_ONE
 End
 
 /// @brief Store the elapsed time in a wave

@@ -545,8 +545,8 @@ static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName
 	i = EP_GetEpochCount(device, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
-	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
-	endTimeStr = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
+	endTimeStr = num2strHighPrec(epEnd * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
 
 	if(!cmpstr(startTimeStr, endTimeStr))
 		// don't add single point epochs

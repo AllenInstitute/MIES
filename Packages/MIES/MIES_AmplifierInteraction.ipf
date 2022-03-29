@@ -147,7 +147,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
 				return ONE_TO_MICRO
 			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
-				return 1e-6
+				return MICRO_TO_ONE
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
 				return PICO_TO_ONE
 			case MCC_GETWHOLECELLCOMPCAP_FUNC:
@@ -162,7 +162,7 @@ Function AI_GetMCCScale(clampMode, func)
 				return ONE_TO_MICRO
 			case MCC_GETBRIDGEBALRESIST_FUNC:
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
-				return 1e-6
+				return MICRO_TO_ONE
 			case MCC_SETHOLDING_FUNC:
 				return PICO_TO_ONE
 			case MCC_GETHOLDING_FUNC:
