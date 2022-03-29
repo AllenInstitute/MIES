@@ -5202,12 +5202,12 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			// END TEST
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceALBN = NaN
-			sealResistanceALBN[INDEP_HEADSTAGE] = sealResistanceA * 1e6
+			sealResistanceALBN[INDEP_HEADSTAGE] = sealResistanceA * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_A)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceALBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceBLBN = NaN
-			sealResistanceBLBN[INDEP_HEADSTAGE] = sealResistanceB * 1e6
+			sealResistanceBLBN[INDEP_HEADSTAGE] = sealResistanceB * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_B)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceBLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
@@ -5226,7 +5226,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			endswitch
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceMaxLBN = NaN
-			sealResistanceMaxLBN[INDEP_HEADSTAGE] = sealResistanceMax * 1e6
+			sealResistanceMaxLBN[INDEP_HEADSTAGE] = sealResistanceMax * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceMaxLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 

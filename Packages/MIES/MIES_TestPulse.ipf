@@ -575,7 +575,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 		targetVoltage    = TPSettings[%autoAmpVoltage][i] * MILLI_TO_ONE
 		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * MILLI_TO_ONE
 
-		resistance = TPResults[%ResistanceSteadyState][i] * 1e6
+		resistance = TPResults[%ResistanceSteadyState][i] * MEGA_TO_ONE
 
 		if(TestOverrideActive())
 			WAVE overrideResults = GetOverrideResults()
