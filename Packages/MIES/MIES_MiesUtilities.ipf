@@ -7580,7 +7580,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 
 	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
 
-	configWave[][%SamplingInterval] = samplingInterval * 1000
+	configWave[][%SamplingInterval] = samplingInterval * MILLI_TO_MICRO
 
 	// always 0, see DC_PlaceDataInDAQConfigWave
 	configWave[][%DecimationMode] = 0

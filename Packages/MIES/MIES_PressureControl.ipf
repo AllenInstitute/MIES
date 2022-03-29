@@ -1166,7 +1166,7 @@ static Function P_DataAcq(device, headStage)
 
 		// wait some time before opening the solenoid
 		startTime = stopmstimer(-2)
-		duration = PRESSURE_TTL_HIGH_START * WAVEBUILDER_MIN_SAMPINT * 1000
+		duration = PRESSURE_TTL_HIGH_START * WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO
 		do
 			elapsedTime = stopmstimer(-2) - startTime
 			if(elapsedTime >= duration)

@@ -722,7 +722,7 @@ static Function DC_GetDecimationFactor(device, dataAcqOrTP)
 	string device
 	variable dataAcqOrTP
 
-	return DAP_GetSampInt(device, dataAcqOrTP) / (WAVEBUILDER_MIN_SAMPINT * 1000)
+	return DAP_GetSampInt(device, dataAcqOrTP) / (WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO)
 End
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type

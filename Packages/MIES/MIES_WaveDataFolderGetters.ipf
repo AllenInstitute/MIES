@@ -4369,7 +4369,7 @@ Function/WAVE P_GetITCChanConfig(device)
 	wv[2][1] = -1
 	wv[3][1] = -1
 
-	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * 1000
+	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv

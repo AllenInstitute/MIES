@@ -104,7 +104,7 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 
 		epochBegin = startOffset * s.samplingInterval
 		if(s.distributedDAQOptOv && s.offsets[i] > 0)
-			epochOffset = s.offsets[i] * 1000
+			epochOffset = s.offsets[i] * MILLI_TO_MICRO
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
@@ -200,8 +200,8 @@ static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, st
 		Make/FREE/N=(numRegions) epochIndexer
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "oodDAQ", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-		epochIndexer[] = EP_AddEpoch(device, channel, str2num(StringFromList(0, regions[p], "-")) * 1E3 + stimsetBegin,                        \
-		                                                  str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin,                        \
+		epochIndexer[] = EP_AddEpoch(device, channel, str2num(StringFromList(0, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,                 \
+		                                                  str2num(StringFromList(1, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,             \
 		                                                  ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 		                                                  EPOCH_SN_OODAQ + num2str(p),                                                             \
 		                                                  2, lowerLimit = stimsetBegin, upperLimit = stimsetEnd)
@@ -314,13 +314,13 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 			shortNameEpTypePT = shortNameEp + "_" + EPOCH_SN_PULSETRAIN
 			shortNameEpTypePTBaseline = shortNameEpTypePT + "_" + EPOCH_SN_PULSETRAINBASETRAIL
 			WAVE startTimes = WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epochNr, pulseToPulseLength)
-			startTimes *= 1000
+			startTimes *= MILLI_TO_MICRO
 			numPulses = DimSize(startTimes, ROWS)
 			if(numPulses)
 				Duplicate/FREE startTimes, ptp
-				ptp[] = pulseToPulseLength ? pulseToPulseLength * 1000 : startTimes[p] - startTimes[limit(p - 1, 0, Inf)]
+				ptp[] = pulseToPulseLength ? pulseToPulseLength * MILLI_TO_MICRO : startTimes[p] - startTimes[limit(p - 1, 0, Inf)]
 				pulseDuration = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Pulse duration", sweep=sweep, epoch=epochNr)
-				pulseDuration *= 1000
+				pulseDuration *= MILLI_TO_MICRO
 
 				// with flipping we iterate the pulses from large to small time points
 

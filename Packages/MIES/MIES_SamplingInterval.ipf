@@ -195,10 +195,10 @@ static Function SI_FindMatchingTableEntry(wv, ac)
 
 	printf "Warning! Could not find a matching entry for the channel combination!\r"
 	print ac
-	printf "Using a sampling interval of %g micoseconds\r", SAMPLING_INTERVAL_FALLBACK * 1000
+	printf "Using a sampling interval of %g microseconds\r", SAMPLING_INTERVAL_FALLBACK * MILLI_TO_MICRO
 	ControlWindowToFront()
 
-	return SAMPLING_INTERVAL_FALLBACK * 1000
+	return SAMPLING_INTERVAL_FALLBACK * MILLI_TO_MICRO
 End
 
 /// @brief Try to load the lookup wave for the minimum sampling
@@ -436,7 +436,7 @@ static Function SI_TestSampInt(device)
 
 	for(i=1; i < numTries; i += 1)
 		if(numConsecutive == -1)
-			sampInt  = WAVEBUILDER_MIN_SAMPINT * i * 1000
+			sampInt  = WAVEBUILDER_MIN_SAMPINT * i * MILLI_TO_MICRO
 		else
 			sampInt *= 2
 		endif
@@ -529,7 +529,7 @@ static Function SI_NI_CalculateMinSampInterval(device)
 	string device
 
 	WAVE channelStatus = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
-	return HARDWARE_NI_DAC_MIN_SAMPINT * 1000 * sum(channelStatus)
+	return HARDWARE_NI_DAC_MIN_SAMPINT * MILLI_TO_MICRO * sum(channelStatus)
 End
 
 /// @brief Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk
@@ -552,8 +552,8 @@ static Function SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
 	WAVE/Z lut = SI_GetMinSampIntWave(device)
 	if(!WaveExists(lut))
 		printf "Warning: Could not load the minimum sampling interval table from disk\r"
-		printf "Falling back to %g microseconds as sampling interval\r", SAMPLING_INTERVAL_FALLBACK * 1000
-		return SAMPLING_INTERVAL_FALLBACK * 1000
+		printf "Falling back to %g microseconds as sampling interval\r", SAMPLING_INTERVAL_FALLBACK * MILLI_TO_MICRO
+		return SAMPLING_INTERVAL_FALLBACK * MILLI_TO_MICRO
 	endif
 
 	STRUCT ActiveChannels ac
@@ -567,7 +567,7 @@ static Function SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
 	endif
 
 	if(numActiveChannels == 0)
-		return HARDWARE_ITC_MIN_SAMPINT * 1000
+		return HARDWARE_ITC_MIN_SAMPINT * MILLI_TO_MICRO
 	endif
 
 	strswitch(deviceType)
