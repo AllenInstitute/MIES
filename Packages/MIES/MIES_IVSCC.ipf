@@ -484,3 +484,11 @@ Function IVS_GetSetQCForSweep(device, sweepNo)
 	key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE) == 1
 End
+
+Function IVS_EnableStoringEveryTP(string device)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = CHECKBOX_SELECTED)
+End
+
+Function IVS_DisableStoringEveryTP(string device)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = CHECKBOX_UNSELECTED)
+End

@@ -56,11 +56,18 @@ Function TP_StoreTP(device, TPWave, tpMarker, hsList)
 	variable tpMarker
 	string hsList
 
-	variable index
+	variable index, ret
 
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-	EnsureLargeEnoughWave(storedTP, minimumSize=index)
+
+	ret = EnsureLargeEnoughWave(storedTP, minimumSize=index, checkFreeMemory = 1)
+
+	if(ret)
+		HandleOutOfMemory(device, NameOfWave(storedTP))
+		return NaN
+	endif
+
 	Note/K TPWave
 
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
@@ -1065,12 +1072,8 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 
 	ret = EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
 
-	if(ret) // running out of memory
-		printf "The amount of free memory is too low to increase TPStorage, please create a new experiment.\r"
-		ControlWindowToFront()
-		LOG_AddEntry(PACKAGE_MIES, "out of memory")
-		DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
-		TP_StopTestPulse(device)
+	if(ret)
+		HandleOutOfMemory(device, NameOfWave(TPStorage))
 		return NaN
 	endif
 
