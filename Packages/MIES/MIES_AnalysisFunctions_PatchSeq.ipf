@@ -5342,7 +5342,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * 1e-3
 
 			if(duration != chunkLength)
-				printf "The length of epoch %d (%g) is different from the expected one %g.", i, duration, chunkLength
+				printf "The length of epoch %d (%g) is different from the expected one %g.\r", i, duration, chunkLength
 				ControlWindowToFront()
 				return 1
 			endif

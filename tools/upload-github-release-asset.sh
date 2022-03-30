@@ -75,8 +75,8 @@ case "$branch" in
     tag=$(git tag --list "Release_*" | tail -1)
     ;;
   *)
-    echo "Unexpected branch $branch"
-    exit 1
+    echo "Skipping outdated release asset deployment."
+    exit 0
     ;;
 esac
 
