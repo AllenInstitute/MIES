@@ -4694,7 +4694,7 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 
 	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 1) * 1e-3
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 1)
-	ASSERT(amplitude == 1, "Invald amplitude")
+	ASSERT(amplitude != 0, "Invald amplitude")
 
 	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 2) * 1e-3
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 2)
