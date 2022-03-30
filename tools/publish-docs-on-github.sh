@@ -40,6 +40,17 @@ then
   exit 1
 fi
 
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+case "$branch" in
+  main|release/*)
+    ;;
+  *)
+    echo "Skipping outdated documentation deployment."
+    exit 0
+    ;;
+esac
+
 unzip -o mies-docu*.zip
 
 cd $public_mies_repo
