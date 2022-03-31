@@ -3516,11 +3516,6 @@ End
 
 static Constant TP_WAIT_TIMEOUT = 5
 
-static Constant TP_WIDTH_EPSILON = 1
-static Constant TP_DYN_PERC_TRESHOLD = 0.2
-static Constant TP_EDGE_EPSILON = 0.2
-static Constant TP_SKIP_NUM_TPS_START = 1
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function TPDuringDAQTPStoreCheck([str])
 	string str
@@ -3546,7 +3541,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 	numStored = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK_GT_VAR(numStored, TP_SKIP_NUM_TPS_START)
+	CHECK_GT_VAR(numStored, 0)
 
 	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(device)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
@@ -3559,7 +3554,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	tpLength = TPSettingsCalculated[%totalLengthPointsDAQ]
 	pulseLengthMS = TPSettingsCalculated[%pulseLengthMS]
 
-	for(i = TP_SKIP_NUM_TPS_START; i < numTP; i += 1)
+	for(i = 0; i < numTP; i += 1)
 
 		WAVE/Z singleTPs = storedTestPulses[i]
 		CHECK_WAVE(singleTPs, NUMERIC_WAVE)
@@ -3573,13 +3568,8 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			Duplicate/FREE/RMD=[][channel] singleTPs, singleTP
 			Redimension/N=(tpLength) singleTP
 
-			m = WaveMin(singleTP)
-			tresh = m + TP_DYN_PERC_TRESHOLD * (WaveMax(singleTP) - m)
-			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
-
-			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			CHECK_LT_VAR(abs(pulseLengthMS - levels[1] + levels[0]), TP_WIDTH_EPSILON)
-
+			CHECK_GT_VAR(DimSize(singleTP, ROWS), 0)
+			CHECK_WAVE(singleTP, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 		endfor
 	endfor
 End
@@ -3966,8 +3956,8 @@ End
 Function RestoreDAEphysPanel([str])
 	string str
 
-	variable jsonID
-	string stimSetPath, jPath, data, fName, rewrittenConfigPath
+	variable jsonID, serialNum
+	string stimSetPath, jPath, data, fName, rewrittenConfigPath, serialNumStr
 
 	fName = PrependExperimentFolder_IGNORE(REF_DAEPHYS_CONFIG_FILE)
 
@@ -3980,6 +3970,21 @@ Function RestoreDAEphysPanel([str])
 	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
 	stimSetPath = S_path + "..:..:Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
 	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
+
+	// replace stored serial number with present serial number
+	AI_FindConnectedAmps()
+	WAVE ampMCC = GetAmplifierMultiClamps()
+
+	CHECK_GT_VAR(DimSize(ampMCC, ROWS), 0)
+	serialNumStr = GetDimLabel(ampMCC, ROWS, 0)
+	if(!cmpstr(serialNumStr, "Demo"))
+		serialNum = 0
+	else
+		serialNum = str2num(serialNumStr)
+	endif
+
+	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/0/Amplifier/Serial", serialNum)
+	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/1/Amplifier/Serial", serialNum)
 
 	rewrittenConfigPath = S_Path + "rewritten_config.json"
 	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
@@ -4388,7 +4393,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	CHECK_EQUAL_VAR(var, 0.5)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
-	CHECK_GE_VAR(var, 0)
+	CHECK(IsFinite(var))
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)
 	refStr = "myTitle"
@@ -4794,7 +4799,7 @@ Function ExportIntoNWBSweepBySweep_REENTRY([str])
 
 	CloseNwbFile()
 	experimentNwbFile = GetExperimentNWBFileForExport()
-	CHECK(FileExists(experimentNwbFile))
+	REQUIRE(FileExists(experimentNwbFile))
 
 	fileID = H5_OpenFile(experimentNWBFile)
 	nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
@@ -4835,7 +4840,7 @@ Function ExportOnlyCommentsIntoNWB([string str])
 	endtry
 
 	discLocation = TestNWBExportV2#TestFileExport()
-	CHECK(FileExists(discLocation))
+	REQUIRE(FileExists(discLocation))
 
 	fileID = H5_OpenFile(discLocation)
 	userComment = TestNWBExportV2#TestUserComment(fileID, str)
