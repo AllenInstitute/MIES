@@ -16,12 +16,14 @@
 // They are defined here so that we can parse them from within IP.
 //
 // .. |IgorPro8Nightly| replace:: `Igor Pro 8 <https://www.byte-physics.de/Downloads/WinIgor8_12MAY2021.zip>`__
-// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_14AUG2021.zip>`__
+// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_31MAR2022.zip>`__
 
 #pragma IgorVersion=8.04
 
 #if IgorVersion() >= 9.0
-// 37840 is the released version of IP9
+#if (NumberByKey("BUILD", IgorInfo(0)) < 38847)
+#define TOO_OLD_IGOR
+#endif
 #else
 #if (NumberByKey("BUILD", IgorInfo(0)) < 37456)
 #define TOO_OLD_IGOR
