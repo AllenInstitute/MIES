@@ -1468,7 +1468,7 @@ Function/Wave GetLBTextualKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1567,8 +1567,13 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		forceReload = !!forceReload
 	endif
 
+	return GetLBDescription_Impl("labnotebook_numerical_description", forceReload)
+End
+
+static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
+
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(WaveExists(wv))
 		if(forceReload)
@@ -1578,7 +1583,7 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 		endif
 	endif
 
-	WAVE/T/Z wv = LoadWaveFromDisk("labnotebook_numerical_description")
+	WAVE/T/Z wv = LoadWaveFromDisk(name)
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
 
@@ -1596,20 +1601,25 @@ End
 static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
 
 Function SaveLBNumericalDescription()
+	SaveLBDescription_Impl("labnotebook_numerical_description", LBN_NUMERICAL_DESCRIPTION_VERSION)
+End
+
+static Function SaveLBDescription_Impl(string name, variable version)
 
 	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	WAVE/T/Z/SDFR=dfr wv = $name
 	ASSERT(WaveExists(wv), "Missing wave")
 
 	RemoveAllDimLabels(wv)
+	Note/K wv
 
 	Duplicate/FREE wv, dup
 
 	MatrixTranspose dup
 
-	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
+	SetWaveVersion(dup, version)
 
-	StoreWaveOnDisk(dup, "labnotebook_numerical_description")
+	StoreWaveOnDisk(dup, name)
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys
