@@ -463,3 +463,12 @@ Function IsRunningInCI()
 	// we always have expensive checks enabled in CI
 	return str2numSafe(GetEnvironmentVariable("BAMBOO_EXPENSIVE_CHECKS")) == 1
 End
+
+Function RetrieveAllWindowsInCI()
+
+	if(!IsRunningInCI())
+		return NaN
+	endif
+
+	DoIgorMenu "Control" "Retrieve All Windows"
+End

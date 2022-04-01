@@ -261,6 +261,8 @@ Function TEST_BEGIN_OVERRIDE(name)
 		DuplicateDataFolder/O=1 root:MIES:WaveBuilder, root:WaveBuilder; AbortOnRTE
 		variable/G root:WaveBuilder:modTime = V_modificationDate
 	endif
+
+	RetrieveAllWindowsInCI()
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
