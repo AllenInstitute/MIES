@@ -57,6 +57,8 @@ digraph G {
 	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
 	n66	 [label="Has acquired data in chirp region?"];
 	n65 -> n66	 [label=No];
+	n80	 [label="Is the analysis parameter \"AutobiasTargetVAtSetEnd\" present?\n If yes, set the autobias target voltage to it."];
+	"Mark set as passed\n in labnotebook" -> n80;
 	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	 [label=No];
 	n76	 [label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
 	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	 [label=Yes];
@@ -124,13 +126,15 @@ digraph G {
 	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
 	"Add BL QC passed labnotebook entry" -> "Early Sweep stop";
 	"Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep";
-	n89 -> "At least three sweeps";
+	n78	 [label="Is the analysis parameter \"AutobiasTargetV\" present?\n If yes, set the autobias target voltage to it."];
+	n89 -> n78;
 	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> Abort	 [label="Not found"];
 	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook"	 [label=Found];
+	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Passed];
+	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
 	"At least three sweeps" -> "All checks passed";
 	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook";
 	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
 	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
-	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Passed];
-	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
+	n78 -> "At least three sweeps";
 }
