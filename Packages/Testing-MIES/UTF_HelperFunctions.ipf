@@ -458,3 +458,8 @@ Function/WAVE GetTrackSweepCounts()
 
 	return wv
 End
+
+Function IsRunningInCI()
+	// we always have expensive checks enabled in CI
+	return str2numSafe(GetEnvironmentVariable("BAMBOO_EXPENSIVE_CHECKS")) == 1
+End

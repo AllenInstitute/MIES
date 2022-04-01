@@ -320,7 +320,7 @@ Function DoExpensiveChecks()
 	return 1
 #endif
 
-	return str2numSafe(GetEnvironmentVariable("BAMBOO_EXPENSIVE_CHECKS")) == 1
+	return IsRunningInCI()
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
