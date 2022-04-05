@@ -3252,7 +3252,7 @@ static Function PA_AddColorScale(string graph, string colorScaleGraph, string na
 	intIndex = trunc(index)
 	length = stop[intIndex] - start[intIndex]
 	yPos = start[intIndex] + abs(index - intIndex) * length
-	yPos *= 100
+	yPos *= ONE_TO_PERCENT
 
 	ColorScale/W=$colorScaleGraph/C/N=$name/F=0/A=MT/X=(0)/Y=(yPos)/E=0 vert=0, image={$graph, $traceName}
 	ColorScale/W=$colorScaleGraph/C/N=$name heightPct=(5), widthPct=95, lblMargin=0

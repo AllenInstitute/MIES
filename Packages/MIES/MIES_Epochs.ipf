@@ -247,7 +247,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 	Make/FREE/D/N=(epochCount) duration, sweepOffset
 
 	duration[] = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Duration", sweep=sweep, epoch=p)
-	duration *= 1000
+	duration *= MILLI_TO_MICRO
 	totalDuration = sum(duration)
 
 	ASSERT(IsFinite(totalDuration), "Expected finite totalDuration")
