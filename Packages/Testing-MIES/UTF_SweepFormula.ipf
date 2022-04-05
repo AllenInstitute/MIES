@@ -1186,25 +1186,25 @@ static Function TestDataOperation()
 
 	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, numChannels / 2) dataRef
 	dataRef[][][] = sweepRef[p]
-	str = "data(cursors(A,B),channels(AD),[" + num2istr(sweepNo) + "])"
+	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, 1) dataRef
 	dataRef[][][] = sweepRef[p]
-	str = "data(cursors(A,B),channels(AD6),[" + num2istr(sweepNo) + "])"
+	str = "data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	Make/FREE/N=(rangeEnd0 - rangeStart0 + 1, 1, numChannels / 2) dataRef
 	dataRef[][][] = sweepRef[p + rangeStart0]
-	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo) + "])"
+	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	Make/FREE/N=(rangeEnd1 - rangeStart1 + 1, 1, numChannels / 2) dataRef
 	dataRef[][][] = sweepRef[p + rangeStart1]
-	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo + 1) + "])"
+	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
@@ -1216,14 +1216,14 @@ static Function TestDataOperation()
 	SetDimLabel COLS, 1, sweep1, dataRef
 	SetDimLabel LAYERS, 0, AD6, dataRef
 	SetDimLabel LAYERS, 1, AD7, dataRef
-	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
+	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_LABELS)
 
 	// use a 3-dim range specification
 	str = "[[[" + num2istr(rangeStart0) + "," + num2istr(rangeStart0) + "],[" + num2istr(rangeStart1) + "," + num2istr(rangeStart1) + "]],"
 	str = str + "[[" + num2istr(rangeEnd0) + "," + num2istr(rangeEnd0) + "],[" + num2istr(rangeEnd1) + "," + num2istr(rangeEnd1) + "]]]"
-	str = "data(" + str + ",channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
+	str = "data(" + str + ",select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
@@ -1231,17 +1231,17 @@ static Function TestDataOperation()
 	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
 
 	// non existing channel
-	str = "data(TestEpoch,channels(AD4),[" + num2istr(sweepNo) + "])"
+	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	// non existing sweep
-	str = "data(TestEpoch,channels(AD4),[" + num2istr(sweepNo + 2) + "])"
+	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 2) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	// range begin
-	str = "data([12, 10],channels(AD),[" + num2istr(sweepNo) + "])"
+	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
 		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 		FAIL()
@@ -1250,7 +1250,7 @@ static Function TestDataOperation()
 	endtry
 
 	// range end
-	str = "data([0, 11],channels(AD),[" + num2istr(sweepNo) + "])"
+	str = "data([0, 11],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
 		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 		FAIL()
@@ -1258,10 +1258,10 @@ static Function TestDataOperation()
 		PASS()
 	endtry
 
-	// One sweep does not exist
-	Make/FREE/N=(DimSize(sweepRef, ROWS), 2, numChannels / 2) dataRef = NaN
+	// One sweep does not exist, it is not result of select, we end up with one sweep
+	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, numChannels / 2) dataRef = NaN
 	dataRef[][0][] = sweepRef[p]
-	str = "data(cursors(A,B),channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "])"
+	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 End
