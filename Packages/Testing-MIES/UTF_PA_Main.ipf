@@ -68,3 +68,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList)
 	endif
 End
+
+Function TEST_BEGIN_OVERRIDE(string name)
+	RetrieveAllWindowsInCI()
+End

@@ -113,6 +113,10 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 End
 
+Function TEST_BEGIN_OVERRIDE(string name)
+	RetrieveAllWindowsInCI()
+End
+
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
