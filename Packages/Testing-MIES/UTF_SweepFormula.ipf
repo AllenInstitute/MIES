@@ -1323,11 +1323,11 @@ Function TestLabNotebook()
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
-	str = "labnotebook(" + channelTypeC + ",channels(AD),sweeps())"
+	str = "labnotebook(" + channelTypeC + ",select(channels(AD),sweeps()))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
 
-	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",channels(AD),sweeps(),UNKNOWN_MODE)"
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),sweeps()),UNKNOWN_MODE)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
 End
