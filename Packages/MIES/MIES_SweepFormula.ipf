@@ -2682,35 +2682,36 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	return out
 End
 
-/// `labnotebook(string key, array channels, array sweeps [, string entrySourceType])`
+/// `labnotebook(string key, array selectData [, string entrySourceType])`
 ///
 /// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, j, mode, JSONtype, index, sweepNo
+	variable numIndices, i, j, mode, JSONtype, index, sweepNo, numSweeps, numChannels
 	string str
 
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
 	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numIndices <= 4, "Maximum number of arguments exceeded.")
-	SF_ASSERT(numIndices >= 3, "At least three arguments are required.")
+	SF_ASSERT(numIndices <= 3, "Maximum number of three arguments exceeded.")
+	SF_ASSERT(numIndices >= 2, "At least two arguments are required.")
 
 	JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
 	SF_ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
 	str = JSON_GetString(jsonID, jsonPath + "/0")
 
-	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
-
-	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	if(SF_IsDefaultEmptyWave(selectData))
+		return selectData
+	endif
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 
 	mode = DATA_ACQUISITION_MODE
-	if(numIndices == 4)
-		JSONtype = JSON_GetType(jsonID, jsonPath + "/3")
+	if(numIndices == 3)
+		JSONtype = JSON_GetType(jsonID, jsonPath + "/2")
 		SF_ASSERT(JSONtype == JSON_STRING, "Last parameter needs to be a string.")
-		strswitch(JSON_GetString(jsonID, jsonPath + "/3"))
+		strswitch(JSON_GetString(jsonID, jsonPath + "/2"))
 			case "UNKNOWN_MODE":
 				mode = UNKNOWN_MODE
 				break
@@ -2727,13 +2728,17 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 		endswitch
 	endif
 
-	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, mode)
+	WAVE/Z sweeps
+	WAVE/Z activeChannels
+	[sweeps, activeChannels] = SF_ReCreateOldSweepsChannelLayout(selectData)
+	numSweeps = DimSize(sweeps, ROWS)
+	numChannels = DimSize(activeChannels, ROWS)
 
 	WAVE/Z settings
 
-	Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
-	Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
-	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+	Make/D/FREE/N=(numSweeps, numChannels) outD = NaN
+	Make/T/FREE/N=(numSweeps, numChannels) outT
+	for(i = 0; i < numSweeps; i += 1)
 		sweepNo = sweeps[i]
 
 		if(!IsValidSweepNumber(sweepNo))
@@ -2746,7 +2751,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 			continue
 		endif
 
-		for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
+		for(j = 0; j <  numChannels; j += 1)
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
 			if(!WaveExists(settings))
 				continue
@@ -2764,11 +2769,11 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 
 	if(!WaveExists(out))
 		DebugPrint("labnotebook entry not found.")
-		Make/FREE/N=1 out = {NaN}
+		WAVE out = SF_GetDefaultEmptyWave()
 		return out
 	endif
 
-	for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
+	for(i = 0; i < numChannels; i += 1)
 		str = StringFromList(activeChannels[i][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
 		SetDimLabel COLS, i, $str, out
 	endfor
