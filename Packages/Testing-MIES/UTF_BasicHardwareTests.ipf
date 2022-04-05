@@ -5298,3 +5298,185 @@ Function TPCachingWorks_REENTRY([string str])
 	CHECK_EQUAL_VAR(DimSize(dimDeltasUnique, ROWS), 1)
 	CHECK_CLOSE_VAR(samplingInterval / samplingIntervalMultiplier, dimDeltasUnique[0], tol = 1e-3)
 End
+
+static Function/WAVE ExtractValidValues(WAVE TPStorage, variable headstage, string entry)
+	variable idx
+
+	idx = FindDimLabel(TPStorage, LAYERS, entry)
+	CHECK_GE_VAR(idx, 0)
+
+	Duplicate/FREE/RMD=[*][headstage][idx] TPStorage, slice
+	Redimension/E=1/N=(numpnts(slice)) slice
+
+	return ZapNaNs(slice)
+End
+
+static Function CheckTPStorage(string device)
+	string entry
+
+	WAVE/Z TPStorage = GetTPStorage(device)
+	CHECK_WAVE(TPStorage, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+
+	entry = "ADC"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 0))
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 1))
+
+	entry = "DAC"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 0))
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 1))
+
+	entry = "Headstage"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 0))
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, 1))
+
+	entry = "ClampMode"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, V_CLAMP_MODE))
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK(IsConstant(values, I_CLAMP_MODE))
+
+	// resistance values are constant and independent of IC/VC amplitudes
+	entry = "PeakResistance"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	WaveStats/M=0/Q values
+	CHECK_CLOSE_VAR(V_avg, 10, tol = 0.1)
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	WaveStats/M=0/Q values
+	CHECK_CLOSE_VAR(V_avg, 250, tol = 0.1)
+
+	entry = "SteadyStateResistance"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	WaveStats/M=0/Q values
+	CHECK_CLOSE_VAR(V_avg, 10, tol = 0.1)
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	WaveStats/M=0/Q values
+	CHECK_CLOSE_VAR(V_avg, 250, tol = 0.1)
+
+	entry = "baseline_IC"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	CHECK_WAVE(values,NULL_WAVE)
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	WaveStats/M=0/Q values
+	CHECK_LT_VAR(V_avg, 100)
+
+	entry = "baseline_VC"
+	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
+	WaveStats/M=0/Q values
+	CHECK_LT_VAR(V_avg, 100)
+
+	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
+	CHECK_WAVE(values,NULL_WAVE)
+End
+
+static Function EnsureUnityGain(string device, variable headstage)
+	variable gain, mode
+
+	mode = DAG_GetHeadstageMode(device, headstage)
+
+	gain = AI_SendToAmp(device, headstage, mode, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	REQUIRE_EQUAL_VAR(gain, 1)
+
+	gain = AI_SendToAmp(device, headstage, mode, MCC_GETSECONDARYSIGNALGAIN_FUNC, NaN)
+	REQUIRE_EQUAL_VAR(gain, 1)
+End
+
+Function CheckTPStorage1_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 15)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -75)
+
+	EnsureUnityGain(device, 0)
+	EnsureUnityGain(device, 1)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckTPStorage1([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckTPStorage1_IGNORE, startTPinstead = 1)
+End
+
+Function CheckTPStorage1_REENTRY([string str])
+	CheckTPStorage(str)
+End
+
+Function CheckTPStorage2_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 37)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -150)
+
+	EnsureUnityGain(device, 0)
+	EnsureUnityGain(device, 1)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckTPStorage2([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckTPStorage2_IGNORE, startTPinstead = 1)
+End
+
+Function CheckTPStorage2_REENTRY([string str])
+	CheckTPStorage(str)
+End
+
+Function CheckTPStorage3_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = -15)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = 50)
+
+	EnsureUnityGain(device, 0)
+	EnsureUnityGain(device, 1)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckTPStorage3([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckTPStorage3_IGNORE, startTPinstead = 1)
+End
+
+Function CheckTPStorage3_REENTRY([string str])
+	CheckTPStorage(str)
+End

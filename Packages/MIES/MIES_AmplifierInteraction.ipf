@@ -1197,6 +1197,21 @@ Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, u
 			case MCC_SETSLOWCURRENTINJSETLT_FUNC:
 				ret = MCC_GetSlowCurrentInjSetlTime()
 				break
+			case MCC_SETPRIMARYSIGNALGAIN_FUNC:
+				ret = MCC_GetPrimarySignalGain()
+				break
+			case MCC_SETSECONDARYSIGNALGAIN_FUNC:
+				ret = MCC_GetSecondarySignalGain()
+				break
+			case MCC_SETPRIMARYSIGNALHPF_FUNC:
+				ret = MCC_GetPrimarySignalHPF()
+				break
+			case MCC_SETPRIMARYSIGNALLPF_FUNC:
+				ret = MCC_GetPrimarySignalLPF()
+				break
+			case MCC_SETSECONDARYSIGNALLPF_FUNC:
+				ret = MCC_GetSecondarySignalLPF()
+				break
 			default:
 				ret = NaN
 				break
@@ -1370,6 +1385,36 @@ Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, u
 			break
 		case MCC_GETSLOWCURRENTINJSETLT_FUNC:
 			ret = MCC_GetSlowCurrentInjSetlTime()
+			break
+		case MCC_SETPRIMARYSIGNALGAIN_FUNC:
+			ret = MCC_SetPrimarySignalGain(value)
+			break
+		case MCC_GETPRIMARYSIGNALGAIN_FUNC:
+			ret = MCC_GetPrimarySignalGain()
+			break
+		case MCC_SETSECONDARYSIGNALGAIN_FUNC:
+			ret = MCC_SetSecondarySignalGain(value)
+			break
+		case MCC_GETSECONDARYSIGNALGAIN_FUNC:
+			ret = MCC_GetSecondarySignalGain()
+			break
+		case MCC_SETPRIMARYSIGNALHPF_FUNC:
+			ret = MCC_SetPrimarySignalHPF(value)
+			break
+		case MCC_GETPRIMARYSIGNALHPF_FUNC:
+			ret = MCC_GetPrimarySignalHPF()
+			break
+		case MCC_SETPRIMARYSIGNALLPF_FUNC:
+			ret = MCC_SetPrimarySignalLPF(value)
+			break
+		case MCC_GETPRIMARYSIGNALLPF_FUNC:
+			ret = MCC_GetPrimarySignalLPF()
+			break
+		case MCC_SETSECONDARYSIGNALLPF_FUNC:
+			ret = MCC_SetSecondarySignalLPF(value)
+			break
+		case MCC_GETSECONDARYSIGNALLPF_FUNC:
+			ret = MCC_GetSecondarySignalLPF()
 			break
 		default:
 			ASSERT(0, "Unknown function: " + num2str(func))
