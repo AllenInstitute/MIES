@@ -1397,60 +1397,60 @@ static Function TestOperationEpochs()
 		ED_AddEntriesToLabnotebook(wEpochStr, keysEpochs, sweepNumber, device, mode)
 	endfor
 
-	str = "epochs(\"E0_PT_P48\", channels(DA0), 0)"
+	str = "epochs(\"E0_PT_P48\", select(channels(DA0), 0))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D refData = {500, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", channels(DA4), 0)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D refData = {503, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", channels(DA4), 0, range)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0), range)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D refData = {503, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", channels(DA4), 0, treelevel)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4),0), treelevel)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D refData = {3}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", channels(DA4), 9, name)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 9), name)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
 	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
 
 	// works with wrong casing
-	str = "epochs(\"e0_pt_p48_B\", channels(DA4), 9, name)"
+	str = "epochs(\"e0_pt_p48_B\", select(channels(DA4), 9), name)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
 	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", channels(DA), sweeps())"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), sweeps()))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
 	refData = p ? 510 : 503
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	// channel(s) with no epochs
-	str = "epochs(\"E0_PT_P48_B\", channels(AD), sweeps())"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), sweeps()))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// name that does not match any
-	str = "epochs(\"does_not_exist\", channels(DA), sweeps())"
+	str = "epochs(\"does_not_exist\", select(channels(DA), sweeps()))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData = NaN
 	CHECK_EQUAL_WAVES(refData, data)
 
 	// invalid sweep
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(\"E0_PT_P48_B\", channels(DA), -1)"), graph = win)
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(\"E0_PT_P48_B\", select(channels(DA), -1))"), graph = win)
 	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// invalid type
-	str = "epochs(\"E0_PT_P48_B\", channels(DA), sweeps(), invalid_type)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), sweeps()), invalid_type)"
 	try
 		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win); AbortOnRTE
 		FAIL()
