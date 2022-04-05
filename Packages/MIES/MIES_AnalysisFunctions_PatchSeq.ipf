@@ -4465,7 +4465,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
 			/// this also then allows us to remove the OVS fiddling
-			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
+			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, select(channels(AD), sweeps()), [0]))")
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 
@@ -5068,15 +5068,15 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			// and `tp` takes the *ignored* list
 			switch(testpulseGroupSel)
 				case PSQ_SE_TGS_BOTH:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, channels(AD), sweeps(), [0, 4, 5, 6]))\r" + \
+					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0, 4, 5, 6]))\r" + \
 							  "and\r"                                                                                        + \
-							  "store(\"Steady state resistance (group B)\", tp(ss, channels(AD), sweeps(), [0, 1, 2, 3]))"
+							  "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0, 1, 2, 3]))"
 					break
 				case PSQ_SE_TGS_FIRST:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, channels(AD), sweeps(), [0]))"
+					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0]))"
 					break
 				case PSQ_SE_TGS_SECOND:
-					formula = "store(\"Steady state resistance (group B)\", tp(ss, channels(AD), sweeps(), [0]))"
+					formula = "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0]))"
 					break
 				default:
 					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
