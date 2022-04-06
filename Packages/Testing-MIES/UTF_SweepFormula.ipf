@@ -291,8 +291,8 @@ static Function orderOfCalculation()
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3*4)
 
-	jsonID1 = DirectToFormulaParser("5*1+2*3+4+5*10")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
+	jsonID1 = DirectToFormulaParser("5*1+2*3+4+5*20")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*20)
 
 	// using - as sign
 	jsonID1 = DirectToFormulaParser("1+-1")
@@ -369,8 +369,8 @@ static Function brackets()
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
 
-	jsonID1 = DirectToFormulaParser("5*(1+2)*3/(4+5*10)")
-	REQUIRE_CLOSE_VAR(SF_FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*10))
+	jsonID1 = DirectToFormulaParser("5*(1+2)*3/(4+5*20)")
+	REQUIRE_CLOSE_VAR(SF_FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*20))
 End
 
 static Function array()
