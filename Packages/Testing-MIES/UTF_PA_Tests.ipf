@@ -1529,7 +1529,7 @@ static Function PAT_ExtendedDeconvCheckDisplay()
 	variable traceNum, i, j, size
 
 	variable range = 400
-	variable dataSize = 100000 // 400 ms * 250000 pts / 1000 ms
+	variable dataSize = 100000 // 400 ms * 250000 pts / 1000 ms // NOLINT
 
 	PA_InitSweep0(patest)
 	Make/FREE/WAVE/N=(2, 2) refData
