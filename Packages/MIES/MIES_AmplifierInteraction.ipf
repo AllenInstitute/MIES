@@ -718,8 +718,9 @@ static Function AI_MIESAutoPipetteOffset(device, headStage)
 	clampMode = DAG_GetHeadstageMode(device, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
-	//calculate delta current to reach zero
-	vdelta = (TPResults[%BaselineSteadyState][headstage] * TPResults[%ResistanceSteadyState][headstage]) / 1000 // set to mV
+	// calculate delta current to reach zero
+	// @todo check for IC
+	vdelta = ((TPResults[%BaselineSteadyState][headstage] * PICO_TO_ONE) * (TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE)) * ONE_TO_MILLI
 	// get current DC V offset
 	offset = AI_SendToAmp(device, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
 	// add delta to current DC V offset

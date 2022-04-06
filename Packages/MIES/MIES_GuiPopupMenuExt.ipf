@@ -590,7 +590,7 @@ Function/WAVE PEXT_SplitToSubMenus(menuList[, method])
 
 	// we have up to MAX_SUBMENUS submenues
 	// - more submenues with fewer entries are better than only a few ones with many entries
-	numPerSubEntry = ceil(numItems / MAX_SUBMENUS / 10) * 10
+	numPerSubEntry = ceil(numItems / MAX_SUBMENUS / 10) * 10 // NOLINT
 
 	method = ParamIsDefault(method) ? PEXT_SUBSPLIT_DEFAULT : method
 

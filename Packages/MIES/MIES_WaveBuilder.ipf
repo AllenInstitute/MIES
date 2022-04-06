@@ -1329,8 +1329,8 @@ static Function WB_TrigSegment(pa)
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
 	if(pa.logChirp)
-		k0 = ln(pa.frequency / 1000)
-		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
+		k0 = ln(pa.frequency / 1000) // NOLINT
+		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration) // NOLINT
 		k2 = 2 * pi * e^k0 / k1
 		k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
 		if(pa.trigFuncType == 0)
@@ -1340,9 +1340,9 @@ static Function WB_TrigSegment(pa)
 		endif
 	else
 		if(pa.trigFuncType == 0)
-			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 		else
-			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 		endif
 	endif
 End
@@ -1352,7 +1352,7 @@ static Function WB_SawToothSegment(pa)
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
-	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 End
 
 static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)

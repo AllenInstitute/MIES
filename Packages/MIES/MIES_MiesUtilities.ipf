@@ -7603,7 +7603,7 @@ static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepN
 	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 
 	// convert to integer as that is stored in the config wave
-	return round(samplingInterval * 1000) / 1000
+	return round(samplingInterval * 1000) / 1000 // NOLINT
 End
 
 /// @brief Set `ChannelNumber` and `ChannelType` in configWave

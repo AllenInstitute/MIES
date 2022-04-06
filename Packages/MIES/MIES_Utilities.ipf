@@ -2462,7 +2462,7 @@ End
 /// \endrst
 Function NewRandomSeed()
 
-	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32
+	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32 // NOLINT
 
 End
 

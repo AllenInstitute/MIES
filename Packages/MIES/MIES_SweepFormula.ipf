@@ -1556,7 +1556,7 @@ static Function/S SF_PrepareDataForResultsWave(WAVE data)
 	endif
 
 	// assuming 100 sweeps on average
-	maxEntries = 100 * NUM_HEADSTAGES * 10
+	maxEntries = 100 * NUM_HEADSTAGES * 10 // NOLINT
 	numEntries = numpnts(dataTxT)
 
 	if(numpnts(dataTxT) > maxEntries)
