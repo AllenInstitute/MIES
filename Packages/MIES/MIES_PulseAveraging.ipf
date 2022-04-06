@@ -1692,8 +1692,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 						if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
 							sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
 							if(WhichListItem(tagName, AnnotationList(graph)) == -1)
-								xPos = ((i + 1) / numActive) * 100 - 2
-								yPos = ((j + 1) / numActive) * 100  - (1 / numActive) * 100 / 2
+								xPos = ((i + 1) / numActive) * ONE_TO_PERCENT - 2
+								yPos = ((j + 1) / numActive) * ONE_TO_PERCENT - (1 / numActive) * ONE_TO_PERCENT / 2
 								Textbox/W=$graph/K/N=$tagName
 								Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
 							endif

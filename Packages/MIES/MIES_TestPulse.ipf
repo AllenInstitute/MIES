@@ -381,7 +381,7 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		// now use the maximum of all baselines
 		WAVE baselineFracClean = ZapNaNs(baselineFrac)
 
-		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * 100, TP_SET_PRECISION)
+		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * ONE_TO_PERCENT, TP_SET_PRECISION)
 
 		DAP_TPSettingsToGUI(device, entry = "baselinePerc")
 	endif

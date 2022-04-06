@@ -2011,7 +2011,7 @@ Function PSQ_DAScale(device, s)
 							Make/FREE/D/N=2 W_sigma = NaN
 						endif
 
-						fISlope[s.headstage] = coefWave[1]/ONE_TO_PICO * 100
+						fISlope[s.headstage] = coefWave[1]/ONE_TO_PICO * ONE_TO_PERCENT // % Hz/pA
 
 						WAVE fitWave = $(CleanupName("fit_" + NameOfWave(spikeFrequencies), 0))
 
