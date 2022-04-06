@@ -3449,7 +3449,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE/Z baselineLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 		ASSERT(WaveExists(baselineLBN), "Missing targetV from LBN")
-		baselineVoltage = baselineLBN[headstage] / 1000
+		baselineVoltage = baselineLBN[headstage] * 1000 // V -> mV
 		ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
 	endif
 
