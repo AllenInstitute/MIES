@@ -3554,7 +3554,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		case PSQ_CR_INCREASE:
 		case PSQ_CR_DECREASE:
 				scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo, boundsEvaluationMode)
-				if(!IsFinite(scalingFactor))
+				if(!IsFinite(scalingFactor) || scalingFactor == 0)
 					// unlikely edge case
 					boundsAction = PSQ_CR_Rerun
 					scalingFactor = NaN
