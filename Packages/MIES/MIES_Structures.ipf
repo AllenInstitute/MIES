@@ -517,7 +517,7 @@ Structure DataConfigurationResult
 
 	/// oodDAQ optimization results, see @ref OOdDAQParams_Output
 	/// @{
-	WAVE offsets
+	WAVE offsets ///< [ms]
 	WAVE/T regions
 	/// @}
 
