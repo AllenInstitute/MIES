@@ -749,9 +749,8 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				if(spikeCheck)
 					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
 					WAVE/Z spikePass = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-					ASSERT(WaveExists(spikePass), "Spike pass wave is missing")
 
-					if(!spikePass[headstage])
+					if(WaveExists(spikePass) && !spikePass[headstage])
 						sprintf text, "Sweep %d failed: found spikes", sweepNo
 						break
 					endif
