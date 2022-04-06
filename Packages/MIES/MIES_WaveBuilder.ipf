@@ -1557,6 +1557,13 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
+/// @brief Return pulse information from a pulse train epoch
+///
+/// @param[in]  stimset            stimulus set
+/// @param[in]  sweep              sweep of the set
+/// @param[in]  epoch              epoch of the set
+/// @param[out] pulseToPulseLength pulse to pulse length [ms]
+/// @return pulse train starting times [ms]
 Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLength)
 	WAVE stimset
 	variable sweep, epoch
