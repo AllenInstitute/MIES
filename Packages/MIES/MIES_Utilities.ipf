@@ -2862,7 +2862,7 @@ Function/S GetUniqueSymbolicPath([prefix])
 	endif
 
 	NewRandomSeed()
-	return prefix + num2istr(GetReproducibleRandom() * 1e6)
+	return prefix + num2istr(GetUniqueInteger())
 End
 
 /// @brief Return a list of all files from the given symbolic path
