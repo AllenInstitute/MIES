@@ -383,7 +383,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 
 	// and rate
 	rate = ReadAttributeAsNumber(groupID, channel + "/starting_time", "rate")
-	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS)/1000)
+	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS) * ONE_TO_KILO)
 	CHECK_CLOSE_VAR(rate, rate_ref, tol=1e-7)
 
 	samplingInterval = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
