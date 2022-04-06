@@ -632,7 +632,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 				continue
 			endif
 
-			scalar = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE] / 100
+			scalar = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
 			current = (targetVoltage - voltage) / resistance
 
@@ -1556,7 +1556,7 @@ Function TP_UpdateTPSettingsCalculated(string device)
 	calculated = NaN
 
 	// update the calculated values
-	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] / 100
+	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
 	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
 	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) * MICRO_TO_MILLI))

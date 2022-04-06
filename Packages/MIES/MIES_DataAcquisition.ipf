@@ -305,7 +305,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") / 100
+		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") * PERCENT_TO_ONE
 
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))

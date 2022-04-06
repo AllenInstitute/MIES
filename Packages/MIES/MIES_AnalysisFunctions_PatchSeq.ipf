@@ -1955,7 +1955,7 @@ Function PSQ_DAScale(device, s)
 
 					minimumSpikeCount = AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)
 					maximumSpikeCount = AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)
-					daScaleModifierParam = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params) / 100
+					daScaleModifierParam = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params) * PERCENT_TO_ONE
 					if(!IsNaN(daScaleModifierParam))
 						if(numberOfSpikes < minimumSpikeCount)
 							daScaleModifier = +daScaleModifierParam

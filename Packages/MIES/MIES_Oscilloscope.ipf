@@ -143,7 +143,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 		WAVE TPData = GetOscilloscopeWave(device)
 	endif
 
-	additionalSpacing = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdExt") / 100
+	additionalSpacing = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdExt") * PERCENT_TO_ONE
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)

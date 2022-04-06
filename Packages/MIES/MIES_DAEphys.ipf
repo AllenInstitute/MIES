@@ -4075,7 +4075,7 @@ Function DAP_UpdateOnsetDelay(device)
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_InsertTP"))
 		pulseDuration = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPDuration")
-		baselineFrac = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPBaselinePerc") / 100
+		baselineFrac = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPBaselinePerc") * PERCENT_TO_ONE
 		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	else
 		testPulseDurWithBL = 0
