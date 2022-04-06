@@ -1800,7 +1800,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial
 	endfor
 End
 
-/// @brief Return the sampling interval with taking the mode,
+/// @brief Return the sampling interval in μs with taking the mode,
 /// the multiplier and the fixed frequency selection into account
 ///
 /// @param[in]  device  device
