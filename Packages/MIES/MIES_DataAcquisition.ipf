@@ -154,6 +154,8 @@ Function DQ_StartDAQDeviceTimer(device)
 End
 
 /// @brief Stop the per-device timer associated with a particular device
+///
+/// @return time in seconds
 Function DQ_StopDAQDeviceTimer(device)
 	string device
 
