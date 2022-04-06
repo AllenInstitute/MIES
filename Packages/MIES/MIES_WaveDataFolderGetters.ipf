@@ -6937,9 +6937,9 @@ End
 /// - Pulses
 ///
 /// Columns:
-/// - Length: Total length including baseline
-/// - PulseStart: Start of the pulse (aka begin of active)
-/// - PulseEnd: End of the pulse (aka end of active)
+/// - Length [ms]: Total length including baseline
+/// - PulseStart [ms]: Start of the pulse (aka begin of active)
+/// - PulseEnd [ms]: End of the pulse (aka end of active)
 Function/WAVE GetPulseInfoWave()
 
 	Make/D/FREE/N=(0, 3) pulseInfo
