@@ -3449,7 +3449,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE/Z baselineLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 		ASSERT(WaveExists(baselineLBN), "Missing targetV from LBN")
-		baselineVoltage = baselineLBN[headstage] / 1000
+		baselineVoltage = baselineLBN[headstage] * 1000 // V -> mV
 		ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
 	endif
 
@@ -3554,7 +3554,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		case PSQ_CR_INCREASE:
 		case PSQ_CR_DECREASE:
 				scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo, boundsEvaluationMode)
-				if(!IsFinite(scalingFactor))
+				if(!IsFinite(scalingFactor) || scalingFactor == 0)
 					// unlikely edge case
 					boundsAction = PSQ_CR_Rerun
 					scalingFactor = NaN
@@ -3679,6 +3679,29 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 	endswitch
 End
 
+Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
+	variable value, preActiveHS
+
+	value = AFH_GetAnalysisParamNumerical(name, params)
+
+	if(IsNaN(value))
+		// not present
+		return NaN
+	endif
+
+	preActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
+
+	if(preActiveHS != headstage)
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
+	endif
+
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = value)
+
+	if(preActiveHS != headstage)
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = preActiveHS)
+	endif
+End
+
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
@@ -3706,6 +3729,10 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 		case "DAScaleModifier":
 			return "Modifier value to the DA Scale of headstages with spikes during chirp"
+		case "AutobiasTargetV":
+			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
+		case "AutobiasTargetVAtSetEnd":
+			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3774,6 +3801,13 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 				return "Invalid value " + num2str(val)
 			endif
 			break
+		case "AutobiasTargetV":
+		case "AutobiasTargetVAtSetEnd":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val == 0)
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3787,7 +3821,7 @@ Function/S PSQ_Chirp_GetParams()
 		   "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]," + \
 		   "[SamplingMultiplier:variable],[SamplingFrequency:variable]," +                          \
 		   "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]," +            \
-		   "BoundsEvaluationMode:string"
+		   "BoundsEvaluationMode:string,[AutobiasTargetV:variable],[AutobiasTargetVAtSetEnd:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3918,6 +3952,8 @@ Function PSQ_Chirp(device, s)
 
 		case PRE_SET_EVENT: // fallthrough-by-design
 			SetAnalysisFunctionVersion(device, PSQ_CHIRP, s.headstage, s.sweepNo)
+
+			PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetV")
 
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 
@@ -4077,6 +4113,10 @@ Function PSQ_Chirp(device, s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			if(setPassed)
+				PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
+			endif
 
 			AD_UpdateAllDatabrowser()
 

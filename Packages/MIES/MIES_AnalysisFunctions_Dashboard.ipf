@@ -749,9 +749,8 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				if(spikeCheck)
 					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
 					WAVE/Z spikePass = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-					ASSERT(WaveExists(spikePass), "Spike pass wave is missing")
 
-					if(!spikePass[headstage])
+					if(WaveExists(spikePass) && !spikePass[headstage])
 						sprintf text, "Sweep %d failed: found spikes", sweepNo
 						break
 					endif
@@ -1000,10 +999,11 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	Make/O/N=2 dfr:chirpBoundLowerMax/WAVE=lowerMax
 	Make/O/N=2 dfr:chirpBoundLowerMin/WAVE=lowerMin
 
-	upperMax[] = baselineVoltage / 1e3 + outerRelativeBound
-	upperMin[] = baselineVoltage / 1e3 + innerRelativeBound
-	lowerMax[] = baselineVoltage / 1e3 - innerRelativeBound
-	lowerMin[] = baselineVoltage / 1e3 - outerRelativeBound
+	// V -> mV
+	upperMax[] = baselineVoltage * 1e3 + outerRelativeBound
+	upperMin[] = baselineVoltage * 1e3 + innerRelativeBound
+	lowerMax[] = baselineVoltage * 1e3 - innerRelativeBound
+	lowerMin[] = baselineVoltage * 1e3 - outerRelativeBound
 
 	GetAxis/W=$graph/Q bottom
 	lastX = V_max
