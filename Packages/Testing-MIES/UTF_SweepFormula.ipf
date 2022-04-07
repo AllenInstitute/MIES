@@ -1145,6 +1145,191 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 End
 
+static Function TestOperationSelect()
+
+	variable numChannels, sweepNo
+	string str, chanList
+	string win = DATABROWSER_WINDOW_TITLE
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+
+	variable numSweeps = 2
+	variable dataSize = 10
+	variable i, j
+	string trace, name
+	string channelTypeList = "DA;AD;DA;AD;"
+	string channelNumberList = "2;6;3;7;"
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	sweepNo = 0
+
+	CreateFakeSweepData(device, sweepNo=sweepNo)
+	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
+	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
+	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo + 1)
+
+	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+	Make/FREE/N=0 sweepTemplate
+	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+
+	Make/FREE/N=(2, 3) dataRef
+	dataRef[][0] = sweepNo
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7} // AD6, AD7
+	str = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// non-existing sweeps are ignored
+	str = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(4, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1} // sweep 0, 1 with 2 AD channels each
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 6, 7} // AD6, AD7, AD6, AD7
+	str = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(2, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6} // AD6, AD6
+	str = "select(channels(AD6),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(6, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
+	chanList = "AD;DA;DA;AD;DA;DA;"
+	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 2, 3, 6, 2, 3} // AD6, DA2, DA3, AD6, DA2, DA3
+	str = "select(channels(AD6, DA),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// No existing sweeps
+	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
+	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 2) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// No existing channels
+	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
+	str = "select(channels(AD0),[" + num2istr(sweepNo) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// Invalid channels
+	try
+		str = "select([0, 6],[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// Setup graph with equivalent data for displayed parameter
+	TUD_Clear(win)
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNo = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo)})
+		endfor
+	endfor
+
+	sweepNo = 0
+	Make/FREE/N=(4, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 6, 7}
+	str = "select(channels(AD),sweeps(),displayed)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "select(channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
+	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {2, 3, 2, 3}
+	str = "select(channels(DA),sweeps())"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(6, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
+	chanList = "AD;AD;DA;AD;AD;DA;"
+	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 2, 6, 7, 2}
+	str = "select(channels(DA2, AD),sweeps())" // note: channels are sorted AD, DA...
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// No existing sweeps
+	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
+	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 2) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// No existing channels
+	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
+	str = "select(channels(AD0),[" + num2istr(sweepNo) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// Invalid channels
+	try
+		str = "select([0, 6],[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "select(1)"
+	try
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "select(channels(AD), sweeps(), 1)"
+	try
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "select(channels(AD), sweeps(), all, 1)"
+	try
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+End
+
 static Function TestDataOperation()
 
 	variable numChannels, sweepNo, rStart, rDelta
