@@ -223,7 +223,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_limit_x_selected_sweeps WIN = $shPanel, value=0
 
 	sfFormula = BSP_GetSFFormula(device)
-	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
+	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rselect(channels(AD),sweeps())\r)")
 
 	sfJSON = BSP_GetSFJSON(device)
 	ReplaceNotebookText(sfJSON, "")
