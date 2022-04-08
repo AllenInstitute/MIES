@@ -1431,11 +1431,11 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	WAVE channels, sweeps
 	variable entrySourceType
 
-	variable i, j, k, channelType, channelNumber, numIndices, sweepNo
-	string setting, msg
+	variable i, j, k, l, channelType, channelNumber, index, sweepNo, outIndex, shift
+	variable numSweeps, numInChannels, numSettings, maxChannels, numUniqueCombinations
+	string setting, settingList, msg
 
 	WAVE/Z settings
-	Variable index
 
 	ASSERT(windowExists(graph), "DB/SB not specified.")
 	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
@@ -1448,14 +1448,14 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		entrySourceType == NUMBER_OF_LBN_DAQ_MODES, \
 		"Undefined labnotebook mode. Use one in group DataAcqModes")
 
-	Make/FREE/WAVE/N=2 channelNumbers
-	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
-	channelNumbers[XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
-	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
-	channelNumbers[XOP_CHANNEL_TYPE_DAC] = channelNumbersDA
-
 	// search sweeps for active channels
-	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+	shift = ceil(log(NUM_AD_CHANNELS) / log(2))
+	numSweeps = DimSize(sweeps, ROWS)
+	numInChannels = DimSize(channels, ROWS)
+
+	Make/FREE/N=((NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS) * numSweeps) collect
+
+	for(i = 0; i < numSweeps; i += 1)
 		sweepNo = sweeps[i]
 
 		if(!IsValidSweepNumber(sweepNo))
@@ -1467,58 +1467,76 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 			continue
 		endif
 
-		for(j = 0; j < DimSize(channels, ROWS); j += 1)
-			channelType = channels[j][0]
-			switch(channelType)
-				case XOP_CHANNEL_TYPE_DAC:
-					setting = "DAC"
-					break
-				case XOP_CHANNEL_TYPE_ADC:
-					setting = "ADC"
-					break
-				default:
-					sprintf msg, "Unhandled channel type %g in channels() at position %d", channelType, j
-					SF_ASSERT(0, msg)
-			endswitch
+		for(j = 0; j < numInChannels; j += 1)
 
-			channelNumber = channels[j][1]
-			WAVE wv = channelNumbers[channelType]
-			for(k = 0; k < DimSize(wv, ROWS); k += 1)
-				if(!IsNaN(wv[k]))
-					continue
-				endif
-				if(!IsNaN(channelNumber) && channelNumber != k)
-					continue
-				endif
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, setting, k, channelType, entrySourceType)
-				if(!WaveExists(settings))
-					continue
-				endif
-				wv[k] = settings[index]
+			channelType = channels[j][%channelType]
+			channelNumber = channels[j][%channelNumber]
+
+			if(IsNaN(channelType))
+				settingList = "DAC;ADC;"
+			else
+				switch(channelType)
+					case XOP_CHANNEL_TYPE_DAC:
+						settingList = "DAC;"
+						break
+					case XOP_CHANNEL_TYPE_ADC:
+						settingList = "ADC;"
+						break
+					default:
+						sprintf msg, "Unhandled channel type %g in channels() at position %d", channelType, j
+						SF_ASSERT(0, msg)
+				endswitch
+			endif
+
+			numSettings = ItemsInList(settingList)
+			for(k = 0; k < numSettings; k += 1)
+				setting = StringFromList(k, settingList)
+				strswitch(setting)
+					case "DAC":
+						channelType = XOP_CHANNEL_TYPE_DAC
+						maxChannels = NUM_DA_TTL_CHANNELS
+						break
+					case "ADC":
+						channelType = XOP_CHANNEL_TYPE_ADC
+						maxChannels = NUM_AD_CHANNELS
+						break
+					default:
+						SF_ASSERT(0, "Unexpected setting entry for channel type resolution.")
+						break
+				endswitch
+
+				for(l = 0; l < maxChannels; l += 1)
+					if(!IsNaN(channelNumber) && channelNumber != l)
+						continue
+					endif
+					[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, setting, l, channelType, entrySourceType)
+					if(!WaveExists(settings))
+						continue
+					endif
+					collect[outIndex] = channelType << shift + settings[index]
+					outIndex += 1
+				endfor
 			endfor
 		endfor
 	endfor
+	Redimension/N=(outIndex, -1) collect
 
-	// create channels wave
-	Make/FREE/N=(NUM_MAX_CHANNELS, 2) out
+	if(outIndex > 1)
+		FindDuplicates/FREE/RN=collectReduced collect
+		Sort collectReduced, collectReduced
+	else
+		WAVE collectReduced = collect
+	endif
+	numUniqueCombinations = DimSize(collectReduced, ROWS)
+
+	Make/FREE/N=(numUniqueCombinations, 2) out
 	SetDimLabel COLS, 0, channelType, out
 	SetDimLabel COLS, 1, channelNumber, out
-	numIndices = 0
-	for(i = 0; i < DimSize(channelNumbers, ROWS); i += 1)
-		WAVE wv = channelNumbers[i]
-		for(j = 0; j < DimSize(wv, ROWS); j += 1)
 
-			if(IsNaN(wv[j]))
-				continue
-			endif
-
-			out[numIndices][%channelType] = i
-			out[numIndices][%channelNumber] = wv[j]
-			numIndices += 1
-		endfor
-	endfor
-
-	Redimension/N=(numIndices, -1) out
+	if(numUniqueCombinations)
+		out[][%channelType] = collectReduced[p] >> shift
+		out[][%channelNumber] = collectReduced[p] - out[p][%channelType] << shift
+	endif
 
 	return out
 End
@@ -1785,26 +1803,10 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	endif
 	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
 
-	// todo: use plain `channels()` once https://github.com/AllenInstitute/MIES/issues/1135 is resolved
-	WAVE/Z channels_AD = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(AD)")), graph = graph)
-	WAVE/Z channels_DA = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(DA)")), graph = graph)
+	WAVE/Z channels = SF_ExecuteFormula(graph, "channels()")
 
-	if(WaveExists(sweeps) && WaveExists(channels_DA) && WaveExists(channels_AD))
-		WAVE/Z activeChannels_DA = SF_GetActiveChannelNumbers(graph, channels_DA, sweeps, DATA_ACQUISITION_MODE)
-		WAVE/Z activeChannels_AD = SF_GetActiveChannelNumbers(graph, channels_AD, sweeps, DATA_ACQUISITION_MODE)
-
-		if(!WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
-			WAVE/Z activeChannels
-		elseif(WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
-			Concatenate/FREE/NP=(ROWS) {activeChannels_DA, activeChannels_AD}, activeChannels
-		elseif(WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
-			WAVE activeChannels = activeChannels_DA
-		elseif(!WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
-			WAVE activeChannels = activeChannels_AD
-		else
-			ASSERT(0, "Unexpected case")
-		endif
-
+	if(WaveExists(sweeps) && WaveExists(channels))
+		WAVE/Z activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
 		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(activeChannels, ";")
 	endif
 
@@ -2548,8 +2550,8 @@ End
 /// returns [[channelName, channelNumber]+]
 static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, JSONtype
-	string channelName, channelNumber
+	variable numIndices, i, JSONtype, channelType
+	string channelName, channelNumber, channelStr
 	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 
 	numIndices = JSON_GetArraySize(jsonID, jsonPath)
@@ -2561,16 +2563,21 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		if(JSONtype == JSON_NUMERIC)
 			out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2istr(i))
 		elseif(JSONtype == JSON_STRING)
-			SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2istr(i)), channelName, channelNumber
+			channelStr = JSON_GetString(jsonID, jsonPath + "/" + num2istr(i))
+			SplitString/E=regExp channelStr, channelName, channelNumber
 			if(V_flag == 0)
-				continue
+				SF_ASSERT(0, "Unknown channel: " + channelStr)
 			endif
 			out[i][%channelNumber] = str2num(channelNumber)
 		endif
 		SF_ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
-		out[i][%channelType] = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
+		if(!IsEmpty(channelName))
+			channelType = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
+			if(channelType >= 0)
+				out[i][%channelType] = channelType
+			endif
+		endif
 	endfor
-	out[][] = out[p][q] < 0 ? NaN : out[p][q]
 
 	return out
 End
