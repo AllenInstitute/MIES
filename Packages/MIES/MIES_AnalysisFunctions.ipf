@@ -1261,7 +1261,7 @@ End
 ///
 /// 	setvar_DataAcq_OnsetDelayUser -> Pre DAQ|20|
 /// 	Popup_Settings_FixedFreq -> Pre Sweep|100|Post Sweep|Maximum|
-/// 	sweepFormula_formula -> Pre Set|data(cursors(A,B), channels(AD), sweeps())
+/// 	sweepFormula_formula -> Pre Set|data(cursors(A,B), select(channels(AD), sweeps()))
 ///
 /// \endrst
 ///
