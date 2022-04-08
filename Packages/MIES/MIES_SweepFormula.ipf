@@ -2566,38 +2566,16 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	return out
 End
 
-/// `sweeps([str type])`
-///  @p type: `|displayed|all`
-///           displayed (default): get (selected) sweeps
-///           all:                  get all possible sweeps
+/// `sweeps()`
+/// returns all possible sweeps as 1d array
 static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string graph)
 
-	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) <= 1, "Function requires 1 argument at most.")
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1 && IsNaN(JSON_GetVariable(jsonID, jsonPath + "/0")), "Sweep function takes no arguments.")
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
-	if(JSON_GetType(jsonID, jsonPath + "/0") == JSON_NULL)
-		Make/FREE/T wvT = {"displayed"}
-	else
-		WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
-	endif
-
-	strswitch(wvT[0])
-		case "all":
-			WAVE out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
-			break
-		case "displayed":
-			WAVE/T/Z sweepNumbers = GetSweepUserData(graph, "sweepNumber")
-			if(WaveExists(sweepNumbers))
-				Make/N=(DimSize(sweepNumbers, ROWS))/FREE sweepNumbersNumeric = str2num(sweepNumbers[p])
-				WAVE out = GetUniqueEntries(sweepNumbersNumeric)
-			endif
-			break
-		default:
-			SF_ASSERT(0, "Undefined argument")
-	endswitch
-
+	WAVE/Z out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 	if(!WaveExists(out))
-		Make/N=1/FREE out = {NaN} // simulates [null]
+		WAVE out = SF_GetDefaultEmptyWave()
 	endif
 
 	return out

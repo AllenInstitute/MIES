@@ -401,10 +401,7 @@ sweeps
 
 `sweeps()`
 
-return an array which holds the sweep numbers of all displayed sweeps.
-`sweeps(all)` return an array of all available sweeps.
-
-Not implemented yet: The not-yet checked sweeps from overlay sweeps are automatically enabled.
+return an 1d-array with the sweep numbers of all sweeps.
 
 .. code-block:: bash
 
