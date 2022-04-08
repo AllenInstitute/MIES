@@ -595,7 +595,7 @@ static Function merge()
 	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 End
 
-static Function MIES_channel()
+static Function TestOperationChannels()
 
 	Make/FREE input = {{0}, {NaN}}
 	SetDimLabel COLS, 0, channelType, input
@@ -623,17 +623,28 @@ static Function MIES_channel()
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD,DA)"))
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
-	Make/FREE input = {{2}, {1}}
+	Make/FREE input = {{NaN}, {1}}
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(1)"))
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
-	Make/FREE input = {{2, 2}, {1, 3}}
+	Make/FREE input = {{NaN, NaN}, {1, 3}}
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(1,3)"))
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
-	Make/FREE input = {{0,1,2},{1,2,3}}
+	Make/FREE input = {{0,1,NaN},{1,2,3}}
 	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD1,DA2,3)"))
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
+
+	Make/FREE input = {{NaN}, {NaN}}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels()"))
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
+
+	try
+		SF_FormulaExecutor(DirectToFormulaParser("channels(unknown)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function testDifferentiales()
@@ -1177,6 +1188,24 @@ static Function TestOperationSelect()
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+
+	Make/FREE/N=(4, 3) dataRef
+	dataRef[][0] = sweepNo
+	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[2, 3][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 2, 3} // AD6, AD7, DA2, DA3
+	str = "select(channels(),[" + num2istr(sweepNo) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(2, 3) dataRef
+	dataRef[][0] = sweepNo
+	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 2} // AD6, DA2
+	str = "select(channels(2, 6),[" + num2istr(sweepNo) + "],all)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/N=(2, 3) dataRef
 	dataRef[][0] = sweepNo
