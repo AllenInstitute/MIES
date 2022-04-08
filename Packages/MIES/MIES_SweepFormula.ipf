@@ -2598,31 +2598,35 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 	return out
 End
 
-/// `select(array channels, array sweeps, [string mode])`
+/// `select([array channels, array sweeps, [string mode]])`
 ///
 /// returns n x 3 with columns [sweepNr][channelType][channelNr]
 static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string graph)
 
 	variable numIndices
-	string mode
+	string mode = "displayed"
 
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-
-	SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires 2 or 3 arguments.")
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-
-	if(numIndices == 3)
-		WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-		SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
-		SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must be either displayed or all.")
-		mode = wMode[0]
+	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(!numIndices)
+		WAVE channels = SF_ExecuteFormula("channels()", databrowser=graph)
+		WAVE sweeps = SF_ExecuteFormula("sweeps()", databrowser=graph)
 	else
-		mode = "displayed"
+		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
+		WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+
+		WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+		if(numIndices == 3)
+			WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
+			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
+			mode = wMode[0]
+			SF_ASSERT(!CmpStr(mode, "displayed") || !CmpStr(mode, "all"), "mode must be \"all\" or \"displayed\".")
+		endif
 	endif
 
 	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
@@ -3153,4 +3157,10 @@ Function/WAVE SF_ExecuteFormula(string formula, [string databrowser])
 	JSON_Release(jsonId, ignoreErr=1)
 
 	return out
+End
+
+// returns number of operation arguments
+static Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
+
+	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : JSON_GetArraySize(jsonID, jsonPath)
 End
