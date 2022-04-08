@@ -1056,10 +1056,10 @@ Constant PSQ_DA_SCALE_VERSION        = 3
 Constant PSQ_RAMP_VERSION            = 4
 Constant PSQ_RHEOBASE_VERSION        = 3
 Constant PSQ_SQUARE_PULSE_VERSION    = 1
-Constant PSQ_SEAL_EVALUATION_VERSION = 0
-Constant MSQ_FAST_RHEO_EST_VERSION   = 0
-Constant MSQ_DA_SCALE_VERSION        = 0
-Constant SC_SPIKE_CONTROL_VERSION    = 0
+Constant PSQ_SEAL_EVALUATION_VERSION = 1
+Constant MSQ_FAST_RHEO_EST_VERSION   = 1
+Constant MSQ_DA_SCALE_VERSION        = 1
+Constant SC_SPIKE_CONTROL_VERSION    = 1
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
@@ -1069,6 +1069,24 @@ Constant SC_SPIKE_CONTROL_VERSION    = 0
 /// @{
 
 Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
+
+/// Legacy analysis functions
+/// @{
+Constant ADJUST_DA_SCALE       = 0x1000 // AD
+Constant REACH_TARGET_VOLTAGE  = 0x2000 // RV
+/// @}
+
+/// Legacy analysis functions labnotebook entries
+///
+/// These are without analysis function prefixes.
+///
+/// @{
+StrConstant LBN_DELTA_I              = "Delta I"
+StrConstant LBN_DELTA_V              = "Delta V"
+StrConstant LBN_RESISTANCE_FIT       = "ResistanceFromFit"
+StrConstant LBN_RESISTANCE_FIT_ERR   = "ResistanceFromFit_Err"
+StrConstant LBN_AUTOBIAS_TARGET_DIAG = "Autobias target voltage from dialog"
+/// @}
 
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{

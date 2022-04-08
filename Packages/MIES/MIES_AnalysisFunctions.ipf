@@ -751,8 +751,8 @@ Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength
 
 	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-	ED_AddEntryToLabnotebook(device, "Delta I", deltaI, unit = "A")
-	ED_AddEntryToLabnotebook(device, "Delta V", deltaV, unit = "V")
+	ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
+	ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
 	FitResistance(device)
 End
@@ -804,8 +804,8 @@ Function FitResistance(string device, [variable showPlot])
 	for(i = 0; i < numEntries; i += 1)
 
 		sweepNo = sweeps[i]
-		WAVE/Z deltaI = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "Delta I", UNKNOWN_MODE)
-		WAVE/Z deltaV = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "Delta V", UNKNOWN_MODE)
+		WAVE/Z deltaI = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I, UNKNOWN_MODE)
+		WAVE/Z deltaV = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V, UNKNOWN_MODE)
 
 		if(!WaveExists(deltaI) || !WaveExists(deltaV))
 			print "Could not find all required labnotebook keys"
@@ -857,11 +857,11 @@ Function FitResistance(string device, [variable showPlot])
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
-	ED_AddEntryToLabnotebook(device, "ResistanceFromFit", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(device, LBN_RESISTANCE_FIT, storage, unit = "Ohm")
 
 	storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
-	ED_AddEntryToLabnotebook(device, "ResistanceFromFit_Err", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(device, LBN_RESISTANCE_FIT_ERR, storage, unit = "Ohm")
 
 	KillOrMoveToTrash(wv=W_sigma)
 	KillOrMoveToTrash(wv=fitWave)
@@ -1126,7 +1126,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 					return 1
 				endif
 
-				ED_AddEntryToLabnotebook(device, "Autobias target voltage from dialog", autobiasV, unit = "mV", overrideSweepNo = s.sweepNo)
+				ED_AddEntryToLabnotebook(device, LBN_AUTOBIAS_TARGET_DIAG, autobiasV, unit = "mV", overrideSweepNo = s.sweepNo)
 			endif
 			break
 		case POST_SWEEP_EVENT:
@@ -1159,12 +1159,12 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-			ED_AddEntryToLabnotebook(device, "Delta I", deltaI, unit = "A")
-			ED_AddEntryToLabnotebook(device, "Delta V", deltaV, unit = "V")
+			ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
+			ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
 			FitResistance(device, showPlot = 1)
 
-			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1209,7 +1209,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 			endif
 
 			WAVE numericalValues = GetLBNumericalValues(device)
-			WAVE/Z autobiasFromDialog = GetLastSettingSCI(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + "Autobias target voltage from dialog", s.headstage, UNKNOWN_MODE)
+			WAVE/Z autobiasFromDialog = GetLastSettingSCI(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, s.headstage, UNKNOWN_MODE)
 			if(WaveExists(autobiasFromDialog))
 				WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 

@@ -1129,9 +1129,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	variable type
 
 	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
-
-	sweepNo = AFH_GetLastSweepAcquired(device)
-	CHECK_EQUAL_VAR(sweepNo, sweepNo)
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
 
 	WAVE textualValues = GetLBTextualValues(device)
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
@@ -1160,6 +1158,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	CheckUserEpochsFromChunks(device)
 
 	CheckForOtherUserLBNKeys(device, type)
+	CheckRangeOfUserLabnotebookKeys(device, type, sweepNo)
 End
 
 static Function CheckForOtherUserLBNKeys(string device, variable type)
@@ -1175,15 +1174,144 @@ static Function CheckForOtherUserLBNKeys(string device, variable type)
 	WAVE/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
 
 	// remove legacy entries
-	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta I")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_Delta V")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit")
-	RemoveTextWaveEntry1D(allUserEntries, "USER_ResistanceFromFit_Err")
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT)
+	RemoveTextWaveEntry1D(allUserEntries, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR)
 
 	prefix = CreateAnaFuncLBNKey(type, "%s", query = 1)
 	WAVE/Z ourUserEntries = GrepTextWave(entries, prefix + ".*")
 
 	CHECK_EQUAL_TEXTWAVES(allUserEntries, ourUserEntries)
+End
+
+static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, variable sweepNoRef)
+	variable numSweeps, sweepNo, numEntries, i, j, k
+	variable result, col, value
+	string unit, entry
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
+
+	WAVE numericalKeys = GetLBNumericalKeys(device)
+	WAVE textualKeys   = GetLBTextualKeys(device)
+
+	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
+	CHECK_WAVE(entries, TEXT_WAVE)
+
+	WAVE/T/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
+	CHECK_WAVE(allUserEntries, TEXT_WAVE)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+
+	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                           \
+	                                  PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE, PSQ_FMT_LBN_SPIKE_COUNT,         \
+	                                  PSQ_FMT_LBN_CR_BOUNDS_ACTION, PSQ_FMT_LBN_INITIAL_SCALE, PSQ_FMT_LBN_FINAL_SCALE,   \
+	                                  MSQ_FMT_LBN_INITIAL_SCALE, MSQ_FMT_LBN_FINAL_SCALE, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, \
+	                                  MSQ_FMT_LBN_FAILED_PULSE_LEVEL, MSQ_FMT_LBN_RERUN_TRIAL}
+
+	entriesWithoutUnit = CreateAnaFuncLBNKey(type, entriesWithoutUnit[p], query = 1)
+
+	numSweeps = DimSize(sweeps, ROWS)
+	numEntries = DimSize(allUserEntries, ROWS)
+	for(i = 0; i < numSweeps; i += 1)
+		for(j = 0; j < numEntries; j += 1)
+			sweepNo = sweeps[i]
+			entry   = allUserEntries[j]
+
+			WAVE/Z settingNum = GetLastSetting(numericalValues, sweepNo, entry, UNKNOWN_MODE)
+			WAVE/Z settingTxt = GetLastSetting(textualValues, sweepNo, entry, UNKNOWN_MODE)
+
+			if(!WaveExists(settingNum) && !WaveExists(settingTxt))
+				PASS()
+				continue
+			endif
+
+			if(WaveExists(settingTxt))
+				// textual entries don't have units
+				[result, unit, col] = LBN_GetEntryProperties(numericalKeys, entry)
+				CHECK_EQUAL_VAR(result, 1)
+				CHECK_EMPTY_STR(unit)
+
+				// we can not check anything more
+				continue
+			endif
+
+			CHECK_WAVE(settingNum, NUMERIC_WAVE)
+
+			// check that we have a unit for most entries
+			[result, unit, col] = LBN_GetEntryProperties(numericalKeys, entry)
+			CHECK_EQUAL_VAR(result, 0)
+
+			if(GetRowIndex(entriesWithoutUnit, str = entry) >= 0)
+				CHECK_EMPTY_STR(unit)
+			else
+				CHECK_PROPER_STR(unit)
+
+				for(k = 0; k < LABNOTEBOOK_LAYER_COUNT; k += 1)
+					value = settingNum[k]
+					if(!IsNaN(value))
+						break
+					endif
+				endfor
+
+				// allow inf for this one only
+				if(!cmpstr(entry, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR))
+					if(value == inf)
+						continue
+					endif
+				endif
+
+				CHECK(IsFinite(value))
+
+				// do a coarse range check
+				strswitch(unit)
+					case "On/Off":
+						// baseline QC entries write -1 for "check not done"
+						Make/FREE allowedValues = {0, 1, -1}
+						FindValue/V=(value) allowedValues
+						CHECK_GE_VAR(V_Value, 0)
+						break
+					case "Amperes":
+					case "A":
+						value = abs(value)
+						CHECK_GT_VAR(value, 0)
+						CHECK_LE_VAR(value, 200e-12)
+						break
+					case "Volts":
+					case "Volt":
+					case "V":
+						CHECK_GE_VAR(value, -0.1)
+						CHECK_LE_VAR(value, 0.1)
+						break
+					case "Ohm":
+					case "Ω":
+
+						value = abs(value)
+						CHECK_GT_VAR(value, 0)
+
+						/// @todo adapt once https://github.com/AllenInstitute/MIES/pull/1316
+						/// is merged
+						CHECK_LE_VAR(value, 12.5e9)
+						break
+					case "ms":
+						CHECK_GT_VAR(value, 0)
+						CHECK_LE_VAR(value, 15000)
+						break
+					case "% of Hz/pA":
+						value = abs(value)
+						CHECK_GE_VAR(value, 0)
+						CHECK_LE_VAR(value, 100)
+						break
+					default:
+						printf "missing %s with unit %s\r", entry, unit
+						CHECK(0)
+						break
+				endswitch
+			endif
+		endfor
+	endfor
 End
 
 Function CheckPublishedMessage(string device, variable type)

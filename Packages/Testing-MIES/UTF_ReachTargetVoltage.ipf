@@ -8,11 +8,11 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	WAVE/Z deltaI        = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_Delta I", HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z deltaV        = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_Delta V", HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z resistance    = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_ResistanceFromFit", HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z resistanceErr = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_ResistanceFromFit_Err", HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_Autobias target voltage from dialog", HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z deltaI        = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z deltaV        = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistance    = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistanceErr = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, HEADSTAGE, UNKNOWN_MODE)
 End
 
 static Function RTV_Works_Setter(device)
