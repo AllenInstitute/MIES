@@ -4463,8 +4463,8 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			formula_nb = BSP_GetSFFormula(databrowser)
 
-			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
-			/// this also then allows us to remove the OVS fiddling
+			/// @todo: The call should work on the last sweep acquired. Once this number is retrieved it can be set directly
+			/// in the formula string replacing sweeps(). The the OVS disabled/enable procedure can be skipped.
 			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, select(channels(AD), sweeps()), [0]))")
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
