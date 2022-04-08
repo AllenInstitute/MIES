@@ -827,7 +827,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		WaveClear wvX
 		xFormula = formulaPairs[j][%FORMULA_X]
 		if(!IsEmpty(xFormula))
-			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
+			WAVE/Z wv = SF_ExecuteFormula(xFormula, databrowser = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
 			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
@@ -844,7 +844,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 		endif
 
-		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formulaPairs[j][%FORMULA_Y])), graph = graph)
+		WAVE/Z wv = SF_ExecuteFormula(formulaPairs[j][%FORMULA_Y], databrowser = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
 		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
@@ -1792,7 +1792,8 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE select = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("select(channels(AD), sweeps(),displayed)")), graph = graph)
+	WAVE/Z select = SF_ExecuteFormula("select(channels(AD), sweeps(),displayed)", databrowser = graph)
+	SF_ASSERT(WaveExists(select), "Select did not return data.")
 	dimSweep = FindDimLabel(select, COLS, "SWEEP")
 	Duplicate/FREE/RMD=[][dimSweep] select, wTmp
 	Redimension/N=(-1) wTmp
@@ -1803,7 +1804,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	endif
 	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
 
-	WAVE/Z channels = SF_ExecuteFormula(graph, "channels()")
+	WAVE/Z channels = SF_ExecuteFormula("channels()", databrowser = graph)
 
 	if(WaveExists(sweeps) && WaveExists(channels))
 		WAVE/Z activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
