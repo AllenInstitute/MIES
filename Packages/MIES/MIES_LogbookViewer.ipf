@@ -489,7 +489,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 
-	isTimeAxis = LBV_CheckIfXAxisIsTime(graph)
+	isTimeAxis = LBV_CheckIfXAxisIsTime(graph, logbookType=logbookType)
 	isTextData = IsTextWave(values)
 	sweepCol   = GetSweepColumn(values)
 
@@ -640,7 +640,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 	WAVE userDataKeys = LBV_GetTraceUserDataNames()
 
 	if(ParamIsDefault(isTimeAxis))
-		isTimeAxis = LBV_CheckIfXAxisIsTime(graph)
+		isTimeAxis = LBV_CheckIfXAxisIsTime(graph, logbookType=LBT_TPSTORAGE)
 	else
 		isTimeAxis = isTimeAxis
 	endif
@@ -769,7 +769,7 @@ static Function [WAVE/T traces, string niceName] LBV_GenerateTraceNames(string n
 End
 
 static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
-	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow
+	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow, logbookType
 	string tagString, tmp, text, unit, lbl, name
 	STRUCT RGBColor s
 
@@ -783,13 +783,15 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 
-	isTimeAxis = LBV_CheckIfXAxisIsTime(graph)
+	logbookType = GetLogbookType(keys)
+
+	isTimeAxis = LBV_CheckIfXAxisIsTime(graph, logbookType=logbookType)
 	sweepCol   = GetSweepColumn(values)
 
 	if(isTimeAxis)
-		WAVE xPos = valuesSweep
-	else
 		WAVE xPos = valuesDat
+	else
+		WAVE xPos = valuesSweep
 	endif
 
 	numRows    = GetNumberFromWaveNote(values, NOTE_INDEX)
@@ -918,17 +920,26 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 End
 
 /// @brief Check if the x wave belonging to the first trace in the
-/// graph has a date/time scale. Returns false if no traces have been found.
-static Function LBV_CheckIfXAxisIsTime(string graph)
+/// graph has a date/time scale.
+static Function LBV_CheckIfXAxisIsTime(string graph, [variable logbookType])
 	string list, trace, name
 
 	list = TraceNameList(graph, ";", 0 + 1)
 
 	if(isEmpty(list))
-		WAVE/Z sweeps = GetPlainSweepList(graph)
-		// use sweeps axis as default if we have sweeps, use time axis otherwise
-		// this is useful for plotting TP data without any sweep data
-		return !WaveExists(sweeps)
+		if(!ParamIsDefault(logbookType))
+			switch(logbookType)
+				case LBT_RESULTS:
+				case LBT_TPSTORAGE:
+					return 1
+				case LBT_LABNOTEBOOK:
+					return 0
+				default:
+					ASSERT(0, "Invalid logbookType")
+			endswitch
+		endif
+
+		return 0
 	endif
 
 	trace = StringFromList(0, list)
