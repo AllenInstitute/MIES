@@ -1742,6 +1742,7 @@ End
 
 static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
 	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
+	variable dimSweep
 	string shPanel, dataFolder, device
 
 	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
@@ -1773,7 +1774,15 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z sweeps = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("sweeps(displayed)")), graph = graph)
+	WAVE select = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("select(channels(AD), sweeps(),displayed)")), graph = graph)
+	dimSweep = FindDimLabel(select, COLS, "SWEEP")
+	Duplicate/FREE/RMD=[][dimSweep] select, wTmp
+	Redimension/N=(-1) wTmp
+	if(DimSize(wTmp, ROWS) > 1)
+		FindDuplicates/FREE/RN=sweeps wTmp
+	else
+		WAVE sweeps = wTmp
+	endif
 	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
 
 	// todo: use plain `channels()` once https://github.com/AllenInstitute/MIES/issues/1135 is resolved
