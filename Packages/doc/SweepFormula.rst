@@ -385,16 +385,21 @@ channels
 `channels([str name]+)` converts a named channel from string to numbers.
 
 The function accepts an arbitrary amount of typical channel names like `AD` and
-`DA` with a combination of numbers `AD1` or channel numbers alone like `2`.
+`DA` with a combination of numbers `AD1` or channel numbers alone like `2`. When
+called without parameter all channel type / channel number are set by setting the
+returned value for type and number to `NaN`.
 
 It returns a numeric array of `[[channelType+], [channelNumber+]]` that has the
 same row dimension as the input string array.
 
-It is intended to be used with the `data()` function.
+It is intended to be used with the `select()` function.
 
 .. code-block:: bash
 
    channels([AD0,AD1, DA0, DA1]) == [[0, 0, 1, 1], [0, 1, 0, 1]]
+
+   // Internally NaN is evaluated as joker for all channel types and all channel numbers
+   channels() == [[NaN], [NaN]]
 
 sweeps
 """"""
