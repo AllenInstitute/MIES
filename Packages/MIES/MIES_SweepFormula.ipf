@@ -3128,3 +3128,28 @@ Function SF_PopMenuProc_OldCode(pa) : PopupMenuControl
 
 	return 0
 End
+
+// Sets a formula in the SweepFormula notebook of the given data/sweepbrowser
+Function SF_SetFormula(string databrowser, string formula)
+
+	string nb = BSP_GetSFFormula(databrowser)
+	ReplaceNotebookText(nb, formula)
+End
+
+// Executes a given formula without changing the current SweepFormula notebook
+Function/WAVE SF_ExecuteFormula(string formula, [string databrowser])
+
+	variable jsonId
+
+	formula = SF_PreprocessInput(formula)
+	formula = SF_FormulaPreParser(formula)
+	jsonId = SF_FormulaParser(formula)
+	if(ParamIsDefault(databrowser))
+		WAVE/Z out = SF_FormulaExecutor(jsonId)
+	else
+		WAVE/Z out = SF_FormulaExecutor(jsonId, graph = databrowser)
+	endif
+	JSON_Release(jsonId, ignoreErr=1)
+
+	return out
+End
