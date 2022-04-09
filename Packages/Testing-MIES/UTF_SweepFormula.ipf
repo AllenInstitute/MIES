@@ -1371,16 +1371,20 @@ static Function TestOperationSelect()
 
 End
 
-static Function TestDataOperation()
+static Function TestOperationData()
 
-	variable numChannels, sweepNo, rStart, rDelta
-	string str, epochStr
+	variable i, j, numChannels, sweepNo, rStart, rDelta
+	string str, epochStr, name, trace
 	string win = DATABROWSER_WINDOW_TITLE
 	variable mode = DATA_ACQUISITION_MODE
+	variable numSweeps = 2
+	variable dataSize = 10
 	variable rangeStart0 = 3
 	variable rangeEnd0 = 6
 	variable rangeStart1 = 1
 	variable rangeEnd1 = 8
+	string channelTypeList = "DA;AD;DA;AD;"
+	string channelNumberList = "2;6;3;7;"
 	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
 
@@ -1490,6 +1494,33 @@ static Function TestDataOperation()
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	// Setup graph with equivalent data
+	TUD_Clear(win)
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNo = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo)})
+		endfor
+	endfor
+
+	Make/FREE/N=(DimSize(sweepRef, ROWS), 2, numChannels) dataRef
+	dataRef[][][] = sweepRef[p]
+	str = "data(cursors(A,B),select())"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	str = "data(cursors(A,B))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
 End
 
 Function TestLabNotebook()
