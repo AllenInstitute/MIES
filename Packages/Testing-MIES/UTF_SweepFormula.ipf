@@ -1284,6 +1284,18 @@ static Function TestOperationSelect()
 	endfor
 
 	sweepNo = 0
+	Make/FREE/N=(8, 3) dataRef
+	dataRef[0, 3][0] = sweepNo
+	dataRef[4, 7][0] = sweepNo + 1
+	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[2, 3][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[4, 5][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[6, 7][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 2, 3, 6, 7, 2, 3}
+	str = "select()"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
 	Make/FREE/N=(4, 3) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)

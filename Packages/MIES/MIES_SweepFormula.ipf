@@ -2645,7 +2645,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	return out
 End
 
-/// `data(array range, array selectData)`
+/// `data(array range[, array selectData])`
 ///
 /// returns [sweepData][sweeps][channelTypeNumber] for all sweeps selected by selectData
 static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string graph)
@@ -2655,7 +2655,8 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	numIndices = JSON_GetArraySize(jsonID, jsonPath)
 
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-	SF_ASSERT(numIndices == 2, "Function requires 2 arguments.")
+	SF_ASSERT(numIndices >= 1, "data function requires at least 1 argument.")
+	SF_ASSERT(numIndices <= 2, "data function has maximal 2 arguments.")
 
 	WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	if(IsTextWave(range))
@@ -2665,7 +2666,12 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
 	endif
 
-	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	if(numIndices == 2)
+		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	else
+		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+	endif
+
 	if(SF_IsDefaultEmptyWave(selectData))
 		return selectData
 	endif
