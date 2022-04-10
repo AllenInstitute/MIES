@@ -2094,27 +2094,15 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	return out
 End
 
-// epochs(string shortName, array selectData, [string type])
+// epochs(string shortName[, array selectData, [string type]])
 // returns 2xN wave for type = range except for a single range result
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, numEpochs, sweepNo
 	string str, epName, epShortName
 
-	numArgs = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numArgs >= 2, "epochs requires at least 2 arguments")
-	SF_ASSERT(numArgs <= 3, "epochs requires at most 3 arguments")
-
-	WAVE/T epochName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Too many input values for parameter name")
-	SF_ASSERT(IsTextWave(epochName), "name parameter must be textual")
-
-	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-	if(SF_IsDefaultEmptyWave(selectData))
-		return selectData
-	endif
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	SF_ASSERT(numArgs >= 1 && numArgs <= 3, "epochs requires at least 1 and at most 3 arguments")
 
 	if(numArgs == 3)
 		WAVE/T epochType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
@@ -2139,6 +2127,22 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 	else
 		epType = EPOCHS_TYPE_RANGE
 	endif
+
+	if(numArgs >= 2)
+		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	else
+		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+	endif
+
+	if(SF_IsDefaultEmptyWave(selectData))
+		return selectData
+	endif
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
+
+	WAVE/T epochName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Too many input values for parameter name")
+	SF_ASSERT(IsTextWave(epochName), "name parameter must be textual")
 
 	WAVE/Z activeChannels
 	WAVE/Z sweeps
