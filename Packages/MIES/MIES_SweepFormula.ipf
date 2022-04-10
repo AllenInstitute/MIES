@@ -2695,36 +2695,24 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	return out
 End
 
-/// `labnotebook(string key, array selectData [, string entrySourceType])`
+/// `labnotebook(string key[, array selectData [, string entrySourceType]])`
 ///
 /// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
 	variable numIndices, i, j, mode, JSONtype, index, sweepNo, numSweeps, numChannels
-	string str
+	string str, lbnKey
 
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
 	SF_ASSERT(numIndices <= 3, "Maximum number of three arguments exceeded.")
-	SF_ASSERT(numIndices >= 2, "At least two arguments are required.")
+	SF_ASSERT(numIndices >= 1, "At least one argument is required.")
 
-	JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
-	SF_ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
-	str = JSON_GetString(jsonID, jsonPath + "/0")
-
-	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-	if(SF_IsDefaultEmptyWave(selectData))
-		return selectData
-	endif
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-
-	mode = DATA_ACQUISITION_MODE
 	if(numIndices == 3)
-		JSONtype = JSON_GetType(jsonID, jsonPath + "/2")
-		SF_ASSERT(JSONtype == JSON_STRING, "Last parameter needs to be a string.")
-		strswitch(JSON_GetString(jsonID, jsonPath + "/2"))
+		WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+		SF_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
+		strswitch(wMode[0])
 			case "UNKNOWN_MODE":
 				mode = UNKNOWN_MODE
 				break
@@ -2739,7 +2727,25 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 			default:
 				SF_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
 		endswitch
+	else
+		mode = DATA_ACQUISITION_MODE
 	endif
+
+	if(numIndices >= 2)
+		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	else
+		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+	endif
+
+	if(SF_IsDefaultEmptyWave(selectData))
+		return selectData
+	endif
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
+
+	WAVE/T wLbnKey = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
+	lbnKey = wLbnKey[0]
 
 	WAVE/Z sweeps
 	WAVE/Z activeChannels
@@ -2765,7 +2771,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 		endif
 
 		for(j = 0; j <  numChannels; j += 1)
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], lbnKey, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
 			if(!WaveExists(settings))
 				continue
 			endif
