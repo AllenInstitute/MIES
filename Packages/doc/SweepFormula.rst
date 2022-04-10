@@ -446,19 +446,21 @@ data
 """"
 
 Although being listed near the end, the `data()` function is the core of the
-`SweepFormula` library. It returns *MIES* specific data from the current graph.
+`SweepFormula` library. It returns sweep data from *MIES*.
 
 .. code-block:: bash
 
-   data(array range, array selectData)
+   data(array range[, array selectData])
 
-   data(string epochShortName, array selectData)
+   data(string epochShortName[, array selectData])
 
-It returns `[[sweeps][channel]]` for all `[sweeps]` in the array containing the
-sweep numbers.
+The return format is a 3d array `[sweepData][sweeps][channels]` where the columns
+use a dimension label in the form SWEEP<X> where X is the sweep number, e.g. `SWEEP0`. The layers
+use dimension labels in the form <channelType><channelNumber>, e.g. `AD0`.
 
-Through the `select` function it can be chosen of data for sweeps is returned for
-currently displayed sweeps or for all existing sweeps.
+Through the `select` function it can be chosen for which sweeps and channels sweep data is returned.
+`select` also allows to choose either currently displayed sweeps or all existing sweeps as data source.
+When the optional select argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
 
 The range can be either supplied explicitly using `[100, 300]` which would
 select `100 ms` to `300 ms` or by using `cursors()`. In case `cursors()` is
@@ -497,7 +499,7 @@ labnotebook
 
 .. code-block:: bash
 
-   labnotebook(string key, array selectData [, string entrySourceType])
+   labnotebook(string key[, array selectData [, string entrySourceType]])
 
 The labnotebook function returns the (case insensitive) `key` entry from the
 labnotebook for the selected channel and sweep combination(s). The optional
@@ -505,9 +507,10 @@ labnotebook for the selected channel and sweep combination(s). The optional
 acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
 `entrySourceType` is omitted it defaults to `DATA_ACQUISITION_MODE`.
 
-The `labnotebook()` function has the same data layout as the `data()`
-function. It returns the notebook entry in the rows for all `[sweeps]` with the
-corresponding `[channel]` (`[[sweeps][channel]]`).
+When the optional select argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+
+The `labnotebook()` function has a similar data layout as the `data()`
+function. It returns the notebook entries as single elements where the rows count the sweeps and the columns the channels: `[sweeps][channel]`.
 
 .. code-block:: bash
 
@@ -621,7 +624,13 @@ The epochs function returns information from epochs.
 
 .. code-block:: bash
 
-   epochs(string name, array selectData[, string type])
+   epochs(string name[, array selectData[, string type]])
+
+The first argument is the name of the epoch.
+
+The second argument is a selection of sweeps and channels where the epoch information is retrieved.
+It is intended to be specified through the `select` operation.
+When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
 
 type sets what information is returned. Valid types are: `range`, `name`, `treelevel`.
 If type is not specified then `range` is used as default.
@@ -645,6 +654,9 @@ If no matching epoch was found a zero sized wave is returned.
 
 .. code-block:: bash
 
+   // get stimset range (epoch ST) from all displayed sweeps and channels
+   epochs(ST)
+
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
    epochs(ST, select(channels(AD), sweeps()), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
 
@@ -655,7 +667,7 @@ The tp function returns analysis values for test pulses that are part of selecte
 
 .. code-block:: bash
 
-   tp(variant type, array selectData[, array ignoreTPs])
+   tp(variant type[, array selectData[, array ignoreTPs]])
 
 type sets what test pulse analysis value is returned.
 The following types are supported:
@@ -670,9 +682,16 @@ The returned array is 1 x M x N, where M indexes the sweeps and N indexes the ch
 sweep and channel information gets transferred as well.
 Values for non-existing sweeps and/or channels are set NaN.
 If a single sweep contains multiple test pulses then the data from the test
-pulse ranges is averaged. The optional parameter ``ignoreTPs`` allows to ignore
+pulse ranges is averaged.
+
+The second argument is a selection of sweeps and channels where the test pulse information is retrieved.
+It is intended to be specified through the `select` operation.
+When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+
+The optional argument ``ignoreTPs`` allows to ignore
 some of the found test-pulses. The indices are zero-based and identify the
 test-pulses by ascending starting time.
+
 The test pulses in the sweep must have the same duration.
 Test pulses that are part of sweeps are identified through their respective epoch short name, that
 starts with "TP" or "U_TP". If sweeps and channels can resolve existing single sweeps but none contain
@@ -680,11 +699,17 @@ epochs for test pulses then a numeric single element wave is returned with the v
 
 .. code-block:: bash
 
-   // Get steady state resistance from all sweeps and all AD channels
+   // Get steady state resistance from all displayed sweeps and channels
+   tp(ss)
+
+   // Get steady state resistance from all displayed sweeps and AD channels
    tp(ss, select(channels(AD), sweeps()))
 
-   // Get base line level from all sweeps and DA1 channel
+   // Get base line level from all displayed sweeps and DA1 channel
    tp(static, select(channels(DA1), sweeps()))
+
+   // Get base line level from all displayed sweeps and channels ignoring test pulse 0 and 1
+   tp(static, select(), [0, 1])
 
 merge
 """""
