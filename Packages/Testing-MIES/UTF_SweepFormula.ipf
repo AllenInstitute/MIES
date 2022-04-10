@@ -1523,7 +1523,7 @@ static Function TestOperationData()
 
 End
 
-Function TestLabNotebook()
+static Function TestOperationLabNotebook()
 	Variable i, j, sweepNumber, channelNumber
 	String str, trace, key, name, epochStr
 
@@ -1559,18 +1559,31 @@ Function TestLabNotebook()
 
 	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
 
+	DFREF dfr = GetDeviceDataPath(device)
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
+		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+		WAVE config = GetDAQConfigWave(device)
+		Redimension/N=(numChannels, -1) config
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
+			channelNumber = channels[i][j]
 			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-						             {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channels[i][j]), num2str(sweepNumber)})
-			values[connections[j]] = channels[i][j]
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber)})
+			values[connections[j]] = channelNumber
+			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[j][%ChannelNumber] = channelNumber
 		endfor
+
+		// create sweeps with dummy data for sweeps() operation thats called when omitting select
+		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
+		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
+		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
 
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
@@ -1580,6 +1593,10 @@ Function TestLabNotebook()
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
+	str = "labnotebook(" + channelTypeC + ")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
 	str = "labnotebook(" + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
@@ -1587,6 +1604,11 @@ Function TestLabNotebook()
 	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
+	str = "labnotebook(" + channelTypeC + ",select(channels(AD12),-1))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE wRef = MIES_SF#SF_GetDefaultEmptyWave()
+	REQUIRE_EQUAL_WAVES(data, wRef, mode = WAVE_DATA)
 End
 
 /// @brief Test Epoch operation of SweepFormula
