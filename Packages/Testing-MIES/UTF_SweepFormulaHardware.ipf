@@ -138,7 +138,7 @@ static Function	TestSweepFormulaTP(string device)
 	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_OVS", val = 1)
 	PGC_SetAndActivateControl(dbPanel, "popup_overlaySweeps_select", str = "All")
 
-	formula = "tp(0)"
+	formula = "tp()"
 	try
 		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
 		FAIL()
@@ -198,14 +198,19 @@ static Function	TestSweepFormulaTP(string device)
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
 	CHECK_EQUAL_WAVES(tpResult, {NaN}, mode=WAVE_DATA)
 
+	Make/FREE/D/N=(1, 3, 2) wRef
 	formula = "tp(ss, select(channels(AD), sweeps()))"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	Make/FREE/D/N=(1, 3, 2) wRef
 	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
 
-	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_DAC", val=1)
-	formula = "tp(ss, select(channels(DA), sweeps()))"
+	formula = "tp(ss, select())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
+
+	formula = "tp(ss)"
+	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
+
 	Make/FREE/D/N=(1, 3, 2) wRef = 1000
 	SetDimLabel COLS, 0, sweep0, wRef
 	SetDimLabel COLS, 1, sweep1, wRef
@@ -213,6 +218,9 @@ static Function	TestSweepFormulaTP(string device)
 	SetDimLabel LAYERS, 0, DA0, wRef
 	SetDimLabel LAYERS, 1, DA1, wRef
 	SetScale d, 0, 0, "MΩ", wRef
+	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_DAC", val=1)
+	formula = "tp(ss, select(channels(DA), sweeps()))"
+	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
 	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
 
 	formula = "tp(inst, select(channels(DA), sweeps()))"
