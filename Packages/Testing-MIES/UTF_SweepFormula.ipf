@@ -1630,20 +1630,35 @@ static Function TestOperationEpochs()
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/T wEpochStr
 	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,"
 
+	DFREF dfr = GetDeviceDataPath(device)
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
+
+		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+		WAVE config = GetDAQConfigWave(device)
+		Redimension/N=(numChannels, -1) config
+
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
+			channelNumber = channels[i][j]
 			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2istr(channels[i][j]), num2istr(sweepNumber)})
-			values[connections[j]] = channels[i][j]
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2istr(channelNumber), num2istr(sweepNumber)})
+			values[connections[j]] = channelNumber
+			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+			config[j][%ChannelNumber] = channelNumber
 		endfor
-		// channels setup: 8, 6, NaN, 4, NaN, 2, NaN, 0, NaN
-		// -> 5 active channels for ADC
+
+		// create sweeps with dummy data for sweeps() operation thats called when omitting select
+		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
+		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
+		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
+
+		// channels setup DA: 8, 6, NaN, 4, NaN, 2, NaN, 0, NaN
 		// -> 4 active channels for DAC, because DAC knows only 8 channels from 0 to 7.
 
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
@@ -1653,6 +1668,13 @@ static Function TestOperationEpochs()
 
 		ED_AddEntriesToLabnotebook(wEpochStr, keysEpochs, sweepNumber, device, mode)
 	endfor
+
+	str = "epochs(\"E0_PT_P48\")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
+	refData[0][] = 500
+	refData[1][] = 510
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48\", select(channels(DA0), 0))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
@@ -1691,10 +1713,11 @@ static Function TestOperationEpochs()
 	refData = p ? 510 : 503
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
+	WAVE wRefEmpty = MIES_SF#SF_GetDefaultEmptyWave()
 	// channel(s) with no epochs
 	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), 0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wRefEmpty, data, mode = WAVE_DATA)
 
 	// name that does not match any
 	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
@@ -1704,7 +1727,7 @@ static Function TestOperationEpochs()
 
 	// invalid sweep
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(\"E0_PT_P48_B\", select(channels(DA), -1))"), graph = win)
-	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wRefEmpty, data, mode = WAVE_DATA)
 
 	// invalid type
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "), invalid_type)"
