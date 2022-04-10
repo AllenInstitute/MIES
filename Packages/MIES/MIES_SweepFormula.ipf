@@ -1884,7 +1884,7 @@ static Function/WAVE SF_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)
 	return epochs
 End
 
-// tp(string type, array selectData, [array ignoreTPs])
+// tp(string type[, array selectData[, array ignoreTPs]])
 // returns 3D wave in the layout: result x sweeps x channels
 static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string graph)
 
@@ -1896,8 +1896,25 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	string baselineUnit = ""
 	STRUCT TPAnalysisInput tpInput
 
-	numArgs = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numArgs == 2 || numArgs == 3, "tp requires 2 or 3 arguments")
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs >= 1 || numArgs <= 3, "tp requires 1 to 3 arguments")
+
+	if(numArgs == 3)
+		WAVE ignoreTPs = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+		SF_ASSERT(DimSize(ignoreTPs, COLS) < 2, "ignoreTPs must be one-dimensional.")
+		SF_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
+	else
+		WAVE/Z ignoreTPs
+	endif
+
+	if(numArgs >= 2)
+		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	else
+		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+	endif
+	SF_ASSERT(!SF_IsDefaultEmptyWave(selectData), "No valid sweep/channels combination found.")
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 
 	WAVE wType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	SF_ASSERT(DimSize(wType, ROWS) == 1, "Too many input values for parameter name")
@@ -1918,19 +1935,6 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 		endswitch
 	else
 		outType = wType[0]
-	endif
-
-	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-	SF_ASSERT(!SF_IsDefaultEmptyWave(selectData), "No valid sweep/channels combination found.")
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-
-	if(numArgs == 3)
-		WAVE ignoreTPs = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-		SF_ASSERT(DimSize(ignoreTPs, COLS) < 2, "ignoreTPs must be one-dimensional.")
-		SF_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
-	else
-		WAVE/Z ignoreTPs
 	endif
 
 	WAVE/Z activeChannels
