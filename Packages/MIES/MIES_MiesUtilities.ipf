@@ -880,7 +880,7 @@ End
 /// @sa GetLastSettingChannel
 threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 	string entryName
-	variable idx, indep
+	variable headstage, indep
 
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
@@ -896,12 +896,10 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	WAVE/Z activeChannels = GetLastSetting(numericalValues, sweepNo, entryName, entrySourceType)
 
 	if(WaveExists(activeChannels))
-		WAVE/Z indizes = FindIndizes(activeChannels, col=0, var=channelNumber)
+		headstage = GetRowIndex(activeChannels, val = channelNumber)
 
-		if(WaveExists(indizes))
+		if(IsFinite(headstage))
 			// given channel was associated and active
-			ASSERT_TS(DimSize(indizes, ROWS) == 1, "Unexpected size")
-			idx = indizes[0]
 
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
@@ -914,21 +912,29 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 			WAVE/T settingsT = settings
 			if(IsNumericWave(settings))
-				if(!IsNaN(settings[idx]))
+				if(!IsNaN(settings[headstage]))
 					// numerical assoc setting
-					return [settings, idx]
+					return [settings, headstage]
 				elseif(!IsNaN(settings[indep]))
 					// ... unassoc ...
 					return [settings, indep]
 				endif
+
+				// happens with querying associated entries
+				// which are only set for other headstages
+				// e.g. DA0, DA1 is active and only DA0 has an entry,
+				// then for DA1 settings[headstage] == NaN,
+				// but settings exist because for DA0 settings[headstage] != NaN
 			elseif(IsTextWave(settingsT))
-				if(cmpstr(settingsT[idx], ""))
+				if(cmpstr(settingsT[headstage], ""))
 					// textual assoc setting
-					return [settingsT, idx]
+					return [settingsT, headstage]
 				elseif(cmpstr(settingsT[indep], ""))
 					// ... unassoc ...
 					return [settingsT, indep]
 				endif
+
+				// same as above
 			else
 				ASSERT_TS(0, "Invalid wave type")
 			endif
