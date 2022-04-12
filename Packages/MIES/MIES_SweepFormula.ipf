@@ -1432,7 +1432,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	variable entrySourceType
 
 	variable i, j, k, l, channelType, channelNumber, index, sweepNo, outIndex, shift
-	variable numSweeps, numInChannels, numSettings, maxChannels, numUniqueCombinations
+	variable numSweeps, numInChannels, numSettings, maxChannels, numUniqueCombinations, numActiveChannels, activeChannel
 	string setting, settingList, msg
 
 	WAVE/Z settings
@@ -1505,17 +1505,27 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 						break
 				endswitch
 
-				for(l = 0; l < maxChannels; l += 1)
-					if(!IsNaN(channelNumber) && channelNumber != l)
-						continue
+				WAVE/Z activeChannels = GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
+				if(!WaveExists(activeChannels))
+					continue
+				endif
+				if(IsNaN(channelNumber))
+					// faster than ZapNaNs due to no mem alloc
+					numActiveChannels = DimSize(activeChannels, ROWS)
+					for(l = 0; l < numActiveChannels; l += 1)
+						activeChannel = activeChannels[l]
+						if(!IsNaN(activeChannel) && activeChannel < maxChannels)
+							collect[outIndex] = channelType << shift + activeChannel
+							outIndex += 1
+						endif
+					endfor
+				elseif(channelNumber < maxChannels)
+					FindValue/V=(channelNumber) activeChannels
+					if(V_Value >= 0)
+						collect[outIndex] = channelType << shift + channelNumber
+						outIndex += 1
 					endif
-					[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, setting, l, channelType, entrySourceType)
-					if(!WaveExists(settings))
-						continue
-					endif
-					collect[outIndex] = channelType << shift + settings[index]
-					outIndex += 1
-				endfor
+				endif
 			endfor
 		endfor
 	endfor
