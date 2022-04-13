@@ -1058,147 +1058,64 @@ static Function SF_GetDAChannel(string graph, variable sweep, variable channelTy
 	return NaN
 End
 
-static Function/WAVE SF_GetSelectDataForAll(string graph, WAVE activeChannels, WAVE sweeps)
-
-	variable i, j, numSweeps, sweepNo, cIndex, index
-	variable channelNr, channelType, numChannels, isSweepBrowser
-	string device, dataFolder
-
-	ASSERT(WindowExists(graph), "graph window does not exist")
-	SF_ASSERT(DimSize(activeChannels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
-	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-	numSweeps = DimSize(sweeps, ROWS)
-	numChannels = DimSize(activeChannels, ROWS)
-	if(!numSweeps || !numChannels)
-		return $""
-	endif
-
-	isSweepBrowser = BSP_IsSweepBrowser(graph)
-
-	if(isSweepBrowser)
-		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
-	else
-		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
-		device = BSP_GetDevice(graph)
-		DFREF deviceDFR = GetDeviceDataPath(device)
-	endif
-
-	WAVE selectData = SF_NewSelectDataWave(numSweeps, numChannels)
-
-	for(i = 0; i < numSweeps; i += 1)
-
-		sweepNo = sweeps[i]
-
-		if(isSweepBrowser)
-			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
-			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
-			if(V_value == -1)
-				continue
-			endif
-			dataFolder = sweepMap[V_row][%DataFolder]
-			device     = sweepMap[V_row][%Device]
-			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
-		endif
-		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-
-		for(j = 0; j < numChannels; j += 1)
-
-			channelNr = activeChannels[j][%channelNumber]
-			channelType = activeChannels[j][%channelType]
-			WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNr)
-			if(!WaveExists(sweep))
-				continue
-			endif
-
-			selectData[index][%SWEEP] = sweepNo
-			selectData[index][%CHANNELTYPE] = channelType
-			selectData[index][%CHANNELNUMBER] = channelNr
-			index += 1
-		endfor
-	endfor
-	if(!index)
-		return $""
-	endif
-	Redimension/N=(index, -1) selectData
-
-	return selectData
-End
-
-static Function/WAVE SF_GetSelectDataForDisplayed(string graph, WAVE activeChannels, WAVE sweeps)
+static Function/WAVE SF_FilterSelectDataFromDisplayed(string graph, WAVE selectData)
 
 	variable i, j, index
-	variable numSweeps, numChannels
-	variable sweepNo, channelNr
-	variable channelType = -1
+	variable numEntries, numTraces
+	variable sweepNo, channelType, channelNumber
+	variable dimPosSweepNo, dimPosChannelType, dimPosChannelNumber
+	variable dimPosSelectSweepNo, dimPosSelectChannelType, dimPosSelectChannelNumber
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
-	SF_ASSERT(DimSize(activeChannels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
-	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
-	numSweeps = DimSize(sweeps, ROWS)
-	numChannels = DimSize(activeChannels, ROWS)
-	if(!numSweeps || !numChannels)
-		return $""
-	endif
+	numEntries = DimSize(selectData, ROWS)
 
 	WAVE/T/Z traces = GetTraceInfos(graph)
 	if(!WaveExists(traces))
 		DebugPrint("No traces found for extracting sweep wave locations.")
 		return $""
 	endif
-	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "channelType"), FindDimLabel(traces, COLS, "channelNumber"), FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
+	numTraces = DimSize(traces, ROWS)
 
-	WAVE selectData = SF_NewSelectDataWave(numSweeps, numChannels)
+	Duplicate/FREE selectData, selectDataFiltered
+	dimPosSweepNo = FindDimLabel(traces, COLS, "sweepNumber")
+	dimPosChannelType = FindDimLabel(traces, COLS, "channelType")
+	dimPosChannelNumber = FindDimLabel(traces, COLS, "channelNumber")
 
-	for(i = 0; i < numSweeps; i += 1)
+	dimPosSelectSweepNo = FindDimLabel(selectData, COLS, "SWEEP")
+	dimPosSelectChannelType = FindDimLabel(selectData, COLS, "CHANNELTYPE")
+	dimPosSelectChannelNumber = FindDimLabel(selectData, COLS, "CHANNELNUMBER")
 
-		sweepNo = sweeps[i]
-		WAVE/Z sweepListIndex = FindIndizes(traces, colLabel = "sweepNumber", var = sweepNo)
-		if(!WaveExists(sweepListIndex))
-			continue
-		endif
+	WAVE selectDisplayed = SF_NewSelectDataWave(numTraces, 1)
+	selectDisplayed[][%SWEEP] = str2num(traces[p][dimPosSweepNo])
+	selectDisplayed[][%CHANNELTYPE] = WhichListItem(traces[p][dimPosChannelType], XOP_CHANNEL_NAMES)
+	selectDisplayed[][%CHANNELNUMBER] = str2num(traces[p][dimPosChannelNumber])
 
-		for(j = 0; j < numChannels; j += 1)
+	for(i = 0; i < numEntries; i += 1)
 
-			if(channelType != activeChannels[j][%channelType])
-				channelType = activeChannels[j][%channelType]
-				WAVE/Z channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
+		sweepNo = selectData[i][%SWEEP]
+		channelType = selectData[i][%CHANNELTYPE]
+		channelNumber = selectData[i][%CHANNELNUMBER]
+
+		for(j = 0; j < numTraces; j += 1)
+
+			if(selectDisplayed[j][dimPosSelectSweepNo] == sweepNo && selectDisplayed[j][dimPosSelectChannelType] == channelType && selectDisplayed[j][dimPosSelectChannelNumber] == channelNumber)
+
+				selectDataFiltered[index][%SWEEP] = sweepNo
+				selectDataFiltered[index][%CHANNELTYPE] = channelType
+				selectDataFiltered[index][%CHANNELNUMBER] = channelNumber
+				index += 1
+
+				break
 			endif
-			if(!WaveExists(channelTypeIndex))
-				continue
-			endif
-
-			channelNr = activeChannels[j][%channelNumber]
-			WAVE/Z channelNumberIndex = FindIndizes(traces, colLabel = "channelNumber", var = channelNr)
-			if(!WaveExists(channelNumberIndex))
-				continue
-			endif
-
-			// find matching index in @c traces wave
-			Concatenate/FREE {sweepListIndex, channelTypeIndex, channelNumberIndex}, indices
-			Redimension/N=(numpnts(indices))/E=1 indices
-			Sort indices, indices
-			Extract/FREE indices, matches, (p > 1 && (indices[p] == indices[p - 1]) && (indices[p] == indices[p - 2]))
-			WaveClear indices
-			if(DimSize(matches, ROWS) == 0)
-				continue
-			endif
-			SF_ASSERT(DimSize(matches, ROWS) == 1, "More than one matching sweep for this sweepNumber, channelType, and channelNumber combination.")
-			WaveClear matches
-
-			selectData[index][%SWEEP] = sweepNo
-			selectData[index][%CHANNELTYPE] = channelType
-			selectData[index][%CHANNELNUMBER] = channelNr
-			index += 1
 		endfor
 	endfor
 	if(!index)
 		return $""
 	endif
-	Redimension/N=(index, -1) selectData
+	Redimension/N=(index, -1) selectDataFiltered
 
-	return selectData
+	return selectDataFiltered
 End
 
 static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE selectData)
@@ -1425,18 +1342,15 @@ End
 /// @param sweeps          @c SF_FormulaExecutor style @c sweeps() wave
 /// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes.
 ///                        If you don't care about the entry source type pass #UNKNOWN_MODE.
-/// @return a @c SF_FormulaExecutor style @c channels() wave with two columns
-///         containing channelType and channelNumber
-static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySourceType)
-	string graph
-	WAVE channels, sweeps
-	variable entrySourceType
+/// @return a selectData style wave with three columns
+///         containing sweepNumber, channelType and channelNumber
+static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE channels, WAVE sweeps, variable entrySourceType)
 
-	variable i, j, k, l, channelType, channelNumber, index, sweepNo, outIndex, shift
-	variable numSweeps, numInChannels, numSettings, maxChannels, numUniqueCombinations, numActiveChannels, activeChannel
-	string setting, settingList, msg
-
-	WAVE/Z settings
+	variable i, j, k, l, channelType, channelNumber, sweepNo, outIndex
+	variable numSweeps, numInChannels, numSettings, maxChannels, activeChannel, numActiveChannels
+	variable isSweepBrowser, cIndex
+	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType
+	string setting, settingList, msg, device, dataFolder, singleSweepDFStr
 
 	ASSERT(windowExists(graph), "DB/SB not specified.")
 	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
@@ -1449,12 +1363,26 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		entrySourceType == NUMBER_OF_LBN_DAQ_MODES, \
 		"Undefined labnotebook mode. Use one in group DataAcqModes")
 
+	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(isSweepBrowser)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+	else
+		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
+		device = BSP_GetDevice(graph)
+		DFREF deviceDFR = GetDeviceDataPath(device)
+	endif
+
 	// search sweeps for active channels
-	shift = ceil(log(NUM_AD_CHANNELS) / log(2))
 	numSweeps = DimSize(sweeps, ROWS)
 	numInChannels = DimSize(channels, ROWS)
 
-	Make/FREE/N=((NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS) * numSweeps) collect
+	WAVE selectData = SF_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS)
+
+	dimPosSweep = FindDimLabel(selectData, COLS, "SWEEP")
+	dimPosChannelType = FindDimLabel(selectData, COLS, "CHANNELTYPE")
+	dimPosChannelNumber = FindDimLabel(selectData, COLS, "CHANNELNUMBER")
 
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNo = sweeps[i]
@@ -1462,6 +1390,22 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		if(!IsValidSweepNumber(sweepNo))
 			continue
 		endif
+
+		if(isSweepBrowser)
+			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
+			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+			if(V_value == -1)
+				continue
+			endif
+			dataFolder = sweepMap[V_row][%DataFolder]
+			device     = sweepMap[V_row][%Device]
+			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
+		endif
+		singleSweepDFStr = GetSingleSweepFolderAsString(deviceDFR, sweepNo)
+		if(!DataFolderExists(singleSweepDFStr))
+			continue
+		endif
+		DFREF sweepDFR = $singleSweepDFStr
 
 		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 		if(!WaveExists(numericalValues))
@@ -1474,7 +1418,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 			channelNumber = channels[j][%channelNumber]
 
 			if(IsNaN(channelType))
-				settingList = "DAC;ADC;"
+				settingList = "ADC;DAC;"
 			else
 				switch(channelType)
 					case XOP_CHANNEL_TYPE_DAC:
@@ -1516,40 +1460,48 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 					for(l = 0; l < numActiveChannels; l += 1)
 						activeChannel = activeChannels[l]
 						if(!IsNaN(activeChannel) && activeChannel < maxChannels)
-							collect[outIndex] = channelType << shift + activeChannel
+							selectData[outIndex][dimPosSweep] = sweepNo
+							selectData[outIndex][dimPosChannelType] = channelType
+							selectData[outIndex][dimPosChannelNumber] = activeChannel
 							outIndex += 1
 						endif
 					endfor
 				elseif(channelNumber < maxChannels)
 					FindValue/V=(channelNumber) activeChannels
 					if(V_Value >= 0)
-						collect[outIndex] = channelType << shift + channelNumber
+						selectData[outIndex][dimPosSweep] = sweepNo
+						selectData[outIndex][dimPosChannelType] = channelType
+						selectData[outIndex][dimPosChannelNumber] = channelNumber
 						outIndex += 1
 					endif
 				endif
+
 			endfor
 		endfor
 	endfor
-	Redimension/N=(outIndex, -1) collect
-
-	if(outIndex > 1)
-		FindDuplicates/FREE/RN=collectReduced collect
-		Sort collectReduced, collectReduced
-	else
-		WAVE collectReduced = collect
+	if(!outIndex)
+		return $""
 	endif
-	numUniqueCombinations = DimSize(collectReduced, ROWS)
 
-	Make/FREE/N=(numUniqueCombinations, 2) out
-	SetDimLabel COLS, 0, channelType, out
-	SetDimLabel COLS, 1, channelNumber, out
-
-	if(numUniqueCombinations)
-		out[][%channelType] = collectReduced[p] >> shift
-		out[][%channelNumber] = collectReduced[p] - out[p][%channelType] << shift
-	endif
+	Redimension/N=(outIndex, -1) selectData
+	WAVE out = SF_SortSelectData(selectData)
 
 	return out
+End
+
+static Function/WAVE SF_SortSelectData(WAVE selectData)
+
+	variable dimPosSweep, dimPosChannelType, dimPosChannelNumber
+
+	if(DimSize(selectData, ROWS) >= 1)
+		dimPosSweep = FindDimLabel(selectData, COLS, "SWEEP")
+		dimPosChannelType = FindDimLabel(selectData, COLS, "CHANNELTYPE")
+		dimPosChannelNumber = FindDimLabel(selectData, COLS, "CHANNELNUMBER")
+
+		SortColumns/KNDX={dimPosSweep, dimPosChannelType, dimPosChannelNumber} sortWaves=selectData
+	endif
+
+	return selectData
 End
 
 /// @brief Pre process code entered into the notebook
@@ -1771,7 +1723,6 @@ End
 
 static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
 	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
-	variable dimSweep
 	string shPanel, dataFolder, device
 
 	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
@@ -1803,23 +1754,13 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z select = SF_ExecuteFormula("select(channels(AD), sweeps(),displayed)", databrowser = graph)
-	SF_ASSERT(WaveExists(select), "Select did not return data.")
-	dimSweep = FindDimLabel(select, COLS, "SWEEP")
-	Duplicate/FREE/RMD=[][dimSweep] select, wTmp
-	Redimension/N=(-1) wTmp
-	if(DimSize(wTmp, ROWS) > 1)
-		FindDuplicates/FREE/RN=sweeps wTmp
-	else
-		WAVE sweeps = wTmp
-	endif
-	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
-
-	WAVE/Z channels = SF_ExecuteFormula("channels()", databrowser = graph)
-
-	if(WaveExists(sweeps) && WaveExists(channels))
-		WAVE/Z activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
-		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(activeChannels, ";")
+	WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+	if(!SF_IsDefaultEmptyWave(selectData))
+		WAVE/Z sweeps
+		WAVE/Z channels
+		[sweeps, channels] = SF_ReCreateOldSweepsChannelLayout(selectData)
+		values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
+		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(channels, ";")
 	endif
 
 	shPanel = LBV_GetSettingsHistoryPanel(graph)
@@ -2648,12 +2589,10 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		endif
 	endif
 
-	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
-
-	if(!CmpStr(mode, "all"))
-		WAVE/Z out = SF_GetSelectDataForAll(graph, activeChannels, sweeps)
-	else
-		WAVE/Z out = SF_GetSelectDataForDisplayed(graph, activeChannels, sweeps)
+	WAVE/Z out = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, DATA_ACQUISITION_MODE)
+	if(!CmpStr(mode, "displayed") && WaveExists(out))
+		WAVE selectDataAll = out
+		WAVE/Z out = SF_FilterSelectDataFromDisplayed(graph, selectDataAll)
 	endif
 
 	if(!WaveExists(out))
