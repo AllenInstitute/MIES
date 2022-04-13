@@ -358,8 +358,6 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	       mode == OVS_SWEEP_SELECTION_SWEEPNO || \
 	       mode == OVS_SWEEP_ALL_SWEEPNO, "Invalid mode")
 
-	DFREF dfr = OVS_GetFolder(win)
-
 	if(mode == OVS_SWEEP_ALL_SWEEPNO)
 		return GetPlainSweepList(win)
 	endif
@@ -368,6 +366,8 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	if(!OVS_IsActive(win))
 		return $""
 	endif
+
+	DFREF dfr = OVS_GetFolder(win)
 
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
