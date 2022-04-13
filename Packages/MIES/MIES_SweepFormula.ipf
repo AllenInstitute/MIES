@@ -1303,7 +1303,8 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE selec
 	numRows = WaveMax(indexEnd) + 1 - indexOffset
 
 	// combine sweeps to data wave
-	Make/FREE/N=(numRows, numSweeps, numChannels) sweepData = NaN
+	Make/FREE/N=(numRows, numSweeps, numChannels) sweepData
+	MultiThread sweepData = NaN
 	SetScale/P x, indexOffset * delta, delta, sweepData
 	for(i = 0; i < numSweeps; i += 1)
 		for(j = 0; j < numChannels; j += 1)
