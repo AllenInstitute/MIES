@@ -1754,10 +1754,9 @@ static Function TestOperationEpochs()
 	// invalid type
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "), invalid_type)"
 	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win); AbortOnRTE
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 		FAIL()
 	catch
-		ClearRTError()
 		PASS()
 	endtry
 End
