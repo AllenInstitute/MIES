@@ -991,11 +991,11 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 #endif
 
 	if(clampMode == I_CLAMP_MODE)
-		outData[1] = (avgTPSS - avgBaselineSS) / clampAmp * 1000
-		outData[2] = (avgInst - avgBaselineSS) / clampAmp * 1000
+		outData[1] = (avgTPSS - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
+		outData[2] = (avgInst - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
 	else
-		outData[1] = clampAmp / (avgTPSS - avgBaselineSS) * 1000
-		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
+		outData[1] = (clampAmp * MILLI_TO_ONE) / ((avgTPSS - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
+		outData[2] = (clampAmp * MILLI_TO_ONE) / ((avgInst - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
 	endif
 	outData[0] = avgBaselineSS
 	outData[3] = avgTPSS
