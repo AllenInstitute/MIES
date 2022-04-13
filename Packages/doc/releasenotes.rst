@@ -3,6 +3,404 @@ Release notes
 
 .. toctree::
 
+Release 2.5
+===========
+
+Current up to ad78a346 (Merge pull request #1329 from AllenInstitute/feature/1312-mh_remove_instru_helper_fun, 2022-04-08).
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``button_sweepformula_all_code``
+- ``check_limit_x_selected_sweeps``
+- ``popupext_resultsKeys``
+
+Removed
+^^^^^^^
+
+- ``button_DataBrowser_setaxis``
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+- ``button_WaveBuilder_setaxisA``
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Make ``tp`` more robust
+- Add ``store`` operation, see `here <https://alleninstitute.github.io/MIES/SweepFormula.html#store>`__
+- We now store all executed code in the results waves with metadata and allow browsing old code again
+- Change argument order in ``epochs`` operation to match the order of the ``data`` operation
+- Add ``select`` operation as replacement for passing ``channels`` and ``sweeps`` to various operations.
+  This now also adds full support for accessing non-displayed sweeps.
+- The operations ``data``, ``epochs``, ``tp`` and ``labnotebook`` now accept selections via ``select``.
+  For convenience this parameter is optional, this means ``data([100-200])`` now
+  returns all displayed data in the range from 100ms to 200ms.
+
+AnalysisBrowser
+---------------
+
+None
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Fix placement of textual entries in the logbook graph
+- Add option to show only displayed sweeps in logbook graph
+- Fix updating textual entries after each new sweep
+- Use graph font size of 10 for logbook graph by default
+- Always re-execute the sweep formula code when the current selection changes
+- Show description of numerical labnotebook entries when hovering over the y-axis label
+- Allow resetting the axis scaling via the wellknown ``Ctrl+A`` shortcut in all circumstances with subwindows.
+  This makes the reset scaling button superfluous.
+
+Dashboard
+~~~~~~~~~
+
+- ``PSQ_Chirp``: Handle missing spike pass wave gracefully
+- Convert baseline voltage correctly in debug plotting routine for chirp bounds
+- Output more detailed error message on baseline QC failures
+- Handle aborted data acquisition better
+- Ignore set but disabled analysis functions
+
+DA\_Ephys
+---------
+
+- Check free memory when storing every TP
+- Fix testpulse caching with NI hardware
+- Handle corrupt package settings files and create a default one in this case
+- Add optional daily logfile upload (defaults to off)
+- Prevent saving incompatible sweep and config wave combinations gracefully
+- Fix indexing error when restarting data acquisition during ``PSQ_Ramp`` execution
+- Make restarting data acquisition more robust in case it asserts out due to
+  lingering runtime errors
+- Don't enable "Sweep rollback" on unlocking
+- Make the TP power spectrum work again with odd number of rows in the DAQDataWave
+- Add a new type of logbook: The results waves, ``textual`` and ``numerical``,
+  hold analysis results from Sweep Formula. Their layout is the same as for the
+  standard labnotebooks.
+
+JSON Configuration
+------------------
+
+None
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- ``PSQ_DAScale``/``PSQ_Rheobase``/``PSQ_Ramp``/``PSQ_Chirp``:
+
+  - Store the ``PSQ_FMT_LBN_TARGETV`` value with the correct amplitude. Broken since
+    0a86df51 (PSQ Analysis functions: Store the baseline voltage when
+    evaluated, 2021-01-15).
+
+- ``PSQ_Chirp``:
+
+  - Handle scalingFactor of zero gracefully
+  - Bugfix: Use correct conversion from V to mV in production code
+  - Add support for setting autobias target voltage
+
+- ``PSQ_PipetteInBath``:
+
+  - Handle turned on overlay sweeps correctly
+  - Use correct conversion value for storing ``PSQ_FMT_LBN_PB_RESISTANCE``.
+    Broken since 6e32699f (PSQ_PipetteInBath: Add it, 2021-12-08).
+
+- Add ``PSQ_SealEvaluation``
+
+- Analysis functions can now read and write epoch information also during the post sweep and set event, see
+  see :ref:`here <File MIES_AnalysisFunctions.ipf>`.
+
+- Add ``PSQ_PipetteInBath``
+
+Foreign Function interface
+--------------------------
+
+None
+
+Pulse Average Plot
+------------------
+
+None
+
+General
+-------
+
+- Require newer IP9 versions to fix some stability issues
+
+TUF XOP
+-------
+
+- Add XOP
+
+ITC XOP 2
+---------
+
+- Automatically retry opening devices with ITC1600 hardware in known error
+  situations, see also `here <https://github.com/AllenInstitute/ITCXOP2/pull/16>`__.
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+- The units of all user entries written in the analysis functions are now
+  documented :ref:`here <File MIES_AnalysisFunctions_PatchSeq.ipf>` and
+  :ref:`here <File MIES_AnalysisFunctions_MultiPatchSeq.ipf>`
+
+- We now store additional values for each numerical labnotebook entry:
+  - Description
+  - Headstage contingency
+  - Applicable clamp modes
+
+  See :ref:`here <Table Numerical Labnotebook Description>` for the generated table with all stock numerical entries
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_LEAKCUR_PASS``
+- ``PSQ_FMT_LBN_LEAKCUR``
+- ``PSQ_FMT_LBN_PB_RESISTANCE_PASS``
+- ``PSQ_FMT_LBN_PB_RESISTANCE``
+- ``PSQ_FMT_LBN_SE_RESISTANCE_A``
+- ``PSQ_FMT_LBN_SE_RESISTANCE_B``
+- ``PSQ_FMT_LBN_SE_RESISTANCE_MAX``
+- ``PSQ_FMT_LBN_SE_RESISTANCE_PASS``
+- ``PSQ_FMT_LBN_SE_TESTPULSE_GROUP``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``Follower Device``: Always add it, even if empty
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_INITIAL_SCALE``: Remove unit
+- ``MSQ_FMT_LBN_SPIKE_COUNTS``: Remove unit
+- ``MSQ_FMT_LBN_ACTIVE_HS``: Add ``LABNOTEBOOK_BINARY_UNIT`` as unit
+
+The following entries now have a correct ``-`` (LABNOTEBOOK_NO_TOLERANCE) as tolerance:
+
+  - ``Serial Number``
+  - ``Channel ID``
+  - ``ComPort ID``
+  - ``AxoBus ID``
+  - ``Operating Mode``
+  - ``Scaled Out Signal``
+  - ``Alpha``
+  - ``Scale Factor``
+  - ``Scale Factor Units``
+  - ``LPF Cutoff``
+  - ``Membrane Cap``
+  - ``Ext Cmd Sens``
+  - ``Raw Out Signal``
+  - ``Raw Scale Factor``
+  - ``Raw Scale Factor Units``
+  - ``Hardware Type``
+  - ``Secondary Alpha``
+  - ``Secondary LPF Cutoff``
+  - ``Slow current injection settling time``
+  - ``TP Amplitude VC``
+  - ``TP Amplitude IC``
+  - ``TP Pulse Duration``
+
+Changed unit to ``MΩ`` from ``MOhm`` for the following entries:
+
+  - ``TP Peak Resistance``
+  - ``TP Steady State Resistance``
+  - ``Whole Cell Comp Resist``
+  - ``Bridge Bal Value``
+  - ``Series Resistance``
+  - ``Minimum TP resistance for tolerance``
+
+Remove ``a. u.`` units for the following entries:
+
+  - ``Sweep Rollback``
+  - ``Skip Sweeps``
+  - ``DAC``
+  - ``ADC``
+  - ``Set Sweep Count``
+  - ``TTL rack zero channel``
+  - ``TTL rack one channel``
+  - ``Repeat Sets``
+  - ``Sampling interval multiplier``
+  - ``Stim set length``
+  - ``Repeated Acq Cycle ID``
+  - ``Stim Wave Checksum``
+  - ``Sampling interval multiplier``
+  - ``Set Cycle Count``
+  - ``Stimset Acq Cycle ID``
+  - ``Digitizer Hardware Type``
+  - ``Clamp Mode``
+  - ``Igor Pro bitness``
+  - ``DA ChannelType``
+  - ``AD ChannelType``
+  - ``Autobias %``
+  - ``Epochs version``
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Epoch information
+-----------------
+
+- Always shorten too long user epoch entries, even if acquisition finished as planned
+- Clip oodDAQ region epochs to the available stimset length
+- Fix the unacquired epoch length when too long user epochs are present
+
+NWB/IPNWB
+---------
+
+- Export results waves into NWBv2
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Make saving stimsets faster by avoiding duplicated update calls
+- Avoid deleting existing stimsets on save errors due to analysis function parameter checks
+- Keep selected x-axis range on display update
+- Allow resetting the axis scaling via the wellknown ``Ctrl+A`` shortcut in all circumstances with subwindows.
+  This makes the reset scaling button superfluous.
+
+Work Sequencing Engine
+----------------------
+
+- Add wrappers for toggling ``Store every testpulse``
+- ``IVS_RunGigOhmSealQC`` now runs the ``PSQ_SealEvaluation`` analysis function
+- ``IVS_runBaselineCheckQC`` now runs the ``PSQ_PipetteInBath`` analysis function
+- Fix returned sweep number in published zeromq messages
+
+Internal
+--------
+
+- Upgrade IUTF to a version which also support code coverage for macros
+- Add development hints for writing analysis functions, see :ref:`here <File analysis-function-writing.rst>`
+- Add linting tool in ``tools/check-code.sh`` to avoid common issues
+- Add the full stacktrace to the log entries for ``BUG`` and ``BUG_TS``
+- Add threadsafe variant ``BUG_TS``
+- Make the extended GUI popup menu names work also with non-liberal input names
+- Add constants XXX_TO_YYY for converting between different decimal
+  multipliers for values with units :ref:`here <File MIES_ConversionConstants.ipf>`.
+  Using that is also enforced with additional checks in ``tools/check-code.sh``.
+
+Tests
+-----
+
+- Add tests for TPStorage wave
+- Add generic range checks for USER labnotebook entries in the PSQ analysis functions
+- Skip outdated deployment on main branch
+- Make the tests work with a real amplifier and model cell
+- Check amplifier presence before locking
+- Only perform expensive checks in CI
+- Create code coverage reports from tests on the main branch
+
+Async Framework
+---------------
+
+None
+
+Logging
+-------
+
+None
+
+Installer
+---------
+
+- Install TUF XOP without hardware XOPs
+
 Release 2.4
 ===========
 
