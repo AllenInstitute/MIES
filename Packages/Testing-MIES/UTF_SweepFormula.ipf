@@ -1508,11 +1508,11 @@ Function TestLabNotebook()
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
-	str = "labnotebook(" + channelTypeC + ",select(channels(AD),sweeps()))"
+	str = "labnotebook(" + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
 
-	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),sweeps()),UNKNOWN_MODE)"
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
 End
@@ -1613,19 +1613,19 @@ static Function TestOperationEpochs()
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
 	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), sweeps()))"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
 	refData = p ? 510 : 503
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	// channel(s) with no epochs
-	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), sweeps()))"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), 0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// name that does not match any
-	str = "epochs(\"does_not_exist\", select(channels(DA), sweeps()))"
+	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData = NaN
 	CHECK_EQUAL_WAVES(refData, data)
@@ -1635,7 +1635,7 @@ static Function TestOperationEpochs()
 	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// invalid type
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), sweeps()), invalid_type)"
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "), invalid_type)"
 	try
 		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win); AbortOnRTE
 		FAIL()
