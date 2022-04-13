@@ -11,6 +11,7 @@
 ///
 /// The stimsets with the analysis functions attached are executed in the following order:
 /// - PSQ_PipetteInBath
+/// - PSQ_SealEvaluation
 /// - PSQ_DaScale (sub threshold)
 /// - PSQ_SquarePulse (long pulse)
 /// - PSQ_Rheobase (long pulse)
