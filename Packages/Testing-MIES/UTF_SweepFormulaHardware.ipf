@@ -331,7 +331,7 @@ static Function TestSweepFormulaCodeResults_REENTRY([string str])
 	CHECK_EQUAL_STR(content, contentRef)
 
 	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula active channels", UNKNOWN_MODE)
-	contentRef = "0;1;,1;0;,"
+	contentRef = "0;1;,"
 	CHECK_EQUAL_STR(content, contentRef)
 
 	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula experiment", UNKNOWN_MODE)
