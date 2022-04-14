@@ -1259,7 +1259,7 @@ static Function/WAVE SF_GetReducedColumn(WAVE w, string dimLabel)
 	Duplicate/FREE/RMD=[][dimPos] w, wTmp
 	Redimension/N=(-1) wTmp
 
-	WAVE wReduced = GetUniqueEntries(wTmp)
+	WAVE wReduced = GetUniqueEntries(wTmp, dontDuplicate=1)
 
 	return wReduced
 End
@@ -1279,7 +1279,7 @@ static Function [WAVE sweeps, WAVE/D channels] SF_ReCreateOldSweepsChannelLayout
 
 	numSelected = DimSize(selectData, ROWS)
 	Make/FREE/D/N=(numSelected) combined = selectData[p][%CHANNELTYPE] << shift + selectData[p][%CHANNELNUMBER]
-	WAVE combReduced = GetUniqueEntries(combined)
+	WAVE combReduced = GetUniqueEntries(combined, dontDuplicate=1)
 
 	numCombined = DimSize(combReduced, ROWS)
 	WAVE channels = SF_NewChannelsWave(numCombined)
