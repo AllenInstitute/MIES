@@ -595,14 +595,14 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
-	ref_from = xLayoutCoord * 100 / sqrt(layoutSize)
-	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
+	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
-	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
+	ref_to = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
@@ -648,15 +648,15 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
-	ref_from = xLayoutCoord * 100 / sqrt(layoutSize)
-	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
+	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
-	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
+	ref_to = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
@@ -760,8 +760,8 @@ static Function [variable from, variable to] PAT_GetAxisLayout(string graph, str
 		return [0, 100]
 	endif
 
-	from = GetNumFromModifyStr(layoutLine, "axisEnab", "{", 0) * 100
-	to   = GetNumFromModifyStr(layoutLine, "axisEnab", "{", 1) * 100
+	from = GetNumFromModifyStr(layoutLine, "axisEnab", "{", 0) * ONE_TO_PERCENT
+	to   = GetNumFromModifyStr(layoutLine, "axisEnab", "{", 1) * ONE_TO_PERCENT
 
 	return [from, to]
 End
@@ -1529,7 +1529,7 @@ static Function PAT_ExtendedDeconvCheckDisplay()
 	variable traceNum, i, j, size
 
 	variable range = 400
-	variable dataSize = 100000 // 400 ms * 250000 pts / 1000 ms
+	variable dataSize = 100000 // 400 ms * 250000 pts / 1000 ms // NOLINT
 
 	PA_InitSweep0(patest)
 	Make/FREE/WAVE/N=(2, 2) refData

@@ -154,6 +154,8 @@ Function DQ_StartDAQDeviceTimer(device)
 End
 
 /// @brief Stop the per-device timer associated with a particular device
+///
+/// @return time in seconds
 Function DQ_StopDAQDeviceTimer(device)
 	string device
 
@@ -173,7 +175,7 @@ Function DQ_StopDAQDeviceTimer(device)
 	sprintf msg, "stopped timer %d", timerID
 	DEBUGPRINT(msg)
 
-	return stopmstimer(timerID) / 1000000
+	return stopmstimer(timerID) * MICRO_TO_ONE
 End
 
 /// @brief Stop any running background DAQ
@@ -278,17 +280,17 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
 
-		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
+		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * PICO_TO_ONE)
 		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
 
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
-		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
-		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
+		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * MILLI_TO_ONE
+		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * MILLI_TO_ONE
 
-		resistance = TPResults[%ResistanceSteadyState][headstage] * 1e6
-		setVoltage = TPResults[%BaselineSteadyState][headstage] * 1e-3
+		resistance = TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE
+		setVoltage = TPResults[%BaselineSteadyState][headstage] * MILLI_TO_ONE
 
 		DEBUGPRINT("resistance[Ohm]=", var=resistance)
 		DEBUGPRINT("setVoltage[V]=", var=setVoltage)
@@ -305,7 +307,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") / 100
+		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") * PERCENT_TO_ONE
 
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
@@ -331,7 +333,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		DEBUGPRINT("current[A] to send=", var=current)
 		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
-		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * ONE_TO_PICO,sendToAll=0)
 	endfor
 End
 

@@ -1248,7 +1248,7 @@ static Function WB_NoiseSegment(pa)
 	ASSERT(IsInteger(pa.buildResolution) && pa.buildResolution > 0, "Invalid build resolution")
 
 	// duration is in ms
-	samples = pa.duration * pa.buildResolution * WAVEBUILDER_MIN_SAMPINT_HZ * 1e-3
+	samples = pa.duration * pa.buildResolution * WAVEBUILDER_MIN_SAMPINT_HZ * MILLI_TO_ONE
 
 	// even number of points for IFFT
 	samples = 2 * ceil(samples / 2)
@@ -1292,7 +1292,7 @@ static Function WB_NoiseSegment(pa)
 
 	ASSERT(!cmpstr(WaveUnits(segmentWave, ROWS), "s"), "Unexpect wave unit")
 	ASSERT(DimOffset(segmentWave, ROWS) == 0, "Unexpected wave rows offset")
-	SetScale/P x, 0, DimDelta(segmentWave, ROWS) * 1000, "ms", segmentWave
+	SetScale/P x, 0, DimDelta(segmentWave, ROWS) * ONE_TO_MILLI, "ms", segmentWave
 
 	Redimension/N=(DimSize(segmentWave, ROWS) / pa.buildResolution) segmentWave
 
@@ -1329,8 +1329,8 @@ static Function WB_TrigSegment(pa)
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
 	if(pa.logChirp)
-		k0 = ln(pa.frequency / 1000)
-		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
+		k0 = ln(pa.frequency / 1000) // NOLINT
+		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration) // NOLINT
 		k2 = 2 * pi * e^k0 / k1
 		k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
 		if(pa.trigFuncType == 0)
@@ -1340,9 +1340,9 @@ static Function WB_TrigSegment(pa)
 		endif
 	else
 		if(pa.trigFuncType == 0)
-			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 		else
-			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 		endif
 	endif
 End
@@ -1352,7 +1352,7 @@ static Function WB_SawToothSegment(pa)
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
-	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 End
 
 static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
@@ -1557,6 +1557,13 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
+/// @brief Return pulse information from a pulse train epoch
+///
+/// @param[in]  stimset            stimulus set
+/// @param[in]  sweep              sweep of the set
+/// @param[in]  epoch              epoch of the set
+/// @param[out] pulseToPulseLength pulse to pulse length [ms]
+/// @return pulse train starting times [ms]
 Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLength)
 	WAVE stimset
 	variable sweep, epoch
@@ -1597,10 +1604,10 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		if(mode == PULSE_TRAIN_MODE_PULSE)
 			// user defined number of pulses
-			pa.duration = pa.numberOfPulses / pa.frequency * 1000
+			pa.duration = pa.numberOfPulses / pa.frequency * ONE_TO_MILLI
 		elseif(mode == PULSE_TRAIN_MODE_DUR)
 			// user defined duration
-			pa.numberOfPulses = pa.frequency * pa.duration / 1000
+			pa.numberOfPulses = pa.frequency * pa.duration * MILLI_TO_ONE
 		else
 			ASSERT(0, "Invalid mode")
 		endif
@@ -1612,8 +1619,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	endif
 
 	if(pa.poisson)
-
-		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0
@@ -1622,7 +1628,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = 0
 
 		for(;;)
-			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
+			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * ONE_TO_MILLI
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
@@ -1640,7 +1646,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		firstStep = 1 / pa.firstFreq
 		lastStep  = 1 / pa.lastFreq
 		dist      = (lastStep / firstStep)^(1 / (pa.numberOfPulses - 1))
-		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * 1000 - pa.pulseDuration
+		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * ONE_TO_MILLI - pa.pulseDuration
 
 		if(pa.mixedFreqShuffle)
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_LINEAR_CONGRUENTIAL)
@@ -1670,7 +1676,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
 		endfor
 	else
-		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0

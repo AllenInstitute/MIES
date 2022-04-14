@@ -1253,7 +1253,7 @@ threadsafe Function/DF RunGenericWorker(dfr)
 	variable/G dfrOut:outV = v
 
 	// some processing that has a random runtime
-	variable runtime = abs(floor(gnoise(1))) * 10
+	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
 	for(i = 0; i < runtime; i += 1)
 			for(j = 0; j < 100; j += 1)
 				s = num2str(i)
@@ -1291,7 +1291,7 @@ threadsafe Function/DF RunGenericWorker3(dfr)
 	variable/G dfrOut:outV = v
 
 	// some processing that has a random runtime
-	variable runtime = abs(floor(gnoise(1))) * 10
+	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
 	for(i = 0; i < runtime; i += 1)
 			for(j = 0; j < 100; j += 1)
 				s = num2str(i)

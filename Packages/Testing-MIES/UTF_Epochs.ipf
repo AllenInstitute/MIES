@@ -311,8 +311,8 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * 1000 + OTHER_EPOCHS_PRECISION
-		last  = endT[i] * 1000 - OTHER_EPOCHS_PRECISION
+		first = startT[i] * ONE_TO_MILLI + OTHER_EPOCHS_PRECISION
+		last  = endT[i] * ONE_TO_MILLI - OTHER_EPOCHS_PRECISION
 		range = last - first
 
 		if(range <= 0)
@@ -404,7 +404,7 @@ static Function TestEpochsGeneric(device)
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(samplInt, NUMERIC_WAVE)
-	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1e-3
+	samplingInterval = samplInt[INDEP_HEADSTAGE] * MICRO_TO_MILLI
 
 	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint

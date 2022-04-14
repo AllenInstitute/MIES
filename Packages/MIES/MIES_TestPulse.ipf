@@ -381,7 +381,7 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		// now use the maximum of all baselines
 		WAVE baselineFracClean = ZapNaNs(baselineFrac)
 
-		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * 100, TP_SET_PRECISION)
+		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * ONE_TO_PERCENT, TP_SET_PRECISION)
 
 		DAP_TPSettingsToGUI(device, entry = "baselinePerc")
 	endif
@@ -570,12 +570,12 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
-		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * 1e-12)
+		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * PICO_TO_ONE)
 
-		targetVoltage    = TPSettings[%autoAmpVoltage][i] * 1e-3
-		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * 1e-3
+		targetVoltage    = TPSettings[%autoAmpVoltage][i] * MILLI_TO_ONE
+		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * MILLI_TO_ONE
 
-		resistance = TPResults[%ResistanceSteadyState][i] * 1e6
+		resistance = TPResults[%ResistanceSteadyState][i] * MEGA_TO_ONE
 
 		if(TestOverrideActive())
 			WAVE overrideResults = GetOverrideResults()
@@ -585,7 +585,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			indizes[i] += 1
 			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
 		else
-			voltage = TPResults[%AutoTPDeltaV][i] * 1e-3
+			voltage = TPResults[%AutoTPDeltaV][i] * MILLI_TO_ONE
 		endif
 
 		skipAutoBaseline = 0
@@ -632,21 +632,21 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 				continue
 			endif
 
-			scalar = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE] / 100
+			scalar = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
 			current = (targetVoltage - voltage) / resistance
 
 			sprintf msg, "headstage %d: current  %g, targetVoltage %g, resistance %g, scalar %g\r", i, current, targetVoltage, resistance, scalar
 			DEBUGPRINT(msg)
 
-			current = TPSettings[%amplitudeIC][i] * 1e-12 + current * scalar
+			current = TPSettings[%amplitudeIC][i] * PICO_TO_ONE + current * scalar
 
 			if(abs(current) > maximumCurrent)
 				printf "Headstage %d: Not applying new amplitude of %.0W0PA as that would exceed the maximum allowed current of %.0W0PA.\r", i, current, maximumCurrent
 				continue
 			endif
 
-			TPSettings[%amplitudeIC][i] = RoundNumber(current / 1e-12, TP_SET_PRECISION)
+			TPSettings[%amplitudeIC][i] = RoundNumber(current * ONE_TO_PICO, TP_SET_PRECISION)
 		endif
 
 		sprintf msg, "headstage %d has failing auto TP amplitude and will use a new IC amplitude of %g", i, TPSettings[%amplitudeIC][i]
@@ -991,11 +991,11 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 #endif
 
 	if(clampMode == I_CLAMP_MODE)
-		outData[1] = (avgTPSS - avgBaselineSS) / clampAmp * 1000
-		outData[2] = (avgInst - avgBaselineSS) / clampAmp * 1000
+		outData[1] = (avgTPSS - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
+		outData[2] = (avgInst - avgBaselineSS) * MILLI_TO_ONE / (clampAmp * PICO_TO_ONE) * ONE_TO_MEGA
 	else
-		outData[1] = clampAmp / (avgTPSS - avgBaselineSS) * 1000
-		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
+		outData[1] = (clampAmp * MILLI_TO_ONE) / ((avgTPSS - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
+		outData[2] = (clampAmp * MILLI_TO_ONE) / ((avgInst - avgBaselineSS) * PICO_TO_ONE) * ONE_TO_MEGA
 	endif
 	outData[0] = avgBaselineSS
 	outData[3] = avgTPSS
@@ -1556,11 +1556,11 @@ Function TP_UpdateTPSettingsCalculated(string device)
 	calculated = NaN
 
 	// update the calculated values
-	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] / 100
+	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
 	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
-	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) / 1000))
-	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, DATA_ACQUISITION_MODE) / 1000))
+	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) * MICRO_TO_MILLI))
+	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI))
 
 	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
 	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))

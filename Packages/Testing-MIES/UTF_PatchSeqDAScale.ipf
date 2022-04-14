@@ -2320,10 +2320,10 @@ Function PS_DS_Supra5_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 
 	Make/FREE/D/N=(numEntries) stimScaleRef = {20 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
-														 40 * (1 + DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE, \
-														 60 * (1 + DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE, \
+														 40 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
+														 60 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
 														 80 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
-														 100 * (1 - DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE}
+														 100 * (1 - DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE}
 
 	// Explanations for the stimscale:
 	// 1. initial

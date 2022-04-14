@@ -4369,7 +4369,7 @@ Function/WAVE P_GetITCChanConfig(device)
 	wv[2][1] = -1
 	wv[3][1] = -1
 
-	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * 1000
+	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv
@@ -6937,9 +6937,9 @@ End
 /// - Pulses
 ///
 /// Columns:
-/// - Length: Total length including baseline
-/// - PulseStart: Start of the pulse (aka begin of active)
-/// - PulseEnd: End of the pulse (aka end of active)
+/// - Length [ms]: Total length including baseline
+/// - PulseStart [ms]: Start of the pulse (aka begin of active)
+/// - PulseEnd [ms]: End of the pulse (aka end of active)
 Function/WAVE GetPulseInfoWave()
 
 	Make/D/FREE/N=(0, 3) pulseInfo

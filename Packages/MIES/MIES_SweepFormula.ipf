@@ -1029,8 +1029,8 @@ static Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variab
 		return range
 	endif
 
-	range[0] = str2num(epochs[0][EPOCH_COL_STARTTIME]) * 1E3
-	range[1] = str2num(epochs[0][EPOCH_COL_ENDTIME]) * 1E3
+	range[0] = str2num(epochs[0][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+	range[1] = str2num(epochs[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 
 	return range
 End
@@ -1556,7 +1556,7 @@ static Function/S SF_PrepareDataForResultsWave(WAVE data)
 	endif
 
 	// assuming 100 sweeps on average
-	maxEntries = 100 * NUM_HEADSTAGES * 10
+	maxEntries = 100 * NUM_HEADSTAGES * 10 // NOLINT
 	numEntries = numpnts(dataTxT)
 
 	if(numpnts(dataTxT) > maxEntries)
@@ -1827,12 +1827,12 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			SF_ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
 			WAVE/Z/T epochTPBaseline = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_B0")
 			SF_ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
-			tpBaseLineT = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * 1E3
+			tpBaseLineT = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
 
 			// Assemble TP data
 			WAVE tpInput.data = SF_AverageTPFromSweep(epochMatches, sweepData)
 			tpInput.tpLengthPoints = DimSize(tpInput.data, ROWS)
-			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * 1E3
+			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
 			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLineT)
 
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
@@ -2035,8 +2035,8 @@ static Function SF_EpochsSetOutValues(variable epType, WAVE out, variable outCnt
 	else
 		ASSERT(!ParamIsDefault(startTime), "startTime expected")
 		ASSERT(!ParamIsDefault(endTime), "endTime expected")
-		out[0][outCnt] = str2num(startTime) * 1E3
-		out[1][outCnt] = str2num(endTime) * 1E3
+		out[0][outCnt] = str2num(startTime) * ONE_TO_MILLI
+		out[1][outCnt] = str2num(endTime) * ONE_TO_MILLI
 	endif
 End
 
@@ -2652,7 +2652,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
 	switch(method[0])
 		case SF_APFREQUENCY_FULL:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
+			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE)
 			break
 		case SF_APFREQUENCY_INSTANTANEOUS:
 			Make/N=(numSets)/D/FREE outD
@@ -2663,7 +2663,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 				else
 					Make/FREE/D/N=(levelPerSet[i] - 1) distances
 					distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
-					outD[i] = 1.0 / Mean(distances) * 1e3
+					outD[i] = 1.0 / (Mean(distances) * MILLI_TO_ONE)
 				endif
 			endfor
 			break
@@ -2795,8 +2795,8 @@ static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
 
 	numTPEpochs = DimSize(epochMatches, ROWS)
 	sweepDelta = DimDelta(sweepData, ROWS)
-	Make/FREE/D/N=(numTPEpochs) tpStart = trunc(str2num(epochMatches[p][EPOCH_COL_STARTTIME]) * 1E3 / sweepDelta)
-	Make/FREE/D/N=(numTPEpochs) tpDelta = trunc(str2num(epochMatches[p][EPOCH_COL_ENDTIME]) * 1E3 / sweepDelta) - tpStart[p]
+	Make/FREE/D/N=(numTPEpochs) tpStart = trunc(str2num(epochMatches[p][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI / sweepDelta)
+	Make/FREE/D/N=(numTPEpochs) tpDelta = trunc(str2num(epochMatches[p][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI / sweepDelta) - tpStart[p]
 	[tpDataSizeMin, tpDataSizeMax] = WaveMinAndMaxWrapper(tpDelta)
 	SF_ASSERT(tpDataSizeMax - tpDataSizeMin <= 1, "TP data size from TP epochs mismatch within sweep.")
 

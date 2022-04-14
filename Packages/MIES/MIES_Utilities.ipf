@@ -678,14 +678,14 @@ End
 threadsafe Function ConvertSamplingIntervalToRate(val)
 	variable val
 
-	return 1 / val * 1e3
+	return 1 / (val * MICRO_TO_ONE) * ONE_TO_KILO
 End
 
 /// @brief Convert the rate in kHz to the sampling interval in microseconds (1e-6s)
 threadsafe Function ConvertRateToSamplingInterval(val)
 	variable val
 
-	return 1 / val * 1e3
+	return 1 / (val * KILO_TO_ONE) * ONE_TO_MICRO
 End
 
 /// @brief Checks if the datafolder referenced by dfr exists.
@@ -2462,7 +2462,7 @@ End
 /// \endrst
 Function NewRandomSeed()
 
-	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32
+	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32 // NOLINT
 
 End
 
@@ -2625,37 +2625,6 @@ End
 ///                            see below or [1] chapter 3 for the full list
 /// @param[out] numPrefix      numerical value of the decimal multiplier
 /// @param[out] unit           unit
-///
-/// \rst
-///
-/// =====  ======  ===============
-/// Name   Symbol  Numerical value
-/// =====  ======  ===============
-/// yotta    Y        1e24
-/// zetta    Z        1e21
-/// exa      E        1e18
-/// peta     P        1e15
-/// tera     T        1e12
-/// giga     G        1e9
-/// mega     M        1e6
-/// kilo     k        1e3
-/// hecto    h        1e2
-/// deca     da       1e1
-/// deci     d        1e-1
-/// centi    c        1e-2
-/// milli    m        1e-3
-/// micro    mu       1e-6
-/// nano     n        1e-9
-/// pico     p        1e-12
-/// femto    f        1e-15
-/// atto     a        1e-18
-/// zepto    z        1e-21
-/// yocto    y        1e-24
-/// =====  ======  ===============
-///
-/// \endrst
-///
-/// [1]: 8th edition of the SI Brochure (2014), http://www.bipm.org/en/publications/si-brochure
 threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	string unitWithPrefix
 	string &prefix
@@ -2691,8 +2660,8 @@ threadsafe Function GetDecimalMultiplierValue(prefix)
 		return 1
 	endif
 
-	Make/FREE/T prefixes = {"Y", "Z", "E", "P", "T", "G", "M", "k", "h", "da", "d", "c", "m", "mu", "n", "p", "f", "a", "z", "y"}
-	Make/FREE/D values   = {1e24, 1e21, 1e18, 1e15, 1e12, 1e9, 1e6, 1e3, 1e2, 1e1, 1e-1, 1e-2, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15, 1e-18, 1e-21, 1e-24}
+	WAVE/T prefixes = ListToTextWave(PREFIX_SHORT_LIST, ";")
+	WAVE/D values   = ListToNumericWave(PREFIX_VALUE_LIST, ";")
 
 	FindValue/Z/TXOP=(1 + 4)/TEXT=(prefix) prefixes
 	ASSERT_TS(V_Value != -1, "Could not find prefix")
@@ -2893,7 +2862,7 @@ Function/S GetUniqueSymbolicPath([prefix])
 	endif
 
 	NewRandomSeed()
-	return prefix + num2istr(GetReproducibleRandom() * 1e6)
+	return prefix + num2istr(GetUniqueInteger())
 End
 
 /// @brief Return a list of all files from the given symbolic path
@@ -4314,7 +4283,7 @@ End
 /// @brief Return a time in seconds with high precision, microsecond resolution, using an
 ///        arbitrary zero point.
 Function RelativeNowHighPrec()
-	return stopmstimer(-2)/1e6
+	return stopmstimer(-2) * MICRO_TO_ONE
 End
 
 /// @brief High precision version of the builtin Sleep command
@@ -4747,7 +4716,7 @@ End
 Function GetElapsedTime(referenceTime)
 	variable referenceTime
 
-	return (stopmstimer(-2) - referenceTime) / 1e6
+	return (stopmstimer(-2) - referenceTime) * MICRO_TO_ONE
 End
 
 /// @brief Store the elapsed time in a wave
@@ -6174,4 +6143,29 @@ Function StoreWaveOnDisk(WAVE wv, string name)
 	Save/O/T/M="\n" storedWave as path
 	KillOrMoveToTrash(wv = storedWave)
 	RemoveEmptyDataFolder(dfr)
+End
+
+Function GenerateMultiplierConstants()
+	variable numElements, i, j, maxLength
+	string str
+
+	WAVE/T prefixes = ListToTextWave(PREFIX_LONG_LIST, ";")
+	WAVE/D values = ListToNumericWave(PREFIX_VALUE_LIST, ";")
+
+	numElements = DimSize(prefixes, ROWS)
+	ASSERT(DimSize(values, ROWS) == numElements, "Non matching list sizes")
+
+	Make/FREE/N=(numElements) lengths = strlen(prefixes[p])
+	maxLength = WaveMax(lengths)
+
+	for(i = 0; i < numElements; i += 1)
+		for(j = 0; j < numElements; j += 1)
+			if( i == j)
+				continue
+			endif
+
+			sprintf str, "Constant %*s_TO_%-*s = %.0e", maxLength, UpperStr(prefixes[i]), maxLength, UpperStr(prefixes[j]), (values[i] / values[j])
+			print str
+		endfor
+	endfor
 End

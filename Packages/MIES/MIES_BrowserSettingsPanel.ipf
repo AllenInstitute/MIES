@@ -1610,8 +1610,8 @@ Function BSP_AddTracesForEpochs(string win)
 
 		for(k = 0; k < numEpochs; k += 1)
 
-			start_x = str2num(epochs[k][0]) * 1000
-			end_x   = str2num(epochs[k][1]) * 1000
+			start_x = str2num(epochs[k][0]) * ONE_TO_MILLI
+			end_x   = str2num(epochs[k][1]) * ONE_TO_MILLI
 
 			// handle EPOCH_USER_LEVEL being -1
 			level = str2num(epochs[k][3]) + 1
@@ -1693,8 +1693,8 @@ Function BSP_EpochGraphToolTip(s)
 			ASSERT(WaveExists(epochs), "Missing epoch info")
 			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx = w[s.row][s.column][1]
-			first = num2strHighPrec(str2num(epochs[idx][0]) * 1000, precision = EPOCHTIME_PRECISION, shorten = 1)
-			last  = num2strHighPrec(str2num(epochs[idx][1]) * 1000, precision = EPOCHTIME_PRECISION, shorten = 1)
+			first = num2strHighPrec(str2num(epochs[idx][0]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
+			last  = num2strHighPrec(str2num(epochs[idx][1]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
 
 			s.tooltip = first + " <-> " + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
 		endif

@@ -184,7 +184,7 @@ static Function PS_RB1_REENTRY([str])
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 
-	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure
@@ -263,7 +263,7 @@ static Function PS_RB2_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 6)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + PSQ_GetFinalDAScaleFake()) * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + PSQ_GetFinalDAScaleFake()) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -333,7 +333,7 @@ static Function PS_RB3_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 6)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -403,7 +403,7 @@ static Function PS_RB4_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 2)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -473,7 +473,7 @@ static Function PS_RB5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 2)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -543,7 +543,7 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -615,8 +615,8 @@ static Function PS_RB7_REENTRY([str])
 
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef
-	stimScaleRef[0, 1]   = PSQ_GetFinalDAScaleFake() * 1e12
-	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 2) * PSQ_RB_DASCALE_STEP_LARGE) * 1e12
+	stimScaleRef[0, 1]   = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
+	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 2) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -700,7 +700,7 @@ static Function PS_RB8_REENTRY([str])
 	stimScaleRef[1] = stimScaleRef[0] - PSQ_RB_DASCALE_STEP_LARGE
 	stimScaleRef[2] = stimScaleRef[1] + PSQ_RB_DASCALE_STEP_SMALL
 	stimScaleRef[3] = stimScaleRef[2] + PSQ_RB_DASCALE_STEP_SMALL
-	stimScaleRef *= 1e12
+	stimScaleRef *= ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -777,7 +777,7 @@ static Function PS_RB9_REENTRY([str])
 	stimScaleRef[0] = PSQ_RB_DASCALE_STEP_LARGE
 	stimScaleRef[1] = PSQ_RB_DASCALE_STEP_SMALL
 	stimScaleRef[2] = 2 * PSQ_RB_DASCALE_STEP_SMALL
-	stimScaleRef *= 1e12
+	stimScaleRef *= ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -928,7 +928,7 @@ static Function PS_RB11_REENTRY([str])
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 
-	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * 1e12
+	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure

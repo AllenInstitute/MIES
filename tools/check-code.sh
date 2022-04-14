@@ -35,11 +35,11 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/UTF_HardwareMain.ipf')
+matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/MIES_ConversionConstants.ipf' ':^*/UTF_HardwareMain.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "Global constants are only allowed in MIES_Constants.ipf and UTF_HardwareMain.ipf:"
+  echo "Global constants are only allowed in MIES_Constants.ipf, MIES_ConversionConstants.ipf and UTF_HardwareMain.ipf:"
   echo "$matches"
   ret=1
 fi
@@ -49,6 +49,26 @@ matches=$(git grep $opts "^Structure\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_S
 if [[ -n "$matches" ]]
 then
   echo "Global structures are only allowed in MIES_Structures.ipf and UTF_HardwareMain.ipf:"
+  echo "$matches"
+  ret=1
+fi
+
+# 1: all types of 10, 100 and 1e3, 1e-6, 1E09 etc. but not tol = 1e3 or 10^. Has to be prefixed with * or / or *=
+# 2: not in constants
+# 3: not in test assertions
+# 4: ignored in comments
+# 5: respects NOLINT
+matches=$(git grep $opts                                                                                                              \
+                   -e '(?<!tol=)(?<!tol =)(?<!tol = )(?<!tol= )(\*|/)[[:space:]]*(=)?[[:space:]]*(10+(?!\^)|1e(-|\+)?[[:digit:]]+)\b' \
+                   --and --not -e '^[[:space:]]*(Str)?Constant'                                                                       \
+                   --and --not -e '^[[:space:]]*(REQUIRE|CHECK|WARN)_([a-z]+)_([a-z]+)\('                                             \
+                   --and --not -e '^[[:space:]]*//'                                                                                   \
+                   --and --not -e '//[[:space:]]*NOLINT$'                                                                             \
+                  '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Pictures.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "Literal decimal multiplier check failed (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi

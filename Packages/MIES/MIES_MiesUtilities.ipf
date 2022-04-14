@@ -2679,7 +2679,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	endif
 
 	if(tgs.dDAQDisplayMode)
-		samplingInt = GetSamplingInterval(config) * 1e-3
+		samplingInt = GetSamplingInterval(config) * MICRO_TO_MILLI
 
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
@@ -5872,7 +5872,7 @@ Function UpdateLeftOverSweepTime(device, fifoPos)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(device)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
-	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
+	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
@@ -5952,7 +5952,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		// convert from mv to V
 		ASSERT(!cmpstr(ADunit[i], "mV"), "Unexpected AD Unit")
 
-		deltaV[i] = (elevated - baseline) * 1e-3
+		deltaV[i] = (elevated - baseline) * MILLI_TO_ONE
 
 		high = firstEdge - 1
 		low  = high - (firstEdge - onsetDelayPoint) * 0.1
@@ -5972,7 +5972,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 
 		// convert from pA to A
 		ASSERT(!cmpstr(DAunit[i], "pA"), "Unexpected DA Unit")
-		deltaI[i] = (elevated - baseline) * 1e-12
+		deltaI[i] = (elevated - baseline) * PICO_TO_ONE
 
 		resistance[i] = deltaV[i] / deltaI[i]
 
@@ -7580,7 +7580,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 
 	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
 
-	configWave[][%SamplingInterval] = samplingInterval * 1000
+	configWave[][%SamplingInterval] = samplingInterval * MILLI_TO_MICRO
 
 	// always 0, see DC_PlaceDataInDAQConfigWave
 	configWave[][%DecimationMode] = 0
@@ -7603,7 +7603,7 @@ static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepN
 	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 
 	// convert to integer as that is stored in the config wave
-	return round(samplingInterval * 1000) / 1000
+	return round(samplingInterval * 1000) / 1000 // NOLINT
 End
 
 /// @brief Set `ChannelNumber` and `ChannelType` in configWave

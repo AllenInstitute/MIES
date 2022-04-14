@@ -233,7 +233,7 @@ Function TPM_BkrdTPFuncMD(s)
 								channelNr = str2num(fifoChannelName)
 								WAVE NIChannel = NIDataWave[channelNr]
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
-								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
+								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * ONE_TO_MILLI, "ms", NIChannel
 							endfor
 
 							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID=deviceID)

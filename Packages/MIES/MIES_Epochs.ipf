@@ -104,7 +104,7 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 
 		epochBegin = startOffset * s.samplingInterval
 		if(s.distributedDAQOptOv && s.offsets[i] > 0)
-			epochOffset = s.offsets[i] * 1000
+			epochOffset = s.offsets[i] * MILLI_TO_MICRO
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
@@ -200,8 +200,8 @@ static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, st
 		Make/FREE/N=(numRegions) epochIndexer
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "oodDAQ", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-		epochIndexer[] = EP_AddEpoch(device, channel, str2num(StringFromList(0, regions[p], "-")) * 1E3 + stimsetBegin,                        \
-		                                                  str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin,                        \
+		epochIndexer[] = EP_AddEpoch(device, channel, str2num(StringFromList(0, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,                 \
+		                                                  str2num(StringFromList(1, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,             \
 		                                                  ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 		                                                  EPOCH_SN_OODAQ + num2str(p),                                                             \
 		                                                  2, lowerLimit = stimsetBegin, upperLimit = stimsetEnd)
@@ -247,7 +247,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 	Make/FREE/D/N=(epochCount) duration, sweepOffset
 
 	duration[] = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Duration", sweep=sweep, epoch=p)
-	duration *= 1000
+	duration *= MILLI_TO_MICRO
 	totalDuration = sum(duration)
 
 	ASSERT(IsFinite(totalDuration), "Expected finite totalDuration")
@@ -314,13 +314,13 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 			shortNameEpTypePT = shortNameEp + "_" + EPOCH_SN_PULSETRAIN
 			shortNameEpTypePTBaseline = shortNameEpTypePT + "_" + EPOCH_SN_PULSETRAINBASETRAIL
 			WAVE startTimes = WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epochNr, pulseToPulseLength)
-			startTimes *= 1000
+			startTimes *= MILLI_TO_MICRO
 			numPulses = DimSize(startTimes, ROWS)
 			if(numPulses)
 				Duplicate/FREE startTimes, ptp
-				ptp[] = pulseToPulseLength ? pulseToPulseLength * 1000 : startTimes[p] - startTimes[limit(p - 1, 0, Inf)]
+				ptp[] = pulseToPulseLength ? pulseToPulseLength * MILLI_TO_MICRO : startTimes[p] - startTimes[limit(p - 1, 0, Inf)]
 				pulseDuration = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Pulse duration", sweep=sweep, epoch=epochNr)
-				pulseDuration *= 1000
+				pulseDuration *= MILLI_TO_MICRO
 
 				// with flipping we iterate the pulses from large to small time points
 
@@ -502,7 +502,7 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(device, channelNumber, epBegin * 1e6, epEnd * 1e6, tags, shortName, EPOCH_USER_LEVEL)
+	return EP_AddEpoch(device, channelNumber, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave
@@ -545,8 +545,8 @@ static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName
 	i = EP_GetEpochCount(device, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
-	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
-	endTimeStr = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
+	endTimeStr = num2strHighPrec(epEnd * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
 
 	if(!cmpstr(startTimeStr, endTimeStr))
 		// don't add single point epochs
@@ -570,7 +570,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
-	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) * MILLI_TO_ONE
 
 	// all channels are acquired simultaneously we can just check if the last
 	// channel has NaN in the last element
@@ -578,7 +578,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		FindValue/FNAN sweepWave
 		ASSERT(V_row >= 0, "Unexpected result")
 
-		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
+		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) * MILLI_TO_ONE
 	else
 		acquiredTime = plannedTime
 	endif
@@ -687,7 +687,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 		// add unacquired epoch
 		// relies on EP_AddEpoch ignoring single point epochs
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
+		EP_AddEpoch(device, channel, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
 

@@ -353,7 +353,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	// and rate
 	rate = ReadAttributeAsNumber(groupID, channel + "/starting_time", "rate")
-	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS)/1000)
+	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS) * MILLI_TO_ONE)
 	CHECK_CLOSE_VAR(rate, rate_ref, tol=1e-7)
 
 	samplingInterval = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
@@ -470,14 +470,14 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	if(!cmpstr(unit_ref, "pA"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
-		CHECK_CLOSE_VAR(conversion, 1e-12)
+		CHECK_CLOSE_VAR(conversion, PICO_TO_ONE)
 
 		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "A"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
-		CHECK_CLOSE_VAR(conversion, 1e-3, tol = 1e-5)
+		CHECK_CLOSE_VAR(conversion, MILLI_TO_ONE, tol = 1e-5)
 
 		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "V"

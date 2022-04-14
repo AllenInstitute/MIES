@@ -5041,7 +5041,7 @@ Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
 
 		samplingInterval = GetValDisplayAsNum(device, "ValDisp_DataAcq_SamplingInt")
 
-		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * 1e3) / samplingInterval, tol = 0.1)
+		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * MILLI_TO_MICRO) / samplingInterval, tol = 0.1)
 	endfor
 End
 

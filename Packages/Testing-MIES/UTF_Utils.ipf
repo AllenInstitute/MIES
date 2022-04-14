@@ -2704,7 +2704,7 @@ Function TWTL4D()
 	string list
 	string refList
 
-	refList = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16/:,;"
+	refList = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16/:,;" // NOLINT
 	list = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
@@ -3074,7 +3074,7 @@ End
 Function ListToTextWaveMDWorks3()
 
 	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", "16"}}}}
-	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/16/:,;", 4)
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/16/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
 
@@ -3082,7 +3082,7 @@ End
 Function ListToTextWaveMDWorks4()
 
 	Make/FREE/T ref = {{{{"1", "9"} , {"5", ""}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", ""}}, {{"4", "12"} , {"8", ""}}}}
-	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:;", 4)
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
 
@@ -3090,7 +3090,7 @@ End
 Function ListToTextWaveMDWorks5()
 
 	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
-	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:,;", 4)
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
 
@@ -3098,7 +3098,7 @@ End
 Function ListToTextWaveMDWorks6()
 
 	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
-	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/:,;", 4)
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
 /// @}
@@ -6061,4 +6061,27 @@ Function SeSt_Works()
 	str = note(wref[3])
 	ref = "abcd:123;"
 	CHECK_EQUAL_STR(str, ref)
+End
+
+Function GMC_SomeVariants()
+
+	// 1 mA -> 1e-3A
+	CHECK_EQUAL_VAR(MILLI_TO_ONE, 1e-3)
+
+	// 1 MA -> 1e9 mA
+	CHECK_EQUAL_VAR(MEGA_TO_MILLI, 1e9)
+
+	CHECK_EQUAL_VAR(PETA_TO_FEMTO, 1e30)
+
+	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
+End
+
+Function CSIR_Works()
+
+	CHECK_CLOSE_VAR(ConvertRateToSamplingInterval(200), 5)
+End
+
+Function CRTSI_Works()
+
+	CHECK_CLOSE_VAR(ConvertSamplingIntervalToRate(5), 200)
 End

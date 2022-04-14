@@ -308,7 +308,7 @@ static Function PS_PB1_REENTRY([str])
 	CHECK_WAVE(entries[%leakCurPass], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
 
-	Make/D resistanceRef = {5e9, 5e9, 5e9}
+	Make/D resistanceRef = {5e6, 5e6, 5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0, 0}, mode = WAVE_DATA)
 
@@ -373,7 +373,7 @@ static Function PS_PB2_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
 
-	Make/FREE/D resistanceRef = {12.5e9}
+	Make/FREE/D resistanceRef = {12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
 
@@ -450,7 +450,7 @@ static Function PS_PB3_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1, NaN, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
 
-	Make/FREE/D resistanceRef = {5e9, 12.5e9, 5e9}
+	Make/FREE/D resistanceRef = {5e6, 12.5e6, 5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 1, 0}, mode = WAVE_DATA)
 
@@ -517,7 +517,7 @@ static Function PS_PB4_REENTRY([str])
 	CHECK_WAVE(entries[%leakCurPass], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
 
-	Make/FREE/D resistanceRef = {5e9, 5e9}
+	Make/FREE/D resistanceRef = {5e6, 5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0}, mode = WAVE_DATA)
 
@@ -586,7 +586,7 @@ static Function PS_PB5_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
 
-	Make/FREE/D resistanceRef = {12.5e9, 12.5e9, 12.5e9}
+	Make/FREE/D resistanceRef = {12.5e6, 12.5e6, 12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -655,7 +655,7 @@ static Function PS_PB6_REENTRY([str])
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
 
-	Make/FREE/D resistanceRef = {12.5e9, 12.5e9, 12.5e9}
+	Make/FREE/D resistanceRef = {12.5e6, 12.5e6, 12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -724,7 +724,7 @@ static Function PS_PB7_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
 
-	Make/FREE/D resistanceRef = {12.5e9}
+	Make/FREE/D resistanceRef = {12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
 

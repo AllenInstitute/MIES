@@ -319,9 +319,9 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 
 		if(numSpikes > 0)
 			// convert spike positions to 0-100 coordinates (aka pulse active coordinate system)
-			Make/FREE/D/N=(numSpikes) spikePositionsPUCrd = (spikePositions[p] - pulseStart) / (pulseEnd - pulseStart) * 100
+			Make/FREE/D/N=(numSpikes) spikePositionsPUCrd = (spikePositions[p] - pulseStart) / (pulseEnd - pulseStart) * ONE_TO_PERCENT
 			// round to one decimal digit
-			spikePositionsPUCrd[] = round(spikePositionsPUCrd[p] * 10) / 10
+			spikePositionsPUCrd[] = round(spikePositionsPUCrd[p] * 10) / 10 // NOLINT
 
 			SC_AddPulseRegionLBNEntries(spikePositionsLBN, pulseIndex, region, headstageProp, data = spikePositionsPUCrd)
 		endif

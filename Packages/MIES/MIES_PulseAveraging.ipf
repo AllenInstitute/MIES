@@ -469,12 +469,12 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 				endif
 
 				if(level == 2)
-					pulseInfos[idx][%Length] = (last - first) * 1000
+					pulseInfos[idx][%Length] = (last - first) * ONE_TO_MILLI
 
 					hasOneValidEntry = 1
 				elseif(level == 3 && (strsearch(tags, "Active", 0) != -1) || (strsearch(tags, "SubType=Pulse;", 0) != -1))
-					pulseInfos[idx][%PulseStart] = first * 1000
-					pulseInfos[idx][%PulseEnd]   = last  * 1000
+					pulseInfos[idx][%PulseStart] = first * ONE_TO_MILLI
+					pulseInfos[idx][%PulseEnd]   = last  * ONE_TO_MILLI
 
 					hasPerPulseInfo = 1
 					hasOneValidEntry = 1
@@ -1332,13 +1332,13 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_Update = stopmstimer(-2) - execTime_Start
-	sprintf execTime_outStr, "PA exec time: PA_PreProcessPulses %.3f s.\r", execTime_PreProcess / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_PreProcessPulses %.3f s.\r", execTime_PreProcess * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ShowPulses %.3f s.\r", execTime_ShowPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ShowPulses %.3f s.\r", execTime_ShowPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ShowImage %.3f s.\r", execTime_ShowImage / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ShowImage %.3f s.\r", execTime_ShowImage * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_Update %.3f s.\r", execTime_Update / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_Update %.3f s.\r", execTime_Update * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
 #endif
 End
@@ -1692,8 +1692,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 						if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
 							sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
 							if(WhichListItem(tagName, AnnotationList(graph)) == -1)
-								xPos = ((i + 1) / numActive) * 100 - 2
-								yPos = ((j + 1) / numActive) * 100  - (1 / numActive) * 100 / 2
+								xPos = ((i + 1) / numActive) * ONE_TO_PERCENT - 2
+								yPos = ((j + 1) / numActive) * ONE_TO_PERCENT - (1 / numActive) * ONE_TO_PERCENT / 2
 								Textbox/W=$graph/K/N=$tagName
 								Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
 							endif
@@ -2064,19 +2064,19 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	endif
 
 #ifndef PA_HIDE_EXECUTION_TIME
-	sprintf execTime_outStr, "PA exec time: PA_GenerateAllPulseWaves %.3f s.\r", execTime_GenerateAllPulseWaves / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_GenerateAllPulseWaves %.3f s.\r", execTime_GenerateAllPulseWaves * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ApplyPulseSortingOrder %.3f s.\r", execTime_ApplyPulseSortingOrder / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ApplyPulseSortingOrder %.3f s.\r", execTime_ApplyPulseSortingOrder * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ResetWavesIfRequired %.3f s.\r", execTime_ResetWavesIfRequired / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ResetWavesIfRequired %.3f s.\r", execTime_ResetWavesIfRequired * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_MarkFailedPulses %.3f s.\r", execTime_MarkFailedPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_MarkFailedPulses %.3f s.\r", execTime_MarkFailedPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_ZeroPulses %.3f s.\r", execTime_ZeroPulses / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_ZeroPulses %.3f s.\r", execTime_ZeroPulses * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_AutomaticTimeAlignment %.3f s.\r", execTime_AutomaticTimeAlignment / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_AutomaticTimeAlignment %.3f s.\r", execTime_AutomaticTimeAlignment * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
-	sprintf execTime_outStr, "PA exec time: PA_CalculateAllAverages %.3f s.\r", execTime_CalculateAllAverages / 1E6
+	sprintf execTime_outStr, "PA exec time: PA_CalculateAllAverages %.3f s.\r", execTime_CalculateAllAverages * MICRO_TO_ONE
 	DEBUGPRINT(execTime_outStr)
 #endif
 
@@ -3252,7 +3252,7 @@ static Function PA_AddColorScale(string graph, string colorScaleGraph, string na
 	intIndex = trunc(index)
 	length = stop[intIndex] - start[intIndex]
 	yPos = start[intIndex] + abs(index - intIndex) * length
-	yPos *= 100
+	yPos *= ONE_TO_PERCENT
 
 	ColorScale/W=$colorScaleGraph/C/N=$name/F=0/A=MT/X=(0)/Y=(yPos)/E=0 vert=0, image={$graph, $traceName}
 	ColorScale/W=$colorScaleGraph/C/N=$name heightPct=(5), widthPct=95, lblMargin=0

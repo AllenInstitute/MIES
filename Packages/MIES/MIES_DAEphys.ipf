@@ -1800,7 +1800,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial
 	endfor
 End
 
-/// @brief Return the sampling interval with taking the mode,
+/// @brief Return the sampling interval in μs with taking the mode,
 /// the multiplier and the fixed frequency selection into account
 ///
 /// @param[in]  device  device
@@ -1823,7 +1823,7 @@ Function DAP_GetSampInt(device, dataAcqOrTP, [valid])
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		fixedFreqkHzStr = DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")
 		if(cmpstr(fixedFreqkHzStr, "Maximum"))
-			sampInt = 1 / (str2num(fixedFreqkHzStr) * 1e3) * 1e6
+			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * ONE_TO_MICRO
 
 			if(!ParamIsDefault(valid))
 				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE)
@@ -4075,7 +4075,7 @@ Function DAP_UpdateOnsetDelay(device)
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_InsertTP"))
 		pulseDuration = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPDuration")
-		baselineFrac = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPBaselinePerc") / 100
+		baselineFrac = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPBaselinePerc") * PERCENT_TO_ONE
 		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	else
 		testPulseDurWithBL = 0

@@ -1852,7 +1852,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, 
 
 			configSweep[numEntries][%type]   = p.channelType
 			configSweep[numEntries][%number] = p.channelNumber
-			configSweep[numEntries][%timeMS] = trunc(DimDelta(loaded, ROWS) * 1000)
+			configSweep[numEntries][%timeMS] = trunc(DimDelta(loaded, ROWS) * ONE_TO_MILLI)
 			configSweep[numEntries][3]       = -1 // -1 for faked Config_Sweeps Waves
 
 			// set unit in config_wave from WaveNote of loaded dataset

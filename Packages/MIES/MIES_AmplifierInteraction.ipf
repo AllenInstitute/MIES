@@ -132,26 +132,26 @@ Function AI_GetMCCScale(clampMode, func)
 	if(clampMode == V_CLAMP_MODE)
 		switch(func)
 			case MCC_SETHOLDING_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETHOLDING_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETPIPETTEOFFSET_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETRSCOMPBANDWIDTH_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_GETRSCOMPBANDWIDTH_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
-				return 1e+6
+				return ONE_TO_MICRO
 			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
-				return 1e-6
+				return MICRO_TO_ONE
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETWHOLECELLCOMPCAP_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			default:
 				return 1
 				break
@@ -159,23 +159,23 @@ Function AI_GetMCCScale(clampMode, func)
 	else // IC and I=0
 		switch(func)
 			case MCC_SETBRIDGEBALRESIST_FUNC:
-				return 1e+6
+				return ONE_TO_MICRO
 			case MCC_GETBRIDGEBALRESIST_FUNC:
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
-				return 1e-6
+				return MICRO_TO_ONE
 			case MCC_SETHOLDING_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETHOLDING_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			case MCC_SETPIPETTEOFFSET_FUNC:
-				return 1e-3
+				return MILLI_TO_ONE
 			case MCC_GETPIPETTEOFFSET_FUNC:
 			case MCC_AUTOPIPETTEOFFSET_FUNC:
-				return 1e+3
+				return ONE_TO_MILLI
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
-				return 1e-12
+				return PICO_TO_ONE
 			case MCC_GETNEUTRALIZATIONCAP_FUNC:
-				return 1e+12
+				return ONE_TO_PICO
 			default:
 				return 1
 				break
@@ -718,8 +718,9 @@ static Function AI_MIESAutoPipetteOffset(device, headStage)
 	clampMode = DAG_GetHeadstageMode(device, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
-	//calculate delta current to reach zero
-	vdelta = (TPResults[%BaselineSteadyState][headstage] * TPResults[%ResistanceSteadyState][headstage]) / 1000 // set to mV
+	// calculate delta current to reach zero
+	// @todo check for IC
+	vdelta = ((TPResults[%BaselineSteadyState][headstage] * PICO_TO_ONE) * (TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE)) * ONE_TO_MILLI
 	// get current DC V offset
 	offset = AI_SendToAmp(device, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
 	// add delta to current DC V offset
@@ -972,13 +973,13 @@ static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 
 	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
 
-	ADGain    = tds.ScaleFactor * tds.Alpha / 1000
+	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
 	clampMode = tds.OperatingMode
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
-		DAGain = tds.ExtCmdSens * 1000
+		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
 	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
-		DAGain =tds.ExtCmdSens * 1e12
+		DAGain = tds.ExtCmdSens * ONE_TO_PICO
 	endif
 End
 
@@ -1570,7 +1571,7 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		ampSettingsWave[0][23][i] = tds.ScaleFactor
 		ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
 		ampSettingsWave[0][25][i] = tds.LPFCutoff
-		ampSettingsWave[0][26][i] = tds.MembraneCap * 1e+12 // converts F to pF
+		ampSettingsWave[0][26][i] = tds.MembraneCap * ONE_TO_PICO // converts F to pF
 		ampSettingsWave[0][27][i] = tds.ExtCmdSens
 		ampSettingsWave[0][28][i] = tds.RawOutSignal
 		ampSettingsWave[0][29][i] = tds.RawScaleFactor
@@ -1578,7 +1579,7 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		ampSettingsWave[0][31][i] = tds.HardwareType
 		ampSettingsWave[0][32][i] = tds.SecondaryAlpha
 		ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
-		ampSettingsWave[0][34][i] = tds.SeriesResistance * 1e-6 // converts Ω to MΩ
+		ampSettingsWave[0][34][i] = tds.SeriesResistance * ONE_TO_MEGA // converts Ω to MΩ
 
 		ampSettingsTextWave[0][0][i] = tds.OperatingModeString
 		ampSettingsTextWave[0][1][i] = tds.ScaledOutSignalString

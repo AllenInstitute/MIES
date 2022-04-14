@@ -106,7 +106,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 	NVAR timestamp = $GetLastAcqHookCallTimeStamp(device)
 	updateInt = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdInt")
 	now = DateTime
-	if((now - timestamp) < updateInt / 1000)
+	if((now - timestamp) < updateInt * MILLI_TO_ONE)
 		return 0
 	endif
 	timestamp = now
@@ -143,7 +143,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 		WAVE TPData = GetOscilloscopeWave(device)
 	endif
 
-	additionalSpacing = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdExt") / 100
+	additionalSpacing = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdExt") * PERCENT_TO_ONE
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
@@ -382,7 +382,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	if(gotDAQChan)
 		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) / 1000
+		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI
 		SetAxis/W=$graph bottomDAQ 0, stopCollectionPoint * sampInt
 		ModifyGraph/W=$graph freePos(bottomDAQ)=-35
 	endif
@@ -467,13 +467,13 @@ static Function SCOPE_UpdatePowerSpectrum(device)
 		numADCs = DimSize(OscilloscopeData, COLS) - startOfADColumns
 
 		// FFT knows how to transform units without prefix so transform them temporarly
-		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * MILLI_TO_ONE, DimDelta(OscilloscopeData, ROWS) * MILLI_TO_ONE, "s", OscilloscopeData
 
 		Make/FREE/N=(numADCs) junk
 
 		MultiThread junk[] = DoFFT(OscilloscopeData, TPOscilloscopeData, (startOfADColumns + p))
 
-		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * ONE_TO_MILLI, DimDelta(OscilloscopeData, ROWS) * ONE_TO_MILLI, "ms", OscilloscopeData
 	endif
 End
 
