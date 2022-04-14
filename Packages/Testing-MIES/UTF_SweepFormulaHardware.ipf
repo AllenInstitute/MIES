@@ -213,19 +213,19 @@ static Function	TestSweepFormulaTP(string device)
 	SetDimLabel LAYERS, 0, DA0, wRef
 	SetDimLabel LAYERS, 1, DA1, wRef
 	SetScale d, 0, 0, "MΩ", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
 
 	formula = "tp(inst, channels(DA), sweeps())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
 
 	formula = "tp(1, channels(DA), sweeps())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
 
 	formula = "tp(2, channels(DA), sweeps())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
 
 	formula = "tp(base, channels(DA), sweeps())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
