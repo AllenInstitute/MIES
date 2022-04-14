@@ -2090,6 +2090,14 @@ Function GUE_WorksWithOne()
 	CHECK_EQUAL_WAVES(result, wv)
 End
 
+static Function GUE_WorksWithOneNoDuplicate()
+
+	Make/N=1 wv
+
+	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate=1)
+	CHECK(WaveRefsEqual(result, wv))
+End
+
 Function GUE_BailsOutWith2D()
 
 	Make/N=(1, 2) wv
@@ -2117,6 +2125,14 @@ Function GUE_WorksWithTextOne()
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_EQUAL_WAVES(result, wv)
+End
+
+static Function GUE_WorksWithTextOneNoDuplicate()
+
+	Make/T/N=1 wv
+
+	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate=1)
+	CHECK(WaveRefsEqual(result, wv))
 End
 
 Function GUE_IgnoresCase()
@@ -2178,6 +2194,14 @@ Function GUE_ListWorksWithSep()
 
 	result = GetUniqueTextEntriesFromList(input, caseSensitive=1, sep="-")
 	CHECK_EQUAL_STR(result, expected)
+End
+
+static Function GUTE_WorksWithOneNoDuplicate()
+
+	Make/T/N=1 wv
+
+	WAVE/Z result = MIES_UTILS#GetUniqueTextEntries(wv, dontDuplicate=1)
+	CHECK(WaveRefsEqual(result, wv))
 End
 
 /// @}

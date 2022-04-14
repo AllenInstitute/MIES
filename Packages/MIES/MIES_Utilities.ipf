@@ -872,13 +872,16 @@ Function CalculateLCMOfWave(wv)
 End
 
 /// @brief Returns an unsorted free wave with all unique entries from wv
+///        If dontDuplicate is set, then for a single element input wave no new free wave is created but the input wave is returned.
 ///
 /// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
 ///
+/// @param wv             wave reference, can be numeric or text
+/// @param caseSensitive  [optional, default = 1] Indicates whether comparison should be case sensitive. Applies only if the input wave is a text wave
+/// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
+///
 /// @todo IP9-only Make threadsafe
-Function/Wave GetUniqueEntries(wv, [caseSensitive])
-	Wave wv
-	variable caseSensitive
+Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numRows
 
@@ -887,19 +890,21 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	numRows = DimSize(wv, ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
-	if(IsTextWave(wv))
-		if(ParamIsDefault(caseSensitive))
-			caseSensitive = 1
-		else
-			caseSensitive = !!caseSensitive
-		endif
-
-		return GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
-	endif
+	dontDuplicate = ParamIsDefault(dontDuplicate) ? 0 : !!dontDuplicate
 
 	if(numRows <= 1)
+		if(dontDuplicate)
+			return wv
+		endif
+
 		Duplicate/FREE wv, result
 		return result
+	endif
+
+	if(IsTextWave(wv))
+		caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
+
+		return GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
 	endif
 
 	FindDuplicates/FREE/RN=result wv
@@ -935,27 +940,26 @@ End
 /// Duplicates are removed from left to right
 ///
 /// @param wv             text wave reference
-/// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
+/// @param caseSensitive  [optional, default = 1] Indicates whether comparison should be case sensitive.
+/// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
 ///
 /// @return free wave with unique entries
 ///
 /// @todo IP9-only make threadsafe
-static Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
-	Wave/T wv
-	variable caseSensitive
+static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numEntries, numDuplicates, i
 
-	if(ParamIsDefault(caseSensitive))
-		caseSensitive = 1
-	else
-		caseSensitive = !!caseSensitive
-	endif
+	dontDuplicate = ParamIsDefault(dontDuplicate) ? 0 : !!dontDuplicate
+	caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
 
 	numEntries = DimSize(wv, ROWS)
 	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
 
 	if(numEntries <= 1)
+		if(dontDuplicate)
+			return wv
+		endif
 		Duplicate/T/FREE wv result
 		return result
 	endif
