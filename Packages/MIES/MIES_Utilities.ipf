@@ -1165,35 +1165,6 @@ threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
 	endif
 End
 
-/// @brief Recursive version of GetStringFromWaveNote
-///
-/// Returns the extracted string for non-wave-reference waves.
-/// For wave-reference waves the string must be the same in the wave
-/// and all waves held in the wave reference wave.
-///
-/// @todo IP9-only Merge with GetStringFromWaveNote
-Function/S GetStringFromWaveNoteRecursive(WAVE wv, string key)
-	variable numEntries = numpnts(wv)
-	string str
-
-	str = GetStringFromWaveNote(wv, key)
-
-	if(!IsWaveRefWave(wv) || numEntries == 0)
-		return str
-	endif
-
-	Make/FREE/T/N=(numEntries) notes = GetStringFromWaveNoteRecursive(WaveRef(wv, row = p), key)
-
-	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
-	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
-
-	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], str))
-		return str
-	endif
-
-	return ""
-End
-
 /// @brief Return the string value of `key` found in the wave note
 /// default expected wave note format: `key1:val1;key2:str2;`
 /// counterpart of AddEntryIntoWaveNoteAsList when supplied with keySep = "="
@@ -1202,9 +1173,19 @@ End
 /// @param key  search for the value at key:value;
 /// @param keySep  [optional, defaults to #DEFAULT_KEY_SEP] separation character for (key, value) pairs
 /// @param listSep [optional, defaults to #DEFAULT_LIST_SEP] list separation character
+/// @param recursive [optional, defaults to false] checks all wave notes in referenced waves from wave reference waves
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
-threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep])
+threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep, variable recursive])
+	variable numEntries = numpnts(wv)
+	string result
+
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
+
 	if(ParamIsDefault(keySep))
 		keySep = DEFAULT_KEY_SEP
 	endif
@@ -1213,7 +1194,22 @@ threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep,
 		listSep = DEFAULT_LIST_SEP
 	endif
 
-	return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+	result = ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+
+	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)
+		return result
+	endif
+
+	Make/FREE/T/N=(numEntries) notes = ExtractStringFromPair(note(WaveRef(wv, row = p)), key, keySep = keySep, listSep = listSep)
+
+	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
+	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
+
+	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], result))
+		return result
+	endif
+
+	return ""
 End
 
 /// @brief Same functionality as GetStringFromWaveNote() but accepts a string

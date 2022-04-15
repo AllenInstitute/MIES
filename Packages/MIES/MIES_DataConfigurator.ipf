@@ -1110,7 +1110,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	if(WaveExists(result))
 		WAVE DAQDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-		if(!cmpstr(GetStringFromWaveNoteRecursive(DAQDataWave, TP_PROPERTIES_HASH), key))
+		if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH, recursive = 1), key))
 			// clear the AD data only
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:

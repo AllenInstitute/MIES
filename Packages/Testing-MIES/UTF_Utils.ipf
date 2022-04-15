@@ -5927,7 +5927,7 @@ Function GSFWNR_Works()
 	Note/K plain "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(plain, "abcd")
+	str = GetStringFromWaveNote(plain, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// empty wave ref
@@ -5935,7 +5935,7 @@ Function GSFWNR_Works()
 	Note/K wref "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref, matching
@@ -5946,7 +5946,7 @@ Function GSFWNR_Works()
 	Note/K wref[1] "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref 2D, matching
@@ -5959,7 +5959,7 @@ Function GSFWNR_Works()
 	Note/K wref[3] "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref, not-matching (wref has a different one)
@@ -5969,7 +5969,7 @@ Function GSFWNR_Works()
 	Note/K wref[0] "abcd:123"
 	Note/K wref[1] "abcd:123"
 
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)
 
 	// wave ref, not-matching (first contained has a different one)
@@ -5979,7 +5979,7 @@ Function GSFWNR_Works()
 	Note/K wref[0] "abcde:123"
 	Note/K wref[1] "abcd:123"
 
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)
 End
 
