@@ -140,7 +140,7 @@ End
 /// @brief Threadsafe version of LOG_AddEntry()
 ///
 /// Callers need to write the calling function name into `caller`.
-/// @todo IP9-only: merge with LOG_AddEntry
+/// @todo IP10 merge with LOG_AddEntry once SpecialDirPath is threadsafe
 threadsafe Function LOG_AddEntry_TS(string package, string action, string caller, [WAVE/T keys, WAVE/T values])
 
 	if(ParamIsDefault(keys) && ParamIsDefault(values))
