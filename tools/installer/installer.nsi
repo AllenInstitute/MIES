@@ -25,22 +25,21 @@
 # This section defines paths
 !define IGOR64EXTENSIONPATH "Igor Extensions (64-bit)"
 # Endings for Helpfiles- and Packages\HDF- folders
-!define IGOR8DIRTEMPL "IP8"
 !define IGOR9DIRTEMPL "IP9"
+!define IGOR10DIRTEMPL "IP10"
 # source folder name for installation with XOPs
-!define IGOR864XOPSOURCETEMPL "XOPs-IP8-64bit"
 !define IGOR964XOPSOURCETEMPL "XOPs-IP9-64bit"
+!define IGOR1064XOPSOURCETEMPL "XOPs-IP10-64bit"
 
 # source file names for XOPs for installation without Hardware XOPs
-!define IGOR864HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
 !define IGORUTILXOPSOURCETEMPL "MIESUtils-64.xop"
 !define IGORJSONXOPSOURCETEMPL "JSON-64.xop"
 !define IGORZEROMQXOPSOURCETEMPL "ZeroMQ-64.xop"
 !define IGORTUFXOPSOURCETEMPL "TUFXOP-64.xop"
 
 # Default paths for Igor Installation where the installer looks automatically
-!define IGOR8DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 8 Folder"
 !define IGOR9DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 9 Folder"
+!define IGOR10DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 10 Folder"
 
 #Unicode true
 SetCompressor /SOLID lzma
@@ -59,7 +58,7 @@ XPStyle on
 Page license
 Page custom DialogAllCur
 Page custom DialogXOP
-Page custom DialogInstallFor89
+Page custom DialogInstallFor910
 Page directory
 Page instfiles
 
@@ -69,10 +68,10 @@ Var IGOR64REGPATH
 Var ALLUSER
 Var XOPINST
 Var processFound
-Var INSTALL_I864
-Var INSTALL_I8PATH
 Var INSTALL_I964
 Var INSTALL_I9PATH
+Var INSTALL_I1064
+Var INSTALL_I10PATH
 Var IGORBASEPATH
 Var FILEHANDLE
 Var LINESTR
@@ -80,7 +79,6 @@ Var ISADMIN
 
 Var IGORDIRTEMPL
 Var IGORBITDIRTEMPL
-Var IGORHDFSOURCETEMPL
 Var IGORUTILSOURCETEMPL
 Var IGORJSONSOURCETEMPL
 Var IGORZEROMQSOURCETEMPL
@@ -326,11 +324,11 @@ Function DialogXOP
   nsDialogs::Show
 FunctionEnd
 
-#---Install for Igor 8,9 Dialog---
+#---Install for Igor 9,10 Dialog---
 !macro CheckIgorSel
 !define CHECKIGSEL ${__LINE__}
-    IntCmp $INSTALL_I864 1 EnableNext_${CHECKIGSEL}
-        IntCmp $INSTALL_I964 1 EnableNext_${CHECKIGSEL}
+    IntCmp $INSTALL_I964 1 EnableNext_${CHECKIGSEL}
+        IntCmp $INSTALL_I1064 1 EnableNext_${CHECKIGSEL}
           GetDlgItem $0 $HWNDPARENT 1
           EnableWindow $0 0
           Goto End_${CHECKIGSEL}
@@ -341,36 +339,7 @@ End_${CHECKIGSEL}:
 !undef CHECKIGSEL
 !macroend
 
-Function ClickedIgor864
-  Pop $0
-  ${NSD_GetState} $0 $INSTALL_I864
-  IntCmp $INSTALL_I864 0 EndSet
-  StrLen $1 $INSTALL_I8PATH
-  IntCmp $1 0 +2
-    Goto EndSet
-  MessageBox MB_OK "The installer can not find your Igor Pro 8 program folder. Please help."
-  Push "" #Initial Pathselection
-  Push "Choose Igor Pro 8 program folder" #Heading
-  Push "$PROGRAMFILES64\WaveMetrics"  #Root Path
-  Call BrowseForFolder
-  Pop $1
-  StrLen $2 $1
-  IntCmp $2 0 BrowseCancel
-    GetDLLVersion "$1\IgorBinaries_x64\Igor64.exe" $R0 $R1
-    IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 8 +3
-      MessageBox MB_OK "Could not find the Igor Pro 8 executable. (at $1\IgorBinaries_x64\Igor64.exe)"
-      Goto BrowseCancel
-    StrCpy $INSTALL_I8PATH "$1"
-    Goto EndSet
-BrowseCancel:
-  ${NSD_Uncheck} $0
-  StrCpy $INSTALL_I864 "0"
-EndSet:
-  !insertmacro CheckIgorSel
-FunctionEnd
-
-Function ClickedIGOR964
+Function ClickedIgor964
   Pop $0
   ${NSD_GetState} $0 $INSTALL_I964
   IntCmp $INSTALL_I964 0 EndSet
@@ -387,7 +356,7 @@ Function ClickedIGOR964
   IntCmp $2 0 BrowseCancel
     GetDLLVersion "$1\IgorBinaries_x64\Igor64.exe" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 9 +3
+    IntCmp $R2 8 +3
       MessageBox MB_OK "Could not find the Igor Pro 9 executable. (at $1\IgorBinaries_x64\Igor64.exe)"
       Goto BrowseCancel
     StrCpy $INSTALL_I9PATH "$1"
@@ -399,7 +368,36 @@ EndSet:
   !insertmacro CheckIgorSel
 FunctionEnd
 
-Function DialogInstallFor89
+Function ClickedIGOR1064
+  Pop $0
+  ${NSD_GetState} $0 $INSTALL_I1064
+  IntCmp $INSTALL_I1064 0 EndSet
+  StrLen $1 $INSTALL_I10PATH
+  IntCmp $1 0 +2
+    Goto EndSet
+  MessageBox MB_OK "The installer can not find your Igor Pro 10 program folder. Please help."
+  Push "" #Initial Pathselection
+  Push "Choose Igor Pro 10 program folder" #Heading
+  Push "$PROGRAMFILES64\WaveMetrics"  #Root Path
+  Call BrowseForFolder
+  Pop $1
+  StrLen $2 $1
+  IntCmp $2 0 BrowseCancel
+    GetDLLVersion "$1\IgorBinaries_x64\Igor64.exe" $R0 $R1
+    IntOp $R2 $R0 / 0x00010000
+    IntCmp $R2 9 +3
+      MessageBox MB_OK "Could not find the Igor Pro 10 executable. (at $1\IgorBinaries_x64\Igor64.exe)"
+      Goto BrowseCancel
+    StrCpy $INSTALL_I10PATH "$1"
+    Goto EndSet
+BrowseCancel:
+  ${NSD_Uncheck} $0
+  StrCpy $INSTALL_I1064 "0"
+EndSet:
+  !insertmacro CheckIgorSel
+FunctionEnd
+
+Function DialogInstallFor910
   nsDialogs::Create 1018
   Pop $NSD_IF_Dialog
 
@@ -410,18 +408,18 @@ Function DialogInstallFor89
   !insertmacro CheckIgorSel
   ${NSD_CreateLabel} 20u 10u 100% 13u "Select Igor Pro version(s) where MIES should be included"
   Pop $NSD_IF_Label
-  ${NSD_CreateCheckbox} 95u 23u 100% 13u "Igor Pro 8 64-bit"
+  ${NSD_CreateCheckbox} 95u 23u 100% 13u "Igor Pro 9 64-bit"
   Pop $NSD_IF_CB2
-  IntCmp $INSTALL_I864 0 NoIgor864
+  IntCmp $INSTALL_I964 0 NoIgor964
     ${NSD_Check} $NSD_IF_CB2
-  NoIgor864:
-  ${NSD_OnClick} $NSD_IF_CB2 ClickedIgor864
-  ${NSD_CreateCheckbox} 95u 36u 100% 13u "Igor Pro 9 64-bit"
+  NoIgor964:
+  ${NSD_OnClick} $NSD_IF_CB2 ClickedIgor964
+  ${NSD_CreateCheckbox} 95u 36u 100% 13u "Igor Pro 10 64-bit"
   Pop $NSD_IF_CB4
-  IntCmp $INSTALL_I964 0 NoIGOR964
+  IntCmp $INSTALL_I1064 0 NoIGOR1064
     ${NSD_Check} $NSD_IF_CB4
-  NoIGOR964:
-  ${NSD_OnClick} $NSD_IF_CB4 ClickedIGOR964
+  NoIGOR1064:
+  ${NSD_OnClick} $NSD_IF_CB4 ClickedIGOR1064
 
   ${NSD_CreateLabel} 5u 88u 100% 26u "The 32-bit version of MIES is discontinued. If you REALLY need a 32-bit version, you can grab the now unsupported version 2.3 from https://github.com/AllenInstitute/MIES/releases/tag/Release_2.3_20210908."
   Pop $NSD_IF_Label
@@ -472,41 +470,44 @@ CheckIgorPaths:
   IntCmp $IGOR64 0 NoRegIgor64
     GetDLLVersion "$IGOR64REGFILE" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    StrCpy $INSTALL_I864 "1"
     StrCpy $INSTALL_I964 "1"
-    StrCpy $INSTALL_I8PATH $IGOR64REGPATH -17
+    StrCpy $INSTALL_I1064 "1"
     StrCpy $INSTALL_I9PATH $IGOR64REGPATH -17
-    IntCmp $R2 8 CheckIGOR964Path
-      StrCpy $INSTALL_I864 "0"
-      StrCpy $INSTALL_I8PATH ""
-CheckIGOR964Path:
-    IntCmp $R2 9 NoRegIgor64
+    StrCpy $INSTALL_I10PATH $IGOR64REGPATH -17
+    # check IP version number
+    IntCmp $R2 9 CheckIGOR1064Path
       StrCpy $INSTALL_I964 "0"
       StrCpy $INSTALL_I9PATH ""
+CheckIGOR1064Path:
+    IntCmp $R2 10 NoRegIgor64
+      StrCpy $INSTALL_I1064 "0"
+      StrCpy $INSTALL_I10PATH ""
 NoRegIgor64:
 
-# Look for Igor8,9 at default install folder, if not already known
-  StrLen $0 $INSTALL_I8PATH
-  IntCmp $0 0 +2
-    Goto IGOR8CheckEnd
-  GetDLLVersion "${IGOR8DEFPATH}\IgorBinaries_x64\Igor64.exe" $R0 $R1
-  IntOp $R2 $R0 / 0x00010000
-  IntCmp $R2 8 +2
-    Goto IGOR8CheckEnd
-  StrCpy $INSTALL_I8PATH "${IGOR8DEFPATH}"
-  StrCpy $INSTALL_I864 "1"
-IGOR8CheckEnd:
-
+# Look for Igor9,10 at default install folder, if not already known
   StrLen $0 $INSTALL_I9PATH
   IntCmp $0 0 +2
     Goto IGOR9CheckEnd
   GetDLLVersion "${IGOR9DEFPATH}\IgorBinaries_x64\Igor64.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
+  # check IP version number
   IntCmp $R2 9 +2
     Goto IGOR9CheckEnd
   StrCpy $INSTALL_I9PATH "${IGOR9DEFPATH}"
   StrCpy $INSTALL_I964 "1"
 IGOR9CheckEnd:
+
+  StrLen $0 $INSTALL_I10PATH
+  IntCmp $0 0 +2
+    Goto IGOR10CheckEnd
+  GetDLLVersion "${IGOR10DEFPATH}\IgorBinaries_x64\Igor64.exe" $R0 $R1
+  IntOp $R2 $R0 / 0x00010000
+  # check IP version number
+  IntCmp $R2 10 +2
+    Goto IGOR10CheckEnd
+  StrCpy $INSTALL_I10PATH "${IGOR10DEFPATH}"
+  StrCpy $INSTALL_I1064 "1"
+IGOR10CheckEnd:
 
   # If found all available Igor installations are enabled for install at this point
 
@@ -587,11 +588,6 @@ CLTDone_${CLTID}:
     Goto ProcInst_${CREALNKSID}
 NoXOPInst__${CREALNKSID}:
 # Link XOP files directly that are not Hardware XOPs
-    StrLen $0 $IGORHDFSOURCETEMPL
-    ${If} $0 != 0
-      CreateShortCut "$IGORBASEPATH\$IGOREXTENSIONPATH\$IGORHDFSOURCETEMPL.lnk" "$INSTDIR\$IGORBITDIRTEMPL\$IGORHDFSOURCETEMPL"
-      FileWrite $FILEHANDLE "$IGORBASEPATH\$IGOREXTENSIONPATH\$IGORHDFSOURCETEMPL.lnk$\n"
-    ${EndIf}
     StrLen $0 $IGORUTILSOURCETEMPL
     ${If} $0 != 0
       CreateShortCut "$IGORBASEPATH\$IGOREXTENSIONPATH\$IGORUTILSOURCETEMPL.lnk" "$INSTDIR\$IGORBITDIRTEMPL\$IGORUTILSOURCETEMPL"
@@ -624,12 +620,6 @@ ProcInst_${CREALNKSID}:
     CreateShortCut "$IGORBASEPATH\User Procedures\MIES.lnk" "$INSTDIR\Packages\MIES"
     FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\MIES.lnk$\n"
 
-    StrLen $0 $IGORHDFSOURCETEMPL
-    ${If} $0 != 0
-      CreateShortCut "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk" "$INSTDIR\Packages\HDF-$IGORDIRTEMPL"
-      FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk$\n"
-    ${EndIf}
-
     CreateShortCut "$IGORBASEPATH\Igor Help Files\HelpFiles-$IGORDIRTEMPL.lnk" "$INSTDIR\HelpFiles-$IGORDIRTEMPL"
     FileWrite $FILEHANDLE "$IGORBASEPATH\Igor Help Files\HelpFiles-$IGORDIRTEMPL.lnk$\n"
 
@@ -639,30 +629,30 @@ ProcInst_${CREALNKSID}:
 Section "install"
   SetOutPath $INSTDIR
 
-  IntCmp $INSTALL_I864 1 MIESCheck8
-  Goto MIESCheck8End
-MIESCheck8:
-      StrLen $0 $INSTALL_I8PATH
-      ${If} $0 = 0
-        IfSilent +2
-        MessageBox MB_OK "Bug: I have no Igor 8 Path."
-        Quit
-      ${EndIf}
-      !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 8 User Files" "Igor Pro 8"
-      !insertmacro CheckMIESPresent "$INSTALL_I8PATH" "Igor Pro 8"
-MIESCheck8End:
   IntCmp $INSTALL_I964 1 MIESCheck9
   Goto MIESCheck9End
 MIESCheck9:
-    StrLen $0 $INSTALL_I9PATH
+      StrLen $0 $INSTALL_I9PATH
+      ${If} $0 = 0
+        IfSilent +2
+        MessageBox MB_OK "Bug: I have no Igor 9 Path."
+        Quit
+      ${EndIf}
+      !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 9 User Files" "Igor Pro 9"
+      !insertmacro CheckMIESPresent "$INSTALL_I9PATH" "Igor Pro 9"
+MIESCheck9End:
+  IntCmp $INSTALL_I1064 1 MIESCheck10
+  Goto MIESCheck10End
+MIESCheck10:
+    StrLen $0 $INSTALL_I10PATH
     ${If} $0 = 0
       IfSilent +2
-      MessageBox MB_OK "Bug: I have no Igor 9 Path."
+      MessageBox MB_OK "Bug: I have no Igor 10 Path."
       Quit
     ${EndIf}
-    !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 9 User Files" "Igor Pro 9"
-    !insertmacro CheckMIESPresent "$INSTALL_I9PATH" "Igor Pro 9"
-MIESCheck9End:
+    !insertmacro CheckMIESPresent "$DOCUMENTS\WaveMetrics\Igor Pro 10 User Files" "Igor Pro 10"
+    !insertmacro CheckMIESPresent "$INSTALL_I10PATH" "Igor Pro 10"
+MIESCheck10End:
 
   IntCmp $ALLUSER 0 AdminCheckDone
     IntCmp $ISADMIN 1 AdminCheckDone
@@ -683,23 +673,9 @@ AdminCheckDone:
   IntCmp $ALLUSER 1 InstallAllUser
     CreateDirectory "$DOCUMENTS\WaveMetrics"
     SetShellVarContext current
-    IntCmp $INSTALL_I864 0 InstallEnd864
-      StrCpy $IGORDIRTEMPL "${IGOR8DIRTEMPL}"
-      StrCpy $IGORBITDIRTEMPL "${IGOR864XOPSOURCETEMPL}"
-      StrCpy $IGORHDFSOURCETEMPL "${IGOR864HDFXOPSOURCETEMPL}"
-      StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
-      StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
-      StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
-      StrCpy $IGORTUFSOURCETEMPL ""
-      StrCpy $IGOREXTENSIONPATH "${IGOR64EXTENSIONPATH}"
-      StrCpy $IGORBASEPATH "$DOCUMENTS\WaveMetrics\Igor Pro 8 User Files"
-      CreateDirectory "$DOCUMENTS\WaveMetrics\Igor Pro 8 User Files"
-      !insertmacro CreateLinks
-InstallEnd864:
     IntCmp $INSTALL_I964 0 InstallEnd964
       StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
       StrCpy $IGORBITDIRTEMPL "${IGOR964XOPSOURCETEMPL}"
-      StrCpy $IGORHDFSOURCETEMPL ""
       StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
       StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
       StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
@@ -709,25 +685,24 @@ InstallEnd864:
       CreateDirectory "$DOCUMENTS\WaveMetrics\Igor Pro 9 User Files"
       !insertmacro CreateLinks
 InstallEnd964:
+    IntCmp $INSTALL_I1064 0 InstallEnd1064
+      StrCpy $IGORDIRTEMPL "${IGOR10DIRTEMPL}"
+      StrCpy $IGORBITDIRTEMPL "${IGOR1064XOPSOURCETEMPL}"
+      StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
+      StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
+      StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
+      StrCpy $IGORTUFSOURCETEMPL "${IGORTUFXOPSOURCETEMPL}"
+      StrCpy $IGOREXTENSIONPATH "${IGOR64EXTENSIONPATH}"
+      StrCpy $IGORBASEPATH "$DOCUMENTS\WaveMetrics\Igor Pro 10 User Files"
+      CreateDirectory "$DOCUMENTS\WaveMetrics\Igor Pro 10 User Files"
+      !insertmacro CreateLinks
+InstallEnd1064:
     Goto EndOfLinks
 
 InstallAllUser:
-  IntCmp $INSTALL_I864 0 InstallAEnd864
-    StrCpy $IGORDIRTEMPL "${IGOR8DIRTEMPL}"
-    StrCpy $IGORBITDIRTEMPL "${IGOR864XOPSOURCETEMPL}"
-    StrCpy $IGORHDFSOURCETEMPL "${IGOR864HDFXOPSOURCETEMPL}"
-    StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
-    StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
-    StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
-    StrCpy $IGORTUFSOURCETEMPL "${IGORTUFXOPSOURCETEMPL}"
-    StrCpy $IGOREXTENSIONPATH "${IGOR64EXTENSIONPATH}"
-    StrCpy $IGORBASEPATH $INSTALL_I8PATH
-    !insertmacro CreateLinks
-InstallAEnd864:
   IntCmp $INSTALL_I964 0 InstallAEnd964
     StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
     StrCpy $IGORBITDIRTEMPL "${IGOR964XOPSOURCETEMPL}"
-    StrCpy $IGORHDFSOURCETEMPL ""
     StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
     StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
     StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
@@ -736,6 +711,17 @@ InstallAEnd864:
     StrCpy $IGORBASEPATH $INSTALL_I9PATH
     !insertmacro CreateLinks
 InstallAEnd964:
+  IntCmp $INSTALL_I1064 0 InstallAEnd1064
+    StrCpy $IGORDIRTEMPL "${IGOR10DIRTEMPL}"
+    StrCpy $IGORBITDIRTEMPL "${IGOR1064XOPSOURCETEMPL}"
+    StrCpy $IGORUTILSOURCETEMPL "${IGORUTILXOPSOURCETEMPL}"
+    StrCpy $IGORJSONSOURCETEMPL "${IGORJSONXOPSOURCETEMPL}"
+    StrCpy $IGORZEROMQSOURCETEMPL "${IGORZEROMQXOPSOURCETEMPL}"
+    StrCpy $IGORTUFSOURCETEMPL "${IGORTUFXOPSOURCETEMPL}"
+    StrCpy $IGOREXTENSIONPATH "${IGOR64EXTENSIONPATH}"
+    StrCpy $IGORBASEPATH $INSTALL_I10PATH
+    !insertmacro CreateLinks
+InstallAEnd1064:
   Goto EndOfLinks
 
 FileError:
