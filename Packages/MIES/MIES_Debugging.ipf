@@ -534,8 +534,6 @@ Function BUG(msg)
 End
 
 /// @brief Threadsafe variant of BUG()
-///
-/// @todo IP9: Unify with BUG
 threadsafe Function BUG_TS(string msg)
 	variable bugCount
 	string stacktrace
