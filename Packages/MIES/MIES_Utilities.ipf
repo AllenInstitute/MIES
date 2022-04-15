@@ -829,16 +829,14 @@ End
 /// @param wv             wave reference, can be numeric or text
 /// @param caseSensitive  [optional, default = 1] Indicates whether comparison should be case sensitive. Applies only if the input wave is a text wave
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
-///
-/// @todo IP9-only Make threadsafe
-Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numRows
 
-	ASSERT(WaveExists(wv), "Wave must exist")
+	ASSERT_TS(WaveExists(wv), "Wave must exist")
 
 	numRows = DimSize(wv, ROWS)
-	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
+	ASSERT_TS(numRows == numpnts(wv), "Wave must be 1D")
 
 	dontDuplicate = ParamIsDefault(dontDuplicate) ? 0 : !!dontDuplicate
 
@@ -863,14 +861,14 @@ Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDu
 End
 
 /// @brief Convenience wrapper around GetUniqueTextEntries() for string lists
-Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
+threadsafe Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
 	string list, sep
 	variable caseSensitive
 
 	if(ParamIsDefault(sep))
 		sep = ";"
 	else
-		ASSERT(strlen(sep) == 1, "Separator should be one byte long")
+		ASSERT_TS(strlen(sep) == 1, "Separator should be one byte long")
 	endif
 
 	if(ParamIsDefault(caseSensitive))
@@ -894,9 +892,7 @@ End
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
 ///
 /// @return free wave with unique entries
-///
-/// @todo IP9-only make threadsafe
-static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numEntries, numDuplicates, i
 
@@ -904,7 +900,7 @@ static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, va
 	caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
 
 	numEntries = DimSize(wv, ROWS)
-	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
+	ASSERT_TS(numEntries == numpnts(wv), "Wave must be 1D.")
 
 	if(numEntries <= 1)
 		if(dontDuplicate)
