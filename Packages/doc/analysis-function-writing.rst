@@ -1,3 +1,5 @@
+.. _File analysis-function-writing.rst:
+
 Thirty six hints for writing analysis functions
 ===============================================
 

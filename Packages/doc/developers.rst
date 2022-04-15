@@ -78,11 +78,13 @@ data acquisition is blocked.
 Cutting a new release
 ~~~~~~~~~~~~~~~~~~~~~
 
--  Checkout the main branch
+-  Checkout a new branch ``git checkout -b feature/XXXX-release-notes main``
 -  Paste the contents of ``Packages\doc\releasenotes_template.rst`` to
    the top of ``Packages\doc\releasenotes.rst``
 -  Call ``tools\create-changelog.sh`` which generate a raw changelog and
    fill ``releasenotes.rst`` with a cleaned up version of it.
+-  Propose a pull request and get it merged
+-  Checkout the main branch
 -  Tag the current state with ``git tag Release_X.Y_*``, see ``git tag``
    for how the asterisk should look like
 -  Push the tag: ``git push origin $tag``. You can pass ``--dry-run`` for

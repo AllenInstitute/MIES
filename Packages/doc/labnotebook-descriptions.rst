@@ -1,6 +1,8 @@
 Labnotebook descriptions
 ========================
 
+.. _Table Numerical Labnotebook Description:
+
 .. csv-table:: Numerical entries
    :file: /csv/labnotebook_numerical_description.csv
    :delim: tab
