@@ -3949,30 +3949,17 @@ Function STIW_TestDimensions()
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), DimSize(testwave, ROWS) - 1)
-#else
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), NaN)
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -inf, ROWS), 0)
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1e3, ROWS), DimOffset(testwave, ROWS) + 1e3 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1e3, ROWS), DimSize(testwave, ROWS) - 1)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), ScaleToIndexWrapper(testWave, inf, ROWS))
-#endif
 
 	SetScale/P x, 0, -0.1, testwave
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), ScaleToIndexWrapper(testWave, -inf, ROWS))
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1, ROWS), DimOffset(testwave, ROWS) + 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), DimSize(testwave, ROWS) - 1)
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, inf, ROWS), 0)
 End
 
@@ -5700,8 +5687,6 @@ Function BUGWorks()
 	CHECK_EQUAL_VAR(bugCount, 1)
 End
 
-#if IgorVersion() >= 9.0
-
 Function BUG_TSWorks1()
 	variable bugCount
 
@@ -5750,8 +5735,6 @@ Function BUG_TSWorks2()
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, numThreads)
 End
-
-#endif
 
 Function/WAVE InvalidUnits()
 	Make/FREE/T result = {"", "ab", "MOhm", "xs", "sx"}

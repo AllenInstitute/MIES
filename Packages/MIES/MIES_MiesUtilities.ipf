@@ -5253,14 +5253,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
 	if(remove_all_traces)
-#if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
-#else
-		AssertOnAndClearRTError()
-		do
-			RemoveFromGraph/W=$graph $("#0"); err = GetRTError(1)
-		while(err == 0)
-#endif
 		return NaN
 	endif
 

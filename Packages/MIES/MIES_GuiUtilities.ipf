@@ -2079,8 +2079,6 @@ Function/S GetPopupMenuList(string value, variable type)
 	endswitch
 End
 
-#if IgorVersion() >= 9.0
-
 /// @brief Enable show trace info tags for the current top graph
 ///
 /// Callers should call that via the operation queue to avoid
@@ -2093,8 +2091,6 @@ Function ShowTraceInfoTags()
 		DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
 	endif
 End
-
-#endif
 
 /// @brief Return the recreation macro and the type of the given control
 Function [string recMacro, variable type] GetRecreationMacroAndType(string win, string control)

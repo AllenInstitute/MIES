@@ -10,8 +10,6 @@
 ///
 /// @brief Helper functions for accessing global objects from all threads
 
-#if IgorVersion() >= 9.0
-
 threadsafe Function TSDS_Write(string name, [variable var])
 	ASSERT_TS(!ParamIsDefault(var), "Missing var parameter")
 	ASSERT_TS(!IsEmpty(name), "name can not be empty")
@@ -68,5 +66,3 @@ threadsafe static Function/WAVE TSDS_Read(string name)
 
 	return data
 End
-
-#endif

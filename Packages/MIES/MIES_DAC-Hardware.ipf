@@ -815,13 +815,8 @@ threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
 
-#if IgorVersion() >= 9.0
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
-#else
-		printf "Responsible function: (not available)\r"
-		printf "Complete call stack: (not available)\r"
-#endif
 
 		BUG_TS("The ITC XOP was called incorrectly!")
 	endif

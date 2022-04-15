@@ -3,8 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ThreadsafeDataSharingTests
 
-#if IgorVersion() >= 9.0
-
 static StrConstant KEY = "abcd"
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
@@ -115,11 +113,3 @@ static Function ReadBrokenStorage2()
 	var = TSDS_ReadVar(KEY)
 	CHECK_EQUAL_VAR(var, NaN)
 End
-
-#else
-
-Function NotImplemented()
-	PASS()
-end
-
-#endif

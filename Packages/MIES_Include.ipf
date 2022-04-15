@@ -127,10 +127,6 @@ End
 #include <FunctionProfiling>
 #endif
 
-#if IgorVersion() < 9.0
-#include <HDF5 Browser>
-#endif
-
 // third party includes
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"

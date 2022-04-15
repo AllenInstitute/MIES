@@ -227,7 +227,6 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
 
-#if IgorVersion() >= 9.0
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
 		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
 
@@ -235,7 +234,6 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 
 			AbortOnValue 1, 1
 		endif
-#endif
 
 		print "!!! Threadsafe assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
@@ -244,11 +242,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print "Please provide the following information if you contact the MIES developers:"
 			print "################################"
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-#if IgorVersion() >= 9.0
 			stacktrace = GetStackTrace()
-#else
-			stacktrace = "stacktrace not available"
-#endif
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -593,11 +587,7 @@ End
 threadsafe static Function GetWaveSizeImplementation(wv)
 	Wave wv
 
-#if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
 	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
-#else
-	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(wv) * numpnts(wv) + strlen(note(wv))
-#endif
 End
 
 /// @brief Return the size in bytes of a given type
@@ -1735,16 +1725,7 @@ End
 /// @brief Return the experiment file type
 threadsafe Function/S GetExperimentFileType()
 
-#if IgorVersion() >= 9.0
 	return IgorInfo(11)
-#else
-	if(!cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT))
-		return ""
-	else
-		// hardcoded to pxp
-		return "Packed"
-	endif
-#endif
 
 End
 
@@ -3208,26 +3189,6 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
-#if IgorVersion() < 9.0
-
-threadsafe Function/S ReplicateString(string str, variable numTotalCopies)
-
-	variable i
-	string list = ""
-
-	if(!IsFinite(numTotalCopies) || numTotalCopies <= 0)
-		return str
-	endif
-
-	for(i = 0; i < numTotalCopies; i += 1)
-		list += str
-	endfor
-
-	return list
-End
-
-#endif
-
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
@@ -4195,8 +4156,6 @@ threadsafe Function/S NormalizeToEOL(str, eol)
 	return str
 End
 
-#if IgorVersion() >= 9.0
-
 /// @brief Return a nicely formatted multiline stacktrace
 threadsafe Function/S GetStackTrace([prefix])
 	string prefix
@@ -4230,50 +4189,6 @@ threadsafe Function/S GetStackTrace([prefix])
 
 	return output
 End
-
-#else
-
-/// @brief Return a nicely formatted multiline stacktrace
-Function/S GetStackTrace([prefix])
-	string prefix
-
-	string stacktrace, entry, func, line, file, str
-	string output, module
-	variable i, numCallers
-
-	if(ParamIsDefault(prefix))
-		prefix = ""
-	endif
-
-	stacktrace = GetRTStackInfo(3)
-	numCallers = ItemsInList(stacktrace)
-
-	if(numCallers < 3)
-		// our caller was called directly
-		return "Stacktrace not available"
-	endif
-
-	output = prefix + "Stacktrace:\r"
-
-	for(i = 0; i < numCallers - 2; i += 1)
-		entry = StringFromList(i, stacktrace)
-		func  = StringFromList(0, entry, ",")
-		module = StringByKey("MODULE", FunctionInfo(func))
-
-		if(!IsEmpty(module))
-			func = module + "#" + func
-		endif
-
-		file  = StringFromList(1, entry, ",")
-		line  = StringFromList(2, entry, ",")
-		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
-		output += str
-	endfor
-
-	return output
-End
-
-#endif
 
 /// @brief Stop all millisecond Igor Pro timers
 Function StopAllMSTimers()
@@ -5633,19 +5548,9 @@ End
 threadsafe Function [variable minimum, variable maximum] WaveMinAndMaxWrapper(WAVE wv, [variable x1, variable x2])
 
 	if(ParamIsDefault(x1) && ParamIsDefault(x2))
-#if IgorVersion() < 9.0
-		minimum = WaveMin(wv)
-		maximum = WaveMax(wv)
-#else
 	   [minimum, maximum] = WaveMinAndMax(wv)
-#endif
 	elseif(!ParamIsDefault(x1) && !ParamIsDefault(x2))
-#if IgorVersion() < 9.0
-		minimum = WaveMin(wv, x1, x2)
-		maximum = WaveMax(wv, x1, x2)
-#else
 	   [minimum, maximum] = WaveMinAndMax(wv, x1, x2)
-#endif
 	else
 		ASSERT_TS(0, "Unsupported case")
 	endif
@@ -5940,12 +5845,7 @@ threadsafe Function/WAVE ZapNaNs(WAVE data)
 		return $""
 	endif
 
-#if IgorVersion() >= 9
 	MatrixOP/FREE dup = zapNans(data)
-#else
-	Duplicate/FREE data, dup
-	WaveTransform/O zapNans, dup
-#endif
 
 	if(DimSize(dup, ROWS) == 0)
 		return $""
