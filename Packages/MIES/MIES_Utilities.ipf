@@ -3660,9 +3660,7 @@ End
 ///
 /// Given {1, 2, 10} and {2, 5, 11} this will return {1, 2, 5, 10, 11}.
 /// The order of the returned entries is not defined.
-///
-/// @todo IP9 make it threadsafe
-Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
+threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 	variable type, wave1Points, wave2Points, totalPoints
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
