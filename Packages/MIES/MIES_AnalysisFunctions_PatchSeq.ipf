@@ -4427,7 +4427,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed, ovsState
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
-	string key, ctrl, stimset, msg, databrowser, bsPanel, formula_nb
+	string key, ctrl, stimset, msg, databrowser, bsPanel
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -4461,11 +4461,10 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			databrowser = DB_GetBoundDataBrowser(device)
 			bsPanel = BSP_GetPanel(databrowser)
 
-			formula_nb = BSP_GetSFFormula(databrowser)
-
-			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
-			/// this also then allows us to remove the OVS fiddling
-			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
+			/// @todo: The call should work on the last sweep acquired. Once this number is retrieved it can be set directly
+			/// in the formula string replacing sweeps(). The the OVS disabled/enable procedure can be skipped.
+			/// By using SF_ExecuteFormula instead it can also executed right here.
+			SF_SetFormula(databrowser, "store(\"Steady state resistance\", tp(ss, select(channels(AD), sweeps()), [0]))")
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 
@@ -5019,7 +5018,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, samplingFrequencyQCPassed, sealResistanceMax
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet, ovsState
 	variable expectedNumTestpulses, numTestPulses, sealResistanceA, sealResistanceB, sealResistanceQCPassed, testpulseGroupSel, sealThreshold
-	string key, ctrl, stimset, msg, databrowser, bsPanel, formula, formula_nb, pipetteResistanceStr, sweepStr
+	string key, ctrl, stimset, msg, databrowser, bsPanel, formula, pipetteResistanceStr, sweepStr
 	string sealResistanceGroupAStr, sealResistanceGroupBStr
 
 	switch(s.eventType)
@@ -5055,8 +5054,6 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 
 			bsPanel = BSP_GetPanel(databrowser)
 
-			formula_nb = BSP_GetSFFormula(databrowser)
-
 			testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(s.params)
 
 			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
@@ -5068,21 +5065,21 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			// and `tp` takes the *ignored* list
 			switch(testpulseGroupSel)
 				case PSQ_SE_TGS_BOTH:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, channels(AD), sweeps(), [0, 4, 5, 6]))\r" + \
+					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0, 4, 5, 6]))\r" + \
 							  "and\r"                                                                                        + \
-							  "store(\"Steady state resistance (group B)\", tp(ss, channels(AD), sweeps(), [0, 1, 2, 3]))"
+							  "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0, 1, 2, 3]))"
 					break
 				case PSQ_SE_TGS_FIRST:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, channels(AD), sweeps(), [0]))"
+					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0]))"
 					break
 				case PSQ_SE_TGS_SECOND:
-					formula = "store(\"Steady state resistance (group B)\", tp(ss, channels(AD), sweeps(), [0]))"
+					formula = "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0]))"
 					break
 				default:
 					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
 			endswitch
 
-			ReplaceNotebookText(formula_nb, formula)
+			SF_SetFormula(databrowser, formula)
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 

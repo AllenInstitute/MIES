@@ -39,7 +39,7 @@ End
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
 	string device, bsPanel, scPanel, shPanel, recreationCode
-	string sfFormula, sfJSON, descNB
+	string sfJSON, descNB
 
 	device = GetMainWindow(GetCurrentWindow())
 	if(!windowExists(device))
@@ -222,8 +222,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	// settings history
 	CheckBox check_limit_x_selected_sweeps WIN = $shPanel, value=0
 
-	sfFormula = BSP_GetSFFormula(device)
-	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
+	SF_SetFormula(device, "data(\rcursors(A,B),\rselect(channels(AD),sweeps())\r)")
 
 	sfJSON = BSP_GetSFJSON(device)
 	ReplaceNotebookText(sfJSON, "")
