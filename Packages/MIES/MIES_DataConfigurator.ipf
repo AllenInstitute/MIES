@@ -1328,9 +1328,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
 	Make/T/FREE/N=(s.numDACEntries) s.setName
 
-	// @todo IP9-only: Remove workaround once this is fixed upstream
-	Make/WAVE/FREE/N=(s.numDACEntries) stimSetLocal
-	WAVE/WAVE s.stimSet = stimSetLocal
+	Make/WAVE/FREE/N=(s.numDACEntries) s.stimSet
 
 	s.numADCEntries = DimSize(s.ADCList, ROWS)
 	Make/D/FREE/N=(s.numADCEntries) s.headstageADC
