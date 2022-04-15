@@ -1718,7 +1718,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
+threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 	WAVE labnotebookValues
 	string setting
 
@@ -1744,7 +1744,6 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 		return $""
 	endif
 
-	// @todo IP9: Make it threadsafe once FindDuplicates is threadsafe
 	return GetUniqueEntries(sweeps)
 End
 
