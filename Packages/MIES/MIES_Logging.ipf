@@ -82,8 +82,7 @@ threadsafe static Function LOG_AddEntryWithoutChecks(string package, variable JS
 	Open/A/Z=1 refnum as file
 	if(V_flag)
 		printf "Could not open the log file for appending.\r"
-		/// @todo IP9-only: Remove precision specifier
-		printf "Dropping log message: %.1024s\r", str
+		printf "Dropping log message: %s\r", str
 		return NaN
 	endif
 
