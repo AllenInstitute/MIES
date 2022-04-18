@@ -106,7 +106,7 @@ then
   fi
 fi
 
-versions="8 9"
+versions="9"
 
 for i in $versions
 do
@@ -131,11 +131,6 @@ do
     continue
   fi
 
-  if [ $i -le 8 ]
-  then
-    cp -r  "$base_folder"/Packages/HDF-IP${i}  "$user_proc"
-  fi
-
   cp -r  "$base_folder"/Packages/Arduino  "$user_proc"
   cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES_Include.ipf  "$user_proc"
@@ -152,11 +147,6 @@ do
   then
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
   else
-    if [ $i -le 8 ]
-    then
-      cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
-    fi
-
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/MIESUtils*  "$xops64"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/JSON*  "$xops64"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/ZeroMQ*  "$xops64"
