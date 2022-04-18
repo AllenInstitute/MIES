@@ -4133,8 +4133,8 @@ Function NWLWorks()
 	expected = "1;1e+06;-inf;1.5;nan;"
 	CHECK_EQUAL_STR(result, expected)
 
-	Make/FREE/I dataInt = {1, 1e6, -100}
-	result = NumericWaveToList(dataInt, ";", format="%d")
+	Make/FREE dataFP = {1, 1e6, -100}
+	result = NumericWaveToList(dataFP, ";", format="%d")
 	expected = "1;1000000;-100;"
 	CHECK_EQUAL_STR(result, expected)
 
@@ -4172,15 +4172,6 @@ Function NWLChecksInput()
 	try
 		Make/FREE/D/N=(2, 2) TwoDWave
 		NumericWaveToList(TwoDWave, ";", colSep = ""); AbortONRTE
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	// asserts out when triggering IP bug
-	try
-		Make/D/N=(2) input
-		NumericWaveToList(input, ";", format="%d"); AbortONRTE
 		FAIL()
 	catch
 		PASS()

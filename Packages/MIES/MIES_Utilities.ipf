@@ -3174,10 +3174,6 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 
 	numCols = DimSize(wv, COLS)
 
-	if(IsFloatingPointWave(wv))
-		ASSERT_TS(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
-	endif
-
 	if(numCols > 1)
 		fullFormat = ReplicateString(format + sep, numCols) + colSep
 	else
