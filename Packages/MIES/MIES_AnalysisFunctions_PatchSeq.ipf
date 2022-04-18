@@ -5361,6 +5361,8 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
 	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
 
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
+
 	epBegin = 0
 	epEnd   = totalOnsetDelay * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
@@ -5380,8 +5382,6 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 		if(i == 0 || i == 11) // BLC_Sx
 			amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
 			ASSERT(amplitude == 0, "Invalid amplitude")
-
-			chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
 			if(duration != chunkLength)
 				printf "The length of epoch %d (%g) is different from the expected one %g.\r", i, duration, chunkLength
