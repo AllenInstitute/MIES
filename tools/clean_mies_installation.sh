@@ -114,7 +114,6 @@ do
   user_proc="$igor_user_files/User Procedures"
   igor_proc="$igor_user_files/Igor Procedures"
   xops64="$igor_user_files/Igor Extensions (64-bit)"
-  xops32="$igor_user_files/Igor Extensions"
 
   mkdir -p "$user_proc"
 
@@ -147,7 +146,7 @@ do
   mkdir -p "$user_proc/ITCXOP2"
   cp -r  "$base_folder"/Packages/ITCXOP2/tools "$user_proc/ITCXOP2"
 
-  mkdir -p "$xops32" "$xops64"
+  mkdir -p "$xops64"
 
   if [ "$skipHardwareXOPs" = "0" ]
   then
