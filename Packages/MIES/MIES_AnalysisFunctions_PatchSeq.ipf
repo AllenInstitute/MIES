@@ -1160,6 +1160,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 		first = offset
 		last  = searchEnd
 	else
+		// search pulse in DA and use the pulse as search region
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
 		[minVal, maxVal] = WaveMinAndMaxWrapper(singleDA, x1 = offset, x2 = inf)
 
