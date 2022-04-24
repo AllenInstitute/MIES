@@ -62,7 +62,7 @@ static Function AB_ClearAnalysisFolder()
 	sel = NaN
 
 	DFREF dfr = GetAnalysisFolder()
-	folders = GetListOfDataFolders(dfr, absolute=1)
+	folders = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, folders)
 End
 
@@ -3016,7 +3016,7 @@ Function/S AB_GetAllDevicesForExperiment(string dataFolder)
 
 	DFREF dfr = GetAnalysisExpFolder(dataFolder)
 
-	return GetListOfDataFolders(dfr)
+	return GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 End
 
 /// @brief Return all experiments the analysis browser knows about
