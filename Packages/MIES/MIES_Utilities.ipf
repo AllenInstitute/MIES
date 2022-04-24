@@ -363,9 +363,7 @@ threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 			list = StringList("*", ";")
 			break
 		case COUNTOBJECTS_DATAFOLDER:
-			list = DataFolderDir(2^0)
-			list = StringByKey("FOLDERS", list)
-			list = ReplaceString(",", list, ";")
+			list = DataFolderList("*", ";")
 			break
 		default:
 			SetDataFolder oldDFR
