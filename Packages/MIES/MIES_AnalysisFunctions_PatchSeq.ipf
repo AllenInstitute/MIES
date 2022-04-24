@@ -3685,8 +3685,8 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 	endswitch
 End
 
-Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
-	variable value, preActiveHS
+static Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
+	variable value
 
 	value = AFH_GetAnalysisParamNumerical(name, params)
 
@@ -3695,10 +3695,20 @@ Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, stri
 		return NaN
 	endif
 
+	PSQ_SetAutobiasTargetV(device, headstage, value)
+End
+
+static Function PSQ_SetAutobiasTargetV(string device, variable headstage, variable value)
+	variable preActiveHS
+
 	preActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
 
 	if(preActiveHS != headstage)
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
+	endif
+
+	if(!DAG_GetNumericalValue(device, "check_DataAcq_AutoBias"))
+		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = value)
