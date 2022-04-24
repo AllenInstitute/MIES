@@ -2377,12 +2377,15 @@ End
 /// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
 ///
 /// Return a reproducible random number depending on the RNG seed.
-threadsafe Function GetReproducibleRandom()
-
+threadsafe Function GetReproducibleRandom([variable noiseGenMode])
 	variable randomSeed
 
+	if(ParamIsDefault(noiseGenMode))
+		noiseGenMode = NOISE_GEN_XOSHIRO
+	endif
+
 	do
-		randomSeed = abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))
+		randomSeed = abs(enoise(1, noiseGenMode))
 	while(randomSeed == 0)
 
 	return randomSeed

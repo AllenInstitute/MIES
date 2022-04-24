@@ -783,6 +783,8 @@ static Structure SegmentParameters
 	// popupmenues
 	variable trigFuncType // 0: sin, 1: cos
 	variable noiseType // 0: white, 1: pink, 2:brown
+	variable noiseGenMode // 2: NOISE_GEN_MERSENNE_TWISTER, 3: NOISE_GEN_XOSHIRO
+	variable noiseGenModePTMixedFreq // 1: NOISE_GEN_LINEAR_CONGRUENTIAL, 3: NOISE_GEN_XOSHIRO
 	variable buildResolution // value, not the popup menu index
 	variable pulseType // 0: square, 1: triangle
 	variable mixedFreq
@@ -882,7 +884,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_NOISE:
-				params.randomSeed = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
+				params.randomSeed   = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
+				params.noiseGenMode = WP[86][i][type]
 
 				WB_NoiseSegment(params)
 				WAVE segmentWave = GetSegmentWave()
@@ -917,7 +920,9 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_PULSE_TRAIN:
-				params.randomSeed = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
+				params.randomSeed              = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
+				params.noiseGenMode            = WP[86][i][type]
+				params.noiseGenModePTMixedFreq = WP[87][i][type]
 
 				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
 
@@ -1162,19 +1167,21 @@ static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
 	WAVE WP, SegWvType
 	variable epoch, type, stepCount
 
-	variable j, randomSeed
+	variable j, randomSeed, noiseGenMode
+
+	noiseGenMode = WP[86][epoch][type]
 
 	// initialize the random seed value if not already done
 	// per epoch seed
 	if(WP[48][epoch][type] == 0)
 		NewRandomSeed()
-		WP[48][epoch][type] = GetReproducibleRandom()
+		WP[48][epoch][type] = GetReproducibleRandom(noiseGenMode = noiseGenMode)
 	endif
 
 	// global stimset seed
 	if(SegWvType[97] == 0)
 		NewRandomSeed()
-		SegWvType[97] = GetReproducibleRandom()
+		SegWvType[97] = GetReproducibleRandom(noiseGenMode = noiseGenMode)
 	endif
 
 	if(WP[39][epoch][type])
@@ -1195,7 +1202,7 @@ static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
 		// In this way we get a different seed value for each step, but all are reproducibly
 		// derived from one seed value. And we still have different values for different epochs.
 		for(j = 1; j <= stepCount; j += 1)
-			randomSeed = GetReproducibleRandom()
+			randomSeed = GetReproducibleRandom(noiseGenMode = noiseGenMode)
 		endfor
 
 		SetRandomSeed/BETR=1 randomSeed
@@ -1260,13 +1267,13 @@ static Function WB_NoiseSegment(pa)
 	// we can't use Multithread here as this creates non-reproducible data
 	switch(pa.noiseType)
 		case NOISE_TYPE_WHITE:
-			magphase[1, inf] = cmplx(1, enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			magphase[1, inf] = cmplx(1, enoise(Pi, pa.noiseGenMode))
 			break
 		case NOISE_TYPE_PINK: // drops with 10db per decade
-			magphase[1, inf] = cmplx(1/sqrt(x), enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			magphase[1, inf] = cmplx(1/sqrt(x), enoise(Pi, pa.noiseGenMode))
 			break
 		case NOISE_TYPE_BROWN: // drops with 20db per decade
-			magphase[1, inf] = cmplx(1/x, enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			magphase[1, inf] = cmplx(1/x, enoise(Pi, pa.noiseGenMode))
 			break
 		default:
 			ASSERT(0, "Invalid noise type")
@@ -1628,7 +1635,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = 0
 
 		for(;;)
-			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * ONE_TO_MILLI
+			pulseStartTime += -ln(abs(enoise(1, pa.noiseGenMode))) / pa.frequency * ONE_TO_MILLI
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
@@ -1649,7 +1656,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * ONE_TO_MILLI - pa.pulseDuration
 
 		if(pa.mixedFreqShuffle)
-			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_LINEAR_CONGRUENTIAL)
+			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = pa.noiseGenModePTMixedFreq)
 		endif
 
 		pulseToPulseLength = 0
