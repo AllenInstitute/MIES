@@ -114,6 +114,7 @@ static Constant PSQ_RMS_SHORT_TEST = 0x0
 static Constant PSQ_RMS_LONG_TEST  = 0x1
 static Constant PSQ_TARGETV_TEST   = 0x2
 static Constant PSQ_LEAKCUR_TEST   = 0x3
+static Constant PSQ_AVERAGE_TEST   = 0x4
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
@@ -399,6 +400,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	variable leakCurPassedAll, maxLeakCurrent
+	variable plainAvgPassedAll, averageVoltageOverride
 	variable rmsShortThreshold, rmsLongThreshold
 	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
@@ -430,7 +432,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE textualValues   = GetLBTextualValues(device)
 
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL)
+		if(type == PSQ_TRUE_REST_VM)
+			WAVE epochsWave = GetEpochsWave(device)
+		else
+			WAVE/ZZ epochsWave = $""
+		endif
+
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
 
 		if(chunk >= DimSize(userChunkEpochs, ROWS))
@@ -468,13 +476,14 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// Cols: checks
 	// - 0: short RMS
 	// - 1: long RMS
-	// - 2: average voltage
+	// - 2: target voltage
 	// - 3: leak current
+	// - 4: average voltage
 	//
 	// Contents:
 	//  0: skip test
 	//  1: perform test
-	Make/FREE/N=(3, 4) testMatrix
+	Make/FREE/N=(3, 5) testMatrix
 
 	if(type == PSQ_PIPETTE_BATH)
 		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
@@ -502,14 +511,15 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	WAVE config = GetDAQConfigWave(device)
 
-	WAVE rmsShort       = LBN_GetNumericWave()
-	WAVE rmsShortPassed = LBN_GetNumericWave()
-	WAVE rmsLong        = LBN_GetNumericWave()
-	WAVE rmsLongPassed  = LBN_GetNumericWave()
-	WAVE avgVoltage     = LBN_GetNumericWave()
-	WAVE targetVPassed  = LBN_GetNumericWave()
-	WAVE avgCurrent     = LBN_GetNumericWave()
-	WAVE leakCurPassed  = LBN_GetNumericWave()
+	WAVE rmsShort        = LBN_GetNumericWave()
+	WAVE rmsShortPassed  = LBN_GetNumericWave()
+	WAVE rmsLong         = LBN_GetNumericWave()
+	WAVE rmsLongPassed   = LBN_GetNumericWave()
+	WAVE avgVoltage      = LBN_GetNumericWave()
+	WAVE targetVPassed   = LBN_GetNumericWave()
+	WAVE avgCurrent      = LBN_GetNumericWave()
+	WAVE leakCurPassed   = LBN_GetNumericWave()
+	WAVE plainAvgVoltage = LBN_GetNumericWave()
 
 	targetV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
@@ -521,6 +531,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkPassedRMSLongOverride  = overrideResults[chunk][count][0][PSQ_RMS_LONG_TEST]
 		chunkPassedTargetVOverride  = overrideResults[chunk][count][0][PSQ_TARGETV_TEST]
 		chunkPassedLeakCurOverride  = overrideResults[chunk][count][0][PSQ_LEAKCUR_TEST]
+		averageVoltageOverride      = overrideResults[chunk][count][0][PSQ_AVERAGE_TEST]
 	endif
 	// END TEST
 
@@ -636,10 +647,10 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 			endif
 
-			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
+			sprintf msg, "Average target voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
-			sprintf msg, "Average voltage: (%s)\r", "skipped"
+			sprintf msg, "Average target voltage: (%s)\r", "skipped"
 			DEBUGPRINT(msg)
 			targetVPassed[i] = -1
 		endif
@@ -675,8 +686,34 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			continue
 		endif
 
+		if(testMatrix[baselineType][PSQ_AVERAGE_TEST])
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = chunkLengthTime
+
+			// calculate average voltage, no QC
+			plainAvgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(TestOverrideActive())
+				plainAvgVoltage[i] = averageVoltageOverride
+			endif
+
+			sprintf msg, "Average voltage of %gms: %g", evalRangeTime, plainAvgVoltage[i]
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "Average voltage: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+		endif
+
 		// more tests can be added here
 	endfor
+
+	if(HasOneValidEntry(plainAvgVoltage))
+		// mV -> V
+		plainAvgVoltage[] *= MILLI_TO_ONE
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_AVERAGEV, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, plainAvgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
+	endif
 
 	if(HasOneValidEntry(avgVoltage))
 		// mV -> V
@@ -701,6 +738,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	ED_AddEntryToLabnotebook(device, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, leakCurPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+	// no QC value to record for plainAvgVoltage
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -726,9 +764,16 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		leakCurPassedAll = -1
 	endif
 
-	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1, "Skipping all tests is not supported.")
+	if(testMatrix[baselineType][PSQ_AVERAGE_TEST])
+		// no QC step
+		plainAvgPassedAll = 1
+	else
+		plainAvgPassedAll = -1
+	endif
 
-	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1 || plainAvgPassedAll != -1, "Skipping all tests is not supported.")
+
+	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll && plainAvgPassedAll
 
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
@@ -937,6 +982,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_DA_SCALE:
 ///
@@ -957,6 +1003,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_CHIRP:
 ///
@@ -980,6 +1027,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_PIPETTE_BATH:
 ///
@@ -998,6 +1046,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_SEAL_EVALUATION:
 ///
@@ -1017,6 +1066,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	string device
 	variable headstage, type
@@ -1032,13 +1082,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_DA_SCALE:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
@@ -1048,18 +1098,18 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = 0
 			break
 		case PSQ_CHIRP:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_PIPETTE_BATH:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 		case PSQ_SEAL_EVALUATION:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 3
 			numRows = 2 // upper limit
 			numCols = IDX_NumberOfSweepsInSet(stimset)

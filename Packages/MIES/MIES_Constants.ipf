@@ -1083,6 +1083,7 @@ StrConstant PSQ_FMT_LBN_SE_RESISTANCE_B    = "%s seal resistance B"
 StrConstant PSQ_FMT_LBN_SE_RESISTANCE_MAX  = "%s seal resistance max"
 StrConstant PSQ_FMT_LBN_SE_RESISTANCE_PASS = "%s seal resistance QC"
 StrConstant PSQ_FMT_LBN_SE_TESTPULSE_GROUP = "%s test pulse group"
+StrConstant PSQ_FMT_LBN_AVERAGEV           = "%s Chk%d Average"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
@@ -1136,6 +1137,7 @@ Constant PSQ_RAMP            = 0x008
 Constant PSQ_CHIRP           = 0x080
 Constant PSQ_PIPETTE_BATH    = 0x100
 Constant PSQ_SEAL_EVALUATION = 0x200
+Constant PSQ_TRUE_REST_VM    = 0x400
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
