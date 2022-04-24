@@ -55,6 +55,7 @@
 /// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                        On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check             On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally                ms       Numerical                RB, DA (Supra), CR          No                     Yes
+/// PSQ_FMT_LBN_SPIKE_PASS          Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                               % Hz/pA  Numerical                DA (Supra)                  No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
 /// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
@@ -63,7 +64,6 @@
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
 /// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                   (none)   Numerical                All                         No                     Yes
 /// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                         Ohm      Numerical                PB                          No                     No
 /// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                      On/Off   Numerical                PB                          No                     No
@@ -4054,7 +4054,7 @@ Function PSQ_Chirp(device, s)
 			spikeCheck = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			ASSERT(IsFinite(spikeCheck), "Invalid spikeCheck value")
 
-			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
 
@@ -4146,7 +4146,7 @@ Function PSQ_Chirp(device, s)
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 	WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 	spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : NaN
 
@@ -4191,7 +4191,7 @@ Function PSQ_Chirp(device, s)
 			endif
 
 			if(WaveExists(spikePass))
-				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS)
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS)
 				ED_AddEntryToLabnotebook(device, key, spikePass, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 				spikeCheckPassed = spikePass[s.headstage]

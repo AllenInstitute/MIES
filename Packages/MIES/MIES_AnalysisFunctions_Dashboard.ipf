@@ -747,7 +747,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				spikeCheck = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(spikeCheck)
-					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 					WAVE/Z spikePass = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 					if(WaveExists(spikePass) && !spikePass[headstage])

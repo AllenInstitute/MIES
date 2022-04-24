@@ -104,7 +104,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
 	wv[%insideBounds] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	wv[%spikePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_PASS)
+	wv[%spikePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
 	wv[%boundsState] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
 	wv[%boundsAction] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
 	wv[%initialDAScale] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
@@ -139,7 +139,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
-		case PSQ_FMT_LBN_CR_SPIKE_PASS:
+		case PSQ_FMT_LBN_SPIKE_PASS:
 		case PSQ_FMT_LBN_PULSE_DUR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
