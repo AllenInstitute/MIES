@@ -253,7 +253,7 @@ static Function CheckTestPulseLikeEpochs(string device, variable testpulseGroupS
 
 End
 
-Function CheckBaselineChunks(string device, variable testpulseGroupSel)
+static Function CheckBaselineChunks(string device, variable testpulseGroupSel)
 
 	switch(testpulseGroupSel)
 		case PSQ_SE_TGS_FIRST:
