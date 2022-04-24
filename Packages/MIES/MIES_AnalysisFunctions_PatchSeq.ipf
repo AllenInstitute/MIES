@@ -5400,8 +5400,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 				return 1
 			endif
 
-			sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", userEpochIndexBLC
-			sprintf shortName, "BLS%d", userEpochIndexBLC
+			[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(userEpochIndexBLC)
 			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 			userEpochIndexBLC += 1
 		elseif(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
@@ -5487,4 +5486,9 @@ static Function PSQ_SE_Publish(string device, variable sweepNo, variable headsta
 	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
 
 	FFI_Publish(jsonID, ANALYSIS_FUNCTION_SE)
+End
+
+static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
+	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
+	sprintf shortName, "BLS%d", index
 End
