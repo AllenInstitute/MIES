@@ -165,7 +165,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			break
 	endswitch
 
-	sprintf msg, "postPulseChunkLength %d, prePulseChunkLength %d, pulseDuration %g", s.postPulseChunkLength, s.prePulseChunkLength, s.pulseDuration
+	sprintf msg, "postPulseChunkLength %d, prePulseChunkLength %d, pulseDuration %g, usesBaselineChunkEpochs %g", s.postPulseChunkLength, s.prePulseChunkLength, s.pulseDuration, s.usesBaselineChunkEpochs
 	DEBUGPRINT(msg)
 End
 
