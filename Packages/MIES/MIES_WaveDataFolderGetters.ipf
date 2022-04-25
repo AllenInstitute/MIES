@@ -2004,7 +2004,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 
 	variable versionOfNewWave = 3
 
-	ASSERT_TS(!IsTextWave(numericalValues), "Expected numerical labnotebook")
+	ASSERT_TS(WaveExists(numericalValues) && IsNumericWave(numericalValues), "Expected existing numerical labnotebook")
 
 	actual        = WaveModCountWrapper(numericalValues)
 	name          = GetWavesDataFolder(numericalValues, 2)
