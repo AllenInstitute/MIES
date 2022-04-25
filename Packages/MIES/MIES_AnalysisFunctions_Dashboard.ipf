@@ -495,7 +495,7 @@ static Function/S AD_GetPipetteInBathFailMsg(WAVE numericalValues, WAVE/T textua
 End
 
 static Function/S AD_GetSealEvaluationFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
-	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
+	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_SE_NUM_SWEEPS_PASS)
 End
 
 static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
