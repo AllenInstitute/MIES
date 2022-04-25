@@ -276,9 +276,9 @@ static Function AD_FillWaves(win, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_SE, PSQ_PB, PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
-			//     If not passed, all are failing
+			//         If not passed, all are failing
 
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
