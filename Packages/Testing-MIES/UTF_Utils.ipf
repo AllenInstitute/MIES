@@ -1300,6 +1300,12 @@ Function FI_TextSearchWithRestRows()
 	CHECK_EQUAL_WAVES(indizes, {2}, mode = WAVE_DATA)
 End
 
+Function FI_EmptyWave()
+	Make/FREE/N=0 emptyWave
+	WAVE/Z indizes = FindIndizes(emptyWave, col = 0, var = NaN)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
 Function FI_AbortsWithInvalidParams1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
