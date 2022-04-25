@@ -6014,8 +6014,7 @@ static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpi
 	variable totalOnsetDelay, numberOfSpikesFound
 	string key
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	Make/FREE/N=0 spikePositions
 	WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_TRUE_REST_VM, scaledDACWave, headstage, totalOnsetDelay,        \
@@ -6101,8 +6100,7 @@ static Function PSQ_VM_HandleFailingSpikeQC(string device, struct AnalysisFuncti
 	WAVE config = GetConfigWave(sweepWave)
 	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, s.headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	ignoredTime = AFH_GetAnalysisParamNumerical("SpikeFailureIgnoredTime", s.params)
 
