@@ -700,22 +700,40 @@ End
 /// @param channelNumber   number of channel
 /// @param shortname       short name filter, can be a regular expression which is matched caseless
 /// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
+/// @param epochsWave      [optional: defaults to $""] when passed, gathers epoch information from this wave directly.
+///                        This is required for callers who want to read epochs during MID_SWEEP_EVENT in analysis functions.
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel])
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel, WAVE/T epochsWave])
 
-	variable index, epochCnt
+	variable index, epochCnt, midSweep
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
-	WAVE/T/Z epochInfo =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
-
-	if(!WaveExists(epochInfo))
-		return $""
+	if(ParamIsDefault(epochsWave) || !WaveExists(epochsWave))
+		midSweep = 0
+	else
+		midSweep = 1
 	endif
 
-	epochCnt = DimSize(epochInfo, ROWS)
+	if(!midsweep)
+		WAVE/T/Z epochInfo =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+
+		if(!WaveExists(epochInfo))
+			return $""
+		endif
+
+		epochCnt = DimSize(epochInfo, ROWS)
+	else
+		epochCnt = EP_GetEpochCount(epochsWave, channelNumber)
+
+		if(epochCnt == 0)
+			return $""
+		endif
+
+		Duplicate/FREE/T/RMD=[0, epochCnt - 1][][channelNumber] epochsWave, epochInfo
+	endif
 
 	if(IsNaN(treelevel))
 		Make/FREE/N=(epochCnt) indizesLevel = p
@@ -738,6 +756,8 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
 
 	SortColumns/KNDX={EPOCH_COL_STARTTIME} sortWaves={matches}
+
+	CopyDimLabels/COLS=(COLS) epochInfo, matches
 
 	return matches
 End
