@@ -6089,3 +6089,13 @@ Function CRTSI_Works()
 
 	CHECK_CLOSE_VAR(ConvertSamplingIntervalToRate(5), 200)
 End
+
+Function IVR_Works()
+	string null
+
+	CHECK(IsValidRegexp(".*"))
+	CHECK(IsValidRegexp("(.*)"))
+
+	CHECK(!IsValidRegexp("*"))
+	CHECK(!IsValidRegexp(""))
+End

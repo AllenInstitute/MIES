@@ -5989,3 +5989,19 @@ Function GenerateMultiplierConstants()
 		endfor
 	endfor
 End
+
+/// @brief Return true if the passed regular expression is well-formed
+threadsafe Function IsValidRegexp(string regexp)
+	variable err, result
+
+	// GrepString and friends treat an empty regular expression as *valid*
+	// although this seems to be standard behaviour, we don't allow that shortcut
+	if(IsEmpty(regexp))
+		return 0
+	endif
+
+	AssertOnAndClearRTError()
+	result = GrepString("", regexp); err = GetRTError(1)
+
+	return err == 0
+End
