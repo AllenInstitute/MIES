@@ -6651,10 +6651,13 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	endif
 
 	endRow = numRows - 1
-	MatrixOp/Free result = replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN)
+	MatrixOp/Free result = zapNans(replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN))
 
-	WAVE/Z reduced = ZapNaNs(result)
-	return reduced
+	if(DimSize(result, ROWS) == 0)
+		return $""
+	endif
+
+	return result
 End
 
 /// @brief Searches the column colLabel in wv for an non-empty
