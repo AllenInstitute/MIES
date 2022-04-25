@@ -707,6 +707,7 @@ End
 Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel, WAVE/T epochsWave])
 
 	variable index, epochCnt, midSweep
+	string regexp
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
@@ -735,22 +736,28 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 		Duplicate/FREE/T/RMD=[0, epochCnt - 1][][channelNumber] epochsWave, epochInfo
 	endif
 
+	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
+
+	regexp = "(?i)" + shortname
+	WAVE/Z indizesName = FindIndizes(shortnames, col = 0, str = regexp, prop = PROP_GREP)
+
+	if(!WaveExists(indizesName))
+		return $""
+	endif
+
 	if(IsNaN(treelevel))
-		Make/FREE/N=(epochCnt) indizesLevel = p
+		WAVE indizes = indizesName
 	else
 		WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
 
 		if(!WaveExists(indizesLevel))
 			return $""
 		endif
-	endif
 
-	// @todo add support for grepping in FindIndizes later
-	Make/FREE/N=(epochCnt) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), "(?i)" + shortName) ? p : NaN
-
-	WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
-	if(!WaveExists(indizes))
-		return $""
+		WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
+		if(!WaveExists(indizes))
+			return $""
+		endif
 	endif
 
 	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
