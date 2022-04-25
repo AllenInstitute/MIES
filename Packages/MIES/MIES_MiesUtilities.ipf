@@ -6492,6 +6492,7 @@ End
 /// Exactly one of `var`/`str`/`prop` has to be given except for
 /// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
 /// which requires a `var`/`str` parameter as well.
+/// `prop == PROP_GREP` requires `str`.
 ///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
@@ -6519,11 +6520,12 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	string key
 
 	ASSERT_TS(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
-		   || (!ParamIsDefault(prop)                                                          \
-			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
-			  && (ParamIsDefault(var) + ParamIsDefault(str)) == 1),                           \
-			  "Invalid combination of var/str/prop arguments")
+	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                 \
+	          || (!ParamIsDefault(prop)                                                             \
+	              && (((prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
+	                    && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                        \
+	                  || (prop == PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var)))),      \
+	          "Invalid combination of var/str/prop arguments")
 
 	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
 
@@ -6553,10 +6555,11 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 
 	if(!ParamIsDefault(prop))
 		ASSERT_TS(prop == PROP_NON_EMPTY                    \
-			   || prop == PROP_EMPTY                     \
-			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
-			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
-			   "Invalid property")
+		          || prop == PROP_EMPTY                     \
+		          || prop == PROP_MATCHES_VAR_BIT_MASK      \
+		          || prop == PROP_NOT_MATCHES_VAR_BIT_MASK  \
+		          || prop == PROP_GREP,                     \
+		          "Invalid property")
 
 		if(prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
 			if(ParamIsDefault(var))
@@ -6564,6 +6567,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 			elseif(ParamIsDefault(str))
 				str = num2str(var)
 			endif
+		elseif(prop == PROP_GREP)
+			ASSERT_TS(IsValidRegexp(str), "Invalid regular expression")
 		endif
 	elseif(!ParamIsDefault(var))
 		str = num2str(var)
@@ -6629,6 +6634,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var ? p : -1)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
+			elseif(prop == PROP_GREP)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1)
 			endif
 		else
 			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
@@ -6644,6 +6651,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var ? p : -1)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(str2num(wvText[p][col][q]) & var) ? p : -1)
+			elseif(prop == PROP_GREP)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (GrepString(wvText[p][col][q], str) ? p : -1)
 			endif
 		else
 			MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], str) ? p : -1)
