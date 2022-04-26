@@ -108,6 +108,17 @@ static StrConstant SF_CHAR_NEWLINE = "\n"
 
 static StrConstant MIXED_UNITS = "** undefined **"
 
+Function/WAVE SF_GetNamedOperations()
+
+	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
+					  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_MERGE, SF_OP_TEXT, SF_OP_LOG, \
+					  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
+					  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP, \
+					  SF_OP_STORE, SF_OP_SELECT}
+
+	return wt
+End
+
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
@@ -573,12 +584,10 @@ End
 /// @param jsonID   JSON object ID from the JSON XOP
 /// @param jsonPath JSON pointer compliant path
 /// @param graph    graph to read from, mainly used by the `data` operation
-Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
-	Variable jsonID
-	String jsonPath
-	String graph
+Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph])
 
-	Variable JSONType, i
+	string opName
+	variable JSONType, i
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -663,9 +672,25 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	jsonPath += "/" + SF_EscapeJsonPath(operations[0])
 	SF_ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId=jsonId)
 
+	opName = LowerStr(operations[0])
+#ifdef AUTOMATED_TESTING
+	strswitch(opName)
+		case SF_OP_MINUS:
+		case SF_OP_PLUS:
+		case SF_OP_DIV:
+		case SF_OP_MULT:
+		case SF_OP_RANGESHORT:
+			break
+		default:
+			WAVE ops = SF_GetNamedOperations()
+			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date")
+			break
+	endswitch
+#endif
+
 	/// @name SweepFormulaOperations
 	/// @{
-	strswitch(LowerStr(operations[0]))
+	strswitch(opName)
 		case SF_OP_MINUS:
 			WAVE out = SF_OperationMinus(jsonId, jsonPath, graph)
 			break
