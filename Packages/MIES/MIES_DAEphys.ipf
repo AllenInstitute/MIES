@@ -1388,10 +1388,12 @@ End
 /// @param forcedStop      [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled at the end
 Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable forcedStop, variable startTPAfterDAQ])
-	variable hardwareType
+	variable hardwareType, indexing
 
 	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
+
+	indexing = DAG_GetNumericalValue(device, "Check_DataAcq_Indexing")
 
 	DAP_ResetGUIAfterDAQ(device)
 
@@ -1425,7 +1427,7 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 	fifoPosition = NaN
 
 	// restore the selected sets before DAQ
-	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
+	if(indexing)
 		IDX_ResetStartFinishForIndexing(device)
 	endif
 
