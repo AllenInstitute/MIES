@@ -1083,6 +1083,8 @@ Function/S GetGuiControlValue(win, control)
 		endif
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		value = num2str(GetPopupMenuIndex(win, control))
+	elseif(controlType == CONTROL_TYPE_TAB)
+		value = num2istr(V_value)
 	else
 		value = ""
 	endif
