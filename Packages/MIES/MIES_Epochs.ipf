@@ -709,14 +709,12 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
-	WAVE/Z settings
-	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
+	WAVE/T/Z epochInfo =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+
+	if(!WaveExists(epochInfo))
 		return $""
 	endif
 
-	WAVE/T settingsT = settings
-	WAVE/T epochInfo = EP_EpochStrToWave(settingsT[index])
 	epochCnt = DimSize(epochInfo, ROWS)
 
 	if(IsNaN(treelevel))
