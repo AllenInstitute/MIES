@@ -3968,7 +3968,7 @@ Function RestoreDAEphysPanel([str])
 	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
 	JSON_SetString(jsonID, jPath + "/StrValue", str)
 	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
-	stimSetPath = S_path + "..:..:Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
+	stimSetPath = S_path + "::Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
 	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
 
 	// replace stored serial number with present serial number
