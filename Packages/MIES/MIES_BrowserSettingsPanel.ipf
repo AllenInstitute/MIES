@@ -1695,3 +1695,124 @@ Function BSP_EpochGraphToolTip(s)
 
 	return hookResult
 End
+
+Function BSP_SFHelpWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string mainWin, sfWin, bspPanel, cmdStr
+	variable modMask
+
+	mainWin = GetMainWindow(s.winName)
+	sfWin = BSP_GetSFFormula(mainWin)
+	if(!CmpStr(sfWin, s.winName))
+		modMask = WMWINHOOK_EMOD_SHIFTKEYDOWN | WMWINHOOK_EMOD_RIGHTCLICK
+		switch(s.eventCode)
+			case EVENT_WINDOW_HOOK_MOUSEDOWN:
+				if((s.eventMod & modMask) == modMask)
+					Notebook $sfWin, getData=4
+					cmdStr = LowerStr(S_Value)
+					WAVE/T knownOps = SF_GetNamedOperations()
+					if(GetRowIndex(knownOps, str = cmdStr) >= 0)
+						DB_SFHelpJumpToLine("operation - " + cmdStr)
+						bspPanel = BSP_GetPanel(mainWin)
+						PGC_SetAndActivateControl(bspPanel, "SF_InfoTab", val=2, mode=PGC_MODE_SKIP_ON_DISABLED)
+						return 1
+					endif
+				endif
+				break
+			case EVENT_WINDOW_HOOK_ACTIVATE:
+			case EVENT_WINDOW_HOOK_DEACTIVATE:
+				BSP_SFFormulaColoring(sfWin)
+				break
+		endswitch
+	endif
+
+	// return zero so that other hooks are called as well
+	return 0
+End
+
+static Function BSP_SFFormulaColoring(string sfWin)
+
+	variable i, numOps
+	string cmdStr
+
+	WAVE/T knownOps = SF_GetNamedOperations()
+	numOps = DimSize(knownOps, ROWS)
+
+	Notebook $sfWin, selection={startOfFile, endOfFile}
+	Notebook $sfWin, textRGB=(0, 0, 0)
+
+	for(i = 0; i < numOps; i += 1)
+
+		cmdStr = knownOps[i]
+		Notebook $sfWin, selection={startOfFile, startOfFile}
+		Notebook $sfWin, findText={"", 1}
+
+		do
+			Notebook $sfWin, findText={cmdStr, 1}
+			if(V_flag == 1)
+				Notebook $sfWin, textRGB=(0xc3 << 8, 0x4e << 8, 0)
+			endif
+		while(V_flag == 1)
+	endfor
+
+	Notebook $sfWin, selection={startOfFile, startOfFile}
+	Notebook $sfWin, findText={"", 1}
+End
+
+Function BSP_TTHookSFFormulaNB(STRUCT WMTooltipHookStruct &s)
+
+	variable hookResult = 0					// 0 tells Igor to use the standard tooltip
+	string targetCtrl = "SF_InfoTab"
+	string mainWin, sfWin, sfHelpWin, cmdStr, searchStr, tmpStr
+	variable tabVal
+	variable paraStart, paraStartOff, paraEnd
+
+	if(!CmpStr(targetCtrl, s.ctrlName))
+		tabVal = str2num(GetGuiControlValue(s.winName, targetCtrl))
+		if(tabVal == 0)
+			hookResult = 1
+			s.duration_ms = Inf
+			mainWin = GetMainWindow(s.winName)
+			sfWin = BSP_GetSFFormula(mainWin)
+			Notebook $sfWin, getData=4
+			if(isEmpty(S_Value))
+				s.tooltip = "Mark operation for help tooltip or\r shift-rightclick on marked operation to jump to help."
+				return hookResult
+			endif
+			cmdStr = LowerStr(S_Value)
+			WAVE/T knownOps = SF_GetNamedOperations()
+			if(GetRowIndex(knownOps, str = cmdStr) >= 0)
+				sfHelpWin = BSP_GetSFHELP(mainWin)
+				if(DB_SFHelpJumpToLine("operation - " + cmdStr))
+					s.tooltip = "Help for " + cmdStr + " not found."
+					BUG(s.tooltip)
+					return hookResult
+				endif
+				GetSelection notebook, $sfHelpWin, 1
+				paraStart = V_endParagraph
+				paraStartOff = V_endPos
+
+				searchStr = "to_top_" + cmdStr
+				Notebook $sfHelpWin, findSpecialCharacter={searchStr, 1}
+				if(!V_flag)
+					s.tooltip = "Help for " + cmdStr + " not found."
+					BUG(s.tooltip)
+					return hookResult
+				endif
+				GetSelection notebook, $sfHelpWin, 1
+				paraEnd = V_startParagraph
+				Notebook $sfHelpWin, selection={(paraStart, paraStartOff), (paraEnd, 0)}
+				Notebook $sfHelpWin, getData=4
+				s.tooltip = Trimstring(S_value)
+
+				DB_SFHelpJumpToLine("operation - " + cmdStr)
+			else
+				s.tooltip = "\"" + cmdStr + "\" is no known operation."
+			endif
+		endif
+	endif
+
+	return hookResult
+End
+
