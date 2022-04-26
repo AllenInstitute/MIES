@@ -1560,6 +1560,8 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 
 			numChunks = DimSize(userChunkEpochs, ROWS)
 
+			CHECK_EQUAL_VAR(DimSize(times, ROWS) / 2, numChunks)
+
 			Make/FREE/T/N=(numChunks) epochShortNames = EP_GetShortName(userChunkEpochs[p][EPOCH_COL_TAGS])
 			for(k = 0; k < numChunks; k += 1)
 				sprintf str, shortNameFormat, k
