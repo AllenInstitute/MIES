@@ -5054,7 +5054,7 @@ static Function DAP_LoadBuiltinStimsets()
 	variable i, numEntries
 
 	symbPath = GetUniqueSymbolicPath()
-	NewPath/Q $symbPath, GetFolder(FunctionPath("")) + "..:Stimsets"
+	NewPath/Q $symbPath, GetFolder(FunctionPath("")) + ":Stimsets"
 
 	PathInfo $symbPath
 	if(!V_flag)

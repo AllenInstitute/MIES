@@ -7177,10 +7177,10 @@ Function UploadCrashDumps()
 	diagPath = S_path
 
 	basePath = GetUniqueSymbolicPath()
-	NewPath/Q/O/Z $basePath diagPath + "..:"
+	NewPath/Q/O/Z $basePath diagPath + ":"
 
 #ifdef DEBUGGING_ENABLED
-	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + "..:" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
+	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + ":" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
 #endif // DEBUGGING_ENABLED
 
 	UploadJSONPayload(jsonID)
