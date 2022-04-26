@@ -154,6 +154,9 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 		ChangeWaveLock(DAQDataWave, 0)
 		ChangeWaveLock(scaledDataWave, 0)
 
+		// error out in CI on pending RTEs
+		AssertOnAndClearRTError()
+
 		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %g", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)
 
