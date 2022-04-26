@@ -29,11 +29,11 @@ and a dialog appears with a button which opens this documentation.
 
 In that case please perform the following steps:
 
-- Download the zip package for |IgorPro8Nightly| or |IgorPro9Nightly|. Either
+- Download the zip package for |IgorPro9Nightly|. Either
   from within Igor Pro or from the browser.
 - Close Igor Pro
 - Replace the folders ``IgorBinaries_x64`` and
-  ``IgorBinaries_Win32`` in ``C:\Program Files\WaveMetrics\Igor Pro 8/9`` with the
+  ``IgorBinaries_Win32`` in ``C:\Program Files\WaveMetrics\Igor Pro 9`` with the
   ones from the downloaded zip package. This requires admin access.
 - Restart Igor Pro
 
@@ -71,7 +71,7 @@ silent installation.
 To perform a silent installation pass the `/S` command line option which will
 install with the following settings:
 
-- Install for Igor Pro 8 64bit
+- Install for Igor Pro 9 64bit
 - Admin installation into `%PROGRAMFILES%\MIES` for the current user, pass `/ALLUSER` to install for all users
 - Install all Hardware XOPs
 
@@ -86,7 +86,7 @@ run with user privileges only. By default an installer requiring admin privilege
 is created by executing ``tools/create-installer.sh`` from a MingW64 bash.
 With ``tools/create-installer.sh 1`` a user mode installer can be created.
 
-The installer tries to detect if and where Igor Pro 8 and/or Igor Pro 9 is installed.
+The installer tries to detect if and where the required Igor Pro versions are is installed.
 It defaults then to the 64-bit version if the found Igor Pro(s) which is reflected
 in the default selection of the corresponding installer dialog. In silent mode the
 found defaults are automatically used. If in silent mode no Igor Pro installations are

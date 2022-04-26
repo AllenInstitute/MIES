@@ -77,10 +77,7 @@ static Function TUD_ClearImpl(string graph)
 	SetNumberInWaveNote(graphUserData, TUD_INDEX_JSON, NaN)
 
 	index = GetnumberFromWaveNote(graphUserData, NOTE_INDEX)
-	// @TODO remove the check once IP9 is mandatory
-	if(index > 0)
-		Multithread graphUserData[0, index - 1][] = ""
-	endif
+	Multithread graphUserData[0, max(0, index - 1)][] = ""
 
 	// clear column dimension labels
 	numEntries = DimSize(graphUserData, COLS)

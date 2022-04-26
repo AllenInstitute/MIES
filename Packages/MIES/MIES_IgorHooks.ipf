@@ -28,12 +28,11 @@ static Function IH_KillTemporaries()
 	KillStrings/Z dfrHW:ITCDeviceList
 
 	// try to delete all trash folders
-	allFolders = StringByKey("FOLDERS", DataFolderDir(1, dfr))
-	trashFolders = ListMatch(allFolders, TRASH_FOLDER_PREFIX + "*", ",")
+	trashFolders = GetListOfObjects(dfr, TRASH_FOLDER_PREFIX + ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
 
-	numFolders = ItemsInList(trashFolders, ",")
+	numFolders = ItemsInList(trashFolders)
 	for(i = 0; i < numFolders; i += 1)
-		path = GetDataFolder(1, dfr) + StringFromList(i, trashFolders, ",")
+		path = StringFromList(i, trashFolders)
 		KillDataFolder/Z $path
 	endfor
 

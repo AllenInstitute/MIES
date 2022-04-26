@@ -1718,7 +1718,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
+threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 	WAVE labnotebookValues
 	string setting
 
@@ -1744,7 +1744,6 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 		return $""
 	endif
 
-	// @todo IP9: Make it threadsafe once FindDuplicates is threadsafe
 	return GetUniqueEntries(sweeps)
 End
 
@@ -5253,14 +5252,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
 	if(remove_all_traces)
-#if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
-#else
-		AssertOnAndClearRTError()
-		do
-			RemoveFromGraph/W=$graph $("#0"); err = GetRTError(1)
-		while(err == 0)
-#endif
 		return NaN
 	endif
 

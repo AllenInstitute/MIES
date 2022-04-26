@@ -2181,8 +2181,7 @@ static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE/Z avg, variable chan
 	endif
 End
 
-// @todo IP9: Switch to WAVE/WAVE/Z
-threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/Z setWave2)
+threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE/Z setWave2)
 
 	if(!WaveExists(setWave2))
 		return $""

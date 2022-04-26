@@ -534,19 +534,13 @@ Function BUG(msg)
 End
 
 /// @brief Threadsafe variant of BUG()
-///
-/// @todo IP9: Unify with BUG
 threadsafe Function BUG_TS(string msg)
 	variable bugCount
 	string stacktrace
 
 	msg = RemoveEnding(msg, "\r")
 
-#if IgorVersion() >= 9.0
 	stacktrace = GetStackTrace()
-#else
-	stacktrace = "stacktrace not available"
-#endif
 
 	LOG_AddEntry_TS(PACKAGE_MIES, "report", "BUG_TS",  \
 	                keys = {"msg", "stacktrace"},      \
@@ -556,13 +550,11 @@ threadsafe Function BUG_TS(string msg)
 
 #ifdef AUTOMATED_TESTING
 
-#if IgorVersion() >= 9.0
 	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
 	bugCount += 1
 	TSDS_Write(TSDS_BUGCOUNT, var = bugCount)
 	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
-#endif
 
 	ASSERT_TS(IsNaN(bugCount), "BUG_TS: Should never be called during automated testing.")
 #endif

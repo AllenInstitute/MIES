@@ -3949,30 +3949,17 @@ Function STIW_TestDimensions()
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), DimSize(testwave, ROWS) - 1)
-#else
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), NaN)
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -inf, ROWS), 0)
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1e3, ROWS), DimOffset(testwave, ROWS) + 1e3 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1e3, ROWS), DimSize(testwave, ROWS) - 1)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), ScaleToIndexWrapper(testWave, inf, ROWS))
-#endif
 
 	SetScale/P x, 0, -0.1, testwave
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), ScaleToIndexWrapper(testWave, -inf, ROWS))
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1, ROWS), DimOffset(testwave, ROWS) + 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-#if IgorVersion() < 9.0
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), DimSize(testwave, ROWS) - 1)
-#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, inf, ROWS), 0)
 End
 
@@ -4146,8 +4133,8 @@ Function NWLWorks()
 	expected = "1;1e+06;-inf;1.5;nan;"
 	CHECK_EQUAL_STR(result, expected)
 
-	Make/FREE/I dataInt = {1, 1e6, -100}
-	result = NumericWaveToList(dataInt, ";", format="%d")
+	Make/FREE dataFP = {1, 1e6, -100}
+	result = NumericWaveToList(dataFP, ";", format="%d")
 	expected = "1;1000000;-100;"
 	CHECK_EQUAL_STR(result, expected)
 
@@ -4185,15 +4172,6 @@ Function NWLChecksInput()
 	try
 		Make/FREE/D/N=(2, 2) TwoDWave
 		NumericWaveToList(TwoDWave, ";", colSep = ""); AbortONRTE
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	// asserts out when triggering IP bug
-	try
-		Make/D/N=(2) input
-		NumericWaveToList(input, ";", format="%d"); AbortONRTE
 		FAIL()
 	catch
 		PASS()
@@ -5700,8 +5678,6 @@ Function BUGWorks()
 	CHECK_EQUAL_VAR(bugCount, 1)
 End
 
-#if IgorVersion() >= 9.0
-
 Function BUG_TSWorks1()
 	variable bugCount
 
@@ -5750,8 +5726,6 @@ Function BUG_TSWorks2()
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, numThreads)
 End
-
-#endif
 
 Function/WAVE InvalidUnits()
 	Make/FREE/T result = {"", "ab", "MOhm", "xs", "sx"}
@@ -5944,7 +5918,7 @@ Function GSFWNR_Works()
 	Note/K plain "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(plain, "abcd")
+	str = GetStringFromWaveNote(plain, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// empty wave ref
@@ -5952,7 +5926,7 @@ Function GSFWNR_Works()
 	Note/K wref "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref, matching
@@ -5963,7 +5937,7 @@ Function GSFWNR_Works()
 	Note/K wref[1] "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref 2D, matching
@@ -5976,7 +5950,7 @@ Function GSFWNR_Works()
 	Note/K wref[3] "abcd:123"
 
 	ref = "123"
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EQUAL_STR(ref, str)
 
 	// wave ref, not-matching (wref has a different one)
@@ -5986,7 +5960,7 @@ Function GSFWNR_Works()
 	Note/K wref[0] "abcd:123"
 	Note/K wref[1] "abcd:123"
 
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)
 
 	// wave ref, not-matching (first contained has a different one)
@@ -5996,7 +5970,7 @@ Function GSFWNR_Works()
 	Note/K wref[0] "abcde:123"
 	Note/K wref[1] "abcd:123"
 
-	str = GetStringFromWaveNoteRecursive(wref, "abcd")
+	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)
 End
 

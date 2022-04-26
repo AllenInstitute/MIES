@@ -227,7 +227,6 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
 
-#if IgorVersion() >= 9.0
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
 		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
 
@@ -235,7 +234,6 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 
 			AbortOnValue 1, 1
 		endif
-#endif
 
 		print "!!! Threadsafe assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
@@ -244,11 +242,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print "Please provide the following information if you contact the MIES developers:"
 			print "################################"
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-#if IgorVersion() >= 9.0
 			stacktrace = GetStackTrace()
-#else
-			stacktrace = "stacktrace not available"
-#endif
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -287,7 +281,7 @@ End
 /// @param exprType [optional, defaults: MATCH_REGEXP] convention used for matchExpr, one of @ref MatchExpressions
 ///
 /// @returns list of object names matching matchExpr
-Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, exprType])
+threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, exprType])
 	dfref dfr
 	string matchExpr
 	variable fullPath, recursive, typeFlag, exprType
@@ -296,8 +290,8 @@ Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, expr
 	string name, folders, basePath, subList
 	string list = ""
 
-	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
-	ASSERT(!isEmpty(matchExpr),"matchExpr is empty or null")
+	ASSERT_TS(DataFolderExistsDFR(dfr),"Non-existing datafolder")
+	ASSERT_TS(!isEmpty(matchExpr),"matchExpr is empty or null")
 
 	if(ParamIsDefault(fullPath))
 		fullPath = 0
@@ -318,7 +312,7 @@ Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, expr
 	if(ParamIsDefault(exprType))
 		exprType = MATCH_REGEXP
 	else
-		ASSERT(exprType == MATCH_REGEXP || exprType == MATCH_WILDCARD, "Invalid exprType")
+		ASSERT_TS(exprType == MATCH_REGEXP || exprType == MATCH_WILDCARD, "Invalid exprType")
 	endif
 
 	basePath = GetDataFolder(1, dfr)
@@ -348,7 +342,7 @@ End
 /// @brief Return a list of all objects of the given type from dfr
 ///
 /// Does not work for datafolders which have a comma (`,`) in them.
-static Function/S GetAllObjects(dfr, typeFlag)
+threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 	DFREF dfr
 	variable typeFlag
 
@@ -369,49 +363,7 @@ static Function/S GetAllObjects(dfr, typeFlag)
 			list = StringList("*", ";")
 			break
 		case COUNTOBJECTS_DATAFOLDER:
-			list = DataFolderDir(2^0)
-			list = StringByKey("FOLDERS", list)
-			list = ReplaceString(",", list, ";")
-			break
-		default:
-			SetDataFolder oldDFR
-			ASSERT(0, "Invalid type flag")
-	endswitch
-
-	SetDataFolder oldDFR
-
-	return list
-End
-
-/// @brief Return a list of all objects of the given type from dfr
-///
-/// @todo merge with GetAllObjects once IP9 is mandatory as then
-///       VariableList and StringList are threadsafe
-///
-/// Does not work for datafolders which have a comma (`,`) in them.
-threadsafe Function/S GetAllObjects_TS(DFREF dfr, variable typeFlag)
-	string list
-
-	DFREF oldDFR = GetDataFolderDFR()
-
-	// @todo remove SetDataFolder call once IP9 is mandatory as the XXXList function
-	// then have a dfr parameter
-	SetDataFolder dfr
-
-	switch(typeFlag)
-		case COUNTOBJECTS_WAVES:
-			list = WaveList("*", ";", "")
-			break
-		case COUNTOBJECTS_VAR:
-			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
-			break
-		case COUNTOBJECTS_STR:
-			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
-			break
-		case COUNTOBJECTS_DATAFOLDER:
-			list = DataFolderDir(2^0)
-			list = StringByKey("FOLDERS", list)
-			list = ReplaceString(",", list, ";")
+			list = DataFolderList("*", ";")
 			break
 		default:
 			SetDataFolder oldDFR
@@ -425,7 +377,7 @@ End
 
 /// @brief Matches `list` against the expression `matchExpr` using the given
 ///        convention in `exprType`
-Function/S ListMatchesExpr(list, matchExpr, exprType)
+threadsafe Function/S ListMatchesExpr(list, matchExpr, exprType)
 	string list, matchExpr
 	variable exprType
 
@@ -435,7 +387,7 @@ Function/S ListMatchesExpr(list, matchExpr, exprType)
 		case MATCH_WILDCARD:
 			return ListMatch(list, matchExpr)
 		default:
-			ASSERT(0, "invalid exprType")
+			ASSERT_TS(0, "invalid exprType")
 	endswitch
 End
 
@@ -593,11 +545,7 @@ End
 threadsafe static Function GetWaveSizeImplementation(wv)
 	Wave wv
 
-#if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
 	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
-#else
-	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(wv) * numpnts(wv) + strlen(note(wv))
-#endif
 End
 
 /// @brief Return the size in bytes of a given type
@@ -879,16 +827,14 @@ End
 /// @param wv             wave reference, can be numeric or text
 /// @param caseSensitive  [optional, default = 1] Indicates whether comparison should be case sensitive. Applies only if the input wave is a text wave
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
-///
-/// @todo IP9-only Make threadsafe
-Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numRows
 
-	ASSERT(WaveExists(wv), "Wave must exist")
+	ASSERT_TS(WaveExists(wv), "Wave must exist")
 
 	numRows = DimSize(wv, ROWS)
-	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
+	ASSERT_TS(numRows == numpnts(wv), "Wave must be 1D")
 
 	dontDuplicate = ParamIsDefault(dontDuplicate) ? 0 : !!dontDuplicate
 
@@ -913,14 +859,14 @@ Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDu
 End
 
 /// @brief Convenience wrapper around GetUniqueTextEntries() for string lists
-Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
+threadsafe Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
 	string list, sep
 	variable caseSensitive
 
 	if(ParamIsDefault(sep))
 		sep = ";"
 	else
-		ASSERT(strlen(sep) == 1, "Separator should be one byte long")
+		ASSERT_TS(strlen(sep) == 1, "Separator should be one byte long")
 	endif
 
 	if(ParamIsDefault(caseSensitive))
@@ -944,9 +890,7 @@ End
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
 ///
 /// @return free wave with unique entries
-///
-/// @todo IP9-only make threadsafe
-static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
 
 	variable numEntries, numDuplicates, i
 
@@ -954,7 +898,7 @@ static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, va
 	caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
 
 	numEntries = DimSize(wv, ROWS)
-	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
+	ASSERT_TS(numEntries == numpnts(wv), "Wave must be 1D.")
 
 	if(numEntries <= 1)
 		if(dontDuplicate)
@@ -1175,35 +1119,6 @@ threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
 	endif
 End
 
-/// @brief Recursive version of GetStringFromWaveNote
-///
-/// Returns the extracted string for non-wave-reference waves.
-/// For wave-reference waves the string must be the same in the wave
-/// and all waves held in the wave reference wave.
-///
-/// @todo IP9-only Merge with GetStringFromWaveNote
-Function/S GetStringFromWaveNoteRecursive(WAVE wv, string key)
-	variable numEntries = numpnts(wv)
-	string str
-
-	str = GetStringFromWaveNote(wv, key)
-
-	if(!IsWaveRefWave(wv) || numEntries == 0)
-		return str
-	endif
-
-	Make/FREE/T/N=(numEntries) notes = GetStringFromWaveNoteRecursive(WaveRef(wv, row = p), key)
-
-	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
-	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
-
-	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], str))
-		return str
-	endif
-
-	return ""
-End
-
 /// @brief Return the string value of `key` found in the wave note
 /// default expected wave note format: `key1:val1;key2:str2;`
 /// counterpart of AddEntryIntoWaveNoteAsList when supplied with keySep = "="
@@ -1212,9 +1127,19 @@ End
 /// @param key  search for the value at key:value;
 /// @param keySep  [optional, defaults to #DEFAULT_KEY_SEP] separation character for (key, value) pairs
 /// @param listSep [optional, defaults to #DEFAULT_LIST_SEP] list separation character
+/// @param recursive [optional, defaults to false] checks all wave notes in referenced waves from wave reference waves
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
-threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep])
+threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep, variable recursive])
+	variable numEntries = numpnts(wv)
+	string result
+
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
+
 	if(ParamIsDefault(keySep))
 		keySep = DEFAULT_KEY_SEP
 	endif
@@ -1223,7 +1148,22 @@ threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep,
 		listSep = DEFAULT_LIST_SEP
 	endif
 
-	return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+	result = ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+
+	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)
+		return result
+	endif
+
+	Make/FREE/T/N=(numEntries) notes = ExtractStringFromPair(note(WaveRef(wv, row = p)), key, keySep = keySep, listSep = listSep)
+
+	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
+	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
+
+	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], result))
+		return result
+	endif
+
+	return ""
 End
 
 /// @brief Same functionality as GetStringFromWaveNote() but accepts a string
@@ -1735,16 +1675,7 @@ End
 /// @brief Return the experiment file type
 threadsafe Function/S GetExperimentFileType()
 
-#if IgorVersion() >= 9.0
 	return IgorInfo(11)
-#else
-	if(!cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT))
-		return ""
-	else
-		// hardcoded to pxp
-		return "Packed"
-	endif
-#endif
 
 End
 
@@ -2015,34 +1946,6 @@ Function/S GetListDifference(list1, list2)
 	endfor
 
 	return result
-End
-
-/// @brief Return a list of datafolders located in `dfr`
-///
-/// @param dfr base folder
-/// @param absolute [optional, defaults to false] return absolute paths
-Function/S GetListOfDataFolders(dfr, [absolute])
-	DFREF dfr
-	variable absolute
-
-	string list, datafolder
-
-	if(ParamIsDefault(absolute))
-		absolute = 0
-	else
-		absolute = !!absolute
-	endif
-
-	list = DataFolderDir(0x01, dfr)
-	list = StringByKey("FOLDERS", list , ":")
-	list = ReplaceString(",", list, ";")
-
-	if(!absolute)
-		return list
-	endif
-
-	datafolder = GetDataFolder(1, dfr)
-	return AddPrefixToEachListItem(datafolder, list)
 End
 
 /// @brief Return the base name of the file
@@ -3208,26 +3111,6 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
-#if IgorVersion() < 9.0
-
-threadsafe Function/S ReplicateString(string str, variable numTotalCopies)
-
-	variable i
-	string list = ""
-
-	if(!IsFinite(numTotalCopies) || numTotalCopies <= 0)
-		return str
-	endif
-
-	for(i = 0; i < numTotalCopies; i += 1)
-		list += str
-	endfor
-
-	return list
-End
-
-#endif
-
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
@@ -3260,10 +3143,6 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
 
 	numCols = DimSize(wv, COLS)
-
-	if(IsFloatingPointWave(wv))
-		ASSERT_TS(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
-	endif
 
 	if(numCols > 1)
 		fullFormat = ReplicateString(format + sep, numCols) + colSep
@@ -3747,9 +3626,7 @@ End
 ///
 /// Given {1, 2, 10} and {2, 5, 11} this will return {1, 2, 5, 10, 11}.
 /// The order of the returned entries is not defined.
-///
-/// @todo IP9 make it threadsafe
-Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
+threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 	variable type, wave1Points, wave2Points, totalPoints
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
@@ -4195,8 +4072,6 @@ threadsafe Function/S NormalizeToEOL(str, eol)
 	return str
 End
 
-#if IgorVersion() >= 9.0
-
 /// @brief Return a nicely formatted multiline stacktrace
 threadsafe Function/S GetStackTrace([prefix])
 	string prefix
@@ -4230,50 +4105,6 @@ threadsafe Function/S GetStackTrace([prefix])
 
 	return output
 End
-
-#else
-
-/// @brief Return a nicely formatted multiline stacktrace
-Function/S GetStackTrace([prefix])
-	string prefix
-
-	string stacktrace, entry, func, line, file, str
-	string output, module
-	variable i, numCallers
-
-	if(ParamIsDefault(prefix))
-		prefix = ""
-	endif
-
-	stacktrace = GetRTStackInfo(3)
-	numCallers = ItemsInList(stacktrace)
-
-	if(numCallers < 3)
-		// our caller was called directly
-		return "Stacktrace not available"
-	endif
-
-	output = prefix + "Stacktrace:\r"
-
-	for(i = 0; i < numCallers - 2; i += 1)
-		entry = StringFromList(i, stacktrace)
-		func  = StringFromList(0, entry, ",")
-		module = StringByKey("MODULE", FunctionInfo(func))
-
-		if(!IsEmpty(module))
-			func = module + "#" + func
-		endif
-
-		file  = StringFromList(1, entry, ",")
-		line  = StringFromList(2, entry, ",")
-		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
-		output += str
-	endfor
-
-	return output
-End
-
-#endif
 
 /// @brief Stop all millisecond Igor Pro timers
 Function StopAllMSTimers()
@@ -5633,19 +5464,9 @@ End
 threadsafe Function [variable minimum, variable maximum] WaveMinAndMaxWrapper(WAVE wv, [variable x1, variable x2])
 
 	if(ParamIsDefault(x1) && ParamIsDefault(x2))
-#if IgorVersion() < 9.0
-		minimum = WaveMin(wv)
-		maximum = WaveMax(wv)
-#else
 	   [minimum, maximum] = WaveMinAndMax(wv)
-#endif
 	elseif(!ParamIsDefault(x1) && !ParamIsDefault(x2))
-#if IgorVersion() < 9.0
-		minimum = WaveMin(wv, x1, x2)
-		maximum = WaveMax(wv, x1, x2)
-#else
 	   [minimum, maximum] = WaveMinAndMax(wv, x1, x2)
-#endif
 	else
 		ASSERT_TS(0, "Unsupported case")
 	endif
@@ -5940,12 +5761,7 @@ threadsafe Function/WAVE ZapNaNs(WAVE data)
 		return $""
 	endif
 
-#if IgorVersion() >= 9
 	MatrixOP/FREE dup = zapNans(data)
-#else
-	Duplicate/FREE data, dup
-	WaveTransform/O zapNans, dup
-#endif
 
 	if(DimSize(dup, ROWS) == 0)
 		return $""

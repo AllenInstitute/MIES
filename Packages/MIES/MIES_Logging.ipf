@@ -82,8 +82,7 @@ threadsafe static Function LOG_AddEntryWithoutChecks(string package, variable JS
 	Open/A/Z=1 refnum as file
 	if(V_flag)
 		printf "Could not open the log file for appending.\r"
-		/// @todo IP9-only: Remove precision specifier
-		printf "Dropping log message: %.1024s\r", str
+		printf "Dropping log message: %s\r", str
 		return NaN
 	endif
 
@@ -140,7 +139,7 @@ End
 /// @brief Threadsafe version of LOG_AddEntry()
 ///
 /// Callers need to write the calling function name into `caller`.
-/// @todo IP9-only: merge with LOG_AddEntry
+/// @todo IP10 merge with LOG_AddEntry once SpecialDirPath is threadsafe
 threadsafe Function LOG_AddEntry_TS(string package, string action, string caller, [WAVE/T keys, WAVE/T values])
 
 	if(ParamIsDefault(keys) && ParamIsDefault(values))

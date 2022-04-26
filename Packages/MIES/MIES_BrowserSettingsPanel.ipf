@@ -1172,16 +1172,11 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					endif
 					break
 				case "check_BrowserSettings_VisEpochs":
-#if IgorVersion() >= 9.0
 					if(checked)
 						DisableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
 					else
 						EnableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
 					endif
-#else
-					print "Epoch visualization is an Igor Pro 9 only feature."
-					ControlWindowToFront()
-#endif
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
@@ -1505,8 +1500,6 @@ Function BSP_UnHideSettingsHistory(win)
 	endif
 End
 
-#if IgorVersion() >= 9.0
-
 static Function BSP_RemoveTraces(string graph)
 	variable i, numEntries
 	string trace
@@ -1702,12 +1695,3 @@ Function BSP_EpochGraphToolTip(s)
 
 	return hookResult
 End
-
-#else
-
-Function BSP_AddTracesForEpochs(string win)
-
-	BUG("Epoch visualization is an IP9-only feature")
-End
-
-#endif

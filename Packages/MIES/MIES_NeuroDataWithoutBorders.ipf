@@ -1258,7 +1258,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			DFREF dfr = NewFreeDataFolder()
 			SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_", TTL_RESCALE_OFF)
 
-			list = GetAllObjects_TS(dfr, COUNTOBJECTS_WAVES)
+			list = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_WAVES)
 			numEntries = ItemsInList(list)
 			for(j = 0; j < numEntries; j += 1)
 				name = StringFromList(j, list)
