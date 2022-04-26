@@ -1985,6 +1985,7 @@ End
 /// @brief Return the folder of the file
 ///
 /// Given `path/file.suffix` this gives `path`.
+/// The returned result has a trailing separator.
 ///
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
