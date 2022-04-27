@@ -1131,7 +1131,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 
 	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	REQUIRE_WAVE(anaFuncs, TEXT_WAVE)
 
 	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
@@ -1139,7 +1139,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	anaFuncTypes[] = (anaFuncTypes[p] == INVALID_ANALYSIS_FUNCTION) ? NaN : anaFuncTypes[p]
 
 	WAVE/Z anaFuncTypesWoNaN = ZapNaNs(anaFuncTypes)
-	CHECK_WAVE(anaFuncTypesWoNaN, NUMERIC_WAVE)
+	REQUIRE_WAVE(anaFuncTypesWoNaN, NUMERIC_WAVE)
 
 	WAVE/Z uniqueAnaFuncTypes = GetUniqueEntries(anaFuncTypesWoNaN)
 	CHECK_WAVE(uniqueAnaFuncTypes, NUMERIC_WAVE)
