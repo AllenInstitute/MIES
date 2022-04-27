@@ -1679,7 +1679,7 @@ Function [string raw, string preProc] SF_GetCode(string win)
 	string formula_nb, code
 
 	formula_nb = BSP_GetSFFormula(win)
-	code = GetNotebookText(formula_nb)
+	code = GetNotebookText(formula_nb,mode=2)
 
 	return [code, SF_PreprocessInput(code)]
 End
