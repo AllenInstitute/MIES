@@ -1932,3 +1932,17 @@ static Function StoreWorks([WAVE wv])
 	Redimension/N=(-1, 0) sweepFormulaY
 	CHECK_EQUAL_WAVES(wv, sweepFormulaY, mode = WAVE_DATA)
 End
+
+static Function/WAVE TestHelpNotebookGetter_IGNORE()
+
+	WAVE/T wt = SF_GetNamedOperations()
+
+	return wt
+End
+
+// UTF_TD_GENERATOR TestHelpNotebookGetter_IGNORE
+static Function TestHelpNotebook([string str])
+
+	DB_OpenDataBrowser()
+	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine("operation - " + str), 0)
+End
