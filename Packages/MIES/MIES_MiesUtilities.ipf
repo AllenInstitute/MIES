@@ -3857,8 +3857,8 @@ Function TimeAlignCursorMovedHook(s)
 	string trace, graphtrace, graphtraces, xAxis, yAxis, bsPanel, mainPanel
 	variable numTraces, i
 
-	strswitch(s.eventName)
-		case "cursormoved":
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_CURSORMOVED:
 			trace = s.traceName
 			if(isEmpty(trace))
 				return 0
@@ -6965,7 +6965,7 @@ Function StoreWindowCoordinatesHook(s)
 	string win
 
 	switch(s.eventCode)
-		case 2: // kill
+		case EVENT_WINDOW_HOOK_KILL:
 			win = s.winName
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, win)

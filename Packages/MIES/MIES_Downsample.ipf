@@ -499,7 +499,7 @@ Function DownsampleWindowHook(s)
 	string win
 
 	switch(s.eventCode)
-		case EVENT_KILL_WINDOW_HOOK:
+		case EVENT_WINDOW_HOOK_KILL:
 			win = s.winName
 
 			NVAR JSONid = $GetSettingsJSONid()

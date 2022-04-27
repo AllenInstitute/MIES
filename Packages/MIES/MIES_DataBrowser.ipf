@@ -731,7 +731,7 @@ Function DB_WindowHook(s)
 	string win
 
 	switch(s.eventCode)
-		case 2: // Kill
+		case EVENT_WINDOW_HOOK_KILL:
 
 			win = s.winName
 

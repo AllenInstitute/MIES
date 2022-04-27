@@ -232,8 +232,8 @@ Function BSP_SweepFormulaHook(s)
 	string win, bsPanel
 
 	switch(s.eventCode)
-		case 11: // keyboard
-			if(s.specialKeyCode == 200 && s.eventMod & 0x2) // Enter + Shift
+		case EVENT_WINDOW_HOOK_KEYBOARD: // keyboard
+			if(s.specialKeyCode == 200 && s.eventMod & WINDOW_HOOK_EMOD_SHIFTKEYDOWN) // Enter + Shift
 				win = GetMainWindow(s.winName)
 				bsPanel = BSP_GetPanel(win)
 
@@ -596,7 +596,7 @@ Function BSP_ClosePanelHook(s)
 	string mainPanel
 
 	switch(s.eventCode)
-		case 17: // killVote
+		case EVENT_WINDOW_HOOK_KILLVOTE:
 			mainPanel = GetMainWindow(s.winName)
 			SetWindow $s.winName hide=1
 
@@ -615,14 +615,14 @@ Function BSP_SweepsAndMouseWheel(s)
 	string graph, scPanel, ctrl
 
 	switch(s.eventCode)
-		case 22: // mouse wheel
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
 			graph = GetMainWindow(s.winName)
 
 			if(!windowExists(graph))
 				break
 			endif
 
-			if(!(s.eventMod & EVENT_MOD_ALT_OPTION))
+			if(!(s.eventMod & WINDOW_HOOK_EMOD_ALTKEYDOWN))
 				break
 			endif
 

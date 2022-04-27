@@ -180,7 +180,7 @@ Function LBV_CloseSettingsHistoryHook(STRUCT WMWinHookStruct &s)
 	string mainPanel, shPanel
 
 	switch(s.eventCode)
-		case 17: // killVote
+		case EVENT_WINDOW_HOOK_KILLVOTE:
 			mainPanel = GetMainWindow(s.winName)
 
 			if(!BSP_IsDataBrowser(mainPanel))
@@ -1033,7 +1033,7 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 	variable numEntries, i, axisOrientation, first, last, relYPos, width, yAxisHorizPos
 
 	switch(s.eventCode)
-		case 4: // mouse moved
+		case EVENT_WINDOW_HOOK_MOUSEMOVED:
 			win = LBV_GetLabNoteBookGraph(s.winName)
 			if(cmpstr(s.winName, win))
 				// not our subwindow
@@ -1088,7 +1088,7 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 				endif
 			endfor
 			break
-		case 6: // resize
+		case EVENT_WINDOW_HOOK_RESIZE:
 			descNB = LBV_GetDescriptionNotebook(s.winName)
 			ReflowNotebookText(descNB)
 			break

@@ -143,8 +143,8 @@ Function DP_WindowHook(s)
 
 	variable debugMode
 
-	strswitch(s.eventName)
-		case "activate":
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_ACTIVATE:
 			debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
 			SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
 			break

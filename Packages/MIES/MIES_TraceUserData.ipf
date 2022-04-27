@@ -18,7 +18,7 @@ Function TUD_RemoveUserDataWave(s)
 	STRUCT WMWinHookStruct &s
 
 	switch(s.eventCode)
-		case 2: // Kill
+		case EVENT_WINDOW_HOOK_KILL:
 			TUD_Clear(s.winName)
 			break
 	endswitch

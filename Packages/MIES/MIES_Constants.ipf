@@ -148,10 +148,37 @@ Constant DEFAULT_DECIMATION_FACTOR = -1
 /// Common string to denote an invalid entry in a popupmenu
 StrConstant NONE = "- none -"
 
-/// Hook events constants
-Constant EVENT_KILL_WINDOW_HOOK = 2
-
-Constant EVENT_MOD_ALT_OPTION = 0x4
+/// @name WMWinHookStruct eventCode field constants
+/// @anchor WinHookEventCodes
+/// @{
+Constant EVENT_WINDOW_HOOK_ACTIVATE            = 0
+Constant EVENT_WINDOW_HOOK_DEACTIVATE          = 1
+Constant EVENT_WINDOW_HOOK_KILL                = 2
+Constant EVENT_WINDOW_HOOK_MOUSEDOWN           = 3
+Constant EVENT_WINDOW_HOOK_MOUSEMOVED          = 4
+Constant EVENT_WINDOW_HOOK_MOUSEUP             = 5
+Constant EVENT_WINDOW_HOOK_RESIZE              = 6
+Constant EVENT_WINDOW_HOOK_CURSORMOVED         = 7
+Constant EVENT_WINDOW_HOOK_MODIFIED            = 8
+Constant EVENT_WINDOW_HOOK_ENABLEMENU          = 9
+Constant EVENT_WINDOW_HOOK_MENU                = 10
+Constant EVENT_WINDOW_HOOK_KEYBOARD            = 11
+Constant EVENT_WINDOW_HOOK_MOVED               = 12
+Constant EVENT_WINDOW_HOOK_RENAMED             = 13
+Constant EVENT_WINDOW_HOOK_SUBWINDOWKILL       = 14
+Constant EVENT_WINDOW_HOOK_HIDE                = 15
+Constant EVENT_WINDOW_HOOK_SHOW                = 16
+Constant EVENT_WINDOW_HOOK_KILLVOTE            = 17
+Constant EVENT_WINDOW_HOOK_SHOWTOOLS           = 18
+Constant EVENT_WINDOW_HOOK_HIDETOOLS           = 19
+Constant EVENT_WINDOW_HOOK_SHOWINFO            = 20
+Constant EVENT_WINDOW_HOOK_HIDEINFO            = 21
+Constant EVENT_WINDOW_HOOK_MOUSEWHEEL          = 22
+Constant EVENT_WINDOW_HOOK_SPINUPDATE          = 23
+Constant EVENT_WINDOW_HOOK_TABLEENTRYACCEPTED  = 24
+Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
+Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
+/// @}
 
 /// Used by CheckName and UniqueName
 Constant CONTROL_PANEL_TYPE = 9
@@ -180,6 +207,16 @@ Constant CONTROL_TYPE_GROUPBOX      = 9
 Constant CONTROL_TYPE_TITLEBOX      = 10
 Constant CONTROL_TYPE_LISTBOX       = 11
 Constant CONTROL_TYPE_CUSTOMCONTROL = 12
+/// @}
+
+/// @name Modifier flags from the eventMod field of the WMWinHookStruct
+/// @anchor WMWinHookEventMod
+/// @{
+Constant WINDOW_HOOK_EMOD_MBUTTONDOWN  = 1
+Constant WINDOW_HOOK_EMOD_SHIFTKEYDOWN = 2
+Constant WINDOW_HOOK_EMOD_ALTKEYDOWN   = 4
+Constant WINDOW_HOOK_EMOD_CTRLKEYDOWN  = 8
+Constant WINDOW_HOOK_EMOD_RIGHTCLICK   = 16
 /// @}
 
 StrConstant CURSOR_NAMES = "A;B;C;D;E;F;G;H;I;J"
