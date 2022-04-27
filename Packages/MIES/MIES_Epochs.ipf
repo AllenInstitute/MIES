@@ -438,7 +438,7 @@ static Function EP_SortEpochs(device)
 	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = EP_GetEpochCount(device, channel)
+		epochCnt = EP_GetEpochCount(epochWave, channel)
 		if(epochCnt == 0)
 			continue
 		endif
@@ -466,14 +466,13 @@ static Function EP_SortEpochs(device)
 End
 
 /// @brief Returns the number of epoch in the epochsWave for the given channel
-/// @param[in] device title of device panel
-/// @param[in] channel    number of DA channel
+///
+/// @param[in] epochWave wave with epoch info
+/// @param[in] channel   number of DA channel
+///
 /// @return number of epochs for channel
-static Function EP_GetEpochCount(device, channel)
-	string device
-	variable channel
+static Function EP_GetEpochCount(WAVE/T epochWave, variable channel)
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
 	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
@@ -496,7 +495,8 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Currently only epochs for the DA channels are supported")
 
 	if(ParamIsDefault(shortName))
-		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(device, channelNumber)
+		WAVE/T epochWave = GetEpochsWave(device)
+		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(epochWave, channelNumber)
 	else
 		ASSERT(!GrepString(shortName, "^" + EPOCH_SHORTNAME_USER_PREFIX), "short name must not be prefixed with " + EPOCH_SHORTNAME_USER_PREFIX)
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
@@ -542,7 +542,7 @@ static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
 
-	i = EP_GetEpochCount(device, channel)
+	i = EP_GetEpochCount(epochWave, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
 	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
@@ -663,7 +663,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 
 		channel = configWave[i][%ChannelNumber]
 
-		epochCnt = EP_GetEpochCount(device, channel)
+		epochCnt = EP_GetEpochCount(epochWave, channel)
 
 		for(epoch = 0; epoch < epochCnt; epoch += 1)
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
