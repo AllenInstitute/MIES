@@ -834,3 +834,10 @@ The above code creates a panel with three separate graphs arranged vertically ev
 
 .. figure:: ScreenShots/sweepFormulaPlot4.png
    :align: center
+
+Getting Quick Help
+^^^^^^^^^^^^^^^^^^
+
+In the Sweep Formula notebook it is possible to get a quick help for operation and keywords like `vs` and `and`.
+Mark the operation in question with the mouse and hover over it, a tooltip appears that shows the help for this operation.
+Alternatively hold shift and right-click to jump to the `Help` tab that shows the help for the marked operation.
