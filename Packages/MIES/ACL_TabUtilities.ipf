@@ -274,4 +274,3 @@ Function ACL_DisplayTab(tca): TabControl
 	EndIf
 	return 0
 End
-

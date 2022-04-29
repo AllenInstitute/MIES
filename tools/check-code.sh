@@ -87,7 +87,7 @@ then
   ret=1
 fi
 
-matches=$(rg ${rg_opts} --multiline '\n\n\n' ${files})
+matches=$(rg ${rg_opts} --multiline '\n\n(\n|\z)' ${files})
 
 if [[ -n "$matches" ]]
 then
