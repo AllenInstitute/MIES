@@ -6311,7 +6311,7 @@ Function/WAVE GetAnalysisFuncDAScaleRes(device)
 		wv = NaN
 	endif
 
-	SetScale d, 0, 0, "Ohm", wv
+	SetScale d, 0, 0, "Ω", wv
 	SetDimLabel COLS, 0, Value, wv
 	SetDimLabel COLS, 1, Error, wv
 	SetWaveVersion(wv, versionOfNewWave)
@@ -6343,7 +6343,7 @@ Function/WAVE GetAnalysisFuncDAScaleResFit(device, headstage)
 		wv = NaN
 	endif
 
-	SetScale d, 0, 0, "Ohm", wv
+	SetScale d, 0, 0, "Ω", wv
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv

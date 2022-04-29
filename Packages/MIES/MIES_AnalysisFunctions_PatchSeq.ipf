@@ -59,7 +59,7 @@
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
 /// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
 /// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                      On/Off   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold    Ohm      Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance from DAScale sub threshold           Ohm      Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
@@ -991,7 +991,7 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: averaged steady state resistance [MOhm]
+/// - 1: averaged steady state resistance [MΩ]
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1009,8 +1009,8 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: Resistance A [MOhm]
-/// - 2: Resistance B [MOhm]
+/// - 1: Resistance A [MΩ]
+/// - 2: Resistance B [MΩ]
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -4051,7 +4051,7 @@ Function PSQ_Chirp(device, s)
 					resistance = resistanceFromFit[s.headstage]
 				endif
 
-				sprintf msg, "Resistance: %g [Ohm]\r", resistance
+				sprintf msg, "Resistance: %g [Ω]\r", resistance
 				DEBUGPRINT(msg)
 
 				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
@@ -4384,11 +4384,9 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MinPipetteResistance":
-			return "Minimum allowed pipette resistance [MOhm]"
+			return "Minimum allowed pipette resistance [MΩ]"
 		case "MaxPipetteResistance":
-			return "Maximum allowed pipette resistance [MOhm]"
-		case "NumberOfTestpulses":
-			return "Expected number of testpulses in the stimset"
+			return "Maximum allowed pipette resistance [MΩ]"
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -5230,7 +5228,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceMaxLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
-			// GOhm -> MOhm
+			// GΩ-> MΩ
 			sealThreshold = AFH_GetAnalysisParamNumerical("SealThreshold", s.params) * GIGA_TO_MEGA
 
 			switch(testpulseGroupSel)
