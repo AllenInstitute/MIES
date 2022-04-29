@@ -119,6 +119,14 @@ Function/WAVE SF_GetNamedOperations()
 	return wt
 End
 
+Function/WAVE SF_GetFormulaKeywords()
+
+	// see also SF_SWEEPFORMULA_REGEXP and SF_SWEEPFORMULA_GRAPHS_REGEXP
+	Make/FREE/T wt = {"vs", "and"}
+
+	return wt
+End
+
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)

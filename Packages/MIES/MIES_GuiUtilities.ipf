@@ -2219,3 +2219,21 @@ Function ReflowNotebookText(string win)
 	// deselect selection
 	Notebook $win selection={endOfFile, endOfFile}
 End
+
+/// @brief In a formatted notebook sets a location where keyWord appear to the given color
+Function ColorNotebookKeywords(string win, string keyWord, variable r, variable g, variable b)
+
+	if(IsEmpty(keyWord))
+		return NaN
+	endif
+
+	Notebook $win, selection={startOfFile, startOfFile}
+	Notebook $win, findText={"", 1}
+
+	do
+		Notebook $win, findText={keyWord, 1}
+		if(V_flag == 1)
+			Notebook $win, textRGB=(r, g, b)
+		endif
+	while(V_flag == 1)
+End
