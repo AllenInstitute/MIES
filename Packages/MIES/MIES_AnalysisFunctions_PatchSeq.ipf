@@ -1518,13 +1518,28 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	return samplingFrequencyPassed
 End
 
+/// @brief Help strings for common parameters
+///
+/// Not every analysis function uses every parameter though.
 static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
+		case "BaselineChunkLength":
+			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
 		case "BaselineRMSLongThreshold":
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
 			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "MaxLeakCurrent":
+			return "Maximum current [pA] which is allowed in the pre pulse baseline"
+		case "NextIndexingEndStimSetName": // TODO unify in all places after merge of #1330
+			return "Next indexing end stimulus set which should be set in case of success.\r Also enables indexing."
+		case "NextStimSetName":
+			return "Next stimulus set which should be set in case of success"
+		case "NumberOfFailedSweeps":
+			return "Number of failed sweeps which marks the set as failed."
+		case "NumberOfTestpulses":
+			return "Expected number of testpulses in the stimset"
 		case "SamplingFrequency":
 			return "Required sampling frequency for the acquired data [kHz]. Defaults to " + num2str(PSQ_GetDefaultSamplingFrequency(type)) + "."
 		case "SamplingMultiplier":
@@ -3712,6 +3727,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
@@ -3723,8 +3739,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -4356,21 +4370,19 @@ End
 Function/S PSQ_PipetteInBath_GetHelp(string name)
 
 	strswitch(name)
-		case "SamplingFrequency":
-		case "SamplingMultiplier":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
-			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MaxLeakCurrent":
-			return "Maximum current [pA] which is allowed in the pre pulse baseline"
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "NumberOfTestpulses":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MinPipetteResistance":
 			return "Minimum allowed pipette resistance [MOhm]"
 		case "MaxPipetteResistance":
 			return "Maximum allowed pipette resistance [MOhm]"
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed"
-		case "NextStimSetName":
-			return "Next stimulus set which should be set in case of success"
 		case "NumberOfTestpulses":
 			return "Expected number of testpulses in the stimset"
 		default:
@@ -4936,19 +4948,16 @@ End
 Function/S PSQ_SealEvaluation_GetHelp(string name)
 
 	strswitch(name)
-		case "SamplingFrequency":
-		case "SamplingMultiplier":
+		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
 			return "Minimum required seal threshold, defaults to 1 [GΩ]"
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed"
-		case "NextStimSetName":
-			return "Next stimulus set which should be set in case of success"
-		case "BaselineChunkLength":
-			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
