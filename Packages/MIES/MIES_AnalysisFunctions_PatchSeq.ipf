@@ -10,16 +10,16 @@
 /// @brief __PSQ__ Analysis functions for patch sequence
 ///
 /// The stimsets with the analysis functions attached are executed in the following order:
-/// - PSQ_PipetteInBath
-/// - PSQ_SealEvaluation
-/// - PSQ_DaScale (sub threshold)
-/// - PSQ_SquarePulse (long pulse)
-/// - PSQ_Rheobase (long pulse)
-/// - PSQ_DaScale (supra threshold)
-/// - PSQ_SquarePulse (short pulse)
-/// - PSQ_Rheobase (short pulse)
-/// - PSQ_Ramp
-/// - PSQ_Chirp
+/// - PSQ_PipetteInBath `PB`
+/// - PSQ_SealEvaluation `SE`
+/// - PSQ_DaScale (sub threshold) `DA (sub)`
+/// - PSQ_SquarePulse (long pulse) `SP`
+/// - PSQ_Rheobase (long pulse) `RB`
+/// - PSQ_DaScale (supra threshold) `DA (supra)`
+/// - PSQ_SquarePulse (short pulse) `SP`
+/// - PSQ_Rheobase (short pulse) `RB`
+/// - PSQ_Ramp `RA`
+/// - PSQ_Chirp `CR`
 ///
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
