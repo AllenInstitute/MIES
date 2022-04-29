@@ -3705,12 +3705,12 @@ Function PA_TraceWindowHook(s)
 	string traceGraph
 
 	switch(s.eventcode)
-		case 22: // mouse wheel
-		case 6: // resize
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
+		case EVENT_WINDOW_HOOK_RESIZE:
 			traceGraph = s.winName
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"
 			break
-		case 10: // menu
+		case EVENT_WINDOW_HOOK_MENU:
 			if(!cmpstr(s.menuName, "Graph") && !cmpstr(s.menuItem, "Autoscale Axes"))
 				traceGraph = s.winName
 				Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 1)"
@@ -3727,12 +3727,12 @@ Function PA_ImageWindowHook(s)
 	string imageGraph
 
 	switch(s.eventcode)
-		case 6: // resize
+		case EVENT_WINDOW_HOOK_RESIZE:
 			imageGraph = s.winName
 			PA_ResizeColorScalePanel(imageGraph)
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + imageGraph + "\", 0)"
 			break
-		case 10: // menu
+		case EVENT_WINDOW_HOOK_MENU:
 			if(!cmpstr(s.menuName, "Graph") && !cmpstr(s.menuItem, "Autoscale Axes"))
 				imageGraph = s.winName
 				Execute/P/Q/Z "PA_UpdateScaleBars(\"" + imageGraph + "\", 1)"

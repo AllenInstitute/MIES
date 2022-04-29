@@ -1487,11 +1487,11 @@ Function WBP_MainWindowHook(s)
 	variable row, found
 
 	switch(s.eventCode)
-		case 2:
+		case EVENT_WINDOW_HOOK_KILL:
 			KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
 			break
 #ifdef DEBUGGING_ENABLED
-		case 4:
+		case EVENT_WINDOW_HOOK_MOUSEMOVED:
 			win = s.winName
 
 			if(DP_DebuggingEnabledForCaller())
@@ -1540,7 +1540,7 @@ Function WBP_MainWindowHook(s)
 			endif
 			break
 #endif
-		case 5:
+		case EVENT_WINDOW_HOOK_MOUSEUP:
 			win = s.winName
 
 			if(cmpstr(win, WaveBuilderGraph))

@@ -1183,7 +1183,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_json
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
+	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)t;Aq0k.+MM:Wn-B,Y+=49<;1gg<[&>t!W*$r7a%93b[l?5m27Z+\"3?p730/Wt_lCt7V>b7Bf:op@iaf>^JRC<n4"

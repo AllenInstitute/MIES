@@ -10,12 +10,15 @@
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
 Function/S DB_OpenDataBrowser()
-	string win, device, devicesWithData, bsPanel
+	string win, winBSP, device, devicesWithData, bsPanel
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
 
 	SetWindow $win, hook(cleanup)=DB_WindowHook
+	winBSP = BSP_GetPanel(win)
+	SetWindow $winBSP, hook(nbinteract)=BSP_SFHelpWindowHook
+	SetWindow $winBSP, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
 
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
@@ -731,7 +734,7 @@ Function DB_WindowHook(s)
 	string win
 
 	switch(s.eventCode)
-		case 2: // Kill
+		case EVENT_WINDOW_HOOK_KILL:
 
 			win = s.winName
 
@@ -758,4 +761,25 @@ Function DB_WindowHook(s)
 
 	// return zero so that other hooks are called as well
 	return 0
+End
+
+/// @brief Jumps in the SweepFormula help notebook of the current data/sweepbrowser to the first location
+///        of the search string from the notebook start. Used for scrolling to operation help.
+///
+/// The convention is that the headlines of the operation description in the sweepformula help notebook is
+/// `operation - <operationName>`
+///
+/// @param[in] str characters to find, use "" to jump to the notebook start
+/// @returns 0 if help for operation was found, 1 in case of error
+Function DB_SFHelpJumpToLine(string str)
+
+	string win = BSP_GetSFHELP(GetCurrentWindow())
+
+	Notebook $win, selection={startOfFile, startOfFile}
+	Notebook $win, findText={"", 1}
+	if(!IsEmpty(str))
+		Notebook $win, findText={str, 1}
+	endif
+
+	return V_flag == 0
 End

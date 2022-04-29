@@ -761,7 +761,7 @@ Function DAP_WindowHook(s)
 	variable sgn, i
 
 	switch(s.eventCode)
-		case EVENT_KILL_WINDOW_HOOK:
+		case EVENT_WINDOW_HOOK_KILL:
 			device = s.winName
 
 			NVAR JSONid = $GetSettingsJSONid()
@@ -778,7 +778,7 @@ Function DAP_WindowHook(s)
 
 			// return zero so that other hooks are called as well
 			break
-		case 22: // mouse wheel
+		case EVENT_WINDOW_HOOK_MOUSEWHEEL:
 			device = s.winName
 
 			if(GetTabID(device, "ADC") != DATA_ACQU_TAB_NUM)
@@ -4498,7 +4498,7 @@ Function DAP_CommentPanelHook(s)
 	string device
 
 	switch(s.eventCode)
-		case 2: // kill
+		case EVENT_WINDOW_HOOK_KILL:
 			device = GetMainWindow(s.winName)
 
 			if(!DAP_DeviceIsUnlocked(device))

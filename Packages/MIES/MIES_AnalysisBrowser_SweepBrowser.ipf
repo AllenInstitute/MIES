@@ -374,7 +374,7 @@ Function SB_SweepBrowserWindowHook(s)
 	string graph, scPanel, ctrl
 
 	switch(s.eventCode)
-		case 2:	 // Kill
+		case EVENT_WINDOW_HOOK_KILL:
 			graph = GetMainWindow(s.winName)
 
 			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)

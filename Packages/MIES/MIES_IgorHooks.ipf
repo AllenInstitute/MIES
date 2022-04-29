@@ -307,8 +307,8 @@ Function IH_ResetScaling(struct WMWinHookStruct &s)
 	variable i, numEntries
 
 	switch(s.eventCode)
-		case 11: // keyboard
-			if(cmpstr(s.keyText, "A") || s.eventMod != 8)
+		case EVENT_WINDOW_HOOK_KEYBOARD: // keyboard
+			if(cmpstr(s.keyText, "A") || s.eventMod != WINDOW_HOOK_EMOD_CTRLKEYDOWN)
 				break
 			endif
 
