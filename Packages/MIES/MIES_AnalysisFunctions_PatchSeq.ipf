@@ -10,16 +10,16 @@
 /// @brief __PSQ__ Analysis functions for patch sequence
 ///
 /// The stimsets with the analysis functions attached are executed in the following order:
-/// - PSQ_PipetteInBath
-/// - PSQ_SealEvaluation
-/// - PSQ_DaScale (sub threshold)
-/// - PSQ_SquarePulse (long pulse)
-/// - PSQ_Rheobase (long pulse)
-/// - PSQ_DaScale (supra threshold)
-/// - PSQ_SquarePulse (short pulse)
-/// - PSQ_Rheobase (short pulse)
-/// - PSQ_Ramp
-/// - PSQ_Chirp
+/// - PSQ_PipetteInBath `PB`
+/// - PSQ_SealEvaluation `SE`
+/// - PSQ_DaScale (sub threshold) `DA (sub)`
+/// - PSQ_SquarePulse (long pulse) `SP`
+/// - PSQ_Rheobase (long pulse) `RB`
+/// - PSQ_DaScale (supra threshold) `DA (supra)`
+/// - PSQ_SquarePulse (short pulse) `SP`
+/// - PSQ_Rheobase (short pulse) `RB`
+/// - PSQ_Ramp `RA`
+/// - PSQ_Chirp `CR`
 ///
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
@@ -60,7 +60,7 @@
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
 /// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
 /// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                      On/Off   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold    Ohm      Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance from DAScale sub threshold           Ohm      Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
@@ -96,8 +96,8 @@
 /// Name=Unacquired DA data                                    U_RA_UD    RA                 Interval of unacquired data                                 -1
 /// Type=Testpulse Like;Index=x                                U_TPx      PB, SE             Testpulse like region in stimset                            -1
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B0   PB, SE             Pre pulse baseline of testpulse                             -1
-/// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_B1   PB, SE             Post pulse baseline of testpulse                            -1
-/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_P    PB, SE             Pulse of testpulse                                          -1
+/// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_P    PB, SE             Pulse of testpulse                                          -1
+/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B1   PB, SE             Post pulse baseline of testpulse                            -1
 /// ========================================================== ========== ================== ========================================================== =======
 ///
 /// The tag entry ``Index=x`` is a zero-based index, which tracks how often the specific type of user epoch appears. So for different
@@ -991,7 +991,7 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: averaged steady state resistance [MOhm]
+/// - 1: averaged steady state resistance [MΩ]
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1009,8 +1009,8 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: Resistance A [MOhm]
-/// - 2: Resistance B [MOhm]
+/// - 1: Resistance A [MΩ]
+/// - 2: Resistance B [MΩ]
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1519,13 +1519,28 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	return samplingFrequencyPassed
 End
 
+/// @brief Help strings for common parameters
+///
+/// Not every analysis function uses every parameter though.
 static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
+		case "BaselineChunkLength":
+			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
 		case "BaselineRMSLongThreshold":
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
 			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "MaxLeakCurrent":
+			return "Maximum current [pA] which is allowed in the pre pulse baseline"
+		case "NextIndexingEndStimSetName": // TODO unify in all places after merge of #1330
+			return "Next indexing end stimulus set which should be set in case of success.\r Also enables indexing."
+		case "NextStimSetName":
+			return "Next stimulus set which should be set in case of success"
+		case "NumberOfFailedSweeps":
+			return "Number of failed sweeps which marks the set as failed."
+		case "NumberOfTestpulses":
+			return "Expected number of testpulses in the stimset"
 		case "SamplingFrequency":
 			return "Required sampling frequency for the acquired data [kHz]. Defaults to " + num2str(PSQ_GetDefaultSamplingFrequency(type)) + "."
 		case "SamplingMultiplier":
@@ -1535,8 +1550,9 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 	endswitch
 End
 
-static Function/S PSQ_CheckParamCommon(string name, string params, [variable maxRMSThreshold])
+static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct &s, [variable maxRMSThreshold])
 	variable val
+	string str
 
 	if(ParamIsDefault(maxRMSThreshold))
 		maxRMSThreshold = 20
@@ -1545,21 +1561,70 @@ static Function/S PSQ_CheckParamCommon(string name, string params, [variable max
 	endif
 
 	strswitch(name)
+		case "BaselineChunkLength":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= maxRMSThreshold))
 				return "Invalid value " + num2str(val)
 			endif
 			break
+		case "DAScaleOperator":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			if(cmpstr(str, "+") && cmpstr(str, "*"))
+				return "Invalid string " + str
+			endif
+			break
+		case "DAScaleModifier":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 0 && val <= 1000))
+				return "Not a precentage"
+			endif
+			break
+		case "FailedLevel":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
+		case "NextStimSetName":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
+			if(!WaveExists(stimset))
+				return "The stimset can not be created"
+			endif
+			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
+			endif
+			break
+		case "NumberOfTestpulses":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 100))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "MaxLeakCurrent":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
@@ -1624,9 +1689,10 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "DAScaleModifier":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "DAScales":
 			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
@@ -1672,12 +1738,6 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
-			endif
-			break
-		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Not a precentage"
 			endif
 			break
 		default:
@@ -2222,7 +2282,7 @@ Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct 
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -2464,7 +2524,7 @@ Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -2882,7 +2942,7 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
@@ -3723,6 +3783,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
@@ -3734,8 +3795,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -3762,9 +3821,13 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "DAScaleOperator":
+		case "DAScaleModifier":
+		case "FailedLevel":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
@@ -3787,34 +3850,10 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 				return "Must be a finite non-zero integer"
 			endif
 			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "FailedLevel":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val))
-				return "Must be a finite value"
-			endif
-			break
 		case "SpikeCheck":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "DAScaleOperator":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			if(cmpstr(str, "+") && cmpstr(str, "*"))
-				return "Invalid string " + str
-			endif
-			break
-		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "AutobiasTargetV":
@@ -4023,7 +4062,7 @@ Function PSQ_Chirp(device, s)
 					resistance = resistanceFromFit[s.headstage]
 				endif
 
-				sprintf msg, "Resistance: %g [Ohm]\r", resistance
+				sprintf msg, "Resistance: %g [Ω]\r", resistance
 				DEBUGPRINT(msg)
 
 				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
@@ -4324,38 +4363,17 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruc
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "MaxLeakCurrent":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "NumberOfTestpulses":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
-		case "MaxLeakCurrent":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+			return PSQ_CheckParamCommon(name, s)
 		case "MinPipetteResistance":
 		case "MaxPipetteResistance":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "NextStimSetName":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
-			if(!WaveExists(stimset))
-				return "The stimset can not be created"
-			endif
-			break
-		case "NumberOfTestpulses":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 100))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -4367,23 +4385,19 @@ End
 Function/S PSQ_PipetteInBath_GetHelp(string name)
 
 	strswitch(name)
-		case "SamplingFrequency":
-		case "SamplingMultiplier":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
-			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
 		case "MaxLeakCurrent":
-			return "Maximum current [pA] which is allowed in the pre pulse baseline"
-		case "MinPipetteResistance":
-			return "Minimum allowed pipette resistance [MOhm]"
-		case "MaxPipetteResistance":
-			return "Maximum allowed pipette resistance [MOhm]"
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed"
 		case "NextStimSetName":
-			return "Next stimulus set which should be set in case of success"
+		case "NumberOfFailedSweeps":
 		case "NumberOfTestpulses":
-			return "Expected number of testpulses in the stimset"
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
+		case "MinPipetteResistance":
+			return "Minimum allowed pipette resistance [MΩ]"
+		case "MaxPipetteResistance":
+			return "Maximum allowed pipette resistance [MΩ]"
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -4908,29 +4922,18 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 	string str
 
 	strswitch(name)
+		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params, maxRMSThreshold = 100)
-		case "BaselineChunkLength":
+			return PSQ_CheckParamCommon(name, s, maxRMSThreshold = 100)
 		case "SealThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
 				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "NextStimSetName":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
-			if(!WaveExists(stimset))
-				return "The stimset can not be created"
 			endif
 			break
 		case "TestPulseGroupSelector":
@@ -4947,19 +4950,16 @@ End
 Function/S PSQ_SealEvaluation_GetHelp(string name)
 
 	strswitch(name)
-		case "SamplingFrequency":
-		case "SamplingMultiplier":
+		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
 			return "Minimum required seal threshold, defaults to 1 [GΩ]"
-		case "NumberOfFailedSweeps":
-			return "Number of failed sweeps which marks the set as failed"
-		case "NextStimSetName":
-			return "Next stimulus set which should be set in case of success"
-		case "BaselineChunkLength":
-			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
@@ -5239,7 +5239,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceMaxLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
-			// GOhm -> MOhm
+			// GΩ-> MΩ
 			sealThreshold = AFH_GetAnalysisParamNumerical("SealThreshold", s.params) * GIGA_TO_MEGA
 
 			switch(testpulseGroupSel)

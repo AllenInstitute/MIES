@@ -292,7 +292,7 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		resistance = TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE
 		setVoltage = TPResults[%BaselineSteadyState][headstage] * MILLI_TO_ONE
 
-		DEBUGPRINT("resistance[Ohm]=", var=resistance)
+		DEBUGPRINT("resistance[Ω]=", var=resistance)
 		DEBUGPRINT("setVoltage[V]=", var=setVoltage)
 		DEBUGPRINT("targetVoltage[V]=", var=targetVoltage)
 
