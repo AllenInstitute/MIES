@@ -11,6 +11,7 @@
 /// - Upload the nightly zip package to the FTP (Thomas' job). Don't delete the
 ///   old zip packages, we still need them.
 /// - Update the below URLs
+/// - Update Igor Pro on the CI boxes (Thomas' job).
 
 // These are sphinx substitutions destined for Packages/doc/installation_subst.txt.
 // They are defined here so that we can parse them from within IP.
