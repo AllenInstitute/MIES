@@ -7,7 +7,7 @@
 ///
 /// Developer instructions for raising the required nightly versions:
 ///
-/// - Update the revision numbers for IP8 and or IP9 below in the expression involving "BUILD"
+/// - Update the revision numbers for IP9 below in the expression involving "BUILD"
 /// - Upload the nightly zip package to the FTP (Thomas' job). Don't delete the
 ///   old zip packages, we still need them.
 /// - Update the below URLs
