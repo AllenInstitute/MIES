@@ -96,8 +96,8 @@
 /// Name=Unacquired DA data                                    U_RA_UD    RA                 Interval of unacquired data                                 -1
 /// Type=Testpulse Like;Index=x                                U_TPx      PB, SE             Testpulse like region in stimset                            -1
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B0   PB, SE             Pre pulse baseline of testpulse                             -1
-/// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_B1   PB, SE             Post pulse baseline of testpulse                            -1
-/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_P    PB, SE             Pulse of testpulse                                          -1
+/// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_P    PB, SE             Pulse of testpulse                                          -1
+/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B1   PB, SE             Post pulse baseline of testpulse                            -1
 /// ========================================================== ========== ================== ========================================================== =======
 ///
 /// The tag entry ``Index=x`` is a zero-based index, which tracks how often the specific type of user epoch appears. So for different
