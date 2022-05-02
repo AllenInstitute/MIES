@@ -4630,28 +4630,6 @@ Function/WAVE P_PressureDataTxtWaveRef(device)
 End
 /// @}
 
-/// @brief Returns a wave reference to the temporary wave for IVSCC
-///
-/// Rows:
-/// - 0: tpBuffer, used to hold previous tp settings.
-///      Setting will be restored upon completion of qc function.
-Function/Wave GetIVSCCTemporaryWave(device)
-	string device
-
-	DFREF dfr = GetDevSpecLabNBTempFolder(device)
-
-	WAVE/D/Z/SDFR=dfr wv = IVSCCTemporary
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/D/N=(1) dfr:IVSCCTemporary/Wave=wv
-	SetDimLabel 0, 0, tpBuffer, wv
-
-	return wv
-End
-
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
 Function/DF GetDevSpecLabNBTempFolder(device)
 	string device

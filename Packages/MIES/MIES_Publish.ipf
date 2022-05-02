@@ -329,36 +329,6 @@ Function PUB_ClampModeChange(string device, variable headstage, variable oldClam
 	PUB_Publish(jsonID, AMPLIFIER_CLAMP_MODE_FILTER)
 End
 
-/// @brief Push QC results onto ZeroMQ Publisher socket
-///
-/// Filter: #IVS_PUB_FILTER
-///
-/// Payload: JSON-encoded string with three elements in the top-level object
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///    {
-///      "Description": "some text",
-///      "Issuer": "My QC Function",
-///      "Value": 123
-///    }
-///
-/// \endrst
-Function PUB_IVS_QCState(variable result, string description)
-	variable jsonID
-
-	jsonID = JSON_New()
-	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "Issuer", GetRTStackInfo(2))
-	JSON_AddVariable(jsonID, "Value", result)
-	JSON_AddString(jsonID, "Description", description)
-
-	PUB_Publish(jsonID, IVS_PUB_FILTER)
-End
-
 /// Filter: #PRESSURE_STATE_FILTER
 ///
 /// Example:
