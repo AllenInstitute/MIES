@@ -263,17 +263,22 @@ static Function EnsureCorrectUserAnalysis()
 	REQUIRE_EQUAL_VAR(ItemsInList(FunctionList("InvalidSignature", ";", "WIN:UserAnalysisFunctions.ipf")), 1)
 End
 
-Function CheckHelpStringsOfAllAnalysisFunctions()
-	string funcs, genericFunc, params, names, name, help
-	variable i, j, numFuncs, numParams
+static Function/WAVE GetAnalysisFunctions()
+	string funcs
 
 	funcs = WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
+
 	// remove our test help functions which do nasty things
 	funcs = GrepList(funcs, "Params[[:digit:]]*_V3", 1)
 
-	numFuncs = ItemsInList(funcs)
-	for(i = 0; i < numFuncs; i += 1)
-		genericFunc = StringFromList(i, funcs)
+	return ListToTextWave(funcs, ";")
+End
+
+Function CheckHelpStringsOfAllAnalysisFunctions()
+	string genericFunc, params, names, name, help
+	variable j, numParams
+
+	for(genericFunc : GetAnalysisFunctions())
 		params = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
 
 		names = AFH_GetListOfAnalysisParamNames(params)
