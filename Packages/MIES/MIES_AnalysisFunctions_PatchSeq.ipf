@@ -4356,6 +4356,38 @@ static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multip
 	ASSERT(!cmpstr(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"), multiplierAsString), "Sampling interval multiplier could not be set")
 End
 
+static Function PSQ_SetStimulusSets(string device, variable headstage, string params)
+	string ctrl, stimset, stimsetIndex
+	variable DAC, type, enableIndexing, tabID
+
+	stimset      = AFH_GetAnalysisParamTextual("NextStimSetName", params, defValue = NONE)
+	stimsetIndex = AFH_GetAnalysisParamTextual("NextIndexingEndStimSetName", params, defValue = NONE)
+
+	if(!cmpstr(stimset, NONE) && !cmpstr(stimsetIndex, NONE))
+		return NaN
+	endif
+
+	tabID = GetTabID(device, "ADC")
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	if(cmpstr(stimset, NONE))
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+	endif
+
+	if(cmpstr(stimsetIndex, NONE))
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		PGC_SetAndActivateControl(device, ctrl, str = stimsetIndex, switchTab = 1)
+
+		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 1)
+	endif
+
+	if(tabID != GetTabID(device, "ADC"))
+		PGC_SetAndActivateControl(device, "ADC", val = tabID)
+	endif
+End
+
 Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruct& s)
 	variable val
 	string str
@@ -4635,10 +4667,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
 
 			if(setPassed)
-				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
-				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
-				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+				PSQ_SetStimulusSets(device, s.headstage, s.params)
 			endif
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -5332,10 +5361,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
 
 			if(setPassed)
-				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
-				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
-				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+				PSQ_SetStimulusSets(device, s.headstage, s.params)
 			endif
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
