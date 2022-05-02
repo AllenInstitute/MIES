@@ -1549,8 +1549,9 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 	endswitch
 End
 
-static Function/S PSQ_CheckParamCommon(string name, string params, [variable maxRMSThreshold])
+static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct &s, [variable maxRMSThreshold])
 	variable val
+	string str
 
 	if(ParamIsDefault(maxRMSThreshold))
 		maxRMSThreshold = 20
@@ -1559,21 +1560,70 @@ static Function/S PSQ_CheckParamCommon(string name, string params, [variable max
 	endif
 
 	strswitch(name)
+		case "BaselineChunkLength":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= maxRMSThreshold))
 				return "Invalid value " + num2str(val)
 			endif
 			break
+		case "DAScaleOperator":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			if(cmpstr(str, "+") && cmpstr(str, "*"))
+				return "Invalid string " + str
+			endif
+			break
+		case "DAScaleModifier":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 0 && val <= 1000))
+				return "Not a precentage"
+			endif
+			break
+		case "FailedLevel":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
+		case "NextStimSetName":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
+			if(!WaveExists(stimset))
+				return "The stimset can not be created"
+			endif
+			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
+			endif
+			break
+		case "NumberOfTestpulses":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 100))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "MaxLeakCurrent":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
@@ -1638,9 +1688,10 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "DAScaleModifier":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "DAScales":
 			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
@@ -1686,12 +1737,6 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
-			endif
-			break
-		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Not a precentage"
 			endif
 			break
 		default:
@@ -2236,7 +2281,7 @@ Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct 
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -2478,7 +2523,7 @@ Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -2896,7 +2941,7 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
@@ -3765,9 +3810,13 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "DAScaleOperator":
+		case "DAScaleModifier":
+		case "FailedLevel":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
+			return PSQ_CheckParamCommon(name, s)
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
@@ -3790,34 +3839,10 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 				return "Must be a finite non-zero integer"
 			endif
 			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "FailedLevel":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val))
-				return "Must be a finite value"
-			endif
-			break
 		case "SpikeCheck":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "DAScaleOperator":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			if(cmpstr(str, "+") && cmpstr(str, "*"))
-				return "Invalid string " + str
-			endif
-			break
-		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "AutobiasTargetV":
@@ -4327,38 +4352,17 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruc
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "MaxLeakCurrent":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "NumberOfTestpulses":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params)
-		case "MaxLeakCurrent":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+			return PSQ_CheckParamCommon(name, s)
 		case "MinPipetteResistance":
 		case "MaxPipetteResistance":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "NextStimSetName":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
-			if(!WaveExists(stimset))
-				return "The stimset can not be created"
-			endif
-			break
-		case "NumberOfTestpulses":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 100))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -4909,29 +4913,18 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 	string str
 
 	strswitch(name)
+		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s.params, maxRMSThreshold = 100)
-		case "BaselineChunkLength":
+			return PSQ_CheckParamCommon(name, s, maxRMSThreshold = 100)
 		case "SealThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
 				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "NumberOfFailedSweeps":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
-				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
-			endif
-			break
-		case "NextStimSetName":
-			str = AFH_GetAnalysisParamTextual(name, s.params)
-			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
-			if(!WaveExists(stimset))
-				return "The stimset can not be created"
 			endif
 			break
 		case "TestPulseGroupSelector":
