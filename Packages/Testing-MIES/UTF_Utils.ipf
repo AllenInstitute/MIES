@@ -1188,6 +1188,14 @@ Function FI_NumSearchWithColAndProp4()
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
+Function FI_NumSearchWithColAndProp5()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6+", prop = PROP_GREP)
+	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
+End
+
 Function FI_NumSearchWithRestRows()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -1292,12 +1300,26 @@ Function FI_TextSearchWithColAndProp4()
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
+Function FI_TextSearchWithColAndProp5()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr text
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "^1.*$", prop = PROP_GREP, startLayer = 1, endLayer = 1)
+	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
+End
+
 Function FI_TextSearchWithRestRows()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
 	WAVE/Z indizes = FindIndizes(text, col = 1, str = "2", startRow = 2, endRow = 3)
 	CHECK_EQUAL_WAVES(indizes, {2}, mode = WAVE_DATA)
+End
+
+Function FI_EmptyWave()
+	Make/FREE/N=0 emptyWave
+	WAVE/Z indizes = FindIndizes(emptyWave, col = 0, var = NaN)
+	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_AbortsWithInvalidParams1()
@@ -1453,6 +1475,17 @@ Function FI_AbortsWithInvalidWave()
 	endtry
 End
 
+Function FI_AbortsWithInvalidRegExp()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	try
+		FindIndizes(numeric, col = 0, str = "*", prop = PROP_GREP)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
 /// @}
 
 /// @{
@@ -6082,4 +6115,14 @@ End
 Function CRTSI_Works()
 
 	CHECK_CLOSE_VAR(ConvertSamplingIntervalToRate(5), 200)
+End
+
+Function IVR_Works()
+	string null
+
+	CHECK(IsValidRegexp(".*"))
+	CHECK(IsValidRegexp("(.*)"))
+
+	CHECK(!IsValidRegexp("*"))
+	CHECK(!IsValidRegexp(""))
 End

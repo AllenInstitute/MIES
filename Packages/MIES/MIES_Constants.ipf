@@ -236,6 +236,7 @@ Constant PROP_NON_EMPTY                = 0x01 ///< Wave entry is not NaN or ""
 Constant PROP_EMPTY                    = 0x02 ///< Wave entry is NaN or ""
 Constant PROP_MATCHES_VAR_BIT_MASK     = 0x04 ///< Wave entry matches the bitmask given in var
 Constant PROP_NOT_MATCHES_VAR_BIT_MASK = 0x08 ///< Wave entry does not match the bitmask given in var
+Constant PROP_GREP                     = 0x10 ///< Wave entry matches the regular expression given in str
 ///@}
 
 /// @name Parameters for GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
@@ -1073,7 +1074,7 @@ StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION   = "%s bounds action"
 StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
-StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
+StrConstant PSQ_FMT_LBN_SPIKE_PASS         = "%s spike QC"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE      = "%s pipette resistance"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS = "%s pipette resistance QC"
 StrConstant PSQ_FMT_LBN_SE_RESISTANCE_A    = "%s seal resistance A"

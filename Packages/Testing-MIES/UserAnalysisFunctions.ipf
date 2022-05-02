@@ -1039,3 +1039,14 @@ End
 Function ComplainWithProperString(string device, STRUCT AnalysisFunction_V3& s)
 	FAIL()
 End
+
+Function EnableIndexing(string device, STRUCT AnalysisFunction_V3& s)
+
+	switch(s.eventType)
+		case POST_DAQ_EVENT:
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = CHECKBOX_SELECTED)
+			break
+		default:
+			// do nothing
+	endswitch
+End

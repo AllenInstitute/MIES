@@ -55,6 +55,7 @@
 /// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                        On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check             On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally                ms       Numerical                RB, DA (Supra), CR          No                     Yes
+/// PSQ_FMT_LBN_SPIKE_PASS          Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                               % Hz/pA  Numerical                DA (Supra)                  No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
 /// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
@@ -63,7 +64,6 @@
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
 /// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                   (none)   Numerical                All                         No                     Yes
 /// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                         Ohm      Numerical                PB                          No                     No
 /// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                      On/Off   Numerical                PB                          No                     No
@@ -165,7 +165,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			break
 	endswitch
 
-	sprintf msg, "postPulseChunkLength %d, prePulseChunkLength %d, pulseDuration %g", s.postPulseChunkLength, s.prePulseChunkLength, s.pulseDuration
+	sprintf msg, "postPulseChunkLength %d, prePulseChunkLength %d, pulseDuration %g, usesBaselineChunkEpochs %g", s.postPulseChunkLength, s.prePulseChunkLength, s.pulseDuration, s.usesBaselineChunkEpochs
 	DEBUGPRINT(msg)
 End
 
@@ -1160,6 +1160,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 		first = offset
 		last  = searchEnd
 	else
+		// search pulse in DA and use the pulse as search region
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
 		[minVal, maxVal] = WaveMinAndMaxWrapper(singleDA, x1 = offset, x2 = inf)
 
@@ -1731,7 +1732,7 @@ End
 ///
 ///    // set properties
 ///
-///    key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASSED, query = 1)
+///    key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
 ///    setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
@@ -3684,8 +3685,8 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 	endswitch
 End
 
-Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
-	variable value, preActiveHS
+static Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
+	variable value
 
 	value = AFH_GetAnalysisParamNumerical(name, params)
 
@@ -3694,10 +3695,20 @@ Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, stri
 		return NaN
 	endif
 
+	PSQ_SetAutobiasTargetV(device, headstage, value)
+End
+
+static Function PSQ_SetAutobiasTargetV(string device, variable headstage, variable value)
+	variable preActiveHS
+
 	preActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
 
 	if(preActiveHS != headstage)
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
+	endif
+
+	if(!DAG_GetNumericalValue(device, "check_DataAcq_AutoBias"))
+		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = value)
@@ -4054,7 +4065,7 @@ Function PSQ_Chirp(device, s)
 			spikeCheck = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			ASSERT(IsFinite(spikeCheck), "Invalid spikeCheck value")
 
-			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
 
@@ -4146,7 +4157,7 @@ Function PSQ_Chirp(device, s)
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 	WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 	spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : NaN
 
@@ -4191,7 +4202,7 @@ Function PSQ_Chirp(device, s)
 			endif
 
 			if(WaveExists(spikePass))
-				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS)
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS)
 				ED_AddEntryToLabnotebook(device, key, spikePass, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 				spikeCheckPassed = spikePass[s.headstage]
@@ -5361,6 +5372,8 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
 	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
 
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
+
 	epBegin = 0
 	epEnd   = totalOnsetDelay * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
@@ -5381,16 +5394,13 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
 			ASSERT(amplitude == 0, "Invalid amplitude")
 
-			chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
-
 			if(duration != chunkLength)
 				printf "The length of epoch %d (%g) is different from the expected one %g.\r", i, duration, chunkLength
 				ControlWindowToFront()
 				return 1
 			endif
 
-			sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", userEpochIndexBLC
-			sprintf shortName, "BLS%d", userEpochIndexBLC
+			[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(userEpochIndexBLC)
 			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 			userEpochIndexBLC += 1
 		elseif(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
@@ -5476,4 +5486,9 @@ static Function PSQ_SE_Publish(string device, variable sweepNo, variable headsta
 	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
 
 	FFI_Publish(jsonID, ANALYSIS_FUNCTION_SE)
+End
+
+static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
+	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
+	sprintf shortName, "BLS%d", index
 End

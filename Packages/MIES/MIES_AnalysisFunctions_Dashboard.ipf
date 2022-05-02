@@ -276,9 +276,9 @@ static Function AD_FillWaves(win, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_SE, PSQ_PB, PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
-			//     If not passed, all are failing
+			//         If not passed, all are failing
 
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
@@ -495,7 +495,7 @@ static Function/S AD_GetPipetteInBathFailMsg(WAVE numericalValues, WAVE/T textua
 End
 
 static Function/S AD_GetSealEvaluationFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
-	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
+	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_SE_NUM_SWEEPS_PASS)
 End
 
 static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
@@ -747,7 +747,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				spikeCheck = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(spikeCheck)
-					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+					key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 					WAVE/Z spikePass = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 					if(WaveExists(spikePass) && !spikePass[headstage])

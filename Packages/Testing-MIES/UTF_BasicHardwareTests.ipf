@@ -3968,7 +3968,7 @@ Function RestoreDAEphysPanel([str])
 	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
 	JSON_SetString(jsonID, jPath + "/StrValue", str)
 	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
-	stimSetPath = S_path + "..:..:Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
+	stimSetPath = S_path + "::Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
 	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
 
 	// replace stored serial number with present serial number
@@ -5479,4 +5479,36 @@ End
 
 Function CheckTPStorage3_REENTRY([string str])
 	CheckTPStorage(str)
+End
+
+static Function EnableIndexingInPostDAQStimsets_IGNORE(string device)
+
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "EnableIndexing")
+End
+
+static Function EnableIndexingInPostDAQ_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_DA_0")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EnableIndexingInPostDAQ([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = EnableIndexingInPostDAQStimsets_IGNORE, preAcquireFunc = EnableIndexingInPostDAQ_IGNORE)
+End
+
+Function EnableIndexingInPostDAQ_REENTRY([string str])
+	string ctrl, stimset, expected
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+	stimset = DAG_GetTextualValue(str, ctrl, index = 0)
+	expected = "StimulusSetA_DA_0"
+	CHECK_EQUAL_STR(stimset, expected)
 End

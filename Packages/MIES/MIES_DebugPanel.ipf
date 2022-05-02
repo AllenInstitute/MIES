@@ -113,11 +113,11 @@ static Function DP_FillDebugPanelWaves()
 
 	symbPath = GetUniqueSymbolicPath()
 
-	path = FunctionPath("") + ":..:"
+	path = FunctionPath("") + "::"
 	NewPath/Q/O $symbPath, path
 	allProcFiles = GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf")
 
-	path += "..:IPNWB"
+	path += ":IPNWB"
 	NewPath/Q/O $symbPath, path
 	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf"), "|")
 
