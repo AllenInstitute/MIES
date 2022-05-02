@@ -291,6 +291,31 @@ Function CheckHelpStringsOfAllAnalysisFunctions()
 	endfor
 End
 
+static Function AnalysisParamsMustHaveSameOptionality()
+	variable numFuncs
+	WAVE/T funcs = GetAnalysisFunctions()
+
+	numFuncs = DimSize(funcs, ROWS)
+
+	Make/N=(numFuncs)/WAVE requiredParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], REQUIRED_PARAMS)), ";")
+	Make/N=(numFuncs)/WAVE optParams      = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
+
+	Concatenate/NP/FREE {requiredParams}, allRequiredParams
+	Concatenate/NP/FREE {optParams}, allOptParams
+
+	WAVE/Z allRequiredParamsUnique = GetUniqueEntries(allRequiredParams)
+	WAVE/Z allOptParamsUnique      = GetUniqueEntries(allOptParams)
+
+	WAVE/Z duplicates = GetSetIntersection(allRequiredParamsUnique, allOptParamsUnique)
+
+	// these parameters are expected to have different optionality
+	CHECK(!RemoveTextWaveEntry1D(duplicates, "DAScaleModifier"))
+	CHECK(!RemoveTextWaveEntry1D(duplicates, "DAScaleOperator"))
+	CHECK(!RemoveTextWaveEntry1D(duplicates, "FailedLevel"))
+
+	CHECK_EQUAL_VAR(DimSize(duplicates, ROWS), 0)
+End
+
 // invalid analysis functions
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT1([str])
