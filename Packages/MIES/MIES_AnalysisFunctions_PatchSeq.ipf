@@ -1526,7 +1526,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
 		case "BaselineChunkLength":
-			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
+			return "Length of a baseline QC chunk to evaluate"
 		case "BaselineRMSLongThreshold":
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
