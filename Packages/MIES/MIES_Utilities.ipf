@@ -2230,7 +2230,7 @@ End
 /// author s.r.chinn
 ///
 /// @param inwave The wave that will have its rows shuffled.
-/// @param noiseGenMode [optional, defaults to #NOISE_GEN_LINEAR_CONGRUENTIAL] type of RNG to use
+/// @param noiseGenMode [optional, defaults to #NOISE_GEN_XOSHIRO] type of RNG to use
 Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 	wave inwave
 	variable noiseGenMode
@@ -2239,7 +2239,7 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 	variable N = DimSize(inwave, ROWS)
 
 	if(ParamIsDefault(noiseGenMode))
-		noiseGenMode = NOISE_GEN_LINEAR_CONGRUENTIAL
+		noiseGenMode = NOISE_GEN_XOSHIRO
 	endif
 
 	for(i = N; i>1; i-=1)
@@ -2377,12 +2377,15 @@ End
 /// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
 ///
 /// Return a reproducible random number depending on the RNG seed.
-threadsafe Function GetReproducibleRandom()
-
+threadsafe Function GetReproducibleRandom([variable noiseGenMode])
 	variable randomSeed
 
+	if(ParamIsDefault(noiseGenMode))
+		noiseGenMode = NOISE_GEN_XOSHIRO
+	endif
+
 	do
-		randomSeed = abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))
+		randomSeed = abs(enoise(1, noiseGenMode))
 	while(randomSeed == 0)
 
 	return randomSeed

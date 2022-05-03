@@ -3460,7 +3460,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 12
+static Constant WP_WAVE_LAYOUT_VERSION = 13
 
 /// @brief Automated testing helper
 static Function GetWPVersion()
@@ -3477,7 +3477,7 @@ Function UpgradeWaveParam(wv)
 		return NaN
 	endif
 
-	Redimension/N=(86, -1, EPOCH_TYPES_TOTAL_NUMBER) wv
+	Redimension/N=(88, -1, EPOCH_TYPES_TOTAL_NUMBER) wv
 	AddDimLabelsToWP(wv)
 
 	// custom wave offsets special location removed
@@ -3516,6 +3516,11 @@ Function UpgradeWaveParam(wv)
 	// nothing to do as we keep them float
 
 	// upgrade to wave version 12 is done in AddDimLabelsToWP (liberal object names)
+
+	if(WaveVersionIsSmaller(wv, 13))
+		wv[86][][] = NOISE_GEN_MERSENNE_TWISTER
+		wv[87][][] = NOISE_GEN_LINEAR_CONGRUENTIAL
+	endif
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
@@ -3625,6 +3630,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 83, $("PT [First Mixed Frequency] op")  , wv
 	SetDimLabel ROWS, 84, $("PT [Last Mixed Frequency] op")   , wv
 	SetDimLabel ROWS, 85, $("Number of pulses op")            , wv
+	SetDimLabel ROWS, 86, $("Noise RNG type")                 , wv
+	SetDimLabel ROWS, 87, $("Noise RNG type [Mixed Freq]")    , wv
 End
 
 /// @brief Return the parameter wave for the wave builder panel
@@ -3665,7 +3672,7 @@ End
 /// @sa GetWaveBuilderWaveParam()
 Function/WAVE GetWaveBuilderWaveParamAsFree()
 
-	Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER)/FREE wv
+	Make/D/N=(88, 100, EPOCH_TYPES_TOTAL_NUMBER)/FREE wv
 
 	// noise low/high pass filter to off
 	wv[20][][EPOCH_TYPE_NOISE] = 0
@@ -3679,6 +3686,11 @@ Function/WAVE GetWaveBuilderWaveParamAsFree()
 
 	// noise type
 	wv[54][][EPOCH_TYPE_NOISE] = 0
+
+	// noise generator types
+	// compatibility defaults are set in UpgradeWaveParam()
+	wv[86][][] = NOISE_GEN_XOSHIRO
+	wv[87][][] = NOISE_GEN_XOSHIRO
 
 	AddDimLabelsToWP(wv)
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)

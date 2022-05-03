@@ -568,15 +568,12 @@ Function CreatesReproducibleResults()
 
 	rngSeed = 1
 	Make/FREE/N=1024/L dataInt = GetNextRandomNumberForDevice(device)
-	CHECK_EQUAL_VAR(998651135, WaveCRC(0, dataInt))
+	CHECK_EQUAL_VAR(2932874867, WaveCRC(0, dataInt))
 
 	rngSeed = 1
 	Make/FREE/N=1024/D dataDouble = GetNextRandomNumberForDevice(device)
 
-	// EqualWaves is currently (7.0.5.1) broken for different data types
-	Make/FREE/B/N=1024 equal = dataInt[p] - dataDouble[p]
-	CHECK_EQUAL_VAR(WaveMax(equal), 0)
-	CHECK_EQUAL_VAR(WaveMin(equal), 0)
+	CHECK_EQUAL_WAVES(dataInt, dataDouble, mode = WAVE_DATA)
 End
 /// @}
 

@@ -677,7 +677,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 55
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 41
-Constant WAVEBUILDER_PANEL_VERSION        = 12
+Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
 /// Version of the labnotebooks and results (numerical and textual) waves
@@ -842,7 +842,8 @@ Constant INDEP_EPOCH_TYPE = 0
 /// @name Parameters for gnoise and enoise
 ///@{
 Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
-Constant NOISE_GEN_MERSENNE_TWISTER    = 2
+Constant NOISE_GEN_MERSENNE_TWISTER    = 2 ///< Don't use for new code.
+Constant NOISE_GEN_XOSHIRO             = 3
 ///@}
 
 StrConstant SEGMENTWAVE_SPECTRUM_PREFIX = "segmentWaveSpectrum"

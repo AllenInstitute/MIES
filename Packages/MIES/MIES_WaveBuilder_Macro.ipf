@@ -708,7 +708,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P30,value=_NUM:0
-	CheckBox check_SPT_MixedFreq_P41,pos={880.00,189.00},size={107.00,15.00},disable=1,proc=WBP_CheckProc
+	CheckBox check_SPT_MixedFreq_P41,pos={880.00,189.00},size={106.00,15.00},disable=1,proc=WBP_CheckProc
 	CheckBox check_SPT_MixedFreq_P41,title="Mixed Frequency"
 	CheckBox check_SPT_MixedFreq_P41,help={"Draw the pulses from a frequency range instead of only using a fixed frequency."}
 	CheckBox check_SPT_MixedFreq_P41,userdata(tabnum)="5"
@@ -742,7 +742,7 @@ Window WaveBuilder() : Panel
 	CheckBox check_SPT_MixedFreqShuffle_P42,value=0
 	Button button_NewStimsetSeed_S97,pos={62.00,138.00},size={53.00,19.00},proc=WBP_ButtonProc_NewSeed
 	Button button_NewStimsetSeed_S97,title="Reseed"
-	Button button_NewStimsetSeed_S97,help={"Reseed the pseudo RNG for epochs using the global seed."}
+	Button button_NewStimsetSeed_S97,help={"Reseed the pseudo RNG for epochs using the global seed.\rThis also upgrades the pseudo RNG to the latest version."}
 	Button button_NewStimsetSeed_S97,userdata(ResizeControlsInfo)=A"!!,E2!!#@n!!#>b!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_NewStimsetSeed_S97,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_NewStimsetSeed_S97,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -1223,7 +1223,7 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGH1;UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)="NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:237.00;GUIDE1:FT;GUIDE2:;RELPOSITION:237;"
-	SetWindow kwTopWin,userdata(panelVersion)="11"
+	SetWindow kwTopWin,userdata(panelVersion)="12"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
 	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
 	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="wavebuilder"
