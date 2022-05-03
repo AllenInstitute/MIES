@@ -90,7 +90,7 @@ Thirty six hints for writing analysis functions
    We always have the following three test cases:
 
      - The first has all QC (except ``Sampling Interval QC``) failing.
-     - The secon has all QC passing.
+     - The second has all QC passing.
      - The last one only has ``Sampling Interval QC`` failing.
 
 #. Implement all test cases, fixing bugs in the analysis function on the way.
