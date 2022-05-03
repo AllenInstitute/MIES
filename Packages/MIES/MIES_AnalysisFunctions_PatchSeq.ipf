@@ -325,8 +325,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 		ASSERT(numBaselineChunks == 1, "Unexpected number of baseline chunks")
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -777,8 +776,8 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 
 	WAVE DAQDataWave    = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	length = stopCollectionPoint * DimDelta(DAQDataWave, ROWS)
 
@@ -2004,8 +2003,7 @@ Function PSQ_DAScale(device, s)
 					FitResistance(device, showPlot = showPlot)
 
 				elseif(!cmpstr(opMode, PSQ_DS_SUPRA))
-					totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-									  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+					totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 					WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_DA_SCALE, sweep, s.headstage, totalOnsetDelay, \
 					                                          PSQ_DS_SPIKE_LEVEL, numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
@@ -3164,8 +3162,7 @@ Function PSQ_Ramp(device, s)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -3507,8 +3504,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		endif
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-						+ GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	if(TestOverrideActive())
 		baselineVoltage = PSQ_CR_BASELINE_V_FAKE
@@ -4090,8 +4086,7 @@ Function PSQ_Chirp(device, s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-				  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+			totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -4189,8 +4184,7 @@ Function PSQ_Chirp(device, s)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -4759,8 +4753,7 @@ static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * MILLI_TO_ONE
 
@@ -5396,8 +5389,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
