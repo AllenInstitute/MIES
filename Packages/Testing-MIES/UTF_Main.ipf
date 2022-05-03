@@ -13,6 +13,7 @@
 #include "UTF_AnalysisFunctionHelpers"
 #include "UTF_AsynFrameworkTest"
 #include "UTF_Configuration"
+#include "UTF_EpochswoHardware"
 #include "UTF_HelperFunctions"
 #include "UTF_Labnotebook"
 #include "UTF_Macros"
@@ -84,6 +85,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", inf)
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
 	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
+	list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
 	list = AddListItem("UTF_Macros.ipf", list, ";", inf)
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)

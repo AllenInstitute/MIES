@@ -438,7 +438,7 @@ static Function EP_SortEpochs(device)
 	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = EP_GetEpochCount(device, channel)
+		epochCnt = EP_GetEpochCount(epochWave, channel)
 		if(epochCnt == 0)
 			continue
 		endif
@@ -466,14 +466,13 @@ static Function EP_SortEpochs(device)
 End
 
 /// @brief Returns the number of epoch in the epochsWave for the given channel
-/// @param[in] device title of device panel
-/// @param[in] channel    number of DA channel
+///
+/// @param[in] epochWave wave with epoch info
+/// @param[in] channel   number of DA channel
+///
 /// @return number of epochs for channel
-static Function EP_GetEpochCount(device, channel)
-	string device
-	variable channel
+static Function EP_GetEpochCount(WAVE/T epochWave, variable channel)
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
 	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
@@ -496,7 +495,8 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Currently only epochs for the DA channels are supported")
 
 	if(ParamIsDefault(shortName))
-		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(device, channelNumber)
+		WAVE/T epochWave = GetEpochsWave(device)
+		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(epochWave, channelNumber)
 	else
 		ASSERT(!GrepString(shortName, "^" + EPOCH_SHORTNAME_USER_PREFIX), "short name must not be prefixed with " + EPOCH_SHORTNAME_USER_PREFIX)
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
@@ -542,7 +542,7 @@ static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
 
-	i = EP_GetEpochCount(device, channel)
+	i = EP_GetEpochCount(epochWave, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
 	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
@@ -663,7 +663,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 
 		channel = configWave[i][%ChannelNumber]
 
-		epochCnt = EP_GetEpochCount(device, channel)
+		epochCnt = EP_GetEpochCount(epochWave, channel)
 
 		for(epoch = 0; epoch < epochCnt; epoch += 1)
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
@@ -700,46 +700,71 @@ End
 /// @param channelNumber   number of channel
 /// @param shortname       short name filter, can be a regular expression which is matched caseless
 /// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
+/// @param epochsWave      [optional: defaults to $""] when passed, gathers epoch information from this wave directly.
+///                        This is required for callers who want to read epochs during MID_SWEEP_EVENT in analysis functions.
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel])
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel, WAVE/T epochsWave])
 
-	variable index, epochCnt
+	variable index, epochCnt, midSweep
+	string regexp
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
-	WAVE/Z settings
-	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
+	if(ParamIsDefault(epochsWave) || !WaveExists(epochsWave))
+		midSweep = 0
+	else
+		midSweep = 1
+	endif
+
+	if(!midsweep)
+		WAVE/T/Z epochInfo =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+
+		if(!WaveExists(epochInfo))
+			return $""
+		endif
+
+		epochCnt = DimSize(epochInfo, ROWS)
+	else
+		epochCnt = EP_GetEpochCount(epochsWave, channelNumber)
+
+		if(epochCnt == 0)
+			return $""
+		endif
+
+		Duplicate/FREE/T/RMD=[0, epochCnt - 1][][channelNumber] epochsWave, epochInfo
+	endif
+
+	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
+
+	regexp = "(?i)" + shortname
+	WAVE/Z indizesName = FindIndizes(shortnames, col = 0, str = regexp, prop = PROP_GREP)
+
+	if(!WaveExists(indizesName))
 		return $""
 	endif
 
-	WAVE/T settingsT = settings
-	WAVE/T epochInfo = EP_EpochStrToWave(settingsT[index])
-	epochCnt = DimSize(epochInfo, ROWS)
-
 	if(IsNaN(treelevel))
-		Make/FREE/N=(epochCnt) indizesLevel = p
+		WAVE indizes = indizesName
 	else
 		WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
 
 		if(!WaveExists(indizesLevel))
 			return $""
 		endif
-	endif
 
-	// @todo add support for grepping in FindIndizes later
-	Make/FREE/N=(epochCnt) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), "(?i)" + shortName) ? p : NaN
-
-	WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
-	if(!WaveExists(indizes))
-		return $""
+		WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
+		if(!WaveExists(indizes))
+			return $""
+		endif
 	endif
 
 	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
 
 	SortColumns/KNDX={EPOCH_COL_STARTTIME} sortWaves={matches}
+
+	CopyDimLabels/COLS=(COLS) epochInfo, matches
 
 	return matches
 End
