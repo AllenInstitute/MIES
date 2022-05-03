@@ -1305,6 +1305,7 @@ Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
 		case 2: // mouse up
 			NewRandomSeed()
 			WBP_UpdateControlAndWave(ba.ctrlName, var = GetReproducibleRandom())
+			WBP_UpgradePRNG()
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
@@ -1322,6 +1323,13 @@ Function WBP_PopupMenu_AnalysisFunctions(pa) : PopupMenuControl
 	endswitch
 
 	return 0
+End
+
+static Function WBP_UpgradePRNG()
+	WAVE WP = GetWaveBuilderWaveParam()
+
+	WP[%$("Noise RNG type")][][]              = NOISE_GEN_XOSHIRO
+	WP[%$("Noise RNG type [Mixed Freq]")][][] = NOISE_GEN_XOSHIRO
 End
 
 static Function WBP_AnaFuncsToWPT()
