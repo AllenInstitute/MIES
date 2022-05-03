@@ -1531,6 +1531,8 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
 			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "FailedLevel":
+			return "Absolute level for spike search"
 		case "MaxLeakCurrent":
 			return "Maximum current [pA] which is allowed in the pre pulse baseline"
 		case "NextIndexingEndStimSetName": // TODO unify in all places after merge of #1330
@@ -3783,6 +3785,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "FailedLevel":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
@@ -3797,8 +3800,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
-		case "FailedLevel":
-			return "Absolute level for spike search, required when SpikeCheck is enabled."
 		case "DAScaleOperator":
 			return "Set the math operator to use for combining the DAScale and the "            \
 			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
