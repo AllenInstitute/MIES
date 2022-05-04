@@ -2239,7 +2239,7 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 		return 0
 	endif
 
-	cmdPath = GetWindowsPath(GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe")
+	cmdPath = GetWindowsPath(GetFolder(FunctionPath("")) + "::tools:nircmd:nircmd.exe")
 	if(!FileExists(cmdPath))
 		printf "nircmd.exe is not installed, please download it here: %s", "http://www.nirsoft.net/utils/nircmd.html"
 		return NaN
