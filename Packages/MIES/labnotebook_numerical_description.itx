@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(177,6)	labnotebook_numerical_description
+WAVES/T/N=(178,6)	labnotebook_numerical_description
 BEGIN
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -178,6 +178,7 @@ BEGIN
 	"Minimum TP resistance for tolerance"	"MΩ"	"1"	"Testpulse resistance values which differ more than this value from their value on the last TP run are documented in the sweep wave note."	"INDEP"	"IC;VC;I=0"
 	"Send TP settings to all headstages"	"On/Off"	"-"	"GUI control for headstage dependent testpulse settings."	"INDEP"	"IC;VC;I=0"
 	"Epochs version"	""	"1"	"Version number of the stored epoch information."	"INDEP"	"IC;VC;I=0"
+	"Get/Set Inter-trial interval"	"On/Off"	"-"	"Determines if the ITI is readout from the stimset in each sweep or the ITI from GUI control is used."	"INDEP"	"IC;VC;I=0"
 END
 X SetScale/P x 0,1,"", labnotebook_numerical_description; SetScale/P y 0,1,"", labnotebook_numerical_description; SetScale d 0,0,"", labnotebook_numerical_description
 X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:1;"
