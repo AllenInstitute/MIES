@@ -1526,7 +1526,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
 		case "BaselineChunkLength":
-			return "Length of a baseline QC chunk to evaluate, defaults to 500 [ms]"
+			return "Length of a baseline QC chunk to evaluate"
 		case "BaselineRMSLongThreshold":
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
@@ -4978,9 +4978,9 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - See below for the stimset layout
-/// - The dedicated baseline chunks are before each testpulse group (epoch 0
-///   and 11) and must match the length given in the `BaselineChunkLength`
-///   analysis parameter
+/// - The dedicated baseline epochs before each testpulse group (epoch 0 and 11)
+///   and must be at least as large as the given `BaselineChunkLength` analysis
+///   parameter
 ///
 /// Testing:
 /// For testing the range detection logic, the results can be defined in the wave
@@ -5010,14 +5010,14 @@ End
 /// We always expect PSQ_SE_REQUIRED_EPOCHS (22) epochs even if the user only chose `First` or `Second` on testpulse selection.
 ///
 ///    BEGIN group A
-/// 0: baselineQC chunk with length `BaselineChunkLength` before group A
+/// 0: baselineQC chunk with length `BaselineChunkLength` or longer before group A
 /// 1-3: 1. TP
 /// 4-6: 2. TP
 /// 7-9: 3. TP
 ///    END group A
 /// 10: empty space, can be zero points long, but is always present
 ///    BEGIN group B
-/// 11: baselineQC chunk with length `BaselineChunkLength` before group B
+/// 11: baselineQC chunk with length `BaselineChunkLength` or longer before group B
 /// 12-14: 1. TP
 /// 15-17: 2. TP
 /// 18-20: 3. TP
@@ -5351,7 +5351,7 @@ End
 /// @return 0 on success, 1 on failure
 static Function PSQ_SE_CreateEpochs(string device, variable headstage, string params)
 	variable DAC, userEpochIndexBLC, userEpochTPIndexBLC, chunkLength, testpulseGroupSel
-	variable amplitude,  numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, DAScale
+	variable amplitude,  numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, DAScale, wbBegin, wbEnd
 	string setName, shortName, tags
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
@@ -5374,13 +5374,13 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
-	epBegin = 0
-	epEnd   = totalOnsetDelay * MILLI_TO_ONE
+	wbBegin = 0
+	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
-		epBegin = epEnd
-		epEnd   = epBegin + duration
+		wbBegin = wbEnd
+		wbEnd   = wbBegin + duration
 
 		if(!(testpulseGroupSel & PSQ_SE_TGS_FIRST) && i >= 0 && i < 10)
 			// group A was not selected
@@ -5394,16 +5394,23 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
 			ASSERT(amplitude == 0, "Invalid amplitude")
 
-			if(duration != chunkLength)
-				printf "The length of epoch %d (%g) is different from the expected one %g.\r", i, duration, chunkLength
+			if(duration < chunkLength)
+				printf "The length of epoch %d is %g s but that is smaller than the required %g s by \"BaselineChunkLength\".", i, duration, chunkLength
 				ControlWindowToFront()
 				return 1
 			endif
+
+			// BLS epochs are only chunkLength long
+			epBegin = wbBegin
+			epEnd   = epBegin + chunkLength
 
 			[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(userEpochIndexBLC)
 			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 			userEpochIndexBLC += 1
 		elseif(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
+			epBegin = wbBegin
+			epEnd   = wbEnd
+
 			// TPs start with TPx_B0
 			PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, epBegin, i, userEpochTPIndexBLC++)
 		endif
