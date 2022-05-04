@@ -420,21 +420,6 @@ Function TEST_CASE_END_OVERRIDE(name)
 			MoveFile experimentNWBFile as (baseFolder + nwbFile)
 		endif
 	endif
-
-#ifdef AUTOMATED_TESTING_DEBUGGING
-
-	// accessing UTF internals, don't do that at home
-	// but it helps debugging flaky tests
-	DFREF dfr = GetPackageFolder()
-	NVAR/Z/SDFR=dfr error_count
-
-	if(NVAR_Exists(error_count) && error_count > 0)
-		CtrlNamedBackGround _all_, status
-		print s_info
-	endif
-
-#endif
-
 End
 
 /// @brief Checks user epochs for consistency
