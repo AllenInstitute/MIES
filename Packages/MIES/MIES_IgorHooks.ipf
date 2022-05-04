@@ -274,9 +274,22 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_UNCOMPILED)
+	// catch all error conditions, asserts and aborts
+	// and ignore them
+	AssertOnAndClearRTError()
+	try
+		DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_UNCOMPILED); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
 
-	ASYNC_Stop(timeout=5)
+	// dito
+	AssertOnAndClearRTError()
+	try
+		ASYNC_Stop(timeout=5); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
