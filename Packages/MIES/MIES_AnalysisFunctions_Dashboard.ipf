@@ -655,6 +655,8 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 				endif
 			endif
 			break
+		default:
+			BUG("No support for analysis function type: " + num2str(anaFuncType))
 	endswitch
 
 	return ""
