@@ -223,7 +223,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 	endif
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	MAKE/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) durations = NaN
+	WAVE durations = LBN_GetNumericWave()
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -281,7 +281,7 @@ End
 static Function PSQ_StoreRMSThresholdsInLabnotebook(string device, variable type, variable sweepNo, variable headstage, variable rmsShortThreshold, variable rmsLongThreshold)
 	string key
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	WAVE values = LBN_GetNumericWave()
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_THRESHOLD)
 	// mV -> V
@@ -304,7 +304,7 @@ static Function PSQ_EvaluateBaselinePassed(string device, variable type, variabl
 	DEBUGPRINT(msg)
 
 	// document BL QC results
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	WAVE result = LBN_GetNumericWave()
 	result[headstage] = baselineQCPassed
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_BL_QC_PASS)
@@ -418,7 +418,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
 				WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
 			else
-				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
+				WAVE durations = LBN_GetNumericWave()
+				durations = ps.pulseDuration
 			endif
 
 			// skip: onset delay, the pulse itself and one chunk of post pulse baseline
@@ -502,14 +503,14 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	WAVE config = GetDAQConfigWave(device)
 
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgCurrent     = NaN
-	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) leakCurPassed  = NaN
+	WAVE rmsShort       = LBN_GetNumericWave()
+	WAVE rmsShortPassed = LBN_GetNumericWave()
+	WAVE rmsLong        = LBN_GetNumericWave()
+	WAVE rmsLongPassed  = LBN_GetNumericWave()
+	WAVE avgVoltage     = LBN_GetNumericWave()
+	WAVE targetVPassed  = LBN_GetNumericWave()
+	WAVE avgCurrent     = LBN_GetNumericWave()
+	WAVE leakCurPassed  = LBN_GetNumericWave()
 
 	targetV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
@@ -734,7 +735,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	DEBUGPRINT(msg)
 
 	// document chunk results
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	WAVE result = LBN_GetNumericWave()
 	result[INDEP_HEADSTAGE] = chunkPassed
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -1094,7 +1095,7 @@ static Function PSQ_StoreStepSizeInLBN(device, type, sweepNo, stepsize, [future]
 		future = !!future
 	endif
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	WAVE values = LBN_GetNumericWave()
 	values[INDEP_HEADSTAGE] = stepsize
 	key = CreateAnaFuncLBNKey(type, SelectString(future, PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE))
 	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = sweepNo)
@@ -1130,7 +1131,8 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 	variable minVal, maxVal, numSpikesFoundOverride
 	string msg
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
+	WAVE spikeDetection = LBN_GetNumericWave()
+	spikeDetection = (p == headstage ? 0 : NaN)
 
 	if(WaveRefsEqual(sweepWave, GetDAQDataWave(device, DATA_ACQUISITION_MODE)))
 		WAVE config = GetDAQConfigWave(device)
@@ -1511,7 +1513,7 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 
 	samplingFrequencyPassed = CheckIfClose(expected, actual, tol = 1)
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	WAVE result = LBN_GetNumericWave()
 	result[INDEP_HEADSTAGE] = samplingFrequencyPassed
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SAMPLING_PASS)
 	ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -1957,7 +1959,7 @@ Function PSQ_DAScale(device, s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) opModeLBN
+			WAVE/T opModeLBN = LBN_GetTextWave()
 			opModeLBN[INDEP_HEADSTAGE] = opMode
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE)
 			ED_AddEntryToLabnotebook(device, key, opModeLBN, overrideSweepNo = s.sweepNo)
@@ -1972,7 +1974,7 @@ Function PSQ_DAScale(device, s)
 
 			sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -1980,7 +1982,7 @@ Function PSQ_DAScale(device, s)
 			sprintf msg, "SamplingFrequency %s, Sweep %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(sweepPassed)
 			DEBUGPRINT(msg)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) fISlope = NaN
+			WAVE fISlope = LBN_GetNumericWave()
 
 			if(sweepPassed)
 
@@ -1990,9 +1992,9 @@ Function PSQ_DAScale(device, s)
 				ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
 				if(!cmpstr(opMode, PSQ_DS_SUB))
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+					WAVE deltaV     = LBN_GetNumericWave()
+					WAVE deltaI     = LBN_GetNumericWave()
+					WAVE resistance = LBN_GetNumericWave()
 
 					CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
@@ -2010,7 +2012,7 @@ Function PSQ_DAScale(device, s)
 					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_DETECT)
 					ED_AddEntryToLabnotebook(device, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) numberOfSpikesLBN = NaN
+					WAVE numberOfSpikesLBN = LBN_GetNumericWave()
 					numberOfSpikesLBN[s.headstage] = numberOfSpikes
 					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_COUNT)
 					ED_AddEntryToLabnotebook(device, key, numberOfSpikesLBN, overrideSweepNo = s.sweepNo)
@@ -2125,7 +2127,7 @@ Function PSQ_DAScale(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE)
 			ED_AddEntryToLabnotebook(device, key, fISlope, unit = "% of Hz/pA")
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = IsFinite(finalSlopePercent) && fiSlope[s.headstage] >= finalSlopePercent
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2189,7 +2191,7 @@ Function PSQ_DAScale(device, s)
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2404,7 +2406,7 @@ Function PSQ_SquarePulse(device, s)
 
 			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfSmall(DAScale, tol = 1e-14))
-					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+					WAVE value = LBN_GetNumericWave()
 					value[INDEP_HEADSTAGE] = 1
 					key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO)
 					ED_AddEntryToLabnotebook(device, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2419,7 +2421,7 @@ Function PSQ_SquarePulse(device, s)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(device, s.headstage, absolute=DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
-					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+					WAVE value = LBN_GetNumericWave()
 					value[INDEP_HEADSTAGE] = DAScale
 					key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE)
 					ED_AddEntryToLabnotebook(device, key, value)
@@ -2455,7 +2457,7 @@ Function PSQ_SquarePulse(device, s)
 			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)
 			DEBUGPRINT(msg)
 
-			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+			WAVE value = LBN_GetNumericWave()
 			value[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2479,7 +2481,7 @@ Function PSQ_SquarePulse(device, s)
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2673,7 +2675,7 @@ Function PSQ_Rheobase(device, s)
 				endif
 
 				// and set it as the initial DAScale for this SCI
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				result[INDEP_HEADSTAGE] = finalDAScale
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE)
 				ED_AddEntryToLabnotebook(device, key, result)
@@ -2692,7 +2694,7 @@ Function PSQ_Rheobase(device, s)
 			DEBUGPRINT(msg)
 
 			if(!samplingFrequencyPassed)
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2753,7 +2755,7 @@ Function PSQ_Rheobase(device, s)
 						// mark the set as passed
 						// we can't mark each sweep as passed/failed as it is not possible
 						// to add LBN entries to other sweeps than the last one
-						Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+						WAVE result = LBN_GetNumericWave()
 						key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 						result[INDEP_HEADSTAGE] = 1
 						ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2779,7 +2781,7 @@ Function PSQ_Rheobase(device, s)
 				// future DAScale would be zero
 				if(CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_SMALL))
 					// mark set as failure
-					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+					WAVE result = LBN_GetNumericWave()
 					key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 					result[INDEP_HEADSTAGE] = 0
 					ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2813,7 +2815,7 @@ Function PSQ_Rheobase(device, s)
 			diff = abs(DAScale - initialDAScale)
 			if(diff > PSQ_RB_MAX_DASCALE_DIFF || CheckIfClose(diff, PSQ_RB_MAX_DASCALE_DIFF))
 				// mark set as failure
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2841,7 +2843,7 @@ Function PSQ_Rheobase(device, s)
 			// if we don't have an entry yet for the set passing, it has failed
 			if(!IsFinite(setPassed))
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -2855,7 +2857,7 @@ Function PSQ_Rheobase(device, s)
 			WAVE/Z rangeExceeded = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			if(!WaveExists(rangeExceeded))
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				result[s.headstage] = 0
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -2865,7 +2867,7 @@ Function PSQ_Rheobase(device, s)
 			WAVE/Z limitedResolution = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			if(!WaveExists(limitedResolution))
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				WAVE result = LBN_GetNumericWave()
 				result[s.headstage] = 0
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES)
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -3090,7 +3092,7 @@ Function PSQ_Ramp(device, s)
 
 			sweepPassed = baselinePassed[s.headstage] && samplingFrequencyPassed
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -3130,7 +3132,7 @@ Function PSQ_Ramp(device, s)
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -3187,7 +3189,7 @@ Function PSQ_Ramp(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(device, key, spikeDetection, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			Make/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) resultTxT
+			WAVE/T resultTxT = LBN_GetTextWave()
 			resultTxT[s.headstage] = NumericWaveToList(spikePos, ";")
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
 			ED_AddEntryToLabnotebook(device, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
@@ -3559,7 +3561,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	sprintf msg, "lower: value %g, info: min %g, center %g, max %g, state %s", lowerValue, lowerInfo.minimumFac, lowerInfo.centerFac, lowerInfo.maximumFac, lowerInfo.state
 	DEBUGPRINT(msg)
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T resultText
+	WAVE/T resultText = LBN_GetTextWave()
 	resultText[INDEP_HEADSTAGE] = upperInfo.state + lowerInfo.state
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_STATE)
 	ED_AddEntryToLabnotebook(device, key, resultText, overrideSweepNo = sweepNo)
@@ -3630,7 +3632,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 			ASSERT(0, "impossible case")
 	endswitch
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+	WAVE result = LBN_GetNumericWave()
 	result[INDEP_HEADSTAGE] = boundsAction
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
 	ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo)
@@ -3695,7 +3697,7 @@ static Function/WAVE PSQ_CR_DetermineCycles(string device, WAVE rawDACWave, vari
 	WAVE config = GetDAQConfigWave(device)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	MAKE/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) cycles
+	WAVE/T cycles = LBN_GetTextWave()
 
 	WAVE gains = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
 
@@ -4034,7 +4036,7 @@ Function PSQ_Chirp(device, s)
 					endif
 				endif
 
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+				WAVE values = LBN_GetNumericWave()
 				values[INDEP_HEADSTAGE] = spikeCheck
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK)
 				ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -4065,7 +4067,7 @@ Function PSQ_Chirp(device, s)
 				sprintf msg, "Resistance: %g [Ω]\r", resistance
 				DEBUGPRINT(msg)
 
-				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+				WAVE result = LBN_GetNumericWave()
 				result[INDEP_HEADSTAGE] = resistance
 
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_RESISTANCE)
@@ -4077,7 +4079,7 @@ Function PSQ_Chirp(device, s)
 				sprintf msg, "Initial DAScale: %g [Amperes]\r", initialDAScale
 				DEBUGPRINT(msg)
 
-				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+				WAVE result = LBN_GetNumericWave()
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_INITIAL_SCALE)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
@@ -4116,7 +4118,7 @@ Function PSQ_Chirp(device, s)
 				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
 			endif
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -4164,7 +4166,7 @@ Function PSQ_Chirp(device, s)
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -4232,11 +4234,11 @@ Function PSQ_Chirp(device, s)
 			WaveClear spikeDetection
 
 			if(numberOfSpikesFound > 0)
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePass = NaN
+				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 0
 			elseif(fifoInStimsetTime > chirpEnd)
 				// beyond chirp and we found nothing, so we passed
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePass = NaN
+				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 1
 			endif
 
@@ -4287,7 +4289,7 @@ Function PSQ_Chirp(device, s)
 		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(device, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, innerRelativeBound, outerRelativeBound, boundsEvaluationMode)
 
 		insideBounds = (boundsAction == PSQ_CR_PASS)
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+		WAVE result = LBN_GetNumericWave()
 		result[INDEP_HEADSTAGE] = insideBounds
 		key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
 		ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -4553,14 +4555,14 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			endif
 			// END TEST
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+			WAVE resistance = LBN_GetNumericWave()
 			resistance[INDEP_HEADSTAGE] = pipetteResistance * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE)
 			ED_AddEntryToLabnotebook(device, key, resistance, unit = "Ω", overrideSweepNo = s.sweepNo)
 
 			pipetteResistanceQCPassed = (pipetteResistance >= minPipetteResistance) && (pipetteResistance <= maxPipetteResistance)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) pipetteResistanceQC = NaN
+			WAVE pipetteResistanceQC = LBN_GetNumericWave()
 			pipetteResistanceQC[INDEP_HEADSTAGE] = pipetteResistanceQCPassed
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS)
 			ED_AddEntryToLabnotebook(device, key, pipetteResistanceQC, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -4569,7 +4571,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && pipetteResistanceQCPassed
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -4617,7 +4619,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage) >= PSQ_PB_NUM_SWEEPS_PASS
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -5106,7 +5108,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 
 			testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(s.params)
 
-			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) testpulseGroupSelLBN = NaN
+			WAVE testpulseGroupSelLBN = LBN_GetNumericWave()
 			testpulseGroupSelLBN[INDEP_HEADSTAGE] = testpulseGroupSel
 
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP)
@@ -5157,7 +5159,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			ASSERT(IsFinite(baselineQCPassed), "Invalid baselineQCpassed")
 
 			// document BL QC results
-			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) baselineQCPassedLBN = NaN
+			WAVE baselineQCPassedLBN = LBN_GetNumericWave()
 			baselineQCPassedLBN[s.headstage] = baselineQCPassed
 
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_BL_QC_PASS)
@@ -5210,12 +5212,12 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			endif
 			// END TEST
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceALBN = NaN
+			WAVE sealResistanceALBN = LBN_GetNumericWave()
 			sealResistanceALBN[INDEP_HEADSTAGE] = sealResistanceA * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_A)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceALBN, unit = "Ω", overrideSweepNo = s.sweepNo)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceBLBN = NaN
+			WAVE sealResistanceBLBN = LBN_GetNumericWave()
 			sealResistanceBLBN[INDEP_HEADSTAGE] = sealResistanceB * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_B)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceBLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
@@ -5234,7 +5236,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 					ASSERT(0, "Invalid testpulseGroupSel")
 			endswitch
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceMaxLBN = NaN
+			WAVE sealResistanceMaxLBN = LBN_GetNumericWave()
 			sealResistanceMaxLBN[INDEP_HEADSTAGE] = sealResistanceMax * MEGA_TO_ONE
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceMaxLBN, unit = "Ω", overrideSweepNo = s.sweepNo)
@@ -5256,7 +5258,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 					ASSERT(0, "Invalid testpulseGroupSel")
 			endswitch
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sealResistanceQCLBN = NaN
+			WAVE sealResistanceQCLBN = LBN_GetNumericWave()
 			sealResistanceQCLBN[INDEP_HEADSTAGE] = sealResistanceQCPassed
 
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_PASS)
@@ -5266,7 +5268,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 
 			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && sealResistanceQCPassed
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepPassedLBN = NaN
+			WAVE sweepPassedLBN = LBN_GetNumericWave()
 			sweepPassedLBN[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, sweepPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -5314,7 +5316,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SEAL_EVALUATION, s.sweepNo, s.headstage) >= PSQ_SE_NUM_SWEEPS_PASS
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)

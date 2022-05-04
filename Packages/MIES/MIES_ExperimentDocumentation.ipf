@@ -140,7 +140,8 @@ static Function ED_GetHeadstageContingency(WAVE values)
 
 	if(IsTextWave(values))
 		WAVE/T valuesText = values
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
+		WAVE stats = LBN_GetNumericWave()
+		stats[] = strlen(valuesText[p]) == 0 ? NaN : 1
 	else
 		Wave stats = values
 	endif
@@ -231,7 +232,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+/// 	WAVE values = LBN_GetNumericWave()
 /// 	values[0] = 4711 // setting of the first headstage
 /// 	ED_AddEntryToLabnotebook(device, "SomeSetting", values)
 /// \endrst
@@ -247,7 +248,8 @@ End
 /// @param key             name under which to store the entry.
 /// @param values          entry to add, wave can be numeric (floating point) or text, must have
 ///                        #LABNOTEBOOK_LAYER_COUNT rows. It can be all NaN or empty (text), this is useful
-///                        if you want to make the key known without adding an entry.
+///                        if you want to make the key known without adding an entry. Use LBN_GetNumericWave()
+///                        or LBN_GetTextWave() to create them.
 /// @param unit            [optional, defaults to ""] physical unit of the entry
 /// @param tolerance       [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
 ///                        judging if a change is "relevant" and should then be written to the sweep wave

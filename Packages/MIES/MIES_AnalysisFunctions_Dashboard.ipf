@@ -201,16 +201,16 @@ static Function AD_FillWaves(win, list, info)
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
+		WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
+
 		if(WaveExists(anaFuncs))
 			if(GetLastSettingIndep(numericalValues, sweepNo, "Skip analysis functions", DATA_ACQUISITION_MODE, defValue = 0))
 				anaFuncs[] = anaFuncs[p] + " (Skipped)"
-				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
 			else
-				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+				anaFuncTypes[] = MapAnaFuncToConstant(anaFuncs[p])
 			endif
 		else
-			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE/T anaFuncs = NOT_AVAILABLE
-			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
+			WAVE/T anaFuncs = LBN_GetTextWave(defValue = NOT_AVAILABLE)
 		endif
 
 		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)

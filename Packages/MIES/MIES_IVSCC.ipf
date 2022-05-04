@@ -476,7 +476,8 @@ Function IVS_GetSetQCForSweep(device, sweepNo)
 
 	ASSERT(WaveExists(anaFuncs), "The queried sweep did not use an analysis function.")
 
-	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+	WAVE anaFuncTypes = LBN_GetNumericWave()
+	anaFuncTypes[] = MapAnaFuncToConstant(anaFuncs[p])
 
 	anaFuncType = anaFuncTypes[headstage]
 	ASSERT(anaFuncType != INVALID_ANALYSIS_FUNCTION, "The used analysis function is not a patch-seq one.")

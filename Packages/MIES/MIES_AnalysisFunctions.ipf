@@ -745,9 +745,9 @@ Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+	WAVE deltaV     = LBN_GetNumericWave()
+	WAVE deltaI     = LBN_GetNumericWave()
+	WAVE resistance = LBN_GetNumericWave()
 
 	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
@@ -855,7 +855,7 @@ Function FitResistance(string device, [variable showPlot])
 		Duplicate/O fitWave, curveFitWave
 	endfor
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
+	WAVE storage = LBN_GetNumericWave()
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
 	ED_AddEntryToLabnotebook(device, LBN_RESISTANCE_FIT, storage, unit = "Ohm")
 
@@ -1113,7 +1113,8 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 				PGC_SetAndActivateControl(device, control , str = name)
 
 				DFREF dfr = GetUniqueTempPath()
-				Make/D/N=(LABNOTEBOOK_LAYER_COUNT) dfr:autobiasV/WAVE=autobiasV
+				WAVE autobiasV = LBN_GetNumericWave()
+				MoveWave autobiasV, dfr:autobiasV
 
 				autobiasV[] = (p < NUM_HEADSTAGES && statusHS[p] == 1) ? -70 : NaN
 
@@ -1153,9 +1154,9 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+			WAVE deltaV     = LBN_GetNumericWave()
+			WAVE deltaI     = LBN_GetNumericWave()
+			WAVE resistance = LBN_GetNumericWave()
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 

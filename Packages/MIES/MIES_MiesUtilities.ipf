@@ -2631,7 +2631,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		WAVE/Z ADCsFromLBN = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 		ASSERT_TS(WaveExists(ADCsFromLBN), "Labnotebook is too old for workaround.")
 
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
+		WAVE statusHS = LBN_GetNumericWave()
+		statusHS[] = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
 	endif
 
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
@@ -7126,7 +7127,7 @@ Function SetAnalysisFunctionVersion(string device, variable type, variable heads
 	string key
 
 	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION)
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	WAVE values = LBN_GetNumericWave()
 	values[headstage] = GetAnalysisFunctionVersion(type)
 	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = sweepNo, tolerance = 0.1)
 End

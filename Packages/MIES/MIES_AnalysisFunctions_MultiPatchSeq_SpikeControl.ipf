@@ -285,7 +285,8 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 	WAVE/Z indizesAllPulses = SC_GetPulseIndizes(properties, propertiesWaves, sweepNo)
 
 	// one sweep has multiple pulses and each pulse can have multiple spikes
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T spikePositionsLBN, spikeNumbersLBN
+	WAVE/T spikePositionsLBN = LBN_GetTextWave()
+	WAVE/T spikeNumbersLBN   = LBN_GetTextWave()
 
 	numPulses = WaveExists(indizesAllPulses) ? DimSize(indizesAllPulses, ROWS) : 0
 	for(i = 0; i < numPulses; i += 1)
@@ -413,7 +414,7 @@ static Function/WAVE SC_SpikeCountsCalc(string device, WAVE minimum, WAVE maximu
 	variable i
 	string msg
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) state = NaN
+	WAVE state = LBN_GetNumericWave()
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -468,7 +469,8 @@ static Function/WAVE SC_SpikeCountsQC(string device, WAVE/T spikeNumbersLBN, var
 
 	WAVE state = SC_SpikeCountsCalc(device, minimum, maximum, idealNumberOfSpikes)
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T stateAsString = SC_SpikeCountStateToString(state[p])
+	WAVE/T stateAsString = LBN_GetTextWave()
+	stateAsString[] = SC_SpikeCountStateToString(state[p])
 
 	sprintf msg, "spike counts state \"%s\"", TextWaveToList(stateAsString, "|")
 	DebugPrint(msg)
@@ -501,7 +503,7 @@ static Function/WAVE SC_SpikePositionQC(string device, WAVE/T/Z spikePositionsLB
 	string list, msg
 	variable numPulses, i, j
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsQCLBN = NaN
+	WAVE spikePositionsQCLBN = LBN_GetNumericWave()
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	spikePositionsQCLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
@@ -589,7 +591,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepN
 	WAVE sweepWave = GetSweepWave(device, sweepNo)
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spontaneousSpikingCheckLBN = NaN
+	WAVE spontaneousSpikingCheckLBN = LBN_GetNumericWave()
 	spontaneousSpikingCheckLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
 	WAVE textualValues = GetLBTextualValues(device)
@@ -633,7 +635,7 @@ End
 static Function/WAVE SC_HeadstageQC(string device, WAVE/T spikeCountStateLBN, WAVE spontaneousSpikingCheckLBN)
 	string msg
 
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) headstageQCLBN = NaN
+	WAVE headstageQCLBN = LBN_GetNumericWave()
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
@@ -1011,7 +1013,7 @@ Function SC_SpikeControl(device, s)
 				failedPulseLevel = GetSetVariable(bsPanel, "setvar_pulseAver_failedPulses_level")
 			endif
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) settingsLBN = NaN
+			WAVE settingsLBN = LBN_GetNumericWave()
 			settingsLBN[INDEP_HEADSTAGE] = failedPulseLevel
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL)
 			ED_AddEntryToLabnotebook(device, key, settingsLBN, overrideSweepNo = s.sweepNo)
@@ -1064,12 +1066,12 @@ Function SC_SpikeControl(device, s)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQOptOvPost", val = 250)
 			PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = 1)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
+			WAVE rerunExceeded = LBN_GetNumericWave()
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
 			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) trialsLBN = NaN
+			WAVE trialsLBN = LBN_GetNumericWave()
 			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
 			ED_AddEntryToLabnotebook(device, key, trialsLBN, overrideSweepNo = s.sweepNo)
@@ -1092,7 +1094,7 @@ Function SC_SpikeControl(device, s)
 			// sweep QC
 			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepQCLBN = NaN
+			WAVE sweepQCLBN = LBN_GetNumericWave()
 			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1112,7 +1114,7 @@ Function SC_SpikeControl(device, s)
 
 			WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
+			WAVE rerunExceeded = LBN_GetNumericWave()
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? rerunExceededResult : NaN
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
 			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1137,7 +1139,7 @@ Function SC_SpikeControl(device, s)
 			DebugPrint(msg)
 
 			if(IsFinite(setPassed))
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) setQC = NaN
+				WAVE setQC = LBN_GetNumericWave()
 				setQC[INDEP_HEADSTAGE] = setPassed
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
 				ED_AddEntryToLabnotebook(device, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)

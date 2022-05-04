@@ -1118,3 +1118,49 @@ Function Test_GetEntryProperties()
 	CHECK_EQUAL_STR(unit, ref)
 	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT + 2)
 End
+
+Function GNW_Works()
+
+	WAVE values = LBN_GetNumericWave()
+
+	CHECK_EQUAL_VAR(WaveDims(values), 1)
+	CHECK_EQUAL_VAR(DimSize(values, ROWS), LABNOTEBOOK_LAYER_COUNT)
+	CHECK_WAVE(values, FREE_WAVE, minorType = DOUBLE_WAVE)
+
+	WaveStats/Q values
+	CHECK_EQUAL_VAR(V_numNans, 9)
+End
+
+Function GNW_WorksWithCustomDefault()
+
+	WAVE values = LBN_GetNumericWave(defValue = -1)
+
+	WaveStats/Q values
+	CHECK_EQUAL_VAR(V_numNans, 0)
+	CHECK_EQUAL_VAR(V_max, -1)
+	CHECK_EQUAL_VAR(V_min, -1)
+End
+
+Function GTW_Works()
+
+	WAVE/T values = LBN_GetTextWave()
+
+	CHECK_EQUAL_VAR(WaveDims(values), 1)
+	CHECK_EQUAL_VAR(DimSize(values, ROWS), LABNOTEBOOK_LAYER_COUNT)
+	CHECK_WAVE(values, FREE_WAVE | TEXT_WAVE)
+
+	Make/FREE/N=(DimSize(values, ROWS)) status = strlen(values[p])
+
+	WaveStats/Q status
+	CHECK_EQUAL_VAR(V_numNans, 0)
+	CHECK_EQUAL_VAR(V_max, 0)
+	CHECK_EQUAL_VAR(V_min, 0)
+End
+
+Function GTW_WorksWithCustomDefault()
+
+	WAVE/T values = LBN_GetTextWave(defValue = "abcd")
+
+	WAVE/T/Z result = GetUniqueEntries(values)
+	CHECK_EQUAL_TEXTWAVES(result, {"abcd"})
+End

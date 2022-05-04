@@ -694,7 +694,8 @@ static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) autoTPEnable = TPSettings[%autoTPEnable][p]
+	WAVE autoTPEnable = LBN_GetNumericWave()
+	autoTPEnable[] = TPSettings[%autoTPEnable][p]
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
