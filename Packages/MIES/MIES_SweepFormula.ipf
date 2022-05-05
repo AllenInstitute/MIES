@@ -1594,7 +1594,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
 			formula_nb = BSP_GetSFFormula(ba.win)
-			formula = GetNotebookText(formula_nb)
+			formula = GetNotebookText(formula_nb, mode=2)
 
 			SF_CheckInputCode(formula, dfr)
 
