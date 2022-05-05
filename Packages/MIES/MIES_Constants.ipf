@@ -1151,6 +1151,7 @@ Constant PSQ_CHIRP           = 0x080
 Constant PSQ_PIPETTE_BATH    = 0x100
 Constant PSQ_SEAL_EVALUATION = 0x200
 Constant PSQ_TRUE_REST_VM    = 0x400
+Constant PSQ_ACC_RES_SMOKE   = 0x800
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes

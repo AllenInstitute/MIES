@@ -104,6 +104,11 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - Spontaneous spiking check
 	// - Not enough sweeps
 
+	// PSQ_AR
+	// - baseline QC
+	// - access resistance QC
+	// - resistance ratio QC
+
 	// PSQ_CR
 	// - baseline QC
 	// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
@@ -145,6 +150,8 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 			return "Failure"
 		case MSQ_FAST_RHEO_EST:
 			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_ACC_RES_SMOKE:
+			return AD_GetAccessResistanceFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_CHIRP:
 			return AD_GetChirpFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_DA_SCALE:
@@ -290,6 +297,7 @@ static Function AD_FillWaves(win, list, info)
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 			switch(anaFuncType)
+				case PSQ_ACC_RES_SMOKE:
 				case PSQ_CHIRP:
 				case PSQ_DA_SCALE:
 				case PSQ_PIPETTE_BATH:
@@ -470,6 +478,16 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	return "Failure"
 End
 
+/// @brief Return an appropriate error message for why #PSQ_ACC_RES_SMOKE failed
+///
+/// @param numericalValues Numerical labnotebook
+/// @param textualValues   Textual labnotebook
+/// @param sweepNo         Sweep number
+/// @param headstage       Headstage
+static Function/S AD_GetAccessResistanceFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+	return AD_GetPerSweepFailMessage(PSQ_ACC_RES_SMOKE, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_AR_NUM_SWEEPS_PASS)
+End
+
 /// @brief Return an appropriate error message for why #PSQ_RAMP failed
 ///
 /// @param numericalValues Numerical labnotebook
@@ -598,6 +616,7 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 	string msg = ""
 
 	switch(anaFuncType)
+		case PSQ_ACC_RES_SMOKE:
 		case PSQ_DA_SCALE:
 		case PSQ_PIPETTE_BATH:
 		case PSQ_SEAL_EVALUATION:
@@ -714,7 +733,8 @@ End
 static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, variable headstage, [variable numRequiredPasses])
 	string key, msg, str
 	string text = ""
-	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, avgCheckPass
+	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
+	variable avgCheckPass
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -742,6 +762,30 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 		endif
 
 		switch(anaFuncType)
+			case PSQ_ACC_RES_SMOKE:
+				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+
+				if(!IsEmpty(msg))
+					sprintf text, "Sweep %d failed: %s", sweepNo, msg
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS, query = 1)
+				accessRestPass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(accessRestPass) && !accessRestPass)
+					sprintf text, "Sweep %d failed: access resistance is out of range", sweepNo
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS, query = 1)
+				resistanceRatio = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(resistanceRatio) && !resistanceRatio)
+					sprintf text, "Sweep %d failed: resistance ratio is out of range", sweepNo
+					break
+				endif
+				break
 			case PSQ_CHIRP:
 				msg = AD_GetBaselineFailMsg(PSQ_CHIRP, numericalValues, sweepNo, headstage)
 
