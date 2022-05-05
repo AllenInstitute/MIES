@@ -278,9 +278,7 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 	variable pulseStart, pulseEnd, numSpikes
 	string entry, msg
 
-	WAVE/Z properties
-	WAVE/WAVE/Z propertiesWaves
-	[properties, propertiesWaves] = SC_GetPulseAveragePropertiesWaves(device)
+	[WAVE properties, WAVE/WAVE propertiesWaves] = SC_GetPulseAveragePropertiesWaves(device)
 
 	WAVE/Z indizesAllPulses = SC_GetPulseIndizes(properties, propertiesWaves, sweepNo)
 

@@ -214,8 +214,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				WAVE/Z settings
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
@@ -230,8 +229,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				WAVE/Z settings
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)

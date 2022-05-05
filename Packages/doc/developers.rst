@@ -436,8 +436,7 @@ of that information as MIES provides functions for that:
    if(!WaveExists(numericalValues))
       // fitting handling code
    endif
-   WAVE/Z settings
-   [settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Indexing", channelNumber, channelType, entrySourceType)
+   [WAVE/Z settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Indexing", channelNumber, channelType, entrySourceType)
 
 This call specifies a sweep number, a channel type and a channel number and asks for information from the "Indexing" field.
 It returns a 1D wave settings and an index, where settings[index] is a Boolean entry telling if indexing was off or on.

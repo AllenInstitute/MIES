@@ -265,8 +265,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				WAVE/Z settings
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
@@ -281,8 +280,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				WAVE/Z settings
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
@@ -525,8 +523,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	if(params.channelType == XOP_CHANNEL_TYPE_DAC && clampMode != I_EQUAL_ZERO_MODE)
 
 		// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
-		WAVE/Z setting
-		[setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
 
 		if(WaveExists(setting) && setting[index] == DAQ_CHANNEL_TYPE_DAQ)
 			CHECK_WAVE(epochs, WAVE_WAVE)

@@ -533,12 +533,11 @@ static Function CheckEpochs(string dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 
-	WAVE/Z settings
 	for(i = 0; i < sweepCnt; i += 1)
 		for(j = 0; j <  channelTypeCount; j += 1)
 			channelCnt = GetNumberFromType(var=channelTypes[j])
 			for(k = 0; k <  channelCnt; k += 1)
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, k, channelTypes[j], DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, k, channelTypes[j], DATA_ACQUISITION_MODE)
 
 				if(WaveExists(settings))
 					WAVE/T settingsT = settings
@@ -566,7 +565,7 @@ static Function CheckEpochs(string dev)
 	channelCnt = GetNumberFromType(var=XOP_CHANNEL_TYPE_DAC)
 	for(i = 0; i < sweepCnt; i += 1)
 		for(j = 0; j <  channelCnt; j += 1)
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, j, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, j, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 			if(WaveExists(settings))
 				WAVE/T settingsT = settings
 				str = settingsT[index]

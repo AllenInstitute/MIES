@@ -1080,8 +1080,7 @@ static Function SF_GetDAChannel(string graph, variable sweep, variable channelTy
 	if(!WaveExists(numericalValues))
 		return NaN
 	endif
-	WAVE/Z settings
-	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
 	if(WaveExists(settings))
 		DAC = settings[index]
 		ASSERT(IsFinite(DAC) && index < NUM_HEADSTAGES, "Only associated channels are supported.")
@@ -1986,7 +1985,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 				unitKey = "AD unit"
 			endif
 			if(!IsEmpty(unitKey))
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, unitKey, channelNr, channelType, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, unitKey, channelNr, channelType, DATA_ACQUISITION_MODE)
 				SF_ASSERT(WaveExists(settings), "Failed to retrieve channel unit from LBN")
 				WAVE/T settingsT = settings
 				unit = settingsT[index]
@@ -1994,7 +1993,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 
 			headstage = GetHeadstageForChannel(numericalValues, sweep, channelType, channelNr, DATA_ACQUISITION_MODE)
 			SF_ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, "DAC", channelNr, channelType, DATA_ACQUISITION_MODE)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, "DAC", channelNr, channelType, DATA_ACQUISITION_MODE)
 			SF_ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
 			dacChannelNr = settings[headstage]
 			SF_ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
@@ -2023,7 +2022,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
 			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLineT)
 
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
 			tpInput.clampMode = settings[index]
 
@@ -2158,8 +2157,6 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		WAVE out = outRange
 	endif
 
-	WAVE/Z settings
-
 	outCnt = 0
 	for(i = 0; i < sweepCnt; i += 1)
 		sweepNo = sweeps[i]
@@ -2175,7 +2172,7 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		endif
 
 		for(j = 0; j <  activeChannelCnt; j += 1)
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
 
 			if(WaveExists(settings))
 				WAVE/T settingsT = settings
@@ -2740,8 +2737,6 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	numSweeps = DimSize(sweeps, ROWS)
 	numChannels = DimSize(activeChannels, ROWS)
 
-	WAVE/Z settings
-
 	Make/D/FREE/N=(numSweeps, numChannels) outD = NaN
 	Make/T/FREE/N=(numSweeps, numChannels) outT
 	for(i = 0; i < numSweeps; i += 1)
@@ -2758,7 +2753,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 		endif
 
 		for(j = 0; j <  numChannels; j += 1)
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], lbnKey, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], lbnKey, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
 			if(!WaveExists(settings))
 				continue
 			endif

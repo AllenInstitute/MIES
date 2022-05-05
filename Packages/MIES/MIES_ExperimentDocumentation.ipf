@@ -73,8 +73,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
+	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = num2istr(sweepNo)
@@ -190,8 +189,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
+	[WAVE indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = sweepNo

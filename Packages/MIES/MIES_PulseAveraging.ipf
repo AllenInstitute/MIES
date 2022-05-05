@@ -3245,8 +3245,7 @@ static Function PA_AddColorScale(string graph, string colorScaleGraph, string na
 
 	variable yPos, intIndex, length
 
-	WAVE/Z start, stop
-	[start, stop] = DistributeElements(numSlots)
+	[WAVE start, WAVE stop] = DistributeElements(numSlots)
 
 	intIndex = trunc(index)
 	length = stop[intIndex] - start[intIndex]

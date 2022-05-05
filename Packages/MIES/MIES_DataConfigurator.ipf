@@ -1135,11 +1135,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		endif
 	else
-		WAVE/Z ITCDataWave
-		WAVE/WAVE/Z NIDataWave
-
-		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
-															 s.samplingInterval, TEST_PULSE_MODE)
+		[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
+		                                                                    s.samplingInterval, TEST_PULSE_MODE)
 
 		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
@@ -1186,13 +1183,10 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
 	variable lastValidRow
 
-	WAVE/Z ITCDataWave
-	WAVE/WAVE/Z NIDataWave
-
 	WAVE config = GetDAQConfigWave(device)
 
-	[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
-														 s.samplingInterval, DATA_ACQUISITION_MODE)
+	[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
+	                                                                    s.samplingInterval, DATA_ACQUISITION_MODE)
 
 	for(i = 0; i < s.numDACEntries; i += 1)
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)

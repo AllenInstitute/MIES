@@ -2611,15 +2611,14 @@ Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
 			CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
 
-			WAVE/Z settings
 			Variable index
 
 			// fetch some labnotebook entries, the last channel is unassociated
 			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "AD ChannelType", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", j, "AD ChannelType", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
 
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
 				expectedStr= "pA"
@@ -2627,10 +2626,10 @@ Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			endfor
 
 			for(k = 0; k < DimSize(DACs, ROWS); k += 1)
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "DA ChannelType", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", j, "DA ChannelType", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
 
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
 				expectedStr= "mV"
