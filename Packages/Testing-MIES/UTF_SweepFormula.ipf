@@ -633,6 +633,45 @@ static Function TestOperationLog()
 	REQUIRE_EQUAL_STR(strRef, histo)
 End
 
+static Function TestOperationButterworth()
+
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth()"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1, 1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D refData = {0,0.863870777482797,0.235196115045368,0.692708791122301,0.359757805059761,0.602060073208013,0.425726643942363,0.554051807855231}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2)"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA, tol=1E-9)
+End
+
 static Function TestOperationChannels()
 
 	Make/FREE input = {{0}, {NaN}}
