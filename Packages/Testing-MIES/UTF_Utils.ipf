@@ -4532,8 +4532,7 @@ End
 
 Function DE_Basics()
 
-	WAVE/Z start, stop
-	[start, stop] = DistributeElements(2)
+	[WAVE start, WAVE stop] = DistributeElements(2)
 	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 
@@ -4545,8 +4544,7 @@ Function DE_OffsetWorks()
 
 	variable offset = 0.01
 
-	WAVE/Z start, stop
-	[start, stop] = DistributeElements(2, offset = offset)
+	[WAVE start, WAVE stop] = DistributeElements(2, offset = offset)
 	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 
@@ -4556,8 +4554,7 @@ End
 
 Function DE_ManyElements()
 
-	WAVE/Z start, stop
-	[start, stop] = DistributeElements(10)
+	[WAVE start, WAVE stop] = DistributeElements(10)
 	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
 

@@ -1084,7 +1084,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			// we have excactly one active headstage with one DA/AD, so we can fix things up
 			index = GetRowIndex(statusHS, val=1)
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) ADCs = NaN
+			WAVE ADCs = LBN_GetNumericWave()
 			ADCs[index] = configADCs[0]
 
 			printf "Encountered an incorrect ADC state HS %d in s.sweep %d. Fixing it up locally.\r", index, s.sweep
@@ -1094,7 +1094,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(s.numericalValues, s.sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
+		WAVE statusHS = LBN_GetNumericWave()
+		statusHS[] = IsFinite(ADCs[p]) && IsFinite(DACs[p])
 	endif
 
 	// Turn on inadvertently turned off headstages again, see also

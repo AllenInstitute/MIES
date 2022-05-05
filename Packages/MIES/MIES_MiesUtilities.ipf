@@ -2631,7 +2631,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		WAVE/Z ADCsFromLBN = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 		ASSERT_TS(WaveExists(ADCsFromLBN), "Labnotebook is too old for workaround.")
 
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
+		WAVE statusHS = LBN_GetNumericWave()
+		statusHS[] = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
 	endif
 
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
@@ -3345,8 +3346,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 	endif
 
 	if(numAxes > 0)
-		WAVE/Z axisStart, axisEnd
-		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
+		[WAVE axisStart, WAVE axisEnd] = DistributeElements(numAxes, offset = axisOffset)
 
 		numAxes = ItemsInList(adaptedList)
 		for(i = 0; i < numAxes; i += 1)
@@ -3379,8 +3379,7 @@ Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [vari
 
 	numAxes = ItemsInList(distAxes)
 	if(numAxes > 0)
-		WAVE/Z axisStart, axisEnd
-		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
+		[WAVE axisStart, WAVE axisEnd] = DistributeElements(numAxes, offset = axisOffset)
 		for(i = 0; i < numAxes; i += 1)
 			axis = StringFromList(i, distAxes)
 			if(WhichListItem(axis, allAxes) != -1)
@@ -4834,8 +4833,7 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 	Make/FREE/N=(numEntries) channelStatus = NaN
 
 	for(i = 0; i < numEntries; i += 1)
-		WAVE/Z setting
-		[setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, key, i, channelType, DATA_ACQUISITION_MODE)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, key, i, channelType, DATA_ACQUISITION_MODE)
 
 		if(!WaveExists(setting))
 			continue
@@ -7126,7 +7124,7 @@ Function SetAnalysisFunctionVersion(string device, variable type, variable heads
 	string key
 
 	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION)
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	WAVE values = LBN_GetNumericWave()
 	values[headstage] = GetAnalysisFunctionVersion(type)
 	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = sweepNo, tolerance = 0.1)
 End
@@ -7518,12 +7516,9 @@ Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T tex
 
 	DFREF singleSweepFolder = $path
 
-	WAVE/WAVE/Z DAWaves, ADWaves, TTLWaves
-	WAVE/Z DAChans, ADChans, TTLChans
-
-	[DAChans, DAWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_DAC)
-	[ADChans, ADWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_ADC)
-	[TTLChans, TTLWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_TTL)
+	[WAVE DAChans, WAVE/WAVE DAWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_DAC)
+	[WAVE ADChans, WAVE/WAVE ADWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_ADC)
+	[WAVE TTLChans, WAVE/WAVE TTLWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_TTL)
 
 	// check that we have found all 1D waves of one sweep
 	WAVE DAFromLBN = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
@@ -7656,15 +7651,13 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 
 	numEntries = DimSize(configWave, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE/Z setting
-
 		switch(configWave[i][%ChannelType])
 			case XOP_CHANNEL_TYPE_DAC:
-				[setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "DA ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
+				[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "DA ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 				channelType = setting[index]
 				break
 			case XOP_CHANNEL_TYPE_ADC:
-				[setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "AD ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
+				[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "AD ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 				channelType = setting[index]
 				break
 			case XOP_CHANNEL_TYPE_TTL:
@@ -7693,8 +7686,7 @@ static Function AddChannelUnitFromLBN(WAVE numericalValues, WAVE/T textualValues
 		endif
 
 		key = StringFromList(configWave[i][%ChannelType], XOP_CHANNEL_NAMES) + " Unit"
-		WAVE/Z setting
-		[setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 
 		WAVE/T settingText = setting
 		unitList = AddListItem(settingText[index], unitList, ",", inf)
@@ -7782,8 +7774,7 @@ Function GetHeadstageForChannel(WAVE numericalValues, variable sweep, variable c
 
 	variable index
 
-	WAVE/Z settings
-	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNumber, channelType, entrySourceType)
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNumber, channelType, entrySourceType)
 	if(!WaveExists(settings))
 		return NaN
 	endif

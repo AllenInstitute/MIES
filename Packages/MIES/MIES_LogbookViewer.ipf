@@ -237,8 +237,7 @@ Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : Popup
 				break
 			endif
 
-			WAVE/Z keys, values
-			[keys, values] = LBV_GetLogbookWavesForEntry(win, key)
+			[WAVE keys, WAVE values] = LBV_GetLogbookWavesForEntry(win, key)
 
 			lbGraph = LBV_GetLabNoteBookGraph(win)
 			LBV_AddTraceToLBGraph(lbGraph, keys, values, key)

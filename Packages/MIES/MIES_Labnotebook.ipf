@@ -61,3 +61,27 @@ threadsafe Function [variable result, string unit, variable col] LBN_GetEntryPro
 
 	return [0, unit, col]
 End
+
+/// @brief Return a wave suitable for consumption by #ED_AddEntryToLabnotebook()
+threadsafe Function/WAVE LBN_GetNumericWave([variable defValue])
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	MAKE/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) data = defValue
+
+	return data
+End
+
+/// @brief Return a wave suitable for consumption by #ED_AddEntryToLabnotebook()
+threadsafe Function/WAVE LBN_GetTextWave([string defValue])
+
+	if(ParamIsDefault(defValue))
+		MAKE/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) data
+	else
+		MAKE/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) data = defValue
+	endif
+
+	return data
+End
