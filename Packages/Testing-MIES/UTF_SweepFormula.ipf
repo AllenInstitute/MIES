@@ -606,6 +606,33 @@ static Function TestOperationText()
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
 End
 
+static Function TestOperationLog()
+
+	string histo, histoAfter, strRef
+
+	Make/FREE/D refData = {NaN}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log()"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+
+	histo = GetHistoryNotebookText()
+	Make/FREE/D refData = {1, 10, 100}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(1, 10, 100)"))
+	histoAfter = GetHistoryNotebookText()
+	histo = ReplaceString(histo, histoAfter, "")
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+	strRef = "  1\r"
+	REQUIRE_EQUAL_STR(strRef, histo)
+
+	histo = GetHistoryNotebookText()
+	Make/FREE/T refDataT = {"a", "bb", "ccc"}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(a, bb, ccc)"))
+	histoAfter = GetHistoryNotebookText()
+	histo = ReplaceString(histo, histoAfter, "")
+	REQUIRE_EQUAL_WAVES(refDataT, output, mode = WAVE_DATA)
+	strRef = "  a\r"
+	REQUIRE_EQUAL_STR(strRef, histo)
+End
+
 static Function TestOperationChannels()
 
 	Make/FREE input = {{0}, {NaN}}
