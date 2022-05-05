@@ -2791,7 +2791,12 @@ End
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	print wv[0]
+	if(IsTextWave(wv))
+		WAVE/T wt = wv
+		print wt[0]
+	else
+		print wv[0]
+	endif
 
 	return wv
 End
