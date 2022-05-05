@@ -595,6 +595,17 @@ static Function merge()
 	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 End
 
+static Function TestOperationText()
+
+	Make/FREE/T refData = {"nan"}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text()"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+
+	Make/FREE/T refData = {{"5.1234567", "2.0000000"},{"1.0000000", "3.0000000"}}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text([[5.1234567, 1], [2, 3]])"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+End
+
 static Function TestOperationChannels()
 
 	Make/FREE input = {{0}, {NaN}}
