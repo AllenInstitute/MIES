@@ -6138,6 +6138,15 @@ Function GetTotalOnsetDelay(numericalValues, sweepNo)
 			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
 
+/// @brief Return the total onset delay from the given device
+///
+/// @sa GetTotalOnsetDelay
+Function GetTotalOnsetDelayFromDevice(string device)
+
+	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + \
+	       GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+End
+
 /// @brief Check if the given multiplier is a valid sampling interval multiplier
 Function IsValidSamplingMultiplier(multiplier)
 	variable multiplier

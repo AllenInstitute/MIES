@@ -34,6 +34,16 @@ threadsafe Function IsNaN(var)
 	return numType(var) == 2
 End
 
+/// @brief Returns 1 if var is +/- inf, 0 otherwise
+///
+/// @hidecallgraph
+/// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsInf(variable var)
+
+	return numType(var) == 1
+End
+
 /// @brief Returns 1 if str is null, 0 otherwise
 /// @param str must not be a SVAR
 ///

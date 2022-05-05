@@ -55,7 +55,7 @@
 /// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                        On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check             On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
 /// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally                ms       Numerical                RB, DA (Supra), CR          No                     Yes
-/// PSQ_FMT_LBN_SPIKE_PASS          Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
+/// PSQ_FMT_LBN_SPIKE_PASS          Pass/fail state of the spike search (No spikes → Pass)     On/Off   Numerical                CR                          No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                               % Hz/pA  Numerical                DA (Supra)                  No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
 /// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
@@ -325,8 +325,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 		ASSERT(numBaselineChunks == 1, "Unexpected number of baseline chunks")
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -778,8 +777,8 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 
 	WAVE DAQDataWave    = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	length = stopCollectionPoint * DimDelta(DAQDataWave, ROWS)
 
@@ -1533,6 +1532,8 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
 			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "FailedLevel":
+			return "Absolute level for spike search"
 		case "MaxLeakCurrent":
 			return "Maximum current [pA] which is allowed in the pre pulse baseline"
 		case "NextIndexingEndStimSetName": // TODO unify in all places after merge of #1330
@@ -2004,8 +2005,7 @@ Function PSQ_DAScale(device, s)
 					FitResistance(device, showPlot = showPlot)
 
 				elseif(!cmpstr(opMode, PSQ_DS_SUPRA))
-					totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-									  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+					totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 					WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_DA_SCALE, sweep, s.headstage, totalOnsetDelay, \
 					                                          PSQ_DS_SPIKE_LEVEL, numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
@@ -3164,8 +3164,7 @@ Function PSQ_Ramp(device, s)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -3507,8 +3506,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		endif
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-						+ GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	if(TestOverrideActive())
 		baselineVoltage = PSQ_CR_BASELINE_V_FAKE
@@ -3785,6 +3783,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	strswitch(name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "FailedLevel":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
@@ -3799,8 +3798,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
-		case "FailedLevel":
-			return "Absolute level for spike search, required when SpikeCheck is enabled."
 		case "DAScaleOperator":
 			return "Set the math operator to use for combining the DAScale and the "            \
 			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
@@ -4091,8 +4088,7 @@ Function PSQ_Chirp(device, s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-				  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+			totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -4190,8 +4186,7 @@ Function PSQ_Chirp(device, s)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
@@ -4356,6 +4351,38 @@ static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multip
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = multiplierAsString)
 	ASSERT(!cmpstr(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"), multiplierAsString), "Sampling interval multiplier could not be set")
+End
+
+static Function PSQ_SetStimulusSets(string device, variable headstage, string params)
+	string ctrl, stimset, stimsetIndex
+	variable DAC, type, enableIndexing, tabID
+
+	stimset      = AFH_GetAnalysisParamTextual("NextStimSetName", params, defValue = NONE)
+	stimsetIndex = AFH_GetAnalysisParamTextual("NextIndexingEndStimSetName", params, defValue = NONE)
+
+	if(!cmpstr(stimset, NONE) && !cmpstr(stimsetIndex, NONE))
+		return NaN
+	endif
+
+	tabID = GetTabID(device, "ADC")
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	if(cmpstr(stimset, NONE))
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+	endif
+
+	if(cmpstr(stimsetIndex, NONE))
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		PGC_SetAndActivateControl(device, ctrl, str = stimsetIndex, switchTab = 1)
+
+		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 1)
+	endif
+
+	if(tabID != GetTabID(device, "ADC"))
+		PGC_SetAndActivateControl(device, "ADC", val = tabID)
+	endif
 End
 
 Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruct& s)
@@ -4637,10 +4664,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
 
 			if(setPassed)
-				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
-				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
-				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+				PSQ_SetStimulusSets(device, s.headstage, s.params)
 			endif
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -4731,8 +4755,7 @@ static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * MILLI_TO_ONE
 
@@ -5334,10 +5357,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
 
 			if(setPassed)
-				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
-				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
-				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+				PSQ_SetStimulusSets(device, s.headstage, s.params)
 			endif
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -5371,8 +5391,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
