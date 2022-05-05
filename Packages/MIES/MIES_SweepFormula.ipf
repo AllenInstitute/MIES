@@ -2471,7 +2471,8 @@ End
 static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2strHighPrec(wv[p][q][r][s], precision=7)
+	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT
+	Multithread outT = num2strHighPrec(wv[p][q][r][s], precision=7)
 	CopyScales wv outT
 	return outT
 End
