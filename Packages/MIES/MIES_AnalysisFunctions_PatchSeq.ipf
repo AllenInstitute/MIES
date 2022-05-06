@@ -5520,3 +5520,79 @@ static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelection
 	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
 	sprintf shortName, "BLS%d", index
 End
+
+/// @brief Create baseline selection epochs
+///
+/// Assumes that all sweeps in the stimset are the same.
+///
+/// @param device            device
+/// @param headstage         headstage
+/// @param params            analysis function parameters
+/// @param epochIndizes      indizes of stimset epochs for which we should create BLS epochs
+/// @param numRequiredEpochs number of required epochs in the stimset, use
+///
+/// @return 0 on success, 1 on failure
+static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable headstage, string params, WAVE epochIndizes, [variable numRequiredEpochs])
+	variable DAC, index, chunkLength
+	variable amplitude, numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, wbBegin, wbEnd
+	string setName, shortName, tags
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+
+	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	ASSERT(numEpochs > 0, "Invalid number of epochs")
+
+	if(!ParamIsDefault(numRequiredEpochs))
+		ASSERT(IsFinite(numRequiredEpochs), "numRequiredEpochs must be finite")
+
+		if(numEpochs != numRequiredEpochs)
+			printf "The number of present (%g) and expected (%g) stimulus set epochs differs.", numEpochs, numRequiredEpochs
+			ControlWindowToFront()
+			return 1
+		endif
+	endif
+
+	if(WaveMax(epochIndizes) >= numEpochs)
+		printf "epochIndizes (%s) has entries which are larger than the number of present epochs (%g)\r", NumericWaveToList(epochIndizes, ";"), numEpochs
+		ControlWindowToFront()
+		return 1
+	endif
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
+	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be present and finite")
+
+	wbBegin = 0
+	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
+	for(i = 0; i < numEpochs; i += 1)
+		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
+
+		wbBegin = wbEnd
+		wbEnd   = wbBegin + duration
+
+		if(IsNaN(GetRowIndex(epochIndizes, val = i)))
+			continue
+		endif
+
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
+		ASSERT(amplitude == 0, "Invalid amplitude")
+
+		if(duration < chunkLength)
+			printf "The length of epoch %d is %g s but that is smaller than the required %g s by \"BaselineChunkLength\".\r", i, duration, chunkLength
+			ControlWindowToFront()
+			return 1
+		endif
+
+		// BLS epochs are only chunkLength long
+		epBegin = wbBegin
+		epEnd   = epBegin + chunkLength
+
+		[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(index)
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+		index += 1
+	endfor
+
+	return 0
+End
