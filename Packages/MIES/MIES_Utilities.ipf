@@ -1838,9 +1838,11 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 	if(!ParamIsDefault(refWave))
 		ASSERT_TS(IsWaveRefWave(wv), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
+		WAVE/WAVE cmpWave = wv
+
 		for(i = 0; i < numEntries; i += 1)
-			WAVE/WAVE cmpWave = wv
-			if(WaveRefsEqual(cmpWave[i], refWave))
+			if(WaveRefsEqual(cmpWave[i], refWave)                   \
+			   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
 				return i
 			endif
 		endfor

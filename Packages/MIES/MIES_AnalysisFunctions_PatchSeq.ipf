@@ -2132,38 +2132,13 @@ Function PSQ_DAScale(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			stimset = stimsets[s.headstage]
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_DA_SCALE, s.sweepNo, s.headstage, numSweepsPass, inf)
 
-			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
-
-			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d, DAScalesIndex %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, numSweepsPass, DAScalesIndex[s.headstage]
-			DEBUGPRINT(msg)
-
-			if(!sweepPassed)
-				// not enough sweeps left to pass the set
-				if((sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet))
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				endif
-
-				if(!samplingFrequencyPassed)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				endif
-			else
-				if(passesInSet >= numSweepsPass)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
-					return NaN
-				else
-					// set next DAScale value
-					DAScalesIndex[s.headstage] += 1
-				endif
+			if(ret == PSQ_RESULTS_DONE)
+				break
+			elseif(sweepPassed && ret == PSQ_RESULTS_CONT)
+				// set next DAScale value
+				DAScalesIndex[s.headstage] += 1
 			endif
 
 			break
@@ -3097,31 +3072,11 @@ Function PSQ_Ramp(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			stimset = stimsets[s.headstage]
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_RAMP, s.sweepNo, s.headstage, PSQ_RA_NUM_SWEEPS_PASS, inf)
 
-			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
-
-			if(!sweepPassed)
-				// not enough sweeps left to pass the set
-				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-				elseif(!samplingFrequencyPassed)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-				endif
-			else
-				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
-				endif
+			if(ret == PSQ_RESULTS_DONE)
+				break
 			endif
-
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, sweeps passed %d, required passes %d\r", ToPassFail(sweepPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_RA_NUM_SWEEPS_PASS
-			DEBUGPRINT(msg)
 
 			break
 		case POST_SET_EVENT:
@@ -4536,7 +4491,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_PB_CreateTestpulseEpochs(device, s.headstage)
+			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
 			if(expectedNumTestpulses != numTestpulses)
 				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
 				ControlWindowToFront()
@@ -4604,41 +4559,10 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params)
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage, PSQ_PB_NUM_SWEEPS_PASS, numSweepsFailedAllowed)
 
-			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			stimset = stimsets[s.headstage]
-
-			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
-			failsInSet          = acquiredSweepsInSet - passesInSet
-
-			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_PB_NUM_SWEEPS_PASS
-			DEBUGPRINT(msg)
-
-			if(!sweepPassed)
-				// not enough sweeps left to pass the set
-				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_PB_NUM_SWEEPS_PASS - passesInSet))
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				elseif(failsInSet >= numSweepsFailedAllowed)
-					// failed too many sweeps
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-				endif
-
-				if(!samplingFrequencyQCPassed)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				endif
-			else
-				if(passesInSet >= PSQ_PB_NUM_SWEEPS_PASS)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
-					return NaN
-				endif
+			if(ret == PSQ_RESULTS_DONE)
+				break
 			endif
 
 			break
@@ -4739,7 +4663,7 @@ End
 /// Assumes that all sweeps in the stimset are the same.
 ///
 /// @return number of found testpulses
-static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
+static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
 	variable DAC, numTestPulses, prePulseTP, DAScale, tpIndex
 	variable offset, numEpochs, i, idx, totalOnsetDelay
 	string setName
@@ -4984,7 +4908,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
-			return "Minimum required seal threshold, defaults to 1 [GΩ]"
+			return "Minimum required seal threshold, defaults to 1 [GΩ]"
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
@@ -5297,41 +5221,10 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(device, key, sweepPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params)
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_SEAL_EVALUATION, s.sweepNo, s.headstage, PSQ_SE_NUM_SWEEPS_PASS, numSweepsFailedAllowed)
 
-			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			stimset = stimsets[s.headstage]
-
-			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_SEAL_EVALUATION, s.sweepNo, s.headstage)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
-			failsInSet          = acquiredSweepsInSet - passesInSet
-
-			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_SE_NUM_SWEEPS_PASS
-			DEBUGPRINT(msg)
-
-			if(!sweepPassed)
-				// not enough sweeps left to pass the set
-				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_SE_NUM_SWEEPS_PASS - passesInSet))
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				elseif(failsInSet >= numSweepsFailedAllowed)
-					// failed too many sweeps
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-				endif
-
-				if(!samplingFrequencyQCPassed)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
-					return NaN
-				endif
-			else
-				if(passesInSet >= PSQ_SE_NUM_SWEEPS_PASS)
-					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
-					return NaN
-				endif
+			if(ret == PSQ_RESULTS_DONE)
+				break
 			endif
 
 			break
@@ -5393,7 +5286,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
@@ -5519,4 +5412,143 @@ End
 static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
 	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
 	sprintf shortName, "BLS%d", index
+End
+
+/// @brief Create baseline selection epochs
+///
+/// Assumes that all sweeps in the stimset are the same.
+///
+/// @param device            device
+/// @param headstage         headstage
+/// @param params            analysis function parameters
+/// @param epochIndizes      indizes of stimset epochs for which we should create BLS epochs
+/// @param numRequiredEpochs number of required epochs in the stimset, use
+///
+/// @return 0 on success, 1 on failure
+static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable headstage, string params, WAVE epochIndizes, [variable numRequiredEpochs])
+	variable DAC, index, chunkLength
+	variable amplitude, numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, wbBegin, wbEnd
+	string setName, shortName, tags
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+
+	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	ASSERT(numEpochs > 0, "Invalid number of epochs")
+
+	if(!ParamIsDefault(numRequiredEpochs))
+		ASSERT(IsFinite(numRequiredEpochs), "numRequiredEpochs must be finite")
+
+		if(numEpochs != numRequiredEpochs)
+			printf "The number of present (%g) and expected (%g) stimulus set epochs differs.", numEpochs, numRequiredEpochs
+			ControlWindowToFront()
+			return 1
+		endif
+	endif
+
+	if(WaveMax(epochIndizes) >= numEpochs)
+		printf "epochIndizes (%s) has entries which are larger than the number of present epochs (%g)\r", NumericWaveToList(epochIndizes, ";"), numEpochs
+		ControlWindowToFront()
+		return 1
+	endif
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
+	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be present and finite")
+
+	wbBegin = 0
+	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
+	for(i = 0; i < numEpochs; i += 1)
+		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
+
+		wbBegin = wbEnd
+		wbEnd   = wbBegin + duration
+
+		if(IsNaN(GetRowIndex(epochIndizes, val = i)))
+			continue
+		endif
+
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = i)
+		ASSERT(amplitude == 0, "Invalid amplitude")
+
+		if(duration < chunkLength)
+			printf "The length of epoch %d is %g s but that is smaller than the required %g s by \"BaselineChunkLength\".\r", i, duration, chunkLength
+			ControlWindowToFront()
+			return 1
+		endif
+
+		// BLS epochs are only chunkLength long
+		epBegin = wbBegin
+		epEnd   = epBegin + chunkLength
+
+		[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(index)
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+		index += 1
+	endfor
+
+	return 0
+End
+
+/// @brief Check if we need to act on the now available sweep QC state
+///
+/// @param device                 device
+/// @param type                   analysis function type
+/// @param sweepNo                sweep number
+/// @param headstage              headstage
+/// @param requiredPassesInSet    number of passes in set which makes the set pass
+/// @param numSweepsFailedAllowed number of failures in set which makes the set fail
+///
+/// @return One of @ref DetermineSweepQCReturns
+static Function PSQ_DetermineSweepQCResults(string device, variable type, variable sweepNo, variable headstage, variable requiredPassesInSet, variable numSweepsFailedAllowed)
+	variable DAC, sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, samplingFrequencyPassed, failsInSet
+	string stimset, key, msg
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
+	passesInSet         = PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
+	acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, sweepNo, headstage)
+	failsInSet          = acquiredSweepsInSet - passesInSet
+
+	sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d, accepted failures %d\r", ToPassFail(sweepPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, requiredPassesInSet, numSweepsFailedAllowed
+	DEBUGPRINT(msg)
+
+	if(!sweepPassed)
+		// not enough sweeps left to pass the set
+		if((sweepsInSet - acquiredSweepsInSet) < (requiredPassesInSet - passesInSet))
+			PSQ_ForceSetEvent(device, headstage)
+			RA_SkipSweeps(device, inf)
+			return PSQ_RESULTS_DONE
+		elseif(failsInSet >= numSweepsFailedAllowed)
+			// failed too many sweeps
+			PSQ_ForceSetEvent(device, headstage)
+			RA_SkipSweeps(device, inf)
+			return PSQ_RESULTS_DONE
+		endif
+
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SAMPLING_PASS, query = 1)
+		samplingFrequencyPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		ASSERT(IsFinite(samplingFrequencyPassed), "Sampling frequency QC is missing")
+
+		if(!samplingFrequencyPassed)
+			PSQ_ForceSetEvent(device, headstage)
+			RA_SkipSweeps(device, inf)
+			return PSQ_RESULTS_DONE
+		endif
+	else
+		if(passesInSet >= requiredPassesInSet)
+			PSQ_ForceSetEvent(device, headstage)
+			RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+			return PSQ_RESULTS_DONE
+		endif
+	endif
+
+	return PSQ_RESULTS_CONT
 End

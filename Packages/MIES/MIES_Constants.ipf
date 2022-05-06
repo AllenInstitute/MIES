@@ -1818,3 +1818,10 @@ StrConstant DEFAULT_LIST_SEP = ";"
 StrConstant PREFIX_SHORT_LIST = ";Y;Z;E;P;T;G;M;k;h;da;d;c;m;mu;n;p;f;a;z;y"
 StrConstant PREFIX_LONG_LIST  = "one;yotta;zetta;exa;peta;tera;giga;mega;kilo;hecto;deca;deci;centi;milli;micro;nano;pico;femto;atto;zepto;yocto"
 StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;1e-1;1e-2;1e-3;1e-6;1e-9;1e-12;1e-15;1e-18;1e-21;1e-24"
+
+/// @name Possible return values for PSQ_DetermineSweepQCResults()
+/// @anchor DetermineSweepQCReturns
+/// @{
+CONSTANT PSQ_RESULTS_DONE = 0x1
+CONSTANT PSQ_RESULTS_CONT = 0x2
+/// @}

@@ -1116,6 +1116,13 @@ Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType
 	Make/FREE/T ignoredKeys = {prefix + " cycle x values"}
 
 	WAVE/T/Z anaFuncKeys = GrepTextWave(allKeys, prefix + "*")
+
+	if(!WaveExists(anaFuncKeys))
+		printf "Could not find any labnotebook keys for analysis function.\r"
+		ControlWindowToFront()
+		return NaN
+	endif
+
 	WAVE/T/Z keys = GetSetDifference(anaFuncKeys, ignoredKeys)
 
 	STRUCT WMPopupAction pa
