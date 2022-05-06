@@ -105,4 +105,15 @@ then
   ret=1
 fi
 
+# https://news.ycombinator.com/item?id=5902583 and
+# https://en.wikipedia.org/wiki/Ohm
+matches=$(rg ${rg_opts} --case-sensitive '\x{2126}' ${files})
+
+if [[ -n "$matches" ]]
+then
+  echo "The ambiguous Ohm, prefer U+03A9 over U+2126, symbol check failed:"
+  echo "$matches"
+  ret=1
+fi
+
 exit $ret

@@ -4908,7 +4908,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
-			return "Minimum required seal threshold, defaults to 1 [GΩ]"
+			return "Minimum required seal threshold, defaults to 1 [GΩ]"
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
