@@ -219,8 +219,7 @@ End
 /// @brief preparse user input to correct formula patterns
 ///
 /// @return parsed formula
-static Function/S SF_FormulaPreParser(formula)
-	String formula
+static Function/S SF_FormulaPreParser(string formula)
 
 	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
 	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
@@ -579,8 +578,7 @@ static Function SF_FPAddArray(variable mainId, string jsonPath, variable subId, 
 End
 
 /// @brief add escape characters to a path element
-static Function/S SF_EscapeJsonPath(str)
-	String str
+static Function/S SF_EscapeJsonPath(string str)
 
 	return ReplaceString("/", str, "~1")
 End
@@ -1021,9 +1019,7 @@ End
 /// split dimension @p dim of wave @p wv into slices of size @p split and get
 /// the starting index @p i
 ///
-static Function SF_SplitPlotting(wv, dim, i, split)
-	WAVE wv
-	Variable dim, i, split
+static Function SF_SplitPlotting(WAVE wv, variable dim, variable i, variable split)
 
 	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
@@ -1274,9 +1270,7 @@ End
 /// @param dimDest   dimension of the destination wave
 ///
 /// @return 0 if wave scaling was transferred, 1 if not
-static Function SF_FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
-	WAVE source, dest
-	Variable dimSource, dimDest
+static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource, variable dimDest)
 
 	string sourceUnit, destUnit
 
@@ -1575,8 +1569,7 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
-Function SF_button_sweepFormula_check(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
 	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
 	variable jsonId
@@ -1676,8 +1669,7 @@ Function SF_Update(string graph)
 End
 
 /// @brief checks if SweepFormula (SF) is active.
-Function SF_IsActive(win)
-	string win
+Function SF_IsActive(string win)
 
 	return BSP_IsActive(win, MIES_BSP_SF)
 End
@@ -1692,8 +1684,7 @@ Function [string raw, string preProc] SF_GetCode(string win)
 	return [code, SF_PreprocessInput(code)]
 End
 
-Function SF_button_sweepFormula_display(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonControl
 
 	String mainPanel, rawCode, bsPanel, preProcCode
 
@@ -1824,8 +1815,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	return [keys, values]
 End
 
-Function SF_TabProc_Formula(tca) : TabControl
-	STRUCT WMTabControlAction &tca
+Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 
 	String mainPanel, bsPanel, json_nb, text
 	variable jsonID
@@ -2990,8 +2980,7 @@ static Function/S SF_GetFormulaWinNameTemplate(string mainWindow)
 	return BSP_GetFormulaGraph(mainWindow) + "_"
 End
 
-Function SF_button_sweepFormula_tofront(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_tofront(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string winNameTemplate, wList, wName
 	variable numWins, i
@@ -3117,8 +3106,7 @@ static Function/WAVE SF_GetAllOldCode()
 	return GetUniqueEntries(entries)
 End
 
-Function SF_PopMenuProc_OldCode(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string sweepFormulaNB, bsPanel, code
 	variable index
