@@ -2806,10 +2806,23 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 
 	variable i
 	string info
+	variable numIndices
 
-	WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
-	Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
-	for(i = 0; i < DimSize(wvT, ROWS); i += 1)
+	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
+	if(!numIndices)
+		Make/FREE/T wvT = {"A", "B"}
+		numIndices = 2
+	else
+		Make/FREE/T/N=(numIndices) wvT
+		for(i = 0; i < numIndices; i += 1)
+			WAVE csrName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(i), graph = graph)
+			SF_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
+			WAVE/T csrNameT = csrName
+			wvT[i] = csrNameT[0]
+		endfor
+	endif
+	Make/FREE/N=(numIndices) out = NaN
+	for(i = 0; i < numIndices; i += 1)
 		SF_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
 		if(IsEmpty(graph))
 			out[i] = xcsr($wvT[i])
