@@ -4536,7 +4536,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_PB_CreateTestpulseEpochs(device, s.headstage)
+			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
 			if(expectedNumTestpulses != numTestpulses)
 				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
 				ControlWindowToFront()
@@ -4739,7 +4739,7 @@ End
 /// Assumes that all sweeps in the stimset are the same.
 ///
 /// @return number of found testpulses
-static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
+static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
 	variable DAC, numTestPulses, prePulseTP, DAScale, tpIndex
 	variable offset, numEpochs, i, idx, totalOnsetDelay
 	string setName
