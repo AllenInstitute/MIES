@@ -1661,6 +1661,8 @@ static Function TestOperationLabNotebook()
 	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
+	string textKey = "TEXTKEY"
+	string textValue = "TestText"
 	String win = DATABROWSER_WINDOW_TITLE
 	String device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
@@ -1684,7 +1686,10 @@ static Function TestOperationLabNotebook()
 	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = textValue
+	Make/T/FREE/N=(numSweeps, numChannels) textRef = textValue
 	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
+	Make/FREE/T/N=(1, 1) textKeys = textKey
 
 	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
 
@@ -1715,10 +1720,12 @@ static Function TestOperationLabNotebook()
 		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
 
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
 		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
 		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
 		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
@@ -1738,6 +1745,10 @@ static Function TestOperationLabNotebook()
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	WAVE wRef = MIES_SF#SF_GetDefaultEmptyWave()
 	REQUIRE_EQUAL_WAVES(data, wRef, mode = WAVE_DATA)
+
+	str = "labnotebook(" + textKey + ")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, textRef, mode = WAVE_DATA)
 End
 
 /// @brief Test Epoch operation of SweepFormula
