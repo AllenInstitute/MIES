@@ -238,23 +238,23 @@ End
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
+	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
 	variable formulaLength
-	String tempPath
+	string tempPath
 	string indentation = ""
-	Variable action = SF_ACTION_UNINITIALIZED
-	String token = ""
-	String buffer = ""
-	Variable state = SF_STATE_UNINITIALIZED
-	Variable lastState = SF_STATE_UNINITIALIZED
-	Variable lastCalculation = SF_STATE_UNINITIALIZED
-	Variable level = 0
-	Variable arrayLevel = 0
+	variable action = SF_ACTION_UNINITIALIZED
+	string token = ""
+	string buffer = ""
+	variable state = SF_STATE_UNINITIALIZED
+	variable lastState = SF_STATE_UNINITIALIZED
+	variable lastCalculation = SF_STATE_UNINITIALIZED
+	variable level = 0
+	variable arrayLevel = 0
 	variable createdArrayLocal, wasArrayCreated
 	variable lastAction = SF_ACTION_UNINITIALIZED
 
-	Variable jsonID = JSON_New()
-	String jsonPath = ""
+	variable jsonID = JSON_New()
+	string jsonPath = ""
 
 #ifdef DEBUGGING_ENABLED
 	for(i = 0; i < indentLevel; i += 1)
@@ -815,12 +815,12 @@ End
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
 static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
-	String trace, axes, xFormula
-	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
-	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
+	string trace, axes, xFormula
+	variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
+	variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints
-	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
-	String traceName = "formula"
+	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
+	string traceName = "formula"
 	string guideNameTemplate = "HOR"
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -1571,7 +1571,7 @@ End
 
 Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
-	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
+	string mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
 	variable jsonId
 
 	switch(ba.eventCode)
@@ -1686,7 +1686,7 @@ End
 
 Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonControl
 
-	String mainPanel, rawCode, bsPanel, preProcCode
+	string mainPanel, rawCode, bsPanel, preProcCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1817,7 +1817,7 @@ End
 
 Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 
-	String mainPanel, bsPanel, json_nb, text
+	string mainPanel, bsPanel, json_nb, text
 	variable jsonID
 
 	switch( tca.eventCode )
