@@ -1841,7 +1841,8 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 		WAVE/WAVE cmpWave = wv
 
 		for(i = 0; i < numEntries; i += 1)
-			if(WaveRefsEqual(cmpWave[i], refWave))
+			if(WaveRefsEqual(cmpWave[i], refWave)                   \
+			   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
 				return i
 			endif
 		endfor
