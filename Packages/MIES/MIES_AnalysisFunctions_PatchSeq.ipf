@@ -5393,7 +5393,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
