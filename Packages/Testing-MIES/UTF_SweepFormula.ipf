@@ -484,8 +484,12 @@ static Function whiteSpace()
 End
 
 // test static Functions with 1..N arguments
-static Function minimaximu()
-	Variable jsonID0, jsonID1
+static Function TestOperationMinMax()
+
+	variable jsonID0, jsonID1
+	string str, wavePath
+	string win = DATABROWSER_WINDOW_TITLE
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
 	jsonID1 = DirectToFormulaParser("min(1)")
@@ -566,6 +570,29 @@ static Function minimaximu()
 	jsonID1 = DirectToFormulaParser("max(1,2)-max(1,2)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	wavePath = GetWavesDataFolder(input, 2)
+
+	Make/FREE/D dataRef = {{0, 2}, {4, 6}}
+	str = "min(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/FREE/D dataRef = {{1, 3}, {5, 7}}
+	str = "max(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/FREE/D dataRef = {{0.5, 2.5}, {4.5, 6.5}}
+	str = "avg(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 End
 
 // test static Functions with aribitrary length array returns
