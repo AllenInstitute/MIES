@@ -1650,6 +1650,25 @@ static Function TestOperationData()
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
+	// Using the setup from data we also test cursors operation
+	Cursor/W=$win/A=1/P A, $trace, 0
+	Cursor/W=$win/A=1/P B, $trace, trunc(dataSize / 2)
+	Make/FREE dataRef = {0, trunc(dataSize / 2)}
+	str = "cursors(A,B)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	str = "cursors()"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	try
+		str = "cursors(X,Y)"
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 End
 
 static Function TestOperationLabNotebook()
