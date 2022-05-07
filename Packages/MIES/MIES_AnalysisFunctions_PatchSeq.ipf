@@ -4408,6 +4408,20 @@ static Function PSQ_ForceSetEvent(device, headstage)
 	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End
 
+/// @brief Execute `code` in the SweepFormula notebook
+static Function PSQ_ExecuteSweepFormula(string device, string code)
+	string databrowser, bsPanel, sfNotebook
+
+	databrowser = DB_GetBoundDataBrowser(device)
+
+	bsPanel = BSP_GetPanel(databrowser)
+
+	SF_SetFormula(databrowser, code)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
+End
+
 static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multiplier)
 
 	string multiplierAsString = num2str(multiplier)
