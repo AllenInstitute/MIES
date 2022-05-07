@@ -4584,6 +4584,7 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruc
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "NumberOfTestpulses":
@@ -4608,6 +4609,7 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "NumberOfTestpulses":
@@ -4629,6 +4631,7 @@ Function/S PSQ_PipetteInBath_GetParams()
 	       "MaxLeakCurrent:variable,"              + \
 	       "MaxPipetteResistance:variable,"        + \
 	       "MinPipetteResistance:variable,"        + \
+	       "[NextIndexingEndStimSetName:string],"  + \
 	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "NumberOfTestpulses:variable,"          + \
