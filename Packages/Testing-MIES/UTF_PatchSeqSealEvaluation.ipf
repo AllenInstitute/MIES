@@ -273,6 +273,7 @@ static Function PS_SE1_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -346,6 +347,7 @@ static Function PS_SE2_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -419,6 +421,7 @@ static Function PS_SE3_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -491,6 +494,7 @@ static Function PS_SE4_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -563,6 +567,7 @@ static Function PS_SE5_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -637,6 +642,7 @@ static Function PS_SE6_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -711,6 +717,7 @@ static Function PS_SE7_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 
@@ -784,6 +791,7 @@ static Function PS_SE8_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=600)
 End
 
@@ -816,6 +824,7 @@ static Function PS_SE9_IGNORE(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
 End
 

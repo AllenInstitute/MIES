@@ -4989,6 +4989,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
@@ -5017,6 +5018,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
@@ -5035,6 +5037,7 @@ Function/S PSQ_SealEvaluation_GetParams()
 	return "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[NextIndexingEndStimSetName:string],"  + \
 	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "[SamplingFrequency:variable],"         + \
