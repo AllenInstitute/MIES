@@ -319,3 +319,50 @@ static Function CheckSealEvaluationPublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckTrueRestMembPotPublishing()
+	string device, msg, expected, actual
+	variable headstage, i, jsonID, value, sweepNo
+
+	WaitForPubSubHeartbeat()
+
+	device = "my_device"
+	headstage = 0
+	sweepNo = 0
+
+	// BEGIN required entries
+	ED_AddEntryToLabnotebook(device, "True Rest Memb. Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "True Rest Memb. Full Average", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 123}, unit = "Volt", overrideSweepNo = sweepNo)
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(3, 1, 1) keys
+
+	values[headstage] = GetUniqueInteger()
+	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0] = "1"
+
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	// END required entries
+
+	MIES_PSQ#PSQ_VM_Publish(device, sweepNo, headstage)
+
+	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_VM)
+
+	jsonID = JSON_Parse(msg)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual   = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Set QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_True Rest Memb. Set QC/value")
+	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
+
+	expected = "Volt"
+	actual = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Full Average/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_True Rest Memb. Full Average/value")
+	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
+
+	JSON_Release(jsonID)
+End

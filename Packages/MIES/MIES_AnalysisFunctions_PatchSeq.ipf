@@ -12,6 +12,7 @@
 /// The stimsets with the analysis functions attached are executed in the following order:
 /// - PSQ_PipetteInBath `PB`
 /// - PSQ_SealEvaluation `SE`
+/// - PSQ_TrueRestingMembranePotential `VM`
 /// - PSQ_DaScale (sub threshold) `DA (sub)`
 /// - PSQ_SquarePulse (long pulse) `SP`
 /// - PSQ_Rheobase (long pulse) `RB`
@@ -28,56 +29,63 @@
 ///
 /// \rst
 ///
-/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
-/// Naming constant                 Description                                                Unit    Labnotebook              Analysis function            Per Chunk?             Headstage dependent?
-/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep   On/Off   Numerical                SP, RB, RA, DA (Supra)      No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions                                            ms       Numerical                RA                          No                     Yes
-/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                                (none)   Numerical                DA (Supra)                  No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                  (none)   Numerical                SP, RB                      No                     No
-/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                   (none)   Numerical                RB                          No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                 On/Off   Numerical                RB                          No                     Yes
-/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                   On/Off   Numerical                RB                          No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success  (none)   Numerical                SP, RB                      No                     No
-/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                             On/Off   Numerical                SP                          No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                            (none)   Numerical                RB, CR                      No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                               On/Off   Numerical                DA, RB, RA, CR, SE          Yes                    Yes
-/// PSQ_FMT_LBN_RMS_SHORT_THRESHOLD Short RMS baseline threshold                               V        Numerical                DA, RB, RA, CR, SE          No                     Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                                On/Off   Numerical                DA, RB, RA, CR, SE          Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_THRESHOLD  Long RMS baseline threshold                                V        Numerical                DA, RB, RA, CR, SE          No                     Yes
-/// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                    Volt     Numerical                DA, RB, RA, CR              Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                          On/Off   Numerical                DA, RB, RA, CR              Yes                    Yes
-/// PSQ_FMT_LBN_LEAKCUR             Leak current                                               Amperes  Numerical                PB                          Yes                    Yes
-/// PSQ_FMT_LBN_LEAKCUR_PASS        Leak current QC result                                     On/Off   Numerical                PB                          Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                      On/Off   Numerical                DA, RB, RA, CR, PB, SE      Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                   On/Off   Numerical                DA, RB, RA, CR, PB, SE      No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                      On/Off   Numerical                DA, SP, RA, CR, PB, SE      No                     No
-/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                        On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
-/// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check             On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
-/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally                ms       Numerical                RB, DA (Supra), CR          No                     Yes
-/// PSQ_FMT_LBN_SPIKE_PASS          Pass/fail state of the spike search (No spikes → Pass)     On/Off   Numerical                CR                          No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                               % Hz/pA  Numerical                DA (Supra)                  No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
-/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
-/// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                      On/Off   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance from DAScale sub threshold           Ohm      Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
-/// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
-/// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
-/// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                   (none)   Numerical                All                         No                     Yes
-/// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                         Ohm      Numerical                PB                          No                     No
-/// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                      On/Off   Numerical                PB                          No                     No
-/// PSQ_FMT_LBN_SE_TP_GROUP_SEL     Selected Testpulse groups: One of Both/First/Second        (none)   Textual                  SE                          No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_A     Seal Resistance of TPs in group A                          Ω        Numerical                SE                          No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_B     Seal Resistance of TPs in group B                          Ω        Numerical                SE                          No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_MAX   Maximum Seal Resistance of TPs in both groups              Ω        Numerical                SE                          No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_PASS  Seal Resistance QC                                         On/Off   Numerical                SE                          No                     No
-/// LBN_DELTA_I                     Delta current in pulse                                     Amperes  Numerical                RV, AD, DA (Sub)            No                     Yes
-/// LBN_DELTA_V                     Delta voltage in pulse                                     Volts    Numerical                RV, AD, DA (Sub)            No                     Yes
-/// LBN_RESISTANCE_FIT              Fitted resistance from pulse                               Ohm      Numerical                RV, AD, DA (Sub)            No                     Yes
-/// LBN_RESISTANCE_FIT_ERR          Error of fitted resistance from pulse                      Ohm      Numerical                RV, AD, DA (Sub)            No                     Yes
-/// LBN_AUTOBIAS_TARGET_DIAG        Autobias target voltage from dialog                        mV       Numerical                RV                          No                     Yes
-/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
+/// =================================== =========================================================== ======== ============ ================================== ===================== ======================
+///  Naming constant                     Description                                                 Unit     Labnotebook  Analysis function                  Per Chunk?            Headstage dependent?
+/// =================================== =========================================================== ======== ============ ================================== ===================== ======================
+///  PSQ_FMT_LBN_SPIKE_DETECT            The required number of spikes were detected on the sweep    On/Off   Numerical    SP, RB, RA, DA (Supra)             No                    Yes
+///  PSQ_FMT_LBN_SPIKE_POSITIONS         Spike positions                                             ms       Numerical    RA, VM                             No                    Yes
+///  PSQ_FMT_LBN_SPIKE_COUNT             Spike count                                                 (none)   Numerical    DA (Supra)                         No                    Yes
+///  PSQ_FMT_LBN_STEPSIZE                Current DAScale step size                                   (none)   Numerical    SP, RB                             No                    No
+///  PSQ_FMT_LBN_STEPSIZE_FUTURE         Future DAScale step size                                    (none)   Numerical    RB                                 No                    No
+///  PSQ_FMT_LBN_RB_DASCALE_EXC          Range for valid DAScale values is exceeded                  On/Off   Numerical    RB                                 No                    Yes
+///  PSQ_FMT_LBN_RB_LIMITED_RES          Failed due to limited DAScale resolution                    On/Off   Numerical    RB                                 No                    Yes
+///  PSQ_FMT_LBN_FINAL_SCALE             Final DAScale of the given headstage, only set on success   (none)   Numerical    SP, RB                             No                    No
+///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO      Sweep spiked with DAScale of 0                              On/Off   Numerical    SP                                 No                    No
+///  PSQ_FMT_LBN_INITIAL_SCALE           Initial DAScale                                             (none)   Numerical    RB, CR                             No                    No
+///  PSQ_FMT_LBN_RMS_SHORT_PASS          Short RMS baseline QC result                                On/Off   Numerical    DA, RB, RA, CR, SE, VM             Yes                   Yes
+///  PSQ_FMT_LBN_RMS_SHORT_THRESHOLD     Short RMS baseline threshold                                V        Numerical    DA, RB, RA, CR, SE, VM             No                    Yes
+///  PSQ_FMT_LBN_RMS_LONG_PASS           Long RMS baseline QC result                                 On/Off   Numerical    DA, RB, RA, CR, SE, VM             Yes                   Yes
+///  PSQ_FMT_LBN_RMS_LONG_THRESHOLD      Long RMS baseline threshold                                 V        Numerical    DA, RB, RA, CR, SE, VM             No                    Yes
+///  PSQ_FMT_LBN_TARGETV                 Target voltage baseline                                     Volt     Numerical    DA, RB, RA, CR                     Yes                   Yes
+///  PSQ_FMT_LBN_TARGETV_PASS            Target voltage baseline QC result                           On/Off   Numerical    DA, RB, RA, CR                     Yes                   Yes
+///  PSQ_FMT_LBN_LEAKCUR                 Leak current                                                Amperes  Numerical    PB                                 Yes                   Yes
+///  PSQ_FMT_LBN_LEAKCUR_PASS            Leak current QC result                                      On/Off   Numerical    PB                                 Yes                   Yes
+///  PSQ_FMT_LBN_AVERAGEV                Average voltage                                             Volt     Numerical    VM                                 Yes                   Yes
+///  PSQ_FMT_LBN_CHUNK_PASS              Which chunk passed/failed baseline QC                       On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM         Yes                   Yes
+///  PSQ_FMT_LBN_BL_QC_PASS              Pass/fail state of the complete baseline                    On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM         No                    Yes
+///  PSQ_FMT_LBN_SWEEP_PASS              Pass/fail state of the complete sweep                       On/Off   Numerical    DA, SP, RA, CR, PB, SE, VM         No                    No
+///  PSQ_FMT_LBN_SET_PASS                Pass/fail state of the complete set                         On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM     No                    No
+///  PSQ_FMT_LBN_SAMPLING_PASS           Pass/fail state of the sampling interval check              On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM     No                    No
+///  PSQ_FMT_LBN_PULSE_DUR               Pulse duration as determined experimentally                 ms       Numerical    RB, DA (Supra), CR                 No                    Yes
+///  PSQ_FMT_LBN_SPIKE_PASS              Pass/fail state of the spike search (No spikes → Pass)      On/Off   Numerical    CR, VM                             No                    Yes
+///  PSQ_FMT_LBN_DA_fI_SLOPE             Fitted slope in the f-I plot                                % Hz/pA  Numerical    DA (Supra)                         No                    Yes
+///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED     Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                         No                    No
+///  PSQ_FMT_LBN_DA_OPMODE               Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA              (none)   Textual      DA                                 No                    No
+///  PSQ_FMT_LBN_CR_INSIDE_BOUNDS        AD response is inside the given bands                       On/Off   Numerical    CR                                 No                    No
+///  PSQ_FMT_LBN_CR_RESISTANCE           Calculated resistance from DAScale sub threshold            Ohm      Numerical    CR                                 No                    No
+///  PSQ_FMT_LBN_CR_BOUNDS_ACTION        Action according to min/max positions                       (none)   Numerical    CR                                 No                    No
+///  PSQ_FMT_LBN_CR_BOUNDS_STATE         Upper and Lower bounds state according to min/max pos.      (none)   Textual      CR                                 No                    No
+///  PSQ_FMT_LBN_CR_SPIKE_CHECK          Spike check was enabled/disabled                            (none)   Numerical    CR                                 No                    No
+///  FMT_LBN_ANA_FUNC_VERSION            Integer version of the analysis function                    (none)   Numerical    All                                No                    Yes
+///  PSQ_FMT_LBN_PB_RESISTANCE           Pipette Resistance                                          Ohm      Numerical    PB                                 No                    No
+///  PSQ_FMT_LBN_PB_RESISTANCE_PASS      Pipette Resistance QC                                       On/Off   Numerical    PB                                 No                    No
+///  PSQ_FMT_LBN_SE_TP_GROUP_SEL         Selected Testpulse groups: One of Both/First/Second         (none)   Textual      SE                                 No                    No
+///  PSQ_FMT_LBN_SE_RESISTANCE_A         Seal Resistance of TPs in group A                           Ω        Numerical    SE                                 No                    No
+///  PSQ_FMT_LBN_SE_RESISTANCE_B         Seal Resistance of TPs in group B                           Ω        Numerical    SE                                 No                    No
+///  PSQ_FMT_LBN_SE_RESISTANCE_MAX       Maximum Seal Resistance of TPs in both groups               Ω        Numerical    SE                                 No                    No
+///  PSQ_FMT_LBN_SE_RESISTANCE_PASS      Seal Resistance QC                                          On/Off   Numerical    SE                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG             Average voltage of all baseline chunks                      Volt     Numerical    VM                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF       Average voltage absolute difference                         Volt     Numerical    VM                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS  Average voltage absolute difference QC                      On/Off   Numerical    VM                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF       Average voltage relative difference                         (none)   Numerical    VM                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS  Average voltage relative difference QC                      On/Off   Numerical    VM                                 No                    No
+///  PSQ_FMT_LBN_VM_FULL_AVG_PASS        Full average voltage QC result                              On/Off   Numerical    VM                                 No                    No
+///  LBN_DELTA_I                         Delta current in pulse                                      Amperes  Numerical    RV, AD, DA (Sub)                   No                    Yes
+///  LBN_DELTA_V                         Delta voltage in pulse                                      Volts    Numerical    RV, AD, DA (Sub)                   No                    Yes
+///  LBN_RESISTANCE_FIT                  Fitted resistance from pulse                                Ohm      Numerical    RV, AD, DA (Sub)                   No                    Yes
+///  LBN_RESISTANCE_FIT_ERR              Error of fitted resistance from pulse                       Ohm      Numerical    RV, AD, DA (Sub)                   No                    Yes
+///  LBN_AUTOBIAS_TARGET_DIAG            Autobias target voltage from dialog                         mV       Numerical    RV                                 No                    Yes
+/// =================================== =========================================================== ======== ============ ================================== ===================== ======================
 ///
 /// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
 ///
@@ -91,7 +99,7 @@
 /// Tags                                                       Short Name Analysis function  Description                                                Level
 /// ========================================================== ========== ================== ========================================================== =======
 /// Name=Baseline Chunk;Index=x                                U_BLCx     DA, RB, RA, CR, SE Baseline QC evaluation chunks                               -1
-/// Name=Baseline Chunk QC Selection;Index=x                   U_BLSx     SE                 Selects the chunk for Baseline QC evaluation                -1
+/// Name=Baseline Chunk QC Selection;Index=x                   U_BLSx     SE, VM             Selects the chunk for Baseline QC evaluation                -1
 /// Name=DA Suppression                                        U_RA_DA    RA                 DA was suppressed in this time interval                     -1
 /// Name=Unacquired DA data                                    U_RA_UD    RA                 Interval of unacquired data                                 -1
 /// Type=Testpulse Like;Index=x                                U_TPx      PB, SE             Testpulse like region in stimset                            -1
@@ -114,6 +122,7 @@ static Constant PSQ_RMS_SHORT_TEST = 0x0
 static Constant PSQ_RMS_LONG_TEST  = 0x1
 static Constant PSQ_TARGETV_TEST   = 0x2
 static Constant PSQ_LEAKCUR_TEST   = 0x3
+static Constant PSQ_AVERAGE_TEST   = 0x4
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
@@ -155,6 +164,12 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			s.pulseDuration        = NaN
 			break
 		case PSQ_SEAL_EVALUATION:
+			s.prePulseChunkLength     = NaN
+			s.postPulseChunkLength    = NaN
+			s.pulseDuration           = NaN
+			s.usesBaselineChunkEpochs = 1
+			break
+		case PSQ_TRUE_REST_VM:
 			s.prePulseChunkLength     = NaN
 			s.postPulseChunkLength    = NaN
 			s.pulseDuration           = NaN
@@ -351,7 +366,10 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			break
 		elseif(ret)
 			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
-			if(i == 0)
+			if(type == PSQ_TRUE_REST_VM)
+				// every failed chunk is fatal
+				break
+			elseif(i == 0)
 				// pre pulse baseline
 				// fail sweep
 				break
@@ -399,6 +417,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	variable leakCurPassedAll, maxLeakCurrent
+	variable plainAvgPassedAll, averageVoltageOverride
 	variable rmsShortThreshold, rmsLongThreshold
 	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
@@ -430,7 +449,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE textualValues   = GetLBTextualValues(device)
 
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL)
+		if(type == PSQ_TRUE_REST_VM)
+			WAVE epochsWave = GetEpochsWave(device)
+		else
+			WAVE/ZZ epochsWave = $""
+		endif
+
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
 
 		if(chunk >= DimSize(userChunkEpochs, ROWS))
@@ -468,13 +493,14 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// Cols: checks
 	// - 0: short RMS
 	// - 1: long RMS
-	// - 2: average voltage
+	// - 2: target voltage
 	// - 3: leak current
+	// - 4: average voltage
 	//
 	// Contents:
 	//  0: skip test
 	//  1: perform test
-	Make/FREE/N=(3, 4) testMatrix
+	Make/FREE/N=(3, 5) testMatrix
 
 	if(type == PSQ_PIPETTE_BATH)
 		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
@@ -485,6 +511,14 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	elseif(type == PSQ_SEAL_EVALUATION)
 		testMatrix[PSQ_BL_GENERIC][PSQ_RMS_SHORT_TEST] = 1
 		testMatrix[PSQ_BL_GENERIC][PSQ_RMS_LONG_TEST]  = 1
+	elseif(type == PSQ_TRUE_REST_VM)
+		if(chunk == 0)
+			testMatrix[PSQ_BL_GENERIC][PSQ_RMS_SHORT_TEST] = 1
+			testMatrix[PSQ_BL_GENERIC][PSQ_RMS_LONG_TEST]  = 1
+			testMatrix[PSQ_BL_GENERIC][PSQ_AVERAGE_TEST]   = 1
+		else
+			testMatrix[PSQ_BL_GENERIC][PSQ_AVERAGE_TEST]   = 1
+		endif
 	else
 		// pre pulse: all except leak current
 		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
@@ -502,14 +536,15 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	WAVE config = GetDAQConfigWave(device)
 
-	WAVE rmsShort       = LBN_GetNumericWave()
-	WAVE rmsShortPassed = LBN_GetNumericWave()
-	WAVE rmsLong        = LBN_GetNumericWave()
-	WAVE rmsLongPassed  = LBN_GetNumericWave()
-	WAVE avgVoltage     = LBN_GetNumericWave()
-	WAVE targetVPassed  = LBN_GetNumericWave()
-	WAVE avgCurrent     = LBN_GetNumericWave()
-	WAVE leakCurPassed  = LBN_GetNumericWave()
+	WAVE rmsShort        = LBN_GetNumericWave()
+	WAVE rmsShortPassed  = LBN_GetNumericWave()
+	WAVE rmsLong         = LBN_GetNumericWave()
+	WAVE rmsLongPassed   = LBN_GetNumericWave()
+	WAVE avgVoltage      = LBN_GetNumericWave()
+	WAVE targetVPassed   = LBN_GetNumericWave()
+	WAVE avgCurrent      = LBN_GetNumericWave()
+	WAVE leakCurPassed   = LBN_GetNumericWave()
+	WAVE plainAvgVoltage = LBN_GetNumericWave()
 
 	targetV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
@@ -521,6 +556,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkPassedRMSLongOverride  = overrideResults[chunk][count][0][PSQ_RMS_LONG_TEST]
 		chunkPassedTargetVOverride  = overrideResults[chunk][count][0][PSQ_TARGETV_TEST]
 		chunkPassedLeakCurOverride  = overrideResults[chunk][count][0][PSQ_LEAKCUR_TEST]
+		averageVoltageOverride      = overrideResults[chunk][count][0][PSQ_AVERAGE_TEST]
 	endif
 	// END TEST
 
@@ -636,10 +672,10 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 			endif
 
-			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
+			sprintf msg, "Average target voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
-			sprintf msg, "Average voltage: (%s)\r", "skipped"
+			sprintf msg, "Average target voltage: (%s)\r", "skipped"
 			DEBUGPRINT(msg)
 			targetVPassed[i] = -1
 		endif
@@ -675,8 +711,34 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			continue
 		endif
 
+		if(testMatrix[baselineType][PSQ_AVERAGE_TEST])
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = chunkLengthTime
+
+			// calculate average voltage, no QC
+			plainAvgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(TestOverrideActive())
+				plainAvgVoltage[i] = averageVoltageOverride
+			endif
+
+			sprintf msg, "Average voltage of %gms: %g", evalRangeTime, plainAvgVoltage[i]
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "Average voltage: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+		endif
+
 		// more tests can be added here
 	endfor
+
+	if(HasOneValidEntry(plainAvgVoltage))
+		// mV -> V
+		plainAvgVoltage[] *= MILLI_TO_ONE
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_AVERAGEV, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, plainAvgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
+	endif
 
 	if(HasOneValidEntry(avgVoltage))
 		// mV -> V
@@ -701,6 +763,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	ED_AddEntryToLabnotebook(device, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, leakCurPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+	// no QC value to record for plainAvgVoltage
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -726,9 +789,16 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		leakCurPassedAll = -1
 	endif
 
-	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1, "Skipping all tests is not supported.")
+	if(testMatrix[baselineType][PSQ_AVERAGE_TEST])
+		// no QC step
+		plainAvgPassedAll = 1
+	else
+		plainAvgPassedAll = -1
+	endif
 
-	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1 || plainAvgPassedAll != -1, "Skipping all tests is not supported.")
+
+	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll && plainAvgPassedAll
 
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
@@ -810,6 +880,8 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 			break
 		case PSQ_SEAL_EVALUATION:
 			// upper limit
+			return 2
+		case PSQ_TRUE_REST_VM:
 			return 2
 		default:
 			ASSERT(0, "unsupported type")
@@ -937,6 +1009,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_DA_SCALE:
 ///
@@ -957,6 +1030,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_CHIRP:
 ///
@@ -980,6 +1054,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_PIPETTE_BATH:
 ///
@@ -998,6 +1073,7 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
 ///
 /// #PSQ_SEAL_EVALUATION:
 ///
@@ -1017,6 +1093,26 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
+/// - 4: average voltage [mV] (unused)
+///
+/// #PSQ_TRUE_REST_VM:
+///
+/// Rows:
+/// - chunk indizes (only selected chunks via user epoch, sorted by ascending chunk start time)
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: 1 if the chunk has passing baseline QC or not
+/// - 1: number of spikes (QC passes with 0)
+///
+/// Chunks (only for row/layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC (unused)
+/// - 3: leak current baseline QC (unused)
+/// - 4: average voltage [mV]
 Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	string device
 	variable headstage, type
@@ -1032,13 +1128,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_DA_SCALE:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
@@ -1048,20 +1144,26 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = 0
 			break
 		case PSQ_CHIRP:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_PIPETTE_BATH:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 		case PSQ_SEAL_EVALUATION:
-			numChunks = 4
+			numChunks = 5
 			numLayers = 3
 			numRows = 2 // upper limit
+			numCols = IDX_NumberOfSweepsInSet(stimset)
+			break
+		case PSQ_TRUE_REST_VM:
+			numChunks = 5
+			numLayers = 2
+			numRows = 2
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		default:
@@ -1157,7 +1259,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 	sprintf msg, "Type %d, headstage %d, offset %g, numberOfSpikesReq %d", type, headstage, offset, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
-	if(type == PSQ_CHIRP)
+	if(type == PSQ_CHIRP || type == PSQ_TRUE_REST_VM)
 		first = offset
 		last  = searchEnd
 	else
@@ -1193,6 +1295,10 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 		NVAR count = $GetCount(device)
 
 		switch(type)
+			case PSQ_TRUE_REST_VM:
+				overrideValue = overrideResults[0][count][1]
+				numSpikesFoundOverride = overrideValue
+				break
 			case PSQ_CHIRP:
 				overrideValue = !overrideResults[0][count][3]
 				numSpikesFoundOverride = overrideValue > 0
@@ -1470,6 +1576,7 @@ static Function PSQ_GetDefaultSamplingFrequency(variable type)
 			return 50
 		case PSQ_PIPETTE_BATH:
 		case PSQ_SEAL_EVALUATION:
+		case PSQ_TRUE_REST_VM:
 			return 200
 		default:
 			ASSERT(0,"Unknown analysis function")
@@ -1536,7 +1643,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 			return "Absolute level for spike search"
 		case "MaxLeakCurrent":
 			return "Maximum current [pA] which is allowed in the pre pulse baseline"
-		case "NextIndexingEndStimSetName": // TODO unify in all places after merge of #1330
+		case "NextIndexingEndStimSetName":
 			return "Next indexing end stimulus set which should be set in case of success.\r Also enables indexing."
 		case "NextStimSetName":
 			return "Next stimulus set which should be set in case of success"
@@ -1596,10 +1703,11 @@ static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct
 			endif
 			break
 		case "NextStimSetName":
+		case "NextIndexingEndStimSetName":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
 			if(!WaveExists(stimset))
-				return "The stimset can not be created"
+				return "The specified stimset cannot be found"
 			endif
 			break
 		case "NumberOfFailedSweeps":
@@ -5409,6 +5517,291 @@ static Function PSQ_SE_Publish(string device, variable sweepNo, variable headsta
 	FFI_Publish(jsonID, ANALYSIS_FUNCTION_SE)
 End
 
+Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, struct CheckParametersStruct& s)
+	variable val
+	string str
+
+	strswitch(name)
+		case "BaselineChunkLength":
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "FailedLevel":
+		case "NextIndexingEndStimSetName":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s)
+		case "AbsoluteVoltageDiff":
+		case "RelativeVoltageDiff":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 0)) // +inf is allowed as well
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "InterTrialInterval":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 0 && val <= 60))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SpikeFailureIgnoredTime":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val >= 3 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "UserOffsetTargetVAutobias":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val <= -1 && val >= -20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
+
+	strswitch(name)
+		case "BaselineChunkLength":
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "FailedLevel":
+		case "NextIndexingEndStimSetName":
+		case "NextStimSetName":
+		case "NumberOfFailedSweeps":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_GetHelpCommon(PSQ_TRUE_REST_VM, name)
+		case "AbsoluteVoltageDiff":
+			return "Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
+		case "RelativeVoltageDiff":
+			return "Maximum relative allowed difference of the baseline membrane potentials [%].\r Set to `inf` to disable this check."
+		case "UserOffsetTargetVAutobias":
+			return "Offset value for the autobias target voltage in case spikes were found"
+		case "SpikeFailureIgnoredTime":
+			return "Time [ms] to ignore around spikes for average calculation.\r Half of this value before and after each spike."
+		case "InterTrialInterval":
+			return "Inter trial interval to set, defaults to 10 [s]"
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_TrueRestingMembranePotential_GetParams()
+	return "AbsoluteVoltageDiff:variable,RelativeVoltageDiff:variable,"                + \
+	       "NumberOfFailedSweeps:variable,"                                            + \
+	       "BaselineChunkLength:variable,"                                             + \
+	       "UserOffsetTargetVAutobias:variable,"                                       + \
+	       "FailedLevel:variable,SpikeFailureIgnoredTime:variable,"                    + \
+	       "[NextStimSetName:string],[NextIndexingEndStimSetName:string],"             + \
+	       "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]," + \
+	       "[SamplingFrequency:variable],[SamplingMultiplier:variable],"               + \
+	       "[InterTrialInterval:variable]"
+End
+
+/// @brief Analysis function for determining the mean potential of a stimset
+///
+/// Prerequisites:
+/// - Does only work for one headstage
+/// - See below for the stimset layout
+///
+/// Testing:
+/// For testing the range detection logic, the results can be defined in the wave
+/// root:overrideResults. @see PSQ_CreateOverrideResults()
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. TODO image:: /dot/patch-seq-true-resting.svg
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of the stimset
+///
+/// --------------------------------------------
+///
+/// Epoch borders
+/// -------------
+///
+/// |         0          | 1 |        2        |
+///
+/// We always expect PSQ_VM_REQUIRED_EPOCHS (3) epochs.
+///
+/// 0: baselineQC chunk with length `BaselineChunkLength` or larger
+/// 1: empty space, can be zero points long, but is always present
+/// 2: baselineQC chunk with length `BaselineChunkLength` or larger
+///
+/// @endverbatim
+Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction_V3& s)
+	variable multiplier, ret, preActiveHS, chunk, baselineQCPassed, spikeQCPassed, IsFinished, targetV, iti
+	variable averageVoltageQCPassed, samplingFrequencyQCPassed, setPassed, sweepPassed, DAC, level, totalOnsetDelay, ignoredTime
+	variable numSweepsFailedAllowed, averageVoltage, numSpikes, position
+	string key, msg, stimset, nextIndexingEndStimSetName, ctrl
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(device, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
+
+			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(DAG_GetHeadstageMode(device, s.headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			break
+		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(device, PSQ_TRUE_REST_VM, s.headstage, s.sweepNo)
+
+			multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
+			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
+
+			preActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
+
+			if(preActiveHS != s.headstage)
+				PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
+			endif
+
+			PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 0)
+			PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnable", val = 0)
+			PGC_SetAndActivateControl(device, "check_DatAcq_CNEnable", val = 1)
+			PGC_SetAndActivateControl(device, "check_DatAcq_BBEnable", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 1)
+
+			if(preActiveHS != s.headstage)
+				PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = preActiveHS)
+			endif
+
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			ret = PSQ_CreateBaselineChunkSelectionEpochs(device, s.headstage, s.params, {0, 2}, numRequiredEpochs = PSQ_VM_REQUIRED_EPOCHS)
+			if(ret)
+				return 1
+			endif
+
+			break
+		case POST_SWEEP_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(WaveExists(baselineQCPassedLBN), "baselineQCPassedLBN does not exist")
+
+			baselineQCPassed = baselineQCPassedLBN[s.headstage]
+
+			level = AFH_GetAnalysisParamNumerical("FailedLevel", s.params)
+
+			[spikeQCPassed, WAVE spikePositions] = PSQ_VM_CheckForSpikes(device, s.sweepNo, s.headstage, s.scaledDACWave, level)
+
+			averageVoltageQCPassed = PSQ_VM_EvaluateAverageVoltage(device, s.sweepNo, s.headstage, s.params)
+
+			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s)
+
+			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && spikeQCPassed && averageVoltageQCPassed
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepPassedLBN = NaN
+			sweepPassedLBN[INDEP_HEADSTAGE] = sweepPassed
+			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(device, key, sweepPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			if(spikeQCPassed)
+				PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 1)
+			else
+				PSQ_VM_HandleFailingSpikeQC(device, s, spikePositions)
+			endif
+
+			numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params)
+			ret = PSQ_DetermineSweepQCResults(device, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage, PSQ_VM_NUM_SWEEPS_PASS, numSweepsFailedAllowed)
+
+			if(ret == PSQ_RESULTS_DONE)
+				break
+			endif
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage) >= PSQ_VM_NUM_SWEEPS_PASS
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			PSQ_VM_Publish(device, s.sweepNo, s.headstage)
+
+			if(setPassed)
+				key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG, query = 1)
+				averageVoltage = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE) * ONE_TO_MILLI
+
+				PSQ_SetAutobiasTargetV(device, s.headstage, averageVoltage)
+			endif
+
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 1)
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+		case POST_DAQ_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS, query = 1)
+			setPassed = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+			if(setPassed)
+				PSQ_SetStimulusSets(device, s.headstage, s.params)
+			endif
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+	endswitch
+
+	if(s.eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
+
+	if(baselineQCPassed) // already done
+		return NaN
+	endif
+
+	[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_TRUE_REST_VM, s)
+
+	return PSQ_EvaluateBaselinePassed(device, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage, chunk, ret)
+End
+
 static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
 	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
 	sprintf shortName, "BLS%d", index
@@ -5551,4 +5944,194 @@ static Function PSQ_DetermineSweepQCResults(string device, variable type, variab
 	endif
 
 	return PSQ_RESULTS_CONT
+End
+
+static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, variable headstage, string params)
+	variable absoluteDiff, absoluteDiffAllowed, relativeDiff, relativeDiffAllowed, voltage
+	variable averageQCPassed, averageAbsoluteQCPassed, averageRelativeQCPassed
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_AVERAGEV, chunk = 0, query = 1)
+	WAVE/Z voltageChunk0LBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_AVERAGEV, chunk = 1, query = 1)
+	WAVE/Z voltageChunk1LBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(WaveExists(voltageChunk0LBN) && WaveExists(voltageChunk1LBN))
+		voltage      = (voltageChunk0LBN[headstage] + voltageChunk1LBN[headstage]) / 2
+		absoluteDiff = voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]
+		relativeDiff = (voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]) / voltageChunk0LBN[headstage]
+	else
+		voltage      = NaN
+		absoluteDiff = NaN
+		relativeDiff = NaN
+	endif
+
+	absoluteDiffAllowed = AFH_GetAnalysisParamNumerical("AbsoluteVoltageDiff", params) * MILLI_TO_ONE
+	relativeDiffAllowed = AFH_GetAnalysisParamNumerical("RelativeVoltageDiff", params) * PERCENT_TO_ONE
+
+	averageAbsoluteQCPassed = abs(absoluteDiff) <= absoluteDiffAllowed
+	averageRelativeQCPassed = abs(relativeDiff) <= relativeDiffAllowed
+
+	averageQCPassed = averageAbsoluteQCPassed && averageRelativeQCPassed
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageLBN = NaN
+	averageLBN[INDEP_HEADSTAGE] = voltage
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG)
+	ED_AddEntryToLabnotebook(device, key, averageLBN, unit = "Volt", overrideSweepNo = sweepNo)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageDiffLBN = NaN
+	averageDiffLBN[INDEP_HEADSTAGE] = absoluteDiff
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF)
+	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, unit = "Volt", overrideSweepNo = sweepNo)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageAbsoluteQCPassedLBN = NaN
+	averageAbsoluteQCPassedLBN[INDEP_HEADSTAGE] = averageAbsoluteQCPassed
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS)
+	ED_AddEntryToLabnotebook(device, key, averageAbsoluteQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageDiffLBN = NaN
+	averageDiffLBN[INDEP_HEADSTAGE] = relativeDiff
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF)
+	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, overrideSweepNo = sweepNo)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageRelativeQCPassedLBN = NaN
+	averageRelativeQCPassedLBN[INDEP_HEADSTAGE] = averageRelativeQCPassed
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS)
+	ED_AddEntryToLabnotebook(device, key, averageRelativeQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageQCPassedLBN = NaN
+	averageQCPassedLBN[INDEP_HEADSTAGE] = averageQCPassed
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_PASS)
+	ED_AddEntryToLabnotebook(device, key, averageQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	return averageQCPassed
+End
+
+static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpikes(string device, variable sweepNo, variable headstage, WAVE scaledDACWave, variable level)
+	variable totalOnsetDelay, numberOfSpikesFound
+	string key
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	Make/FREE/N=0 spikePositions
+	WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_TRUE_REST_VM, scaledDACWave, headstage, totalOnsetDelay,        \
+											  level, numberOfSpikesFound = numberOfSpikesFound, numberOfSpikesReq = inf,  \
+											  spikePositions = spikePositions)
+	WaveClear spikeDetection
+
+	spikeQCPassed = (numberOfSpikesFound == 0)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikeQCPassedLBN = NaN
+	spikeQCPassedLBN[headstage] = spikeQCPassed
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SPIKE_PASS)
+	ED_AddEntryToLabnotebook(device, key, spikeQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsLBN
+	spikePositionsLBN[headstage] = NumericWaveToList(spikePositions, ";")
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SPIKE_POSITIONS)
+	ED_AddEntryToLabnotebook(device, key, spikePositionsLBN, unit = "ms", overrideSweepNo = sweepNo)
+
+	return [spikeQCPassed, spikePositions]
+End
+
+/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_TrueRestingMembranePotential()
+///
+/// Keys under `/results` are labnotebook keys. The arrays under
+/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
+/// This array has currently always one entry as #PSQ_VM_NUM_SWEEPS_PASS is one.
+/// The encoding is UTF-8.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///  {
+///    "device": "my_device",
+///    "headstage": 0,
+///    "results": {
+///      "USER_True Rest Memb. Full Average": {
+///        "unit": "Volt",
+///        "value": [
+///          123.0
+///        ]
+///      },
+///      "USER_True Rest Memb. Set QC": {
+///        "unit": "On/Off",
+///        "value": [
+///          1.0
+///        ]
+///      }
+///    },
+///    "sweep number": "NaN",
+///    "timestamp": "2022-04-27T16:52:28Z"
+///  }
+///
+/// .. Output created with Tests/CheckTrueRestMembPotPublishing.
+///
+/// \endrst
+static Function PSQ_VM_Publish(string device, variable sweepNo, variable headstage)
+	variable jsonID
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE numericalKeys   = GetLBNumericalKeys(device)
+
+	jsonID = FFI_GetJSONTemplate(device, headstage)
+
+	JSON_AddTreeObject(jsonID, "/results")
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	FFI_Publish(jsonID, ANALYSIS_FUNCTION_VM)
+End
+
+static Function PSQ_VM_HandleFailingSpikeQC(string device, struct AnalysisFunction_V3& s, WAVE spikePositions)
+	variable first, last, totalOnsetDelay, ignoredTime, targetV, position, numRows, iti
+
+	WAVE sweepWave = GetSweepWave(device, s.sweepNo)
+	WAVE config = GetConfigWave(sweepWave)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, s.headstage, XOP_CHANNEL_TYPE_ADC, config = config)
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	ignoredTime = AFH_GetAnalysisParamNumerical("SpikeFailureIgnoredTime", s.params)
+
+	ASSERT(DimSize(spikePositions, ROWS) > 0, "Expected some spike positions")
+
+	// ignore inserted TP and offset
+	first = 0
+	last  = ScaleToIndex(singleAD, totalOnsetDelay, ROWS)
+	singleAD[first, last] = 0
+
+	numRows = DimSize(singleAD, ROWS)
+
+	for(position : spikePositions)
+		first = limit(ScaleToIndex(spikePositions, position - ignoredTime/2.0, ROWS), 0, numRows - 1)
+		last  = limit(ScaleToIndex(spikePositions, position + ignoredTime/2.0, ROWS), 0, numRows - 1)
+		singleAD[first, last] = 0
+	endfor
+
+	if(TestOverrideActive())
+		WAVE overrideResults = GetOverrideResults()
+		NVAR count = $GetCount(device)
+
+		targetV = (overrideResults[0][count][0][4] + overrideResults[1][count][0][4]) / 2
+	else
+		targetV = Mean(singleAD)
+	endif
+
+	targetV += AFH_GetAnalysisParamNumerical("UserOffsetTargetVAutobias", s.params)
+	PSQ_SetautobiasTargetV(device, s.headstage, targetV)
+
+	iti = AFH_GetAnalysisParamNumerical("InterTrialInterval", s.params, defValue = 10)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = iti)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 End

@@ -134,6 +134,11 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// PSQ_SP
 	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
 
+	// PSQ_VM
+	// - baseline QC
+	// - spike pass QC
+	// - full average QC
+
 	switch(anaFuncType)
 		case MSQ_DA_SCALE:
 			BUG("Unknown reason for failure")
@@ -152,6 +157,8 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 			return AD_GetRheobaseFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_SEAL_EVALUATION:
 			return AD_GetSealEvaluationFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case PSQ_TRUE_REST_VM:
+			return AD_GetTrueRestMembranePotentialFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_SQUARE_PULSE:
 			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		case SC_SPIKE_CONTROL:
@@ -276,7 +283,7 @@ static Function AD_FillWaves(win, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_SE, PSQ_PB, PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_VM, PSQ_SE, PSQ_PB, PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
 			//         If not passed, all are failing
 
@@ -292,6 +299,7 @@ static Function AD_FillWaves(win, list, info)
 				case MSQ_DA_SCALE:
 				case MSQ_FAST_RHEO_EST:
 				case SC_SPIKE_CONTROL:
+				case PSQ_TRUE_REST_VM:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 					WAVE/Z sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
 
@@ -498,6 +506,10 @@ static Function/S AD_GetSealEvaluationFailMsg(WAVE numericalValues, WAVE/T textu
 	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_SE_NUM_SWEEPS_PASS)
 End
 
+static Function/S AD_GetTrueRestMembranePotentialFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+	return AD_GetPerSweepFailMessage(PSQ_TRUE_REST_VM, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_VM_NUM_SWEEPS_PASS)
+End
+
 static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
@@ -592,6 +604,7 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
 		case PSQ_CHIRP:
+		case PSQ_TRUE_REST_VM:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
@@ -701,7 +714,7 @@ End
 static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, variable headstage, [variable numRequiredPasses])
 	string key, msg, str
 	string text = ""
-	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass
+	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, avgCheckPass
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -833,6 +846,31 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					sprintf text, "Sweep %d failed: Seal resistance is out of range", sweepNo
 					break
 				endif
+				break
+			case PSQ_TRUE_REST_VM:
+				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+
+				if(!IsEmpty(msg))
+					sprintf text, "Sweep %d failed: %s", sweepNo, msg
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_VM_FULL_AVG_PASS, query = 1)
+				avgCheckPass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(avgCheckPass) && !avgCheckPass)
+					sprintf text, "Sweep %d failed: average QC check failed", sweepNo
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
+				WAVE/Z spikePass = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(WaveExists(spikePass) && !spikePass[headstage])
+					sprintf text, "Sweep %d failed: found spikes", sweepNo
+					break
+				endif
+
 				break
 			default:
 				ASSERT(0, "Unsupported analysis function")
