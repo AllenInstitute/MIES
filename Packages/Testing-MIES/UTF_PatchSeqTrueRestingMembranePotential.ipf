@@ -219,17 +219,6 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function [string stimset, string stimsetIndexEnd] GetStimsets_IGNORE(string device)
-	variable DAC
-	string ctrl0, ctrl1
-
-	DAC   = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
-	ctrl0 = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	ctrl1 = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-
-	return [DAG_GetTextualValue(device, ctrl0, index = DAC), DAG_GetTextualValue(device, ctrl1, index = DAC)]
-End
-
 Function CheckBaselineChunks(string device, WAVE chunkTimes)
 
 	CheckUserEpochs(device, {20, 520, 625, 1125}, EPOCH_SHORTNAME_USER_PREFIX + "BLS%d", sweep = 0)
@@ -287,7 +276,6 @@ End
 
 static Function PS_VM1_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 2
 
@@ -317,8 +305,6 @@ static Function PS_VM1_REENTRY([string str])
 
 	CHECK_EQUAL_TEXTWAVES(entries[%spikePositions], {"1;", "2;2;", "3;3;3;"}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 11, 12}, mode = WAVE_DATA)
@@ -332,12 +318,6 @@ static Function PS_VM1_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -394,7 +374,6 @@ End
 
 static Function PS_VM2_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 0
 
@@ -429,8 +408,6 @@ static Function PS_VM2_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 1)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0}, mode = WAVE_DATA)
@@ -444,12 +421,6 @@ static Function PS_VM2_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd] = GetStimsets_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = "StimulusSetB_DA_0"
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -507,7 +478,6 @@ End
 
 static Function PS_VM3_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 2
 
@@ -537,8 +507,6 @@ static Function PS_VM3_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
@@ -552,12 +520,6 @@ static Function PS_VM3_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -614,7 +576,6 @@ End
 
 static Function PS_VM4_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 2
 
@@ -649,8 +610,6 @@ static Function PS_VM4_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
@@ -664,12 +623,6 @@ static Function PS_VM4_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -726,7 +679,6 @@ End
 
 static Function PS_VM5_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 2
 
@@ -761,8 +713,6 @@ static Function PS_VM5_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
@@ -776,12 +726,6 @@ static Function PS_VM5_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -844,7 +788,6 @@ End
 
 static Function PS_VM5a_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 2
 
@@ -879,8 +822,6 @@ static Function PS_VM5a_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 1)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
@@ -894,12 +835,6 @@ static Function PS_VM5a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd] = GetStimsets_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = "StimulusSetB_DA_0"
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -956,7 +891,6 @@ End
 
 static Function PS_VM5b_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 0
 
@@ -991,8 +925,6 @@ static Function PS_VM5b_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0}, mode = WAVE_DATA)
@@ -1006,12 +938,6 @@ static Function PS_VM5b_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd] = GetStimsets_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -1121,7 +1047,6 @@ End
 
 static Function PS_VM7_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 0
 
@@ -1156,8 +1081,6 @@ static Function PS_VM7_REENTRY([string str])
 
 	CHECK_EQUAL_TEXTWAVES(entries[%spikePositions], {"1;"}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0}, mode = WAVE_DATA)
@@ -1171,12 +1094,6 @@ static Function PS_VM7_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -1234,7 +1151,6 @@ End
 
 static Function PS_VM7a_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 1
 
@@ -1269,8 +1185,6 @@ static Function PS_VM7a_REENTRY([string str])
 
 	CHECK_EQUAL_TEXTWAVES(entries[%spikePositions], {"1;", ""}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 1)
-
 	// first sweep does not have autobias enabled
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 6 + 3}, mode = WAVE_DATA)
 	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 13, tol = 1e-12)
@@ -1283,12 +1197,6 @@ static Function PS_VM7a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd] = GetStimsets_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = "StimulusSetB_DA_0"
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})
@@ -1346,7 +1254,6 @@ End
 
 static Function PS_VM8_REENTRY([string str])
 	variable sweepNo
-	string stimset, stimsetIndexEnd, expected
 
 	sweepNo = 0
 
@@ -1381,8 +1288,6 @@ static Function PS_VM8_REENTRY([string str])
 
 	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Indexing"), 0)
-
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0}, mode = WAVE_DATA)
@@ -1396,12 +1301,6 @@ static Function PS_VM8_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
-
-	[stimset, stimsetIndexEnd]  = GetStimsets_IGNORE(str)
-	expected = "PSQ_TrueRest_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-	expected = NONE
-	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckBaselineChunks(str, {20, 520})

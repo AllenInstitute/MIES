@@ -1141,6 +1141,77 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	CheckForOtherUserLBNKeys(device, type)
 	CheckRangeOfUserLabnotebookKeys(device, type, sweepNo)
+	CheckDAStimulusSets(device, sweepNo, type)
+End
+
+/// Used for patch seq analysis functions and NextStimSetName/NextIndexingEndStimSetName analysis parameters
+static Function CheckDAStimulusSets(string device, variable sweepNo, variable type)
+	string stimset, stimsetIndexEnd, previousStimset, expected, key, names, params
+	variable setPassed, nextStimsetPresent, indexingEndPresent, indexingState
+
+	WAVE textualValues = GetLBTextualValues(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/Z/T paramsLBN = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(paramsLBN, TEXT_WAVE)
+
+	params = paramsLBN[PSQ_TEST_HEADSTAGE]
+
+	names = AFH_GetListOfAnalysisParamNames(params)
+
+	nextStimsetPresent = WhichListItem("NextStimsetName", names, ";", 0, 0) != -1
+	indexingEndPresent = WhichListItem("NextIndexingEndStimsetName", names, ";", 0, 0) != -1
+
+	if(!nextStimsetPresent && !indexingEndPresent)
+		PASS()
+		return NaN
+	endif
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+	CHECK(IsFinite(setPassed))
+
+	WAVE/T/Z results = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(results, TEXT_WAVE)
+	previousStimset = results[PSQ_TEST_HEADSTAGE]
+	CHECK_PROPER_STR(previousStimset)
+
+	[stimset, stimsetIndexEnd] = GetStimsets_IGNORE(device)
+
+	if(setPassed)
+		expected = "StimulusSetA_DA_0"
+		CHECK_EQUAL_STR(stimset, expected)
+
+		if(indexingEndPresent)
+			expected = "StimulusSetB_DA_0"
+			indexingState = 1
+
+		else
+			indexingState = 0
+			expected = NONE
+		endif
+
+		CHECK_EQUAL_STR(stimsetIndexEnd, expected)
+		CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"), indexingState)
+	else
+		expected = previousStimset
+		CHECK_EQUAL_STR(stimset, expected)
+		expected = NONE
+		CHECK_EQUAL_STR(stimsetIndexEnd, expected)
+	endif
+End
+
+static Function [string stimset, string stimsetIndexEnd] GetStimsets_IGNORE(string device)
+	variable DAC
+	string ctrl0, ctrl1
+
+	DAC   = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
+	CHECK(IsFinite(DAC))
+
+	ctrl0 = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	ctrl1 = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+
+	return [DAG_GetTextualValue(device, ctrl0, index = DAC), DAG_GetTextualValue(device, ctrl1, index = DAC)]
 End
 
 static Function CheckForOtherUserLBNKeys(string device, variable type)

@@ -221,13 +221,6 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function/S GetStimset_IGNORE(string device)
-	variable DAC
-
-	DAC = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
-	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-End
-
 static Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
 
 	if(ParamIsDefault(incomplete))
@@ -306,10 +299,6 @@ static Function PS_PB1_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0, 0}, mode = WAVE_DATA)
 
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-
 	CHECK_WAVE(entries[%resultsSweep], NULL_WAVE)
 	CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
 
@@ -370,10 +359,6 @@ static Function PS_PB2_REENTRY([str])
 	Make/FREE/D resistanceRef = {12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistance], TEXT_WAVE)
@@ -448,10 +433,6 @@ static Function PS_PB3_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 1, 0}, mode = WAVE_DATA)
 
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistance], TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(entries[%resultsResistance], Rows), 3)
@@ -514,10 +495,6 @@ static Function PS_PB4_REENTRY([str])
 	Make/FREE/D resistanceRef = {5e6, 5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_WAVE(entries[%resultsSweep], NULL_WAVE)
 	CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
@@ -584,10 +561,6 @@ static Function PS_PB5_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
 
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-
 	CHECK_WAVE(entries[%resultsSweep], NULL_WAVE)
 	CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
 
@@ -653,10 +626,6 @@ static Function PS_PB6_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
 
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
-
 	CHECK_WAVE(entries[%resultsSweep], NULL_WAVE)
 	CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
 
@@ -721,10 +690,6 @@ static Function PS_PB7_REENTRY([str])
 	Make/FREE/D resistanceRef = {12.5e6}
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PSQ_QC_stimsets_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistance], TEXT_WAVE)
