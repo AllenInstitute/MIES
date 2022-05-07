@@ -484,8 +484,12 @@ static Function whiteSpace()
 End
 
 // test static Functions with 1..N arguments
-static Function minimaximu()
-	Variable jsonID0, jsonID1
+static Function TestOperationMinMax()
+
+	variable jsonID0, jsonID1
+	string str, wavePath
+	string win = DATABROWSER_WINDOW_TITLE
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
 	jsonID1 = DirectToFormulaParser("min(1)")
@@ -566,6 +570,29 @@ static Function minimaximu()
 	jsonID1 = DirectToFormulaParser("max(1,2)-max(1,2)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	wavePath = GetWavesDataFolder(input, 2)
+
+	Make/FREE/D dataRef = {{0, 2}, {4, 6}}
+	str = "min(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/FREE/D dataRef = {{1, 3}, {5, 7}}
+	str = "max(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/FREE/D dataRef = {{0.5, 2.5}, {4.5, 6.5}}
+	str = "avg(wave(" + wavePath + "))"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 End
 
 // test static Functions with aribitrary length array returns
@@ -593,6 +620,83 @@ static Function merge()
 
 	jsonID1 = DirectToFormulaParser("merge(4/4,4/2,9/3,4*1)")
 	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
+End
+
+static Function TestOperationText()
+
+	Make/FREE/T refData = {"nan"}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text()"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+
+	Make/FREE/T refData = {{"5.1234567", "2.0000000"},{"1.0000000", "3.0000000"}}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text([[5.1234567, 1], [2, 3]])"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+End
+
+static Function TestOperationLog()
+
+	string histo, histoAfter, strRef
+
+	Make/FREE/D refData = {NaN}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log()"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+
+	histo = GetHistoryNotebookText()
+	Make/FREE/D refData = {1, 10, 100}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(1, 10, 100)"))
+	histoAfter = GetHistoryNotebookText()
+	histo = ReplaceString(histo, histoAfter, "")
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+	strRef = "  1\r"
+	REQUIRE_EQUAL_STR(strRef, histo)
+
+	histo = GetHistoryNotebookText()
+	Make/FREE/T refDataT = {"a", "bb", "ccc"}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(a, bb, ccc)"))
+	histoAfter = GetHistoryNotebookText()
+	histo = ReplaceString(histo, histoAfter, "")
+	REQUIRE_EQUAL_WAVES(refDataT, output, mode = WAVE_DATA)
+	strRef = "  a\r"
+	REQUIRE_EQUAL_STR(strRef, histo)
+End
+
+static Function TestOperationButterworth()
+
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth()"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1, 1, 1)"))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D refData = {0,0.863870777482797,0.235196115045368,0.692708791122301,0.359757805059761,0.602060073208013,0.425726643942363,0.554051807855231}
+	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2)"))
+	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA, tol=1E-9)
 End
 
 static Function TestOperationChannels()
@@ -742,7 +846,12 @@ static Function testArea()
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 End
 
-static Function waveScaling()
+static Function TestOperationSetscale()
+
+	string wavePath, str
+	variable ref
+	string refUnit, unit
+
 	Make/N=(10) waveX = p
 	SetScale x 0, 2, "unit", waveX
 	WAVE wv = SF_FormulaExecutor(DirectToFormulaParser("setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"))
@@ -753,6 +862,26 @@ static Function waveScaling()
 	SetScale/P y 0, 4, "unitX", waveXY
 	WAVE wv = SF_FormulaExecutor(DirectToFormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
+
+	Make/O/D/N=(2, 2, 2, 2) input = p + 2 * q + 4 * r + 8 * s
+	wavePath = GetWavesDataFolder(input, 2)
+	refUnit = "unit"
+	str = "setscale(wave(" + wavePath + "), z, 0, 2, " + refUnit + ")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str))
+	ref = DimDelta(data, LAYERS)
+	REQUIRE_EQUAL_VAR(ref, 2)
+	unit = WaveUnits(data, LAYERS)
+	REQUIRE_EQUAL_STR(refUnit, unit)
+
+	Make/O/D/N=(2, 2, 2, 2) input = p + 2 * q + 4 * r + 8 * s
+	wavePath = GetWavesDataFolder(input, 2)
+	refUnit = "unit"
+	str = "setscale(wave(" + wavePath + "), t, 0, 2, " + refUnit + ")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str))
+	ref = DimDelta(data, CHUNKS)
+	REQUIRE_EQUAL_VAR(ref, 2)
+	unit = WaveUnits(data, CHUNKS)
+	REQUIRE_EQUAL_STR(refUnit, unit)
 End
 
 static Function arrayExpansion()
@@ -1521,6 +1650,25 @@ static Function TestOperationData()
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
+	// Using the setup from data we also test cursors operation
+	Cursor/W=$win/A=1/P A, $trace, 0
+	Cursor/W=$win/A=1/P B, $trace, trunc(dataSize / 2)
+	Make/FREE dataRef = {0, trunc(dataSize / 2)}
+	str = "cursors(A,B)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	str = "cursors()"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	try
+		str = "cursors(X,Y)"
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 End
 
 static Function TestOperationLabNotebook()
@@ -1532,6 +1680,8 @@ static Function TestOperationLabNotebook()
 	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
+	string textKey = "TEXTKEY"
+	string textValue = "TestText"
 	String win = DATABROWSER_WINDOW_TITLE
 	String device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
@@ -1555,7 +1705,10 @@ static Function TestOperationLabNotebook()
 	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = textValue
+	Make/T/FREE/N=(numSweeps, numChannels) textRef = textValue
 	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
+	Make/FREE/T/N=(1, 1) textKeys = textKey
 
 	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
 
@@ -1586,10 +1739,12 @@ static Function TestOperationLabNotebook()
 		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
 
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
 		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
 		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
 		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
@@ -1609,6 +1764,10 @@ static Function TestOperationLabNotebook()
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	WAVE wRef = MIES_SF#SF_GetDefaultEmptyWave()
 	REQUIRE_EQUAL_WAVES(data, wRef, mode = WAVE_DATA)
+
+	str = "labnotebook(" + textKey + ")"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, textRef, mode = WAVE_DATA)
 End
 
 /// @brief Test Epoch operation of SweepFormula

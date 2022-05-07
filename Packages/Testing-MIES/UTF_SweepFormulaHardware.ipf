@@ -128,6 +128,34 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
+static Function	TestSweepFormulaButtons(string device)
+
+	string graph, dbPanel, sfPanel, jsonStr, win
+	string refStr
+
+	graph = DB_OpenDataBrowser()
+	dbPanel = BSP_GetPanel(graph)
+	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_SF", val = 1)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_check")
+	sfPanel = BSP_GetSFJSON(graph)
+	jsonStr = GetNotebookText(sfPanel, mode=2)
+	try
+		JSON_Parse(jsonStr, ignoreErr=0)
+		PASS()
+	catch
+		FAIL()
+	endtry
+
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display")
+
+	refStr = MIES_SF#SF_GetFormulaWinNameTemplate(graph)
+	DoWindow/B $refStr
+	refStr = refStr + "#" + refStr + "0" // graph in panel with counter
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_tofront")
+	win = GetCurrentWindow()
+	CHECK_EQUAL_STR(refStr, win)
+End
+
 static Function	TestSweepFormulaTP(string device)
 
 	string graph, dbPanel
@@ -287,6 +315,21 @@ static Function SF_TPTest_REENTRY([str])
 	string str
 
 	TestSweepFormulaTP(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function SF_ButtonTest([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_3")
+	AcquireData(s, str, "EpochTest0_DA_0", "EpochTest0_DA_0")
+End
+
+static Function SF_ButtonTest_REENTRY([str])
+	string str
+
+	TestSweepFormulaButtons(str)
 End
 
 static Function TestSweepFormulaCodeResults_IGNORE(string device)

@@ -219,8 +219,7 @@ End
 /// @brief preparse user input to correct formula patterns
 ///
 /// @return parsed formula
-static Function/S SF_FormulaPreParser(formula)
-	String formula
+static Function/S SF_FormulaPreParser(string formula)
 
 	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
 	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
@@ -239,23 +238,23 @@ End
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
+	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
 	variable formulaLength
-	String tempPath
+	string tempPath
 	string indentation = ""
-	Variable action = SF_ACTION_UNINITIALIZED
-	String token = ""
-	String buffer = ""
-	Variable state = SF_STATE_UNINITIALIZED
-	Variable lastState = SF_STATE_UNINITIALIZED
-	Variable lastCalculation = SF_STATE_UNINITIALIZED
-	Variable level = 0
-	Variable arrayLevel = 0
+	variable action = SF_ACTION_UNINITIALIZED
+	string token = ""
+	string buffer = ""
+	variable state = SF_STATE_UNINITIALIZED
+	variable lastState = SF_STATE_UNINITIALIZED
+	variable lastCalculation = SF_STATE_UNINITIALIZED
+	variable level = 0
+	variable arrayLevel = 0
 	variable createdArrayLocal, wasArrayCreated
 	variable lastAction = SF_ACTION_UNINITIALIZED
 
-	Variable jsonID = JSON_New()
-	String jsonPath = ""
+	variable jsonID = JSON_New()
+	string jsonPath = ""
 
 #ifdef DEBUGGING_ENABLED
 	for(i = 0; i < indentLevel; i += 1)
@@ -579,8 +578,7 @@ static Function SF_FPAddArray(variable mainId, string jsonPath, variable subId, 
 End
 
 /// @brief add escape characters to a path element
-static Function/S SF_EscapeJsonPath(str)
-	String str
+static Function/S SF_EscapeJsonPath(string str)
 
 	return ReplaceString("/", str, "~1")
 End
@@ -817,12 +815,12 @@ End
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
 static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
-	String trace, axes, xFormula
-	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
-	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
+	string trace, axes, xFormula
+	variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
+	variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints
-	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
-	String traceName = "formula"
+	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
+	string traceName = "formula"
 	string guideNameTemplate = "HOR"
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -1021,9 +1019,7 @@ End
 /// split dimension @p dim of wave @p wv into slices of size @p split and get
 /// the starting index @p i
 ///
-static Function SF_SplitPlotting(wv, dim, i, split)
-	WAVE wv
-	Variable dim, i, split
+static Function SF_SplitPlotting(WAVE wv, variable dim, variable i, variable split)
 
 	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
@@ -1273,9 +1269,7 @@ End
 /// @param dimDest   dimension of the destination wave
 ///
 /// @return 0 if wave scaling was transferred, 1 if not
-static Function SF_FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
-	WAVE source, dest
-	Variable dimSource, dimDest
+static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource, variable dimDest)
 
 	string sourceUnit, destUnit
 
@@ -1574,10 +1568,9 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
-Function SF_button_sweepFormula_check(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
-	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
+	string mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
 	variable jsonId
 
 	switch(ba.eventCode)
@@ -1593,7 +1586,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
 			formula_nb = BSP_GetSFFormula(ba.win)
-			formula = GetNotebookText(formula_nb)
+			formula = GetNotebookText(formula_nb, mode=2)
 
 			SF_CheckInputCode(formula, dfr)
 
@@ -1675,8 +1668,7 @@ Function SF_Update(string graph)
 End
 
 /// @brief checks if SweepFormula (SF) is active.
-Function SF_IsActive(win)
-	string win
+Function SF_IsActive(string win)
 
 	return BSP_IsActive(win, MIES_BSP_SF)
 End
@@ -1691,10 +1683,9 @@ Function [string raw, string preProc] SF_GetCode(string win)
 	return [code, SF_PreprocessInput(code)]
 End
 
-Function SF_button_sweepFormula_display(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonControl
 
-	String mainPanel, rawCode, bsPanel, preProcCode
+	string mainPanel, rawCode, bsPanel, preProcCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1823,10 +1814,9 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	return [keys, values]
 End
 
-Function SF_TabProc_Formula(tca) : TabControl
-	STRUCT WMTabControlAction &tca
+Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 
-	String mainPanel, bsPanel, json_nb, text
+	string mainPanel, bsPanel, json_nb, text
 	variable jsonID
 
 	switch( tca.eventCode )
@@ -2468,7 +2458,8 @@ End
 static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2strHighPrec(wv[p][q][r][s], precision=7)
+	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT
+	Multithread outT = num2strHighPrec(wv[p][q][r][s], precision=7)
 	CopyScales wv outT
 	return outT
 End
@@ -2785,7 +2776,12 @@ End
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	print wv[0]
+	if(IsTextWave(wv))
+		WAVE/T wt = wv
+		print wt[0]
+	else
+		print wv[0]
+	endif
 
 	return wv
 End
@@ -2805,10 +2801,23 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 
 	variable i
 	string info
+	variable numIndices
 
-	WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
-	Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
-	for(i = 0; i < DimSize(wvT, ROWS); i += 1)
+	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
+	if(!numIndices)
+		Make/FREE/T wvT = {"A", "B"}
+		numIndices = 2
+	else
+		Make/FREE/T/N=(numIndices) wvT
+		for(i = 0; i < numIndices; i += 1)
+			WAVE csrName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(i), graph = graph)
+			SF_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
+			WAVE/T csrNameT = csrName
+			wvT[i] = csrNameT[0]
+		endfor
+	endif
+	Make/FREE/N=(numIndices) out = NaN
+	for(i = 0; i < numIndices; i += 1)
 		SF_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
 		if(IsEmpty(graph))
 			out[i] = xcsr($wvT[i])
@@ -2979,8 +2988,7 @@ static Function/S SF_GetFormulaWinNameTemplate(string mainWindow)
 	return BSP_GetFormulaGraph(mainWindow) + "_"
 End
 
-Function SF_button_sweepFormula_tofront(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SF_button_sweepFormula_tofront(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string winNameTemplate, wList, wName
 	variable numWins, i
@@ -3106,8 +3114,7 @@ static Function/WAVE SF_GetAllOldCode()
 	return GetUniqueEntries(entries)
 End
 
-Function SF_PopMenuProc_OldCode(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string sweepFormulaNB, bsPanel, code
 	variable index

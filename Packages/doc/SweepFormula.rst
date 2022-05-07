@@ -416,11 +416,18 @@ return an 1d-array with the sweep numbers of all sweeps.
 cursors
 """""""
 
-`cursors([A-J]+)` will return the x values of the named cursor in the graph.
+`cursors([A-J]+)` will return the x values of the named cursor(s) in the graph.
+The cursors operation takes any number of arguments. If no argument is given
+it defaults to `cursors(A, B)`. When `cursors` is used as argument for `range`
+two arguments for `cursors` should be used to have a compatible output for `range`.
 
 .. code-block:: bash
 
    cursors(A,B) vs A,B
+
+   cursors() vs A,B // same as above
+
+   cursors(B,A,D,J,I,G,G) // returns a 7 element array with the x-values of the named cursors
 
 wave
 """"
