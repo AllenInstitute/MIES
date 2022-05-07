@@ -279,16 +279,16 @@ static Function PS_VM1([str])
 	// number of spikes
 	wv[][][1] = 1 + q
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 16
-	wv[1][1][0][4] = 17
-	wv[1][2][0][4] = 18
+	wv[1][0][2] = 16
+	wv[1][1][2] = 17
+	wv[1][2][2] = 18
 End
 
 static Function PS_VM1_REENTRY([string str])
@@ -305,18 +305,13 @@ static Function PS_VM1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_WAVE(entries[%baselineQCChunk1], NULL_WAVE)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_WAVE(entries[%rmsShortQCChunk1], NULL_WAVE)
-
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
-	CHECK_WAVE(entries[%rmsLongQCChunk1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_WAVE(entries[%averageVChunk0], NULL_WAVE)
 	CHECK_WAVE(entries[%averageVChunk1], NULL_WAVE)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_WAVE(entries[%fullAvg], NULL_WAVE)
 	CHECK_WAVE(entries[%fullAvgADiff], NULL_WAVE)
@@ -391,16 +386,16 @@ static Function PS_VM2([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM2_REENTRY([string str])
@@ -417,18 +412,13 @@ static Function PS_VM2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {12e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -468,7 +458,7 @@ static Function PS_VM2_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM3_IGNORE(device)
@@ -509,16 +499,16 @@ static Function PS_VM3([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM3_REENTRY([string str])
@@ -535,18 +525,13 @@ static Function PS_VM3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_WAVE(entries[%baselineQCChunk1], NULL_WAVE)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_WAVE(entries[%rmsShortQCChunk1], NULL_WAVE)
-
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
-	CHECK_WAVE(entries[%rmsLongQCChunk1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_WAVE(entries[%averageVChunk0], NULL_WAVE)
 	CHECK_WAVE(entries[%averageVChunk1], NULL_WAVE)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_WAVE(entries[%fullAvg], NULL_WAVE)
 	CHECK_WAVE(entries[%fullAvgADiff], NULL_WAVE)
@@ -621,16 +606,16 @@ static Function PS_VM4([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 16
-	wv[1][1][0][4] = 17
-	wv[1][2][0][4] = 18
+	wv[1][0][2] = 16
+	wv[1][1][2] = 17
+	wv[1][2][2] = 18
 End
 
 static Function PS_VM4_REENTRY([string str])
@@ -647,18 +632,13 @@ static Function PS_VM4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1, 1, 1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {14e-3, 15e-3, 16e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -698,7 +678,7 @@ static Function PS_VM4_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM5_IGNORE(device)
@@ -738,16 +718,16 @@ static Function PS_VM5([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 16
-	wv[1][1][0][4] = 17
-	wv[1][2][0][4] = 18
+	wv[1][0][2] = 16
+	wv[1][1][2] = 17
+	wv[1][2][2] = 18
 End
 
 static Function PS_VM5_REENTRY([string str])
@@ -764,18 +744,13 @@ static Function PS_VM5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1, 1, 1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {16e-3, 17e-3, 18e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {14e-3, 15e-3, 16e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -815,7 +790,7 @@ static Function PS_VM5_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM5a_IGNORE(device)
@@ -861,16 +836,16 @@ static Function PS_VM5a([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 10
-	wv[0][1][0][4] = 0.1
-	wv[0][2][0][4] = 1
+	wv[0][0][2] = 10
+	wv[0][1][2] = 0.1
+	wv[0][2][2] = 1
 
 	// chunk 1
-	wv[1][0][0][4] = 11
-	wv[1][1][0][4] = 0.15
-	wv[1][2][0][4] = 1.05
+	wv[1][0][2] = 11
+	wv[1][1][2] = 0.15
+	wv[1][2][2] = 1.05
 End
 
 static Function PS_VM5a_REENTRY([string str])
@@ -887,18 +862,13 @@ static Function PS_VM5a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1, 1, 1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1, -1, -1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {10e-3, 0.1e-3, 1e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {11e-3, 0.15e-3, 1.05e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {10.5e-3, 0.125e-3, 1.025e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -938,7 +908,7 @@ static Function PS_VM5a_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM5b_IGNORE(device)
@@ -978,16 +948,16 @@ static Function PS_VM5b([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM5b_REENTRY([string str])
@@ -1004,18 +974,13 @@ static Function PS_VM5b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {12e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -1055,7 +1020,7 @@ static Function PS_VM5b_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM6_IGNORE(device)
@@ -1095,16 +1060,16 @@ static Function PS_VM6([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 
 	// DAQ is not started as PRE_SWEEP_CONFIG_EVENT fails due to non-matching BaselineChunkLength
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1148,16 +1113,16 @@ static Function PS_VM7([str])
 	// number of spikes
 	wv[][][1] = 1
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM7_REENTRY([string str])
@@ -1174,18 +1139,13 @@ static Function PS_VM7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {12e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -1225,7 +1185,7 @@ static Function PS_VM7_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM7a_IGNORE(device)
@@ -1266,16 +1226,16 @@ static Function PS_VM7a([str])
 	wv[][][1]  = 0
 	wv[][0][1] = 1
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM7a_REENTRY([string str])
@@ -1292,18 +1252,13 @@ static Function PS_VM7a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1, 1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1, -1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1, -1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {12e-3, 13e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -1342,7 +1297,7 @@ static Function PS_VM7a_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
 
 static Function PS_VM8_IGNORE(device)
@@ -1383,16 +1338,16 @@ static Function PS_VM8([str])
 	// number of spikes
 	wv[][][1] = 0
 
-	// average baseline voltages
+	// average voltages
 	// chunk 0
-	wv[0][0][0][4] = 12
-	wv[0][1][0][4] = 13
-	wv[0][2][0][4] = 14
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
 
 	// chunk 1
-	wv[1][0][0][4] = 12
-	wv[1][1][0][4] = 13
-	wv[1][2][0][4] = 14
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
 End
 
 static Function PS_VM8_REENTRY([string str])
@@ -1409,18 +1364,13 @@ static Function PS_VM8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk1], {-1}, mode = WAVE_DATA)
-
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk1], {-1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
 	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3}, mode = WAVE_DATA, tol = 1e-12)
-
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
 	Make/D/FREE fullAvg = {12e-3}
 	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
@@ -1460,5 +1410,5 @@ static Function PS_VM8_REENTRY([string str])
 	CHECK_EQUAL_STR(stimsetIndexEnd, expected)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-	CheckBaselineChunks(str, {20, 520, 625, 1125})
+	CheckBaselineChunks(str, {20, 520})
 End
