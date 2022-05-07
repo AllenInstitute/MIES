@@ -5079,10 +5079,10 @@ End
 /// @endverbatim
 Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, samplingFrequencyQCPassed, sealResistanceMax
-	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet, ovsState
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable expectedNumTestpulses, numTestPulses, sealResistanceA, sealResistanceB, sealResistanceQCPassed, testpulseGroupSel, sealThreshold
-	string key, ctrl, stimset, msg, databrowser, bsPanel, formula, pipetteResistanceStr, sweepStr
-	string sealResistanceGroupAStr, sealResistanceGroupBStr
+	string key, ctrl, stimset, msg, databrowser, formula, pipetteResistanceStr, sweepStr
+	string sealResistanceGroupAStr, sealResistanceGroupBStr, str
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -5113,41 +5113,6 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 				return 1
 			endif
 
-			databrowser = DB_GetBoundDataBrowser(device)
-
-			bsPanel = BSP_GetPanel(databrowser)
-
-			testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(s.params)
-
-			/// @todo: Rework to use non-displayed sweeps, once https://github.com/AllenInstitute/MIES/pull/1256 is merged
-			/// this also then allows us to remove the OVS fiddling
-
-			// inserted TP: 0
-			// group A: 1, 2, 3
-			// group B: 4, 5, 6
-			// and `tp` takes the *ignored* list
-			switch(testpulseGroupSel)
-				case PSQ_SE_TGS_BOTH:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0, 4, 5, 6]))\r" + \
-							  "and\r"                                                                                        + \
-							  "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0, 1, 2, 3]))"
-					break
-				case PSQ_SE_TGS_FIRST:
-					formula = "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), sweeps()), [0]))"
-					break
-				case PSQ_SE_TGS_SECOND:
-					formula = "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), sweeps()), [0]))"
-					break
-				default:
-					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
-			endswitch
-
-			SF_SetFormula(databrowser, formula)
-
-			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
-
-			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
-
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			break
 		case PRE_SET_EVENT:
@@ -5175,6 +5140,33 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
+
+			testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(s.params)
+
+			// inserted TP: 0
+			// group A: 1, 2, 3
+			// group B: 4, 5, 6
+			// and `tp` takes the *ignored* list
+			switch(testpulseGroupSel)
+				case PSQ_SE_TGS_BOTH:
+					formula = ""
+					sprintf str, "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), [%d], all), [0, 4, 5, 6]))\r", s.sweepNo
+					formula += str
+					formula += "and\r"
+					sprintf str, "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), [%d], all), [0, 1, 2, 3]))", s.sweepNo
+					formula += str
+					break
+				case PSQ_SE_TGS_FIRST:
+					sprintf formula, "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+					break
+				case PSQ_SE_TGS_SECOND:
+					sprintf formula, "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+					break
+				default:
+					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
+			endswitch
+
+			PSQ_ExecuteSweepFormula(device, formula)
 
 			[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_SEAL_EVALUATION, s)
 
@@ -5219,18 +5211,6 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			DEBUGPRINT(msg)
 
 			databrowser = DB_FindDataBrowser(device)
-
-			bsPanel = BSP_GetPanel(databrowser)
-			ovsState = GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS")
-
-			if(ovsState)
-				// redo SweepFormula execution, as we rely on it being off
-				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 0)
-				// select last acquired sweep
-				DB_UpdateSweepPlot(bsPanel)
-				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
-				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
-			endif
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
