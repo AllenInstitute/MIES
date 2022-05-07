@@ -458,9 +458,9 @@ static Function PS_PB3_REENTRY([str])
 	expected = "PSQ_QC_stimsets_DA_0"
 	CHECK_EQUAL_STR(stimset, expected)
 
-	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "2;"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistance], TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(entries[%resultsResistance], Rows), 2)
+	CHECK_EQUAL_VAR(DimSize(entries[%resultsResistance], Rows), 3)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})

@@ -4555,10 +4555,10 @@ End
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
-	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed, ovsState
+	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
-	string key, ctrl, stimset, msg, databrowser, bsPanel
+	string key, ctrl, stimset, msg, databrowser, formula
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -4588,16 +4588,6 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 				ControlWindowToFront()
 				return 1
 			endif
-
-			databrowser = DB_GetBoundDataBrowser(device)
-			bsPanel = BSP_GetPanel(databrowser)
-
-			/// @todo: The call should work on the last sweep acquired. Once this number is retrieved it can be set directly
-			/// in the formula string replacing sweeps(). The the OVS disabled/enable procedure can be skipped.
-			/// By using SF_ExecuteFormula instead it can also executed right here.
-			SF_SetFormula(databrowser, "store(\"Steady state resistance\", tp(ss, select(channels(AD), sweeps()), [0]))")
-
-			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 
 			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
 			PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
@@ -4630,24 +4620,15 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
 			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
+			sprintf formula, "store(\"Steady state resistance\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+			PSQ_ExecuteSweepFormula(device, formula)
+
 			minPipetteResistance = AFH_GetAnalysisParamNumerical("MinPipetteResistance", s.params)
 			maxPipetteResistance = AFH_GetAnalysisParamNumerical("MaxPipetteResistance", s.params)
 
 			databrowser = DB_FindDataBrowser(device)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
-
-			bsPanel = BSP_GetPanel(databrowser)
-			ovsState = GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS")
-
-			if(ovsState)
-				// redo SweepFormula execution, as we rely on it being off
-				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 0)
-				// select last acquired sweep
-				DB_UpdateSweepPlot(bsPanel)
-				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
-				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
-			endif
 
 			pipetteResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]", s.sweepNo)
 
