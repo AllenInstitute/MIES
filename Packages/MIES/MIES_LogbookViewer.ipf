@@ -431,7 +431,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 			str += prefix + num2str(headstage)
 		else
 			if(!hasAllEntry)
-				str += prefix + "all"
+				str += prefix + "indep"
 				hasAllEntry = 1
 			endif
 		endif
