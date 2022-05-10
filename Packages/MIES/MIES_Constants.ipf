@@ -1102,7 +1102,7 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_PIPETTE_BATH_VERSION    = 1
+Constant PSQ_PIPETTE_BATH_VERSION    = 2
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 0
 Constant PSQ_CHIRP_VERSION           = 8
 Constant PSQ_DA_SCALE_VERSION        = 3
