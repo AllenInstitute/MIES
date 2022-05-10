@@ -85,6 +85,8 @@ Function BSP_InitPanel(mainPanel)
 
 	graph = LBV_GetLabNoteBookGraph(mainPanel)
 	TUD_Init(graph)
+
+	ShowTraceInfoTags()
 End
 
 /// @brief UnHides BrowserSettings side Panel
@@ -1661,9 +1663,6 @@ Function BSP_AddTracesForEpochs(string win)
 		ModifyGraph/W=$win marker($level_4_trace)=10, mode($level_4_trace)=4, rgb($level_4_trace)=(c.red, c.green, c.blue)
 
 		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
-
-		DoWindow/F $win
-		Execute/P/Q/Z "ShowTraceInfoTags()"
 
 		SetAxis/W=$win/A
 	endfor
