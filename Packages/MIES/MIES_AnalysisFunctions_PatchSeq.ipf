@@ -410,7 +410,7 @@ End
 /// generic baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
 static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
-	variable , evalStartTime, evalRangeTime
+	variable headstage, evalStartTime, evalRangeTime
 	variable i, DAC, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
@@ -422,6 +422,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	struct PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
+
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	if(!ps.usesBaselineChunkEpochs)
 		if(chunk == 0) // pre pulse baseline
@@ -452,6 +454,11 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		else
 			WAVE/ZZ epochsWave = $""
 		endif
+
+		ASSERT(Sum(statusHS) == 1, "Does only work with one active headstage")
+		headstage = GetRowIndex(statusHS, val = 1)
+		DAC = AFH_GetDACFromHeadstage(device, headstage)
+		ASSERT(IsFinite(DAC), "Non-finite DAC")
 
 		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
@@ -551,8 +558,6 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkPassedLeakCurOverride  = overrideResults[chunk][count][0][PSQ_LEAKCUR_TEST]
 	endif
 	// END TEST
-
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
