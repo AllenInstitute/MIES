@@ -67,6 +67,7 @@
 ///  PSQ_FMT_LBN_CR_BOUNDS_ACTION             Action according to min/max positions                       (none)   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_BOUNDS_STATE              Upper and Lower bounds state according to min/max pos.      (none)   Textual      CR                                   No           No
 ///  PSQ_FMT_LBN_CR_SPIKE_CHECK               Spike check was enabled/disabled                            (none)   Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_INIT_UOD                  Initial user onset delay                                    ms       Numerical    CR                                   No           No
 ///  FMT_LBN_ANA_FUNC_VERSION                 Integer version of the analysis function                    (none)   Numerical    All                                  No           Yes
 ///  PSQ_FMT_LBN_PB_RESISTANCE                Pipette Resistance                                          Ohm      Numerical    PB                                   No           No
 ///  PSQ_FMT_LBN_PB_RESISTANCE_PASS           Pipette Resistance QC                                       On/Off   Numerical    PB                                   No           No
@@ -3942,6 +3943,8 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
+		case "UserOnsetDelay":
+			return "Will be set as user onset delay in PRE_SET_EVENT, the current value will be set back in POST_SET_EVENT."
 		case "UseTrueRestingMembranePotentialVoltage":
 			return "Use the average voltage of a passing True RMS voltage set as Autobias targetV [mV] " + \
 			       "instead of \"AutobiasTargetVAtSetEnd\" in POST_SET_EVENT. Defaults to on."
@@ -4001,6 +4004,12 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 				return "Must be a finite value"
 			endif
 			break
+		case "UserOnsetDelay":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val < 0)
+				return "Must be a finite value"
+			endif
+			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -4024,6 +4033,7 @@ Function/S PSQ_Chirp_GetParams()
 	       "[SamplingFrequency:variable],"                     + \
 	       "SamplingMultiplier:variable,"                      + \
 	       "[SpikeCheck:variable],"                            + \
+	       "[UserOnsetDelay:variable],"                        + \
 	       "[UseTrueRestingMembranePotentialVoltage:variable]"
 End
 
@@ -4095,7 +4105,7 @@ Function PSQ_Chirp(device, s)
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
+	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
@@ -4231,6 +4241,16 @@ Function PSQ_Chirp(device, s)
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
 				SetDAScale(device, s.headstage, absolute=initialDAScale, roundTopA = 1)
+
+				WAVE result = LBN_GetNumericWave()
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
+				result[INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser")
+				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = "ms")
+
+				userOnsetDelay = AFH_GetAnalysisParamNumerical("UserOnsetDelay", s.params)
+				if(IsFinite(userOnsetDelay))
+					PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
+				endif
 			endif
 			break
 		case POST_SWEEP_EVENT:
@@ -4323,6 +4343,11 @@ Function PSQ_Chirp(device, s)
 					PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
 				endif
 			endif
+
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD, query = 1)
+			userOnsetDelay = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+			ASSERT(IsFinite(userOnsetDelay), "Expected finite value for user onset delay")
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
 
 			AD_UpdateAllDatabrowser()
 			break

@@ -689,7 +689,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 59
+Constant LABNOTEBOOK_VERSION = 60
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -1075,6 +1075,7 @@ StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION           = "%s bounds action"
 StrConstant PSQ_FMT_LBN_CR_CYCLES                  = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE            = "%s bounds state"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK             = "%s spike check"
+StrConstant PSQ_FMT_LBN_CR_INIT_UOD                = "%s initial user onset delay"
 StrConstant PSQ_FMT_LBN_SPIKE_PASS                 = "%s spike QC"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE              = "%s pipette resistance"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS         = "%s pipette resistance QC"
