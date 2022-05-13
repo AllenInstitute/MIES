@@ -2631,14 +2631,19 @@ End
 /// returns all possible sweeps as 1d array
 static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string graph)
 
-	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1 && IsNaN(JSON_GetVariable(jsonID, jsonPath + "/0")), "Sweep function takes no arguments.")
+	variable numIndices
+
+	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numIndices == 0, "Sweep function takes no arguments.")
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
-	WAVE/Z out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
-	if(!WaveExists(out))
-		WAVE out = SF_GetDefaultEmptyWave()
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_SWEEPS, 1)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
+	if(WaveExists(sweeps))
+		output[0] = sweeps
 	endif
 
+	WAVE out = SF_GetOutputForExecutor(output)
 	return out
 End
 
