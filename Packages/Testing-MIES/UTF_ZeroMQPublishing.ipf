@@ -366,3 +366,36 @@ static Function CheckTrueRestMembPotPublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckIVSCC()
+	string msg, filter, expected, actual
+	variable found, i, jsonID
+
+	MIES_PUB#PUB_IVS_QCState(123, "some text")
+
+	for(i = 0; i < 200; i += 1)
+		msg = zeromq_sub_recv(filter)
+		if(strlen(msg) > 0 || strlen(filter) > 0)
+			expected = IVS_PUB_FILTER
+			CHECK_EQUAL_STR(filter, expected)
+
+			jsonID = JSON_Parse(msg)
+			expected = JSON_GetString(jsonID, "/Issuer")
+			actual   = "CheckIVSCC"
+			CHECK_EQUAL_STR(actual, expected)
+
+			expected = JSON_GetString(jsonID, "/Description")
+			actual   = "some text"
+			CHECK_EQUAL_STR(actual, expected)
+
+			CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
+
+			found += 1
+			break
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	CHECK_GT_VAR(found, 0)
+End
