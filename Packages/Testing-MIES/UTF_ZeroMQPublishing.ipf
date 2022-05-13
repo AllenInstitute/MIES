@@ -7,23 +7,12 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
 	AdditionalExperimentCleanup()
 
-	StartZeroMQSockets(forceRestart = 1)
-
-	zeromq_sub_add_filter("")
-	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
-End
-
-static Function TEST_CASE_END_OVERRIDE(string testname)
-
-	StartZeroMQSockets(forceRestart = 1)
-	zeromq_sub_add_filter("")
+	PrepareForPublishTest()
 End
 
 static Function CheckPressureStatePublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -49,8 +38,6 @@ static Function CheckPressureSealPublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
-	WaitForPubSubHeartbeat()
-
 	device = "my_device"
 	headstage = 0
 
@@ -69,8 +56,6 @@ End
 static Function CheckClampModePublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -96,8 +81,6 @@ static Function CheckAutoBridgeBalancePublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
-	WaitForPubSubHeartbeat()
-
 	device = "my_device"
 	headstage = 0
 
@@ -121,8 +104,6 @@ static Function CheckPressureBreakinPublishing()
 	string device, msg
 	variable headstage, i, jsonID, value
 
-	WaitForPubSubHeartbeat()
-
 	device = "my_device"
 	headstage = 0
 
@@ -141,8 +122,6 @@ End
 static Function CheckAutoTPPublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -205,8 +184,6 @@ End
 static Function CheckPipetteInBathPublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -277,8 +254,6 @@ static Function CheckSealEvaluationPublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
-	WaitForPubSubHeartbeat()
-
 	device = "my_device"
 	headstage = 0
 	sweepNo = 0
@@ -323,8 +298,6 @@ End
 static Function CheckTrueRestMembPotPublishing()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0

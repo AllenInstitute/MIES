@@ -65,7 +65,7 @@ Function AdditionalExperimentCleanup()
 	KillVariables bugCount
 End
 
-Function WaitForPubSubHeartbeat()
+static Function WaitForPubSubHeartbeat()
 	variable i, foundHeart
 	string msg, filter
 
