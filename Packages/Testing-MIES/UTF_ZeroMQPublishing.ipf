@@ -28,17 +28,17 @@ static Function CheckPressureStatePublishing()
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishPressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
+	MIES_PUB#PUB_PressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
 
 	msg = FetchPublishedMessage(PRESSURE_STATE_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
-	expected = MIES_P#P_PressureMethodToString(PRESSURE_METHOD_ATM)
+	expected = P_PressureMethodToString(PRESSURE_METHOD_ATM)
 	actual   = JSON_GetString(jsonID, "/pressure method/old")
 	CHECK_EQUAL_STR(actual, expected)
 
-	expected = MIES_P#P_PressureMethodToString(PRESSURE_METHOD_APPROACH)
+	expected = P_PressureMethodToString(PRESSURE_METHOD_APPROACH)
 	actual   = JSON_GetString(jsonID, "/pressure method/new")
 	CHECK_EQUAL_STR(actual, expected)
 
@@ -54,7 +54,7 @@ static Function CheckPressureSealPublishing()
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishSealedState(device, headstage)
+	MIES_PUB#PUB_PressureSealedState(device, headstage)
 
 	msg = FetchPublishedMessage(PRESSURE_SEALED_FILTER)
 
@@ -75,7 +75,7 @@ static Function CheckClampModePublishing()
 	device = "my_device"
 	headstage = 0
 
-	MIES_DAP#DAP_PublishClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
+	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
 
 	msg = FetchPublishedMessage(AMPLIFIER_CLAMP_MODE_FILTER)
 
@@ -101,7 +101,7 @@ static Function CheckAutoBridgeBalancePublishing()
 	device = "my_device"
 	headstage = 0
 
-	MIES_AI#AI_PublishAutoBridgeBalance(device, headstage, 4711)
+	MIES_PUB#PUB_AutoBridgeBalance(device, headstage, 4711)
 
 	msg = FetchPublishedMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
 
@@ -126,7 +126,7 @@ static Function CheckPressureBreakinPublishing()
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishBreakin(device, headstage)
+	MIES_PUB#PUB_PressureBreakin(device, headstage)
 
 	msg = FetchPublishedMessage(PRESSURE_BREAKIN_FILTER)
 
@@ -165,7 +165,7 @@ static Function CheckAutoTPPublishing()
 
 	// END required entries
 
-	MIES_TP#TP_PublishAutoTPResult(device, headstage, 1)
+	MIES_PUB#PUB_AutoTPResult(device, headstage, 1)
 
 	msg = FetchPublishedMessage(AUTO_TP_FILTER)
 
@@ -229,7 +229,7 @@ static Function CheckPipetteInBathPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_PB_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_PipetteInBath(device, sweepNo, headstage)
 
 	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_PB)
 
@@ -297,7 +297,7 @@ static Function CheckSealEvaluationPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_SE_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_SealEvaluation(device, sweepNo, headstage)
 
 	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_SE)
 
@@ -344,7 +344,7 @@ static Function CheckTrueRestMembPotPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_VM_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_TrueRestingMembranePotential(device, sweepNo, headstage)
 
 	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_VM)
 

@@ -678,7 +678,7 @@ static Function TP_AutoTPTurnOff(string device, WAVE autoTPEnable, variable head
 
 	QC = !!QC
 
-	TP_PublishAutoTPResult(device, headstage, QC)
+	PUB_AutoTPResult(device, headstage, QC)
 
 	TP_AutoTPGenerateNewCycleID(device, headstage = headstage)
 
@@ -750,44 +750,6 @@ static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 	if(needsUpdate)
 		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
 	endif
-End
-
-static Function TP_PublishAutoTPResult(string device, variable headstage, variable result)
-
-	variable jsonID, err
-	string payload, path
-
-	WAVE TPSettings = GetTPSettings(device)
-	WAVE TPStorage = GetTPStorage(device)
-
-	WAVE/Z autoTPDeltaV = TP_GetValuesFromTPStorage(TPStorage, headstage, "AutoTPDeltaV", 1)
-	ASSERT(WaveExists(autoTPDeltaV), "Missing auto TP delta V")
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddTreeObject(jsonID, "results")
-	JSON_AddBoolean(jsonID, "results/QC", result)
-
-	path = "results/baseline"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", TPSettings[%baselinePerc][INDEP_HEADSTAGE])
-	JSON_AddString(jsonID, path + "/unit", "%")
-
-	path = "results/amplitude IC"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeIC][headstage])
-	JSON_AddString(jsonID, path + "/unit", "pA")
-
-	path = "results/amplitude VC"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeVC][headstage])
-	JSON_AddString(jsonID, path + "/unit", "mV")
-
-	path = "results/delta V"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", autoTPDeltaV[0])
-	JSON_AddString(jsonID, path + "/unit", "mV")
-
-	FFI_Publish(jsonID, AUTO_TP_FILTER)
 End
 
 /// @brief Generate new auto TP cycle IDs

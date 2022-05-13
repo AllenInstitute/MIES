@@ -3443,7 +3443,7 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 			continue
 		endif
 
-		DAP_PublishClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
+		PUB_ClampModeChange(device, i, GuiState[i][%HSmode], clampMode)
 
 		GuiState[i][%HSmode] = clampMode
 
@@ -3475,22 +3475,6 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(device, "ADC", val=oldTab)
 	endif
-End
-
-static Function DAP_PublishClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode)
-	variable jsonID
-	string payload
-
-	if(oldClampMode == newClampMode)
-		return NaN
-	endif
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddTreeObject(jsonID, "clamp mode")
-	JSON_AddString(jsonID, "clamp mode/old", ConvertAmplifierModeToString(oldClampMode))
-	JSON_AddString(jsonID, "clamp mode/new", ConvertAmplifierModeToString(newClampMode))
-
-	FFI_Publish(jsonID, AMPLIFIER_CLAMP_MODE_FILTER)
 End
 
 ///@brief Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel

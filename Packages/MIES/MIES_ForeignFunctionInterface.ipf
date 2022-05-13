@@ -54,29 +54,12 @@ Function/WAVE FFI_ReturnTPValues()
 	return acqStorageWave
 End
 
-/// @brief Get a template for publishing messages
-///
-/// Publishers in MIES should in general supply additional information like device/sweep number/timestamp.
-/// This function allows to autofill these entries.
-Function FFI_GetJSONTemplate(string device, variable headstage)
-	variable jsonID
-
-	jsonID = JSON_New()
-	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "device", device)
-	JSON_AddVariable(jsonID, "headstage", headstage)
-	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
-
-	return jsonID
-End
-
 /// @brief Return a text wave with all available message filters for
 /// Publisher/Subscriber ZeroMQ sockets
 ///
 /// See also @ref ZeroMQMessageFilters.
 ///
-/// @sa FFI_GetJSONTemplate
+/// @sa PUB_GetJSONTemplate
 Function/WAVE FFI_GetAvailableMessageFilters()
 
 	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_STATE_FILTER, PRESSURE_SEALED_FILTER, \
@@ -87,21 +70,4 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 	Note/K wv "Heartbeat is sent every 5 seconds."
 
 	return wv
-End
-
-/// @brief Publish the given message as given by the JSON and the filter
-Function FFI_Publish(variable jsonID, string messageFilter)
-	variable err
-	string payload
-
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
-
-	AssertOnAndClearRTError()
-	try
-		zeromq_pub_send(messageFilter, payload); AbortOnRTE
-	catch
-		err = ClearRTError()
-		BUG("Could not publish " + messageFilter + " due to: " + num2str(err))
-	endtry
 End

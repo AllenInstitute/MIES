@@ -1255,7 +1255,7 @@ Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, u
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			MCC_AutoBridgeBal()
 			ret = AI_SendToAmp(device, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes, selectAmp = 0)
-			AI_PublishAutoBridgeBalance(device, headstage, ret)
+			PUB_AutoBridgeBalance(device, headstage, ret)
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
@@ -1761,14 +1761,3 @@ Function AI_FindConnectedAmps()
 	DEBUGPRINT("Unimplemented")
 End
 #endif
-
-static Function AI_PublishAutoBridgeBalance(string device, variable headstage, variable resistance)
-	variable jsonID
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddTreeObject(jsonID, "bridge balance resistance")
-	JSON_AddVariable(jsonID, "bridge balance resistance/value", resistance)
-	JSON_AddString(jsonID, "bridge balance resistance/unit", "Ohm")
-
-	FFI_Publish(jsonID, AMPLIFIER_AUTO_BRIDGE_BALANCE)
-End

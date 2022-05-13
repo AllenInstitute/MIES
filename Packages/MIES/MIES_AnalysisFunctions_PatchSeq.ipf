@@ -4631,7 +4631,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			PSQ_PB_Publish(device, s.sweepNo, s.headstage)
+			PUB_PipetteInBath(device, s.sweepNo, s.headstage)
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
@@ -4808,118 +4808,6 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	return epEnd
-End
-
-static Function PSQ_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WAVE keys, variable sweepNo, string key, variable headstage, variable labnotebookLayer)
-	variable result, col
-	string unit, path
-
-	ASSERT(IsNumericWave(values), "Only supporting numeric values for now")
-
-	if(labnotebookLayer == INDEP_HEADSTAGE)
-		WAVE/Z settings = GetLastSettingIndepEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
-	else
-		WAVE/Z settings = GetLastSettingEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
-	endif
-
-	if(!WaveExists(settings))
-		WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(values, sweepNo, headstage)
-		ASSERT(WaveExists(sweeps), "No sweeps in current SCI")
-
-		Make/FREE/N=(DimSize(sweeps, ROWS)) settings = NaN
-	endif
-
-	path = "/results/" + key
-
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddWave(jsonID, path + "/value", settings)
-
-	[result, unit, col] = LBN_GetEntryProperties(keys, key)
-	JSON_AddString(jsonID, path + "/unit", SelectString(result, unit, ""))
-End
-
-/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_PipetteInBath()
-///
-/// Keys under `/results` are labnotebook keys. The arrays under
-/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
-/// This array has currently always one entry as #PSQ_PB_NUM_SWEEPS_PASS is one.
-/// The encoding is UTF-8.
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///    {
-///     "device": "my_device",
-///     "headstage": 0,
-///     "results": {
-///       "USER_Pipette in Bath Chk0 Leak Current BL": {
-///         "unit": "Amperes",
-///         "value": [
-///           123.0
-///         ]
-///       },
-///       "USER_Pipette in Bath Chk0 Leak Current BL QC": {
-///         "unit": "On/Off",
-///         "value": [
-///           0.0
-///         ]
-///       },
-///       "USER_Pipette in Bath Set QC": {
-///         "unit": "On/Off",
-///         "value": [
-///           1.0
-///         ]
-///       },
-///       "USER_Pipette in Bath pipette resistance": {
-///         "unit": "Ω",
-///         "value": [
-///           456.0
-///         ]
-///       },
-///       "USER_Pipette in Bath pipette resistance QC": {
-///         "unit": "On/Off",
-///         "value": [
-///           1.0
-///         ]
-///       }
-///     },
-///     "sweep number": "NaN",
-///     "timestamp": "2022-02-10T20:48:22Z"
-///    }
-///
-/// .. Output created with Tests/CheckPipetteInBathPublishing.
-///
-/// \endrst
-static Function PSQ_PB_Publish(string device, variable sweepNo, variable headstage)
-	variable jsonID
-	string key
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE numericalKeys   = GetLBNumericalKeys(device)
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-
-	JSON_AddTreeObject(jsonID, "/results")
-
-	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
-
-	// assumes that we only have one chunk
-	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR, chunk = 0, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
-
-	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	FFI_Publish(jsonID, ANALYSIS_FUNCTION_PB)
 End
 
 Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStruct& s)
@@ -5273,7 +5161,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			PSQ_SE_Publish(device, s.sweepNo, s.headstage)
+			PUB_SealEvaluation(device, s.sweepNo, s.headstage)
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
@@ -5387,62 +5275,6 @@ static Function PSQ_SE_ParseTestpulseGroupSelection(string str)
 		default:
 			ASSERT(0, "Invalid value: " + str)
 	endswitch
-End
-
-/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_SealEvaluation()
-///
-/// Keys under `/results` are labnotebook keys. The arrays under
-/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
-/// This array has currently always one entry as #PSQ_SE_NUM_SWEEPS_PASS is one.
-/// The encoding is UTF-8.
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///  {
-///    "device": "my_device",
-///    "headstage": 0,
-///    "results": {
-///      "USER_Seal evaluation Set QC": {
-///      "unit": "On/Off",
-///      "value": [
-///       1.0
-///        ]
-///       },
-///       "USER_Seal evaluation seal resistance max": {
-///         "unit": "Ω",
-///         "value": [
-///           123.0
-///         ]
-///       }
-///    },
-///    "sweep number": "NaN",
-///    "timestamp": "2022-02-22T12:27:07Z"
-///  }
-///
-/// .. Output created with Tests/CheckSealEvaluationPublishing.
-///
-/// \endrst
-static Function PSQ_SE_Publish(string device, variable sweepNo, variable headstage)
-	variable jsonID
-	string key
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE numericalKeys   = GetLBNumericalKeys(device)
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-
-	JSON_AddTreeObject(jsonID, "/results")
-
-	key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SET_PASS, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_MAX, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	FFI_Publish(jsonID, ANALYSIS_FUNCTION_SE)
 End
 
 Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, struct CheckParametersStruct& s)
@@ -5681,7 +5513,7 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			PSQ_VM_Publish(device, s.sweepNo, s.headstage)
+			PUB_TrueRestingMembranePotential(device, s.sweepNo, s.headstage)
 
 			if(setPassed)
 				key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG, query = 1)
@@ -6002,62 +5834,6 @@ static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpi
 	ED_AddEntryToLabnotebook(device, key, spikePositionsLBN, unit = "ms", overrideSweepNo = sweepNo)
 
 	return [spikeQCPassed, spikePositions]
-End
-
-/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_TrueRestingMembranePotential()
-///
-/// Keys under `/results` are labnotebook keys. The arrays under
-/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
-/// This array has currently always one entry as #PSQ_VM_NUM_SWEEPS_PASS is one.
-/// The encoding is UTF-8.
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///  {
-///    "device": "my_device",
-///    "headstage": 0,
-///    "results": {
-///      "USER_True Rest Memb. Full Average": {
-///        "unit": "Volt",
-///        "value": [
-///          123.0
-///        ]
-///      },
-///      "USER_True Rest Memb. Set QC": {
-///        "unit": "On/Off",
-///        "value": [
-///          1.0
-///        ]
-///      }
-///    },
-///    "sweep number": "NaN",
-///    "timestamp": "2022-04-27T16:52:28Z"
-///  }
-///
-/// .. Output created with Tests/CheckTrueRestMembPotPublishing.
-///
-/// \endrst
-static Function PSQ_VM_Publish(string device, variable sweepNo, variable headstage)
-	variable jsonID
-	string key
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE numericalKeys   = GetLBNumericalKeys(device)
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-
-	JSON_AddTreeObject(jsonID, "/results")
-
-	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG, query = 1)
-	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
-
-	FFI_Publish(jsonID, ANALYSIS_FUNCTION_VM)
 End
 
 static Function PSQ_VM_HandleFailingSpikeQC(string device, struct AnalysisFunction_V3& s, WAVE spikePositions)
