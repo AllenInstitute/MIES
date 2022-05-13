@@ -1811,3 +1811,71 @@ static Function PS_CR15_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
+
+// No a, b as boundsState evaluation is always passing
+
+static Function PS_CR16_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var=0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR16([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = PS_CR16_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	// all tests pass
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	// layer 3: Spikes check during chirp (not done)
+	//
+	// AutobiasTargetV/AutobiasTargetVAtSetEnd/UseTrueRestingMembranePotentialVoltage are present
+	wv[][][0] = 1
+	wv[][][1] = 35
+	wv[][][2] = -25
+End
+
+static Function PS_CR16_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 2
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {45, 45, 45}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 55)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
+End

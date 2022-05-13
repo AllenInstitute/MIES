@@ -1189,11 +1189,12 @@ Constant PSQ_RA_NUM_SWEEPS_PASS = 3
 
 /// @name PatchSeq Chirp
 /// @{
-Constant PSQ_CR_NUM_SWEEPS_PASS = 3
-Constant PSQ_CR_RESISTANCE_FAKE = 1 // GΩ
-Constant PSQ_CR_BASELINE_V_FAKE = 1 // mV
-Constant PSQ_CR_LIMIT_BAND_LOW  = 1 // mV
-Constant PSQ_CR_LIMIT_BAND_HIGH = 100 // mV
+Constant PSQ_CR_NUM_SWEEPS_PASS  = 3
+Constant PSQ_CR_RESISTANCE_FAKE  = 1 // GΩ
+Constant PSQ_CR_BASELINE_V_FAKE  = 1 // mV
+Constant PSQ_CR_LIMIT_BAND_LOW   = 1 // mV
+Constant PSQ_CR_LIMIT_BAND_HIGH  = 100 // mV
+Constant PSQ_CR_USE_TRUE_RMP_DEF = 1
 /// @}
 
 /// @name PatchSeq Pipette
