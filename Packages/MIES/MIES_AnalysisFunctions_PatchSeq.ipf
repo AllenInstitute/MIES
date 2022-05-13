@@ -3859,25 +3859,25 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
-		 case "BoundsEvaluationMode":
+		case "AutobiasTargetV":
+			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
+		case "AutobiasTargetVAtSetEnd":
+			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
+		case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
-		case "InnerRelativeBound":
-			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
-		case "OuterRelativeBound":
-			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
-		case "NumberOfChirpCycles":
-			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
-		case "SpikeCheck":
-			return "Toggle spike check during the chirp. Defaults to off."
 		case "DAScaleOperator":
 			return "Set the math operator to use for combining the DAScale and the "            \
 			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 		case "DAScaleModifier":
 			return "Modifier value to the DA Scale of headstages with spikes during chirp"
-		case "AutobiasTargetV":
-			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
-		case "AutobiasTargetVAtSetEnd":
-			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
+		case "InnerRelativeBound":
+			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
+		case "NumberOfChirpCycles":
+			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
+		case "OuterRelativeBound":
+			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
+		case "SpikeCheck":
+			return "Toggle spike check during the chirp. Defaults to off."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3898,6 +3898,13 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
+		case "AutobiasTargetV":
+		case "AutobiasTargetVAtSetEnd":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val == 0)
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
@@ -3924,13 +3931,6 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "AutobiasTargetV":
-		case "AutobiasTargetVAtSetEnd":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || val == 0)
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		default:
