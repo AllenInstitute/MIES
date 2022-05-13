@@ -10,7 +10,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 	PrepareForPublishTest()
 End
 
-static Function CheckPressureStatePublishing()
+static Function CheckPressureState()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID
 
@@ -34,7 +34,7 @@ static Function CheckPressureStatePublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckPressureSealPublishing()
+static Function CheckPressureSeal()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -53,7 +53,7 @@ static Function CheckPressureSealPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckClampModePublishing()
+static Function CheckClampMode()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -77,7 +77,7 @@ static Function CheckClampModePublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckAutoBridgeBalancePublishing()
+static Function CheckAutoBridgeBalance()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -100,7 +100,7 @@ static Function CheckAutoBridgeBalancePublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckPressureBreakinPublishing()
+static Function CheckPressureBreakin()
 	string device, msg
 	variable headstage, i, jsonID, value
 
@@ -119,7 +119,7 @@ static Function CheckPressureBreakinPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckAutoTPPublishing()
+static Function CheckAutoTP()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -181,7 +181,7 @@ static Function CheckAutoTPPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckPipetteInBathPublishing()
+static Function CheckPipetteInBath()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
@@ -250,7 +250,7 @@ static Function CheckPipetteInBathPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckSealEvaluationPublishing()
+static Function CheckSealEvaluation()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
@@ -295,7 +295,7 @@ static Function CheckSealEvaluationPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckTrueRestMembPotPublishing()
+static Function CheckTrueRestMembPot()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
