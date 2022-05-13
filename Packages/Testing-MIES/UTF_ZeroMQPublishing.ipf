@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ZeroMQPublishingTests
 
+// #define OUTPUT_DOCUMENTATION_JSON_DUMP
+
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
 	AdditionalExperimentCleanup()
@@ -10,8 +12,41 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 	PrepareForPublishTest()
 End
 
+static Function FetchAndParseMessage(string filter)
+	variable jsonID
+	string msg
+
+	msg = FetchPublishedMessage(filter)
+
+	CHECK_PROPER_STR(msg)
+
+	jsonID = JSON_Parse(msg)
+	CHECK_GE_VAR(jsonID, 0)
+
+#ifdef OUTPUT_DOCUMENTATION_JSON_DUMP
+	WAVE/T contents = ListToTextWave(JSON_Dump(jsonID, indent = 2), "\n")
+
+	contents[] = "///    " + contents[p]
+
+	print "/// Filter: #XXXX"
+	print "///"
+	print "/// Example:"
+	print "///"
+	print "/// \\rst"
+	print "/// .. code-block:: json"
+	print "///"
+	for(s : contents)
+		print s
+	endfor
+	print "///"
+	print "/// \\endrst"
+#endif
+
+	return jsonID
+End
+
 static Function CheckPressureState()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID
 
 	device = "my_device"
@@ -19,9 +54,7 @@ static Function CheckPressureState()
 
 	MIES_PUB#PUB_PressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
 
-	msg = FetchPublishedMessage(PRESSURE_STATE_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(PRESSURE_STATE_FILTER)
 
 	expected = P_PressureMethodToString(PRESSURE_METHOD_ATM)
 	actual   = JSON_GetString(jsonID, "/pressure method/old")
@@ -35,7 +68,7 @@ static Function CheckPressureState()
 End
 
 static Function CheckPressureSeal()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value
 
 	device = "my_device"
@@ -43,9 +76,7 @@ static Function CheckPressureSeal()
 
 	MIES_PUB#PUB_PressureSealedState(device, headstage)
 
-	msg = FetchPublishedMessage(PRESSURE_SEALED_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(PRESSURE_SEALED_FILTER)
 
 	value = JSON_GetVariable(jsonID, "/sealed")
 	CHECK_EQUAL_VAR(value, 1)
@@ -54,7 +85,7 @@ static Function CheckPressureSeal()
 End
 
 static Function CheckClampMode()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value
 
 	device = "my_device"
@@ -62,9 +93,7 @@ static Function CheckClampMode()
 
 	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
 
-	msg = FetchPublishedMessage(AMPLIFIER_CLAMP_MODE_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AMPLIFIER_CLAMP_MODE_FILTER)
 
 	expected = "I_CLAMP_MODE"
 	actual   = JSON_GetString(jsonID, "/clamp mode/old")
@@ -78,7 +107,7 @@ static Function CheckClampMode()
 End
 
 static Function CheckAutoBridgeBalance()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value
 
 	device = "my_device"
@@ -86,9 +115,7 @@ static Function CheckAutoBridgeBalance()
 
 	MIES_PUB#PUB_AutoBridgeBalance(device, headstage, 4711)
 
-	msg = FetchPublishedMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
 
 	expected = "Ohm"
 	actual   = JSON_GetString(jsonID, "/bridge balance resistance/unit")
@@ -101,7 +128,7 @@ static Function CheckAutoBridgeBalance()
 End
 
 static Function CheckPressureBreakin()
-	string device, msg
+	string device
 	variable headstage, i, jsonID, value
 
 	device = "my_device"
@@ -109,9 +136,7 @@ static Function CheckPressureBreakin()
 
 	MIES_PUB#PUB_PressureBreakin(device, headstage)
 
-	msg = FetchPublishedMessage(PRESSURE_BREAKIN_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(PRESSURE_BREAKIN_FILTER)
 
 	value = JSON_GetVariable(jsonID, "/break in")
 	CHECK_EQUAL_VAR(value, 1)
@@ -120,7 +145,7 @@ static Function CheckPressureBreakin()
 End
 
 static Function CheckAutoTP()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value
 
 	device = "my_device"
@@ -146,9 +171,7 @@ static Function CheckAutoTP()
 
 	MIES_PUB#PUB_AutoTPResult(device, headstage, 1)
 
-	msg = FetchPublishedMessage(AUTO_TP_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AUTO_TP_FILTER)
 
 	expected = "%"
 	actual   = JSON_GetString(jsonID, "/results/baseline/unit")
@@ -182,7 +205,7 @@ static Function CheckAutoTP()
 End
 
 static Function CheckPipetteInBath()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
 	device = "my_device"
@@ -208,9 +231,7 @@ static Function CheckPipetteInBath()
 
 	MIES_PUB#PUB_PipetteInBath(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_PB)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_PB)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath Set QC/unit")
@@ -251,7 +272,7 @@ static Function CheckPipetteInBath()
 End
 
 static Function CheckSealEvaluation()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
 	device = "my_device"
@@ -274,9 +295,7 @@ static Function CheckSealEvaluation()
 
 	MIES_PUB#PUB_SealEvaluation(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_SE)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_SE)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_Seal evaluation Set QC/unit")
@@ -296,7 +315,7 @@ static Function CheckSealEvaluation()
 End
 
 static Function CheckTrueRestMembPot()
-	string device, msg, expected, actual
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
 	device = "my_device"
@@ -319,9 +338,7 @@ static Function CheckTrueRestMembPot()
 
 	MIES_PUB#PUB_TrueRestingMembranePotential(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_VM)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_VM)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Set QC/unit")
@@ -341,34 +358,19 @@ static Function CheckTrueRestMembPot()
 End
 
 static Function CheckIVSCC()
-	string msg, filter, expected, actual
-	variable found, i, jsonID
+	string expected, actual
+	variable jsonID
 
 	MIES_PUB#PUB_IVS_QCState(123, "some text")
 
-	for(i = 0; i < 200; i += 1)
-		msg = zeromq_sub_recv(filter)
-		if(strlen(msg) > 0 || strlen(filter) > 0)
-			expected = IVS_PUB_FILTER
-			CHECK_EQUAL_STR(filter, expected)
+	jsonID = FetchAndParseMessage(IVS_PUB_FILTER)
+	expected = JSON_GetString(jsonID, "/Issuer")
+	actual   = "CheckIVSCC"
+	CHECK_EQUAL_STR(actual, expected)
 
-			jsonID = JSON_Parse(msg)
-			expected = JSON_GetString(jsonID, "/Issuer")
-			actual   = "CheckIVSCC"
-			CHECK_EQUAL_STR(actual, expected)
+	expected = JSON_GetString(jsonID, "/Description")
+	actual   = "some text"
+	CHECK_EQUAL_STR(actual, expected)
 
-			expected = JSON_GetString(jsonID, "/Description")
-			actual   = "some text"
-			CHECK_EQUAL_STR(actual, expected)
-
-			CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
-
-			found += 1
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	CHECK_GT_VAR(found, 0)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
 End
