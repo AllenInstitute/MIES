@@ -6,6 +6,8 @@
 #pragma ModuleName=MIES_SF
 #endif
 
+// define SWEEPFORMULA_DEBUG to enable debug mode with more persistent data
+
 /// @file MIES_SweepFormula.ipf
 ///
 /// @brief __SF__ Sweep formula allows to do analysis on sweeps with a
@@ -109,6 +111,9 @@ static StrConstant SF_CHAR_NEWLINE = "\n"
 static StrConstant MIXED_UNITS = "** undefined **"
 
 static Constant SF_TRANSFER_ALL_DIMS = -1
+
+static StrConstant SF_WORKING_DF = "FormulaData"
+static StrConstant SF_WREF_MARKER = "\"WREF@\":"
 
 Function/WAVE SF_GetNamedOperations()
 
@@ -836,6 +841,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
 	SF_Assert(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
+	DFREF dfrWork = SF_GetWorkingDF(graph)
+	KillOrMoveToTrash(dfr=dfrWork)
+
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 	numGraphs = DimSize(graphCode, ROWS)
@@ -862,6 +870,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(!IsEmpty(xFormula))
 			WAVE/Z wv = SF_ExecuteFormula(xFormula, databrowser = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
+			WAVE/WAVE wvRef = SF_ParseArgument(graph, wv, "plotter")
+			WAVE/Z wv = wvRef[0] // TODO multiple results
+			if(!WaveExists(wv))
+				// print warning?
+				continue
+			endif
+
 			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
@@ -879,6 +894,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		WAVE/Z wv = SF_ExecuteFormula(formulaPairs[j][%FORMULA_Y], databrowser = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
+		WAVE/WAVE wvRef = SF_ParseArgument(graph, wv, "plotter")
+		WAVE/Z wv = wvRef[0] // TODO multiple results
+		if(!WaveExists(wv))
+			// print warning?
+			continue
+		endif
+
 		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
@@ -2248,12 +2270,32 @@ End
 
 static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	string opShort = "plus"
+
+	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, opShort)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	Note/K output, note(input)
+
+	output[] = SF_OperationPlusImpl(input[p])
+
+	WAVE out = SF_GetOutputForExecutor(output, clearInput=input)
+	return out
+End
+
+static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
+
+	if(!WaveExists(wv))
+		return $""
+	endif
+	SF_ASSERT(IsNumericWave(wv), "Operand for + must be numeric.")
 	MatrixOP/FREE out = sumCols(wv)^t
+	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
 	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	Note/K out, note(wv)
+
 	return out
 End
 
@@ -3182,4 +3224,79 @@ End
 static Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
 
 	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : JSON_GetArraySize(jsonID, jsonPath)
+End
+
+static Function/DF SF_GetWorkingDF(string win)
+
+	DFREF dfr = BSP_GetFolder(GetMainWindow(win), MIES_BSP_PANEL_FOLDER)
+
+	return createDFWithAllParents(GetDataFolder(1, dfr) + SF_WORKING_DF)
+End
+
+static Function/WAVE SF_CreateSFRefWave(string win, string opShort, variable size)
+
+	string wName
+
+	DFREF dfrWork = SF_GetWorkingDF(win)
+	wName = CreateDataObjectName(dfrWork, "refOut_" + opShort, 1, 0, 0)
+
+	Make/WAVE/N=(size) dfrWork:$wName/WAVE=wv
+
+	return wv
+End
+
+static Function/WAVE SF_ParseArgument(string win, WAVE input, string opShort)
+
+	string wName, tmpStr
+
+	if(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0)
+		WAVE/T wvt = input
+		if(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0)
+			tmpStr = wvt[0]
+			wName =tmpStr[strlen(SF_WREF_MARKER), Inf]
+			WAVE/Z out = $wName
+			ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
+			return out
+		endif
+	endif
+
+	WAVE/WAVE wRef = SF_CreateSFRefWave(win, "refUserInput_" + opShort, 1)
+#ifdef SWEEPFORMULA_DEBUG
+	DFREF dfrWork = SF_GetWorkingDF(win)
+	wName = CreateDataObjectName(dfrWork, "dataInput_" + opShort, 1, 0, 0)
+	Duplicate input, dfrWork:$wName
+	WAVE input = dfrWork:$wName
+#endif
+	wRef[0] = input
+
+	return wRef
+End
+
+static Function SF_CleanUpInput(WAVE input)
+
+#ifndef SWEEPFORMULA_DEBUG
+	KillOrMoveToTrash(wv = input)
+#endif
+End
+
+static Function/WAVE SF_GetOutputForExecutor(WAVE output[, WAVE clearInput])
+
+	if(!ParamIsDefault(clearInput))
+		SF_CleanUpInput(clearInput)
+	endif
+	Make/FREE/T wRefPath = {SF_WREF_MARKER + GetWavesDataFolder(output, 2)}
+
+	return wRefPath
+End
+
+static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort[, variable argNum])
+
+	if(ParamIsDefault(argNum))
+		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	else
+		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(argNum), graph = graph)
+	endif
+	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort)
+
+	return input
 End
