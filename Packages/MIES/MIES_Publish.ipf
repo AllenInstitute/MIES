@@ -68,6 +68,25 @@ static Function PUB_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WA
 	JSON_AddString(jsonID, path + "/unit", SelectString(result, unit, ""))
 End
 
+/// Filter: #AMPLIFIER_AUTO_BRIDGE_BALANCE
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "bridge balance resistance": {
+///        "unit": "Ohm",
+///        "value": 4711
+///      },
+///      "device": "my_device",
+///      "headstage": 0,
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:56:39Z"
+///    }
+///
+/// \endrst
 Function PUB_AutoBridgeBalance(string device, variable headstage, variable resistance)
 	variable jsonID
 
@@ -275,6 +294,25 @@ Function PUB_TrueRestingMembranePotential(string device, variable sweepNo, varia
 	PUB_Publish(jsonID, ANALYSIS_FUNCTION_VM)
 End
 
+/// Filter: #AMPLIFIER_CLAMP_MODE_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "clamp mode": {
+///        "new": "V_CLAMP_MODE",
+///        "old": "I_CLAMP_MODE"
+///      },
+///      "device": "my_device",
+///      "headstage": 0,
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:54:39Z"
+///    }
+///
+/// \endrst
 Function PUB_ClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode)
 	variable jsonID
 	string payload
@@ -321,6 +359,25 @@ Function PUB_IVS_QCState(variable result, string description)
 	PUB_Publish(jsonID, IVS_PUB_FILTER)
 End
 
+/// Filter: #PRESSURE_STATE_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 0,
+///      "pressure method": {
+///        "new": "Approach",
+///        "old": "Atmosphere"
+///      },
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:45:38Z"
+///    }
+///
+/// \endrst
 Function PUB_PressureMethodChange(string device, variable headstage, variable oldMethod, variable newMethod)
 	variable jsonID
 
@@ -336,6 +393,22 @@ Function PUB_PressureMethodChange(string device, variable headstage, variable ol
 	PUB_Publish(jsonID, PRESSURE_STATE_FILTER)
 End
 
+/// Filter: #PRESSURE_SEALED_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 0,
+///      "sealed": true,
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:52:14Z"
+///    }
+///
+/// \endrst
 Function PUB_PressureSealedState(string device, variable headstage)
 	variable jsonID
 
@@ -345,6 +418,22 @@ Function PUB_PressureSealedState(string device, variable headstage)
 	PUB_Publish(jsonID, PRESSURE_SEALED_FILTER)
 End
 
+/// Filter: #PRESSURE_BREAKIN_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "break in": true,
+///      "device": "my_device",
+///      "headstage": 0,
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:58:04Z"
+///    }
+///
+/// \endrst
 Function PUB_PressureBreakin(string device, variable headstage)
 	variable jsonID
 
@@ -354,6 +443,40 @@ Function PUB_PressureBreakin(string device, variable headstage)
 	PUB_Publish(jsonID, PRESSURE_BREAKIN_FILTER)
 End
 
+/// Filter: #AUTO_TP_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 0,
+///      "results": {
+///        "QC": true,
+///        "amplitude IC": {
+///          "unit": "pA",
+///          "value": 456
+///        },
+///        "amplitude VC": {
+///          "unit": "mV",
+///          "value": 789
+///        },
+///        "baseline": {
+///          "unit": "%",
+///          "value": 123
+///        },
+///        "delta V": {
+///          "unit": "mV",
+///          "value": 0.5
+///        }
+///      },
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-13T18:59:44Z"
+///    }
+///
+/// \endrst
 Function PUB_AutoTPResult(string device, variable headstage, variable result)
 
 	variable jsonID, err
