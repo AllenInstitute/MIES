@@ -868,14 +868,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		WaveClear wvX
 		xFormula = formulaPairs[j][%FORMULA_X]
 		if(!IsEmpty(xFormula))
-			WAVE/Z wv = SF_ExecuteFormula(xFormula, databrowser = graph)
-			SF_Assert(WaveExists(wv), "Error in x part of formula.")
-			WAVE/WAVE wvRef = SF_ParseArgument(graph, wv, "plotter")
-			WAVE/Z wv = wvRef[0] // TODO multiple results
-			if(!WaveExists(wv))
-				// print warning?
-				continue
-			endif
+			WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph)
+			WAVE/Z wv = wvXRef[0] // TODO multiple results
+			SF_Assert(WaveExists(wv), "x part of formula returned no result.")
 
 			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
@@ -892,14 +887,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 		endif
 
-		WAVE/Z wv = SF_ExecuteFormula(formulaPairs[j][%FORMULA_Y], databrowser = graph)
-		SF_Assert(WaveExists(wv), "Error in y part of formula.")
-		WAVE/WAVE wvRef = SF_ParseArgument(graph, wv, "plotter")
-		WAVE/Z wv = wvRef[0] // TODO multiple results
-		if(!WaveExists(wv))
-			// print warning?
-			continue
-		endif
+		WAVE/WAVE wvYRef = SF_ExecuteFormula(formulaPairs[j][%FORMULA_Y], graph)
+		WAVE/Z wv = wvYRef[0] // TODO multiple results
+		SF_Assert(WaveExists(wv), "y part of formula returned no result.")
 
 		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
@@ -1824,8 +1814,9 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
-	if(!SF_IsDefaultEmptyWave(selectData))
+	WAVE/WAVE selectDataRef = SF_ExecuteFormula("select()", graph)
+	WAVE/Z selectData = selectDataRef[0]
+	if(WaveExists(selectData))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
 
@@ -1927,7 +1918,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	if(numArgs >= 2)
 		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+		WAVE selectData = SF_ExecuteFormula("select()", graph)
 	endif
 	SF_ASSERT(!SF_IsDefaultEmptyWave(selectData), "No valid sweep/channels combination found.")
 	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
@@ -2148,7 +2139,7 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 	if(numArgs >= 2)
 		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+		WAVE selectData = SF_ExecuteFormula("select()", graph)
 	endif
 
 	if(SF_IsDefaultEmptyWave(selectData))
@@ -2669,8 +2660,8 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numIndices)
-		WAVE channels = SF_ExecuteFormula("channels()", databrowser=graph)
-		WAVE sweeps = SF_ExecuteFormula("sweeps()", databrowser=graph)
+		WAVE channels = SF_ExecuteFormula("channels()", graph)
+		WAVE sweeps = SF_ExecuteFormula("sweeps()", graph)
 	else
 		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
 		WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
@@ -2721,7 +2712,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	if(numIndices == 2)
 		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+		WAVE selectData = SF_ExecuteFormula("select()", graph)
 	endif
 
 	if(SF_IsDefaultEmptyWave(selectData))
@@ -2778,7 +2769,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	if(numIndices >= 2)
 		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
+		WAVE selectData = SF_ExecuteFormula("select()", graph)
 	endif
 
 	if(SF_IsDefaultEmptyWave(selectData))
@@ -3218,20 +3209,17 @@ Function SF_SetFormula(string databrowser, string formula)
 End
 
 // Executes a given formula without changing the current SweepFormula notebook
-Function/WAVE SF_ExecuteFormula(string formula, [string databrowser])
+Function/WAVE SF_ExecuteFormula(string formula, string databrowser)
 
 	variable jsonId
 
 	formula = SF_PreprocessInput(formula)
 	formula = SF_FormulaPreParser(formula)
 	jsonId = SF_FormulaParser(formula)
-	if(ParamIsDefault(databrowser))
-		WAVE/Z out = SF_FormulaExecutor(jsonId)
-	else
-		WAVE/Z out = SF_FormulaExecutor(jsonId, graph = databrowser)
-	endif
+	WAVE/Z result = SF_FormulaExecutor(jsonId, graph = databrowser)
 	JSON_Release(jsonId, ignoreErr=1)
 
+	WAVE/WAVE out = SF_ParseArgument(databrowser, result, "FormulaExecution")
 	return out
 End
 
