@@ -2595,35 +2595,45 @@ End
 /// returns [[channelName, channelNumber]+]
 static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, JSONtype, channelType
-	string channelName, channelNumber, channelStr
+	variable numIndices, i, channelType
+	string channelName, channelNumber
 	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-
-	WAVE out = SF_NewChannelsWave(numIndices)
+	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
+	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
+	WAVE channels = SF_NewChannelsWave(numIndices ? numIndices : 1)
 	for(i = 0; i < numIndices; i += 1)
-		JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2istr(i))
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_CHANNELS, argNum = i)
+		SF_ASSERT(DimSize(arg, ROWS) == 1, "Only one channels pattern can be specified per argument.")
+		WAVE chanSpec = arg[0]
 		channelName = ""
-		if(JSONtype == JSON_NUMERIC)
-			out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2istr(i))
-		elseif(JSONtype == JSON_STRING)
-			channelStr = JSON_GetString(jsonID, jsonPath + "/" + num2istr(i))
-			SplitString/E=regExp channelStr, channelName, channelNumber
+		if(IsNumericWave(chanSpec))
+			channels[i][%channelNumber] = chanSpec[0]
+		elseif(IsTextWave(chanSpec))
+			WAVE/T chanSpecT = chanSpec
+			SplitString/E=regExp chanSpecT[0], channelName, channelNumber
 			if(V_flag == 0)
-				SF_ASSERT(0, "Unknown channel: " + channelStr)
+				SF_ASSERT(0, "Unknown channel: " + chanSpecT[0])
 			endif
-			out[i][%channelNumber] = str2num(channelNumber)
+			channels[i][%channelNumber] = str2num(channelNumber)
+		else
+			SF_ASSERT(0, "Unsupported arg type for channels.")
 		endif
-		SF_ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
+		SF_ASSERT(!isFinite(channels[i][%channelNumber]) || channels[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
 		if(!IsEmpty(channelName))
 			channelType = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
 			if(channelType >= 0)
-				out[i][%channelType] = channelType
+				channels[i][%channelType] = channelType
 			endif
 		endif
+
+		SF_CleanUpInput(arg)
 	endfor
 
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_CHANNELS, 1)
+	output[0] = channels
+
+	WAVE out = SF_GetOutputForExecutor(output)
 	return out
 End
 
