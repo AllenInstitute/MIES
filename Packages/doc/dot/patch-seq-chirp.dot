@@ -105,8 +105,8 @@ digraph G {
 	n69 -> n67;
 	n72	 [label="Add Spike QC passed labnotebook entry"];
 	n71 -> n72	 [label=Yes];
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ"	 [label=Yes];
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Set can still pass?"	 [label=No];
+	"Read analysis parameter \"NumberOfFailedSweeps\".\n Have that many sweeps failed?" -> "Skip to end of DAQ"	 [label=Yes];
+	"Read analysis parameter \"NumberOfFailedSweeps\".\n Have that many sweeps failed?" -> "Set can still pass?"	 [label=No];
 	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
 	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
 	"Check if only one headstage is active" -> "All checks passed";

@@ -3920,7 +3920,7 @@ Function/S PSQ_Chirp_GetParams()
 	       "[FailedLevel:variable],"               + \
 	       "InnerRelativeBound:variable,"          + \
 	       "[NumberOfChirpCycles:variable],"       + \
-	       "[NumberOfFailedSweeps:variable],"      + \
+	       "NumberOfFailedSweeps:variable,"        + \
 	       "OuterRelativeBound:variable,"          + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable,"          + \
@@ -4003,7 +4003,7 @@ Function PSQ_Chirp(device, s)
 	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
 	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params)
-	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
+	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
 	boundsEvaluationMode = PSQ_CR_ParseBoundsEvaluationModeString(AFH_GetAnalysisParamTextual("BoundsEvaluationMode", s.params))
 
