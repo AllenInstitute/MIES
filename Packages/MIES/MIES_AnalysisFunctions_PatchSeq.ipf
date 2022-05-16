@@ -142,16 +142,8 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			s.pulseDuration        = PSQ_DS_PULSE_DUR
 			break
 		case PSQ_RHEOBASE:
-			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
-			s.pulseDuration        = NaN
-			break
 		case PSQ_RAMP:
-			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
-			s.pulseDuration        = NaN
-			break
-		case PSQ_CHIRP:
+		case PSQ_CHIRP: // fallthrough-by-design
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
@@ -162,12 +154,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			s.pulseDuration        = NaN
 			break
 		case PSQ_SEAL_EVALUATION:
-			s.prePulseChunkLength     = NaN
-			s.postPulseChunkLength    = NaN
-			s.pulseDuration           = NaN
-			s.usesBaselineChunkEpochs = 1
-			break
-		case PSQ_TRUE_REST_VM:
+		case PSQ_TRUE_REST_VM: // fallthrough-by-design
 			s.prePulseChunkLength     = NaN
 			s.postPulseChunkLength    = NaN
 			s.pulseDuration           = NaN
