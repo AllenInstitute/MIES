@@ -3923,7 +3923,7 @@ Function/S PSQ_Chirp_GetParams()
 	       "[NumberOfFailedSweeps:variable],"      + \
 	       "OuterRelativeBound:variable,"          + \
 	       "[SamplingFrequency:variable],"         + \
-	       "[SamplingMultiplier:variable],"        + \
+	       "SamplingMultiplier:variable,"          + \
 	       "[SpikeCheck:variable]"
 End
 
@@ -4004,7 +4004,7 @@ Function PSQ_Chirp(device, s)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
 	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params)
 	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
-	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params, defValue = PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
 	boundsEvaluationMode = PSQ_CR_ParseBoundsEvaluationModeString(AFH_GetAnalysisParamTextual("BoundsEvaluationMode", s.params))
 
 	switch(s.eventType)
@@ -4505,7 +4505,7 @@ Function/S PSQ_PipetteInBath_GetParams()
 	       "NumberOfFailedSweeps:variable,"      + \
 	       "NumberOfTestpulses:variable,"        + \
 	       "[SamplingFrequency:variable],"       + \
-	       "[SamplingMultiplier:variable]"
+	       "SamplingMultiplier:variable"
 End
 
 /// @brief Analysis function for determining the pipette resistance while that is located in the bath
@@ -4907,7 +4907,7 @@ Function/S PSQ_SealEvaluation_GetParams()
 	       "NextStimSetName:string,"             + \
 	       "NumberOfFailedSweeps:variable,"      + \
 	       "[SamplingFrequency:variable],"       + \
-	       "[SamplingMultiplier:variable],"      + \
+	       "SamplingMultiplier:variable,"        + \
 	       "SealThreshold:variable,"             + \
 	       "[TestPulseGroupSelector:string]"
 End
@@ -5408,7 +5408,7 @@ Function/S PSQ_TrueRestingMembranePotential_GetParams()
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "RelativeVoltageDiff:variable,"         + \
 	       "[SamplingFrequency:variable],"         + \
-	       "[SamplingMultiplier:variable],"        + \
+	       "SamplingMultiplier:variable,"          + \
 	       "SpikeFailureIgnoredTime:variable,"     + \
 	       "UserOffsetTargetVAutobias:variable"
 End
