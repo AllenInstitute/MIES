@@ -4496,15 +4496,15 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 End
 
 Function/S PSQ_PipetteInBath_GetParams()
-	return "BaselineRMSLongThreshold:variable,"  + \
-	       "BaselineRMSShortThreshold:variable," + \
-	       "MaxLeakCurrent:variable,"            + \
-	       "MaxPipetteResistance:variable,"      + \
-	       "MinPipetteResistance:variable,"      + \
-	       "NextStimSetName:string,"             + \
-	       "NumberOfFailedSweeps:variable,"      + \
-	       "NumberOfTestpulses:variable,"        + \
-	       "[SamplingFrequency:variable],"       + \
+	return "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "MaxLeakCurrent:variable,"              + \
+	       "MaxPipetteResistance:variable,"        + \
+	       "MinPipetteResistance:variable,"        + \
+	       "NextStimSetName:string,"               + \
+	       "NumberOfFailedSweeps:variable,"        + \
+	       "NumberOfTestpulses:variable,"          + \
+	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable"
 End
 
@@ -4901,14 +4901,14 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 End
 
 Function/S PSQ_SealEvaluation_GetParams()
-	return "BaselineChunkLength:variable,"       + \
-	       "BaselineRMSLongThreshold:variable,"  + \
-	       "BaselineRMSShortThreshold:variable," + \
-	       "NextStimSetName:string,"             + \
-	       "NumberOfFailedSweeps:variable,"      + \
-	       "[SamplingFrequency:variable],"       + \
-	       "SamplingMultiplier:variable,"        + \
-	       "SealThreshold:variable,"             + \
+	return "[BaselineChunkLength:variable],"       + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "NextStimSetName:string,"               + \
+	       "NumberOfFailedSweeps:variable,"        + \
+	       "[SamplingFrequency:variable],"         + \
+	       "SamplingMultiplier:variable,"          + \
+	       "SealThreshold:variable,"               + \
 	       "[TestPulseGroupSelector:string]"
 End
 
