@@ -176,7 +176,7 @@ static Function P_UpdateTPStorage(device, headStage)
 
 	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "PressureMethod")
 	new = TPStorage[count][headstage][%PressureMethod]
-	P_PublishPressureMethodChange(device, headstage, old, new)
+	PUB_PressureMethodChange(device, headstage, old, new)
 End
 
 /// @brief Return the last non-NaN entry from the wave's column `col` and layer `name`
@@ -209,39 +209,6 @@ static Function P_AddSealedEntryToTPStorage(string device, variable headstage)
 	TPStorage[count][headstage][%CellState] = TPSTORAGE_SEALED
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, ++count)
-End
-
-static Function P_PublishPressureMethodChange(string device, variable headstage, variable oldMethod, variable newMethod)
-	variable jsonID
-
-	if(EqualValuesOrBothNaN(oldMethod, newMethod))
-		return NaN
-	endif
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddTreeObject(jsonID, "pressure method")
-	JSON_AddString(jsonID, "pressure method/old", P_PressureMethodToString(oldMethod))
-	JSON_AddString(jsonID, "pressure method/new", P_PressureMethodToString(newMethod))
-
-	FFI_Publish(jsonID, PRESSURE_STATE_FILTER)
-End
-
-static Function P_PublishSealedState(string device, variable headstage)
-	variable jsonID
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddBoolean(jsonID, "/sealed", 1)
-
-	FFI_Publish(jsonID, PRESSURE_SEALED_FILTER)
-End
-
-static Function P_PublishBreakin(string device, variable headstage)
-	variable jsonID
-
-	jsonID = FFI_GetJSONTemplate(device, headstage)
-	JSON_AddBoolean(jsonID, "/break in", 1)
-
-	FFI_Publish(jsonID, PRESSURE_BREAKIN_FILTER)
 End
 
 /// @brief Sets the pressure to atmospheric
@@ -324,7 +291,7 @@ static Function P_MethodSeal(device, headStage)
 		// apply holding potential of SEAL_POTENTIAL
 		P_UpdateVcom(device, SEAL_POTENTIAL, headStage)
 		print "Seal on head stage:", headstage
-		P_PublishSealedState(device, headstage)
+		PUB_PressureSealedState(device, headstage)
 		P_AddSealedEntryToTPStorage(device, headstage)
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
@@ -413,7 +380,7 @@ static Function P_MethodBreakIn(device, headStage)
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", device
-		P_PublishBreakin(device, headstage)
+		PUB_PressureBreakin(device, headstage)
 	else // still need to break - in
 		PressureDataWv[headStage][%RealTimePressure] 		= 0
 
@@ -2628,7 +2595,7 @@ Function P_UpdatePressureType(device)
 	pressureType[] = P_ValidatePressureSetHeadstage(device, p) == 1 ? pressureType[p] : NaN
 End
 
-static Function/S P_PressureMethodToString(variable method)
+Function/S P_PressureMethodToString(variable method)
 
 	switch(method)
 		case PRESSURE_METHOD_ATM:

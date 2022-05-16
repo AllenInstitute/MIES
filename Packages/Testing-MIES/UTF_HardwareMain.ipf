@@ -19,7 +19,6 @@
 #include "UTF_Epochs"
 #include "UTF_HardwareTestsWithBUG"
 #include "UTF_HelperFunctions"
-#include "UTF_IVSCC"
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqSpikeControl"
@@ -112,7 +111,6 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
-	list = AddListItem("UTF_IVSCC.ipf", list)
 	list = AddListItem("UTF_AutoTestpulse.ipf", list)
 	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
 

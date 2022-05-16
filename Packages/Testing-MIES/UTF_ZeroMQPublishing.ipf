@@ -3,62 +3,80 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ZeroMQPublishingTests
 
+// #define OUTPUT_DOCUMENTATION_JSON_DUMP
+
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
 	AdditionalExperimentCleanup()
 
-	StartZeroMQSockets(forceRestart = 1)
-
-	zeromq_sub_add_filter("")
-	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
+	PrepareForPublishTest()
 End
 
-static Function TEST_CASE_END_OVERRIDE(string testname)
+static Function FetchAndParseMessage(string filter)
+	variable jsonID
+	string msg
 
-	StartZeroMQSockets(forceRestart = 1)
-	zeromq_sub_add_filter("")
+	msg = FetchPublishedMessage(filter)
+
+	CHECK_PROPER_STR(msg)
+
+	jsonID = JSON_Parse(msg)
+	CHECK_GE_VAR(jsonID, 0)
+
+#ifdef OUTPUT_DOCUMENTATION_JSON_DUMP
+	WAVE/T contents = ListToTextWave(JSON_Dump(jsonID, indent = 2), "\n")
+
+	contents[] = "///    " + contents[p]
+
+	print "/// Filter: #XXXX"
+	print "///"
+	print "/// Example:"
+	print "///"
+	print "/// \\rst"
+	print "/// .. code-block:: json"
+	print "///"
+	for(s : contents)
+		print s
+	endfor
+	print "///"
+	print "/// \\endrst"
+#endif
+
+	return jsonID
 End
 
-static Function CheckPressureStatePublishing()
-	string device, msg, expected, actual
+static Function CheckPressureState()
+	string device, expected, actual
 	variable headstage, i, jsonID
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishPressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
+	MIES_PUB#PUB_PressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
 
-	msg = FetchPublishedMessage(PRESSURE_STATE_FILTER)
+	jsonID = FetchAndParseMessage(PRESSURE_STATE_FILTER)
 
-	jsonID = JSON_Parse(msg)
-
-	expected = MIES_P#P_PressureMethodToString(PRESSURE_METHOD_ATM)
+	expected = P_PressureMethodToString(PRESSURE_METHOD_ATM)
 	actual   = JSON_GetString(jsonID, "/pressure method/old")
 	CHECK_EQUAL_STR(actual, expected)
 
-	expected = MIES_P#P_PressureMethodToString(PRESSURE_METHOD_APPROACH)
+	expected = P_PressureMethodToString(PRESSURE_METHOD_APPROACH)
 	actual   = JSON_GetString(jsonID, "/pressure method/new")
 	CHECK_EQUAL_STR(actual, expected)
 
 	JSON_Release(jsonID)
 End
 
-static Function CheckPressureSealPublishing()
-	string device, msg, expected, actual
+static Function CheckPressureSeal()
+	string device, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishSealedState(device, headstage)
+	MIES_PUB#PUB_PressureSealedState(device, headstage)
 
-	msg = FetchPublishedMessage(PRESSURE_SEALED_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(PRESSURE_SEALED_FILTER)
 
 	value = JSON_GetVariable(jsonID, "/sealed")
 	CHECK_EQUAL_VAR(value, 1)
@@ -66,20 +84,16 @@ static Function CheckPressureSealPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckClampModePublishing()
-	string device, msg, expected, actual
+static Function CheckClampMode()
+	string device, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
 
-	MIES_DAP#DAP_PublishClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
+	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
 
-	msg = FetchPublishedMessage(AMPLIFIER_CLAMP_MODE_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AMPLIFIER_CLAMP_MODE_FILTER)
 
 	expected = "I_CLAMP_MODE"
 	actual   = JSON_GetString(jsonID, "/clamp mode/old")
@@ -92,20 +106,16 @@ static Function CheckClampModePublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckAutoBridgeBalancePublishing()
-	string device, msg, expected, actual
+static Function CheckAutoBridgeBalance()
+	string device, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
 
-	MIES_AI#AI_PublishAutoBridgeBalance(device, headstage, 4711)
+	MIES_PUB#PUB_AutoBridgeBalance(device, headstage, 4711)
 
-	msg = FetchPublishedMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
 
 	expected = "Ohm"
 	actual   = JSON_GetString(jsonID, "/bridge balance resistance/unit")
@@ -117,20 +127,16 @@ static Function CheckAutoBridgeBalancePublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckPressureBreakinPublishing()
-	string device, msg
+static Function CheckPressureBreakin()
+	string device
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
 
-	MIES_P#P_PublishBreakin(device, headstage)
+	MIES_PUB#PUB_PressureBreakin(device, headstage)
 
-	msg = FetchPublishedMessage(PRESSURE_BREAKIN_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(PRESSURE_BREAKIN_FILTER)
 
 	value = JSON_GetVariable(jsonID, "/break in")
 	CHECK_EQUAL_VAR(value, 1)
@@ -138,11 +144,9 @@ static Function CheckPressureBreakinPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckAutoTPPublishing()
-	string device, msg, expected, actual
+static Function CheckAutoTP()
+	string device, expected, actual
 	variable headstage, i, jsonID, value
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -165,11 +169,9 @@ static Function CheckAutoTPPublishing()
 
 	// END required entries
 
-	MIES_TP#TP_PublishAutoTPResult(device, headstage, 1)
+	MIES_PUB#PUB_AutoTPResult(device, headstage, 1)
 
-	msg = FetchPublishedMessage(AUTO_TP_FILTER)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(AUTO_TP_FILTER)
 
 	expected = "%"
 	actual   = JSON_GetString(jsonID, "/results/baseline/unit")
@@ -202,11 +204,9 @@ static Function CheckAutoTPPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckPipetteInBathPublishing()
-	string device, msg, expected, actual
+static Function CheckPipetteInBath()
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -229,11 +229,9 @@ static Function CheckPipetteInBathPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_PB_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_PipetteInBath(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_PB)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_PB)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath Set QC/unit")
@@ -273,11 +271,9 @@ static Function CheckPipetteInBathPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckSealEvaluationPublishing()
-	string device, msg, expected, actual
+static Function CheckSealEvaluation()
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -297,11 +293,9 @@ static Function CheckSealEvaluationPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_SE_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_SealEvaluation(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_SE)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_SE)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_Seal evaluation Set QC/unit")
@@ -320,11 +314,9 @@ static Function CheckSealEvaluationPublishing()
 	JSON_Release(jsonID)
 End
 
-static Function CheckTrueRestMembPotPublishing()
-	string device, msg, expected, actual
+static Function CheckTrueRestMembPot()
+	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
-
-	WaitForPubSubHeartbeat()
 
 	device = "my_device"
 	headstage = 0
@@ -344,11 +336,9 @@ static Function CheckTrueRestMembPotPublishing()
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
 
-	MIES_PSQ#PSQ_VM_Publish(device, sweepNo, headstage)
+	MIES_PUB#PUB_TrueRestingMembranePotential(device, sweepNo, headstage)
 
-	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_VM)
-
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(ANALYSIS_FUNCTION_VM)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
 	actual   = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Set QC/unit")
@@ -365,4 +355,22 @@ static Function CheckTrueRestMembPotPublishing()
 	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
 
 	JSON_Release(jsonID)
+End
+
+static Function CheckIVSCC()
+	string expected, actual
+	variable jsonID
+
+	MIES_PUB#PUB_IVS_QCState(123, "some text")
+
+	jsonID = FetchAndParseMessage(IVS_PUB_FILTER)
+	expected = JSON_GetString(jsonID, "/Issuer")
+	actual   = "CheckIVSCC"
+	CHECK_EQUAL_STR(actual, expected)
+
+	expected = JSON_GetString(jsonID, "/Description")
+	actual   = "some text"
+	CHECK_EQUAL_STR(actual, expected)
+
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
 End

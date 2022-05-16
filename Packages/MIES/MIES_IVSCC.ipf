@@ -255,7 +255,7 @@ Function IVS_finishInitAccessQCCheck(s)
 	if(TP_TestPulseHasCycled(device, cycles))
 		print "Enough Cycles passed..."
 	else
-		IVS_PublishQCState(qcResult, "Too few TP cycles")
+		PUB_IVS_QCState(qcResult, "Too few TP cycles")
 		return 0
 	endif
 
@@ -270,13 +270,13 @@ Function IVS_finishInitAccessQCCheck(s)
 	// See if we pass the baseline QC
 	if ((instResistanceVal < 20.0) && (instResistanceVal < (0.15 * ssResistanceVal)))
 		qcResult = instResistanceVal
-		IVS_PublishQCState(qcResult, "Resistance check")
+		PUB_IVS_QCState(qcResult, "Resistance check")
 	endif
 
 	// and now run the EXTPBREAKN wave so that things are saved into the data record
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 
-	IVS_PublishQCState(qcResult, "Result before finishing")
+	PUB_IVS_QCState(qcResult, "Result before finishing")
 
 	// set the test pulse buffer back to 1
 	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = tpBufferSetting)
@@ -305,36 +305,6 @@ Function IVS_Load_StimSet(stim_filename)
 
 	print "Stimulus loading...." + stim_filename
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
-End
-
-/// @brief Push QC results onto ZeroMQ Publisher socket
-///
-/// Filter: #IVS_PUB_FILTER
-///
-/// Payload: JSON-encoded string with three elements in the top-level object
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///    {
-///      "Description": "some text",
-///      "Issuer": "My QC Function",
-///      "Value": 123
-///    }
-///
-/// \endrst
-static Function IVS_PublishQCState(variable result, string description)
-	variable jsonID
-
-	jsonID = JSON_New()
-	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "Issuer", GetRTStackInfo(2))
-	JSON_AddVariable(jsonID, "Value", result)
-	JSON_AddString(jsonID, "Description", description)
-
-	FFI_Publish(jsonID, IVS_PUB_FILTER)
 End
 
 Function IVS_ExportAllData(filePath)

@@ -209,6 +209,7 @@ End
 #include "MIES_Pictures"
 #include "MIES_PressureControl"
 #include "MIES_ProgrammaticGuiControl"
+#include "MIES_Publish"
 #include "MIES_PulseAveraging"
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"

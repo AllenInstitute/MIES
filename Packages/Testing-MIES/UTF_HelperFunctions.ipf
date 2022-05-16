@@ -65,7 +65,7 @@ Function AdditionalExperimentCleanup()
 	KillVariables bugCount
 End
 
-Function WaitForPubSubHeartbeat()
+static Function WaitForPubSubHeartbeat()
 	variable i, foundHeart
 	string msg, filter
 
@@ -81,6 +81,17 @@ Function WaitForPubSubHeartbeat()
 	endfor
 
 	FAIL()
+End
+
+Function PrepareForPublishTest()
+
+	StartZeroMQSockets(forceRestart = 1)
+	zeromq_sub_remove_filter("")
+
+	zeromq_sub_add_filter("")
+	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
+
+	WaitForPubSubHeartbeat()
 End
 
 static Function CheckMessageFilters_IGNORE(string filter)
