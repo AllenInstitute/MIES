@@ -1312,7 +1312,9 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 	endif
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	PUB_DAQStateChange(device, DATA_ACQUISITION_MODE, dataAcqRunMode, runMode)
 	dataAcqRunMode = runMode
+
 	hardwareType = GetHardwareType(device)
 	if(hardwareType == HARDWARE_NI_DAC)
 		HW_NI_ResetTaskIDs(device)
@@ -1398,6 +1400,7 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 	DAP_ResetGUIAfterDAQ(device)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	PUB_DAQStateChange(device, DATA_ACQUISITION_MODE, dataAcqRunMode, DAQ_NOT_RUNNING)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
 	// needs to be done before changing the acquisition state

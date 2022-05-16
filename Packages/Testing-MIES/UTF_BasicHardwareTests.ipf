@@ -339,6 +339,19 @@ static Function AllTests(t, devices)
 	endif
 End
 
+static Function CheckStartStopMessages(string mode, string state)
+	string msg, actual, expected
+	variable jsonID
+
+	msg = FetchPublishedMessage(DAQ_TP_STATE_CHANGE_FILTER)
+
+	jsonID = JSON_Parse(msg)
+	actual = JSON_GetString(jsonID, "/" + mode)
+	expected = state
+	CHECK_EQUAL_STR(actual, expected)
+	JSON_Release(jsonID)
+End
+
 Function Events_Common(t)
 	STRUCT TestSettings &t
 
@@ -377,6 +390,8 @@ End
 Function MD0_RA0_I0_L0_BKG_0([str])
 	string str
 
+	PrepareForPublishTest()
+
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, str, setAnalysisFuncs = 1)
@@ -402,6 +417,9 @@ Function MD0_RA0_I0_L0_BKG_0_REENTRY([str])
 	t.sweepCount_HS1[]       = 0
 	t.setCycleCount_HS1[]    = 0
 	t.stimsetCycleID_HS1[]   = 0
+
+	CheckStartStopMessages("daq", "starting")
+	CheckStartStopMessages("daq", "stopping")
 
 	AllTests(t, str)
 End
@@ -3579,6 +3597,8 @@ Function CheckThatTPsCanBeFound_IGNORE(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
+
+	PrepareForPublishTest()
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -3640,6 +3660,9 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 
 	FindDuplicates/DN=dups TPMarker
 	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+
+	CheckStartStopMessages("tp", "starting")
+	CheckStartStopMessages("tp", "stopping")
 End
 
 Function TPDuringDAQWithTTL_IGNORE(device)

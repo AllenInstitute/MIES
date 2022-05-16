@@ -1288,12 +1288,14 @@ Function TP_Setup(device, runMode, [fast])
 
 	TP_SetupCommon(device)
 
+	NVAR runModeGlobal = $GetTestpulseRunMode(device)
+
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(device, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(device, CONTROLS_DISABLE_DURING_DAQ_TP)
+		PUB_DAQStateChange(device, TEST_PULSE_MODE, runModeGlobal, runMode)
 	endif
 
-	NVAR runModeGlobal = $GetTestpulseRunMode(device)
 	runModeGlobal = runMode
 
 	DAP_AdaptAutoTPColorAndDependent(device)
@@ -1369,6 +1371,7 @@ Function TP_Teardown(device, [fast])
 
 	SCOPE_KillScopeWindowIfRequest(device)
 
+	PUB_DAQStateChange(device, TEST_PULSE_MODE, runMode, TEST_PULSE_NOT_RUNNING)
 	runMode = TEST_PULSE_NOT_RUNNING
 
 	DAP_AdaptAutoTPColorAndDependent(device)
