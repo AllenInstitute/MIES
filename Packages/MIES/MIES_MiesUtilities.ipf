@@ -29,6 +29,7 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
 static StrConstant PSQ_SE_LBN_PREFIX = "Seal evaluation"
 static StrConstant PSQ_VM_LBN_PREFIX = "True Rest Memb."
+static StrConstant PSQ_AR_LBN_PREFIX = "Access Res. Smoke"
 
 static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
 static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
@@ -7014,6 +7015,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return PSQ_SEAL_EVALUATION
 		case "PSQ_TrueRestingMembranePotential":
 			return PSQ_TRUE_REST_VM
+		case "PSQ_AccessResistanceSmoke":
+			return PSQ_ACC_RES_SMOKE
 		case "PSQ_Rheobase":
 			return PSQ_RHEOBASE
 		case "PSQ_SquarePulse":
@@ -7050,6 +7053,9 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 		case SC_SPIKE_CONTROL:
 			prefix = MSQ_SC_LBN_PREFIX
+			break
+		case PSQ_ACC_RES_SMOKE:
+			prefix = PSQ_AR_LBN_PREFIX
 			break
 		case PSQ_CHIRP:
 			prefix = PSQ_CR_LBN_PREFIX
@@ -7107,6 +7113,8 @@ Function GetAnalysisFunctionVersion(variable type)
 
 	switch(type)
 		// PSQ
+		case PSQ_ACC_RES_SMOKE:
+			return PSQ_ACC_RES_SMOKE_VERSION
 		case PSQ_CHIRP:
 			return PSQ_CHIRP_VERSION
 		case PSQ_DA_SCALE:

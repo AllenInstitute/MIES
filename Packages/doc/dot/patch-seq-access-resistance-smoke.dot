@@ -1,0 +1,150 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	n3	[label="Start DAQ/RA"];
+	n5	[label="Pre Sweep Config Event"];
+	n3 -> n5;
+	n6	[label="Pre DAQ Event"];
+	n3 -> n6;
+	n7	[label="Post Set Event"];
+	n3 -> n7;
+	n8	[label="Pre Set Event"];
+	n3 -> n8;
+	n9	[label="Post Sweep Event"];
+	n3 -> n9;
+	n10	[label="Post DAQ Event"];
+	n3 -> n10;
+	n51	[label="Mid Sweep Event"];
+	n3 -> n51;
+	n73	[label="Check that the length of epoch 0\n matches \"BaselineChunkLength\"\n analysis parameter"];
+	n5 -> n73;
+	n29	[label="Check that only one headstage is active"];
+	n6 -> n29;
+	n22	[label="Turn multi device support on"];
+	n6 -> n22;
+	n11	[label="Update dashboard"];
+	n7 -> n11;
+	n15	[label="Do we have PSQ_AR_NUM_SWEEPS_PASS\n passing  sweeps?"];
+	n7 -> n15;
+	n19	[label="Set analysis function version"];
+	n8 -> n19;
+	n55	[label="Check used sampling frequency\n and store result in labnotebook"];
+	n9 -> n55;
+	n49	[label="Read BL QC from labnotebook"];
+	n9 -> n49;
+	n57	[label="Enable SweepFormula"];
+	n9 -> n57;
+	n10 -> n11;
+	n48	[label="Read Set QC from labnotebook"];
+	n10 -> n48;
+	n54	[label="BL QC passed?"];
+	n51 -> n54;
+	n61	[label=Abort];
+	n73 -> n61	[label=Failure];
+	n74	[label="Check that we have enough epochs for\n \"NumberOfTestpulses\"  TPs"];
+	n73 -> n74;
+	n76	[label="Add baseline chunk selection user epoch\n for epoch 0"];
+	n73 -> n76;
+	n30	[label="Check that no TTL channels are active"];
+	n29 -> n30;
+	n29 -> n61	[label=Failure];
+	n23	[label="Turn repeated acquisition on"];
+	n22 -> n23;
+	n16	[label="Mark Set QC as failed"];
+	n15 -> n16	[label=No];
+	n17	[label="Mark Set QC as passed"];
+	n15 -> n17	[label=Yes];
+	n20	[label="Set sampling rate multiplier\n analysis parameter and check it"];
+	n19 -> n20;
+	n56	[label="Are all four QC labnotebook\n entries passing?"];
+	n55 -> n56;
+	n49 -> n56;
+	n58	[label="Set formula for getting the peak and access resistance\n of all TPs in the stimset"];
+	n57 -> n58;
+	n85	[label="Read optional \"NextStimsetName\" analysis parameter\n and set that as next stimulus set"];
+	n48 -> n85	[label=Passed];
+	n30 -> n61	[label=Failure];
+	n31	[label="Check that the active headstage\n is in voltage clamp"];
+	n30 -> n31;
+	n18	[label="Publish results via ZeroMQ"];
+	n16 -> n18;
+	n17 -> n18;
+	n47	[label="Iterate over all baseline QC\n selection user epochs"];
+	n72	[label="Check RMS short"];
+	n47 -> n72;
+	n78	[label="Check RMS long"];
+	n72 -> n78	[label=Passed];
+	n80	[label="Add BL chunk QC failed\n labnotebook entry"];
+	n72 -> n80	[label=Failed];
+	n59	[label="Mark Sweep QC as failed"];
+	n56 -> n59	[label=No];
+	n60	[label="Mark Sweep QC as passed"];
+	n56 -> n60	[label=Yes];
+	n24	[label="Turn off oodDAQ"];
+	n23 -> n24;
+	n25	[label="Turn off dDAQ"];
+	n24 -> n25;
+	n26	[label="Turn on inserted Testpulse"];
+	n25 -> n26;
+	n31 -> n61	[label=Failure];
+	n52	[label="Usual checks for early abort possibilities"];
+	n59 -> n52;
+	n53	[label="Jump to end of set"];
+	n60 -> n53;
+	n74 -> n61	[label=Failure];
+	n75	[label="Check amplitude of epochs for TPs\n baseline zero, pulse non-zero"];
+	n74 -> n75;
+	n77	[label="Create TP-like epochs"];
+	n75 -> n77;
+	n54 -> n47	[label=No];
+	n78 -> n80	[label=Failed];
+	n79	[label="Check maximum leak current"];
+	n78 -> n79	[label=Passed];
+	n82	[label="Add BL QC failed\n labnotebook entry"];
+	n80 -> n82;
+	n79 -> n80	[label=Failed];
+	n81	[label="Add BL chunk QC passed\n labnotebook entry"];
+	n79 -> n81	[label=Passed];
+	n83	[label="Add BL QC passed\n labnotebook entry"];
+	n81 -> n83;
+	n84	[label="Early sweep stop"];
+	n82 -> n84;
+	n86	[label="Read optional \"NextIndexingEndStimsetName\" analysis parameter\n and set that as indexing end stimulus set"];
+	n85 -> n86;
+	n62	[label="Run it"];
+	n58 -> n62;
+	n63	[label="Store both resistances\n in the labnotebook"];
+	n62 -> n63;
+	n64	[label="Is Access Resistance / Steady State Resistance\n smaller than the \"MaxAccessToSteadyStateResistanceRatio\"\n analysis parameter?"];
+	n63 -> n64;
+	n65	[label="Is the access resistance smaller\n than the \"MaxAccessResistance\" analysis parameter?"];
+	n63 -> n65;
+	n67	[label="Store result in labnotebook"];
+	n64 -> n67;
+	n66	[label="Store result in labnotebook"];
+	n65 -> n66;
+	n67 -> n56;
+	n66 -> n56;
+}
