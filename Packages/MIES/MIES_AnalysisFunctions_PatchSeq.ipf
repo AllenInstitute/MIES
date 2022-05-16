@@ -1098,6 +1098,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			break
 		case PSQ_SEAL_EVALUATION:
 			numChunks = 4
 			numLayers = 3
