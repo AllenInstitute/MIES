@@ -541,12 +541,12 @@ End
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
 Function/S MSQ_FastRheoEst_GetParams()
-	return "SamplingMultiplier:variable,"        + \
-		   "PostDAQDAScaleForFailedHS:variable," + \
-		   "PostDAQDAScaleMinOffset:variable,"   + \
-		   "PostDAQDAScale:variable,"            + \
-		   "PostDAQDAScaleFactor:variable,"      + \
-		   "MaximumDAScale:variable"
+	return "MaximumDAScale:variable,"            + \
+	       "PostDAQDAScale:variable,"            + \
+	       "PostDAQDAScaleFactor:variable,"      + \
+	       "PostDAQDAScaleForFailedHS:variable," + \
+	       "PostDAQDAScaleMinOffset:variable,"   + \
+	       "SamplingMultiplier:variable"
 End
 
 Function/S MSQ_FastRheoEst_GetHelp(name)

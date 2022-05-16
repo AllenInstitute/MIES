@@ -787,10 +787,17 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 End
 
 Function/S SC_SpikeControl_GetParams()
-	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable,"           \
-			+ "DAScaleSpikePositionOperator:string,DAScaleSpikePositionModifier:variable,MinimumSpikePosition:variable," \
-			+ "IdealNumberOfSpikesPerPulse:variable,AutoBiasBaselineModifier:variable,"                                  \
-			+ "DaScaleTooManySpikesOperator:string,DaScaleTooManySpikesModifier:variable"
+	return "AutoBiasBaselineModifier:variable,"     + \
+	       "DAScaleModifier:variable,"              + \
+	       "DAScaleOperator:string,"                + \
+	       "DAScaleSpikePositionModifier:variable," + \
+	       "DAScaleSpikePositionOperator:string,"   + \
+	       "DaScaleTooManySpikesModifier:variable," + \
+	       "DaScaleTooManySpikesOperator:string,"   + \
+	       "[FailedPulseLevel:variable],"           + \
+	       "IdealNumberOfSpikesPerPulse:variable,"  + \
+	       "[MaxTrials:variable],"                  + \
+	       "MinimumSpikePosition:variable"
 End
 
 Function/S SC_SpikeControl_GetHelp(name)

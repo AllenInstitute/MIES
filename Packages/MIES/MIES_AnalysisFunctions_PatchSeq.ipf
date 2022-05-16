@@ -1705,9 +1705,18 @@ End
 
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
-	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," +        \
-		   "[FinalSlopePercent:variable],[MinimumSpikeCount:variable],[MaximumSpikeCount:variable],[DAScaleModifier:variable]," + \
-		   "[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
+	return "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[DAScaleModifier:variable],"           + \
+	       "DAScales:wave,"                        + \
+	       "[FinalSlopePercent:variable],"         + \
+	       "[MaximumSpikeCount:variable],"         + \
+	       "[MinimumSpikeCount:variable],"         + \
+	       "[OffsetOperator:string],"              + \
+	       "OperationMode:string,"                 + \
+	       "[SamplingFrequency:variable],"         + \
+	       "SamplingMultiplier:variable,"          + \
+	       "[ShowPlot:variable]"
 End
 
 Function/S PSQ_DAScale_GetHelp(string name)
@@ -2300,7 +2309,10 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
-	return "SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
+	return "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[SamplingFrequency:variable],"         + \
+	       "SamplingMultiplier:variable"
 End
 
 Function/S PSQ_SquarePulse_GetHelp(string name)
@@ -2544,7 +2556,10 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
-	return "SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
+	return "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[SamplingFrequency:variable],"         + \
+	       "SamplingMultiplier:variable"
 End
 
 Function/S PSQ_Rheobase_GetHelp(string name)
@@ -2957,7 +2972,11 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
-	return "NumberOfSpikes:variable,SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
+	return "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "NumberOfSpikes:variable,"              + \
+	       "[SamplingFrequency:variable],"         + \
+	       "SamplingMultiplier:variable"
 End
 
 Function/S PSQ_Ramp_GetHelp(string name)
@@ -3891,12 +3910,21 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "InnerRelativeBound:variable,OuterRelativeBound:variable," +                            \
-		   "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +         \
-		   "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]," + \
-		   "[SamplingMultiplier:variable],[SamplingFrequency:variable]," +                          \
-		   "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]," +            \
-		   "BoundsEvaluationMode:string,[AutobiasTargetV:variable],[AutobiasTargetVAtSetEnd:variable]"
+	return "[AutobiasTargetV:variable],"           + \
+	       "[AutobiasTargetVAtSetEnd:variable],"   + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "BoundsEvaluationMode:string,"          + \
+	       "[DAScaleModifier:variable],"           + \
+	       "[DAScaleOperator:string],"             + \
+	       "[FailedLevel:variable],"               + \
+	       "InnerRelativeBound:variable,"          + \
+	       "[NumberOfChirpCycles:variable],"       + \
+	       "[NumberOfFailedSweeps:variable],"      + \
+	       "OuterRelativeBound:variable,"          + \
+	       "[SamplingFrequency:variable],"         + \
+	       "[SamplingMultiplier:variable],"        + \
+	       "[SpikeCheck:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -4468,9 +4496,16 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 End
 
 Function/S PSQ_PipetteInBath_GetParams()
-	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +                         \
-	       "BaselineRMSLongThreshold:variable,MaxLeakCurrent:variable,MinPipetteResistance:variable,MaxPipetteResistance:variable," + \
-	       "NumberOfFailedSweeps:variable,NextStimSetName:string,NumberOfTestpulses:variable"
+	return "BaselineRMSLongThreshold:variable,"  + \
+	       "BaselineRMSShortThreshold:variable," + \
+	       "MaxLeakCurrent:variable,"            + \
+	       "MaxPipetteResistance:variable,"      + \
+	       "MinPipetteResistance:variable,"      + \
+	       "NextStimSetName:string,"             + \
+	       "NumberOfFailedSweeps:variable,"      + \
+	       "NumberOfTestpulses:variable,"        + \
+	       "[SamplingFrequency:variable],"       + \
+	       "[SamplingMultiplier:variable]"
 End
 
 /// @brief Analysis function for determining the pipette resistance while that is located in the bath
@@ -4866,9 +4901,15 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 End
 
 Function/S PSQ_SealEvaluation_GetParams()
-	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +                 \
-		   "BaselineRMSLongThreshold:variable,SealThreshold:variable,NumberOfFailedSweeps:variable,NextStimSetName:string," + \
-		   "BaselineChunkLength:variable,[TestPulseGroupSelector:string]"
+	return "BaselineChunkLength:variable,"       + \
+	       "BaselineRMSLongThreshold:variable,"  + \
+	       "BaselineRMSShortThreshold:variable," + \
+	       "NextStimSetName:string,"             + \
+	       "NumberOfFailedSweeps:variable,"      + \
+	       "[SamplingFrequency:variable],"       + \
+	       "[SamplingMultiplier:variable],"      + \
+	       "SealThreshold:variable,"             + \
+	       "[TestPulseGroupSelector:string]"
 End
 
 /// @brief Analysis function for checking the seal resistance
@@ -5356,15 +5397,20 @@ Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 End
 
 Function/S PSQ_TrueRestingMembranePotential_GetParams()
-	return "AbsoluteVoltageDiff:variable,RelativeVoltageDiff:variable,"                + \
-	       "NumberOfFailedSweeps:variable,"                                            + \
-	       "BaselineChunkLength:variable,"                                             + \
-	       "UserOffsetTargetVAutobias:variable,"                                       + \
-	       "FailedLevel:variable,SpikeFailureIgnoredTime:variable,"                    + \
-	       "[NextStimSetName:string],[NextIndexingEndStimSetName:string],"             + \
-	       "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]," + \
-	       "[SamplingFrequency:variable],[SamplingMultiplier:variable],"               + \
-	       "[InterTrialInterval:variable]"
+	return "AbsoluteVoltageDiff:variable,"         + \
+	       "BaselineChunkLength:variable,"         + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
+	       "[BaselineRMSShortThreshold:variable]," + \
+	       "FailedLevel:variable,"                 + \
+	       "[InterTrialInterval:variable],"        + \
+	       "[NextIndexingEndStimSetName:string],"  + \
+	       "[NextStimSetName:string],"             + \
+	       "NumberOfFailedSweeps:variable,"        + \
+	       "RelativeVoltageDiff:variable,"         + \
+	       "[SamplingFrequency:variable],"         + \
+	       "[SamplingMultiplier:variable],"        + \
+	       "SpikeFailureIgnoredTime:variable,"     + \
+	       "UserOffsetTargetVAutobias:variable"
 End
 
 /// @brief Analysis function for determining the mean potential of a stimset
