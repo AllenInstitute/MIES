@@ -4501,7 +4501,7 @@ Function/S PSQ_PipetteInBath_GetParams()
 	       "MaxLeakCurrent:variable,"              + \
 	       "MaxPipetteResistance:variable,"        + \
 	       "MinPipetteResistance:variable,"        + \
-	       "NextStimSetName:string,"               + \
+	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "NumberOfTestpulses:variable,"          + \
 	       "[SamplingFrequency:variable],"         + \
@@ -4904,7 +4904,7 @@ Function/S PSQ_SealEvaluation_GetParams()
 	return "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
-	       "NextStimSetName:string,"               + \
+	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable,"          + \
