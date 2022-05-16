@@ -1697,6 +1697,7 @@ StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
 StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
 StrConstant ANALYSIS_FUNCTION_SE          = "analysis function:seal evaluation"
 StrConstant ANALYSIS_FUNCTION_VM          = "analysis function:true resting membrane potential"
+StrConstant DAQ_TP_STATE_CHANGE_FILTER    = "data acquisition:state change"
 /// @}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.

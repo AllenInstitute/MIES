@@ -374,3 +374,45 @@ static Function CheckIVSCC()
 
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
 End
+
+static Function CheckDAQStateChange_DAQ()
+	string device, actual, expected
+	variable headstage, i, jsonID, type
+
+	device = "my_device"
+	headstage = 0
+
+	MIES_PUB#PUB_DAQStateChange(device, DATA_ACQUISITION_MODE, 0, 1)
+
+	jsonID = FetchAndParseMessage(DAQ_TP_STATE_CHANGE_FILTER)
+
+	actual = JSON_GetString(jsonID, "/daq")
+	expected = "starting"
+	CHECK_EQUAL_STR(actual, expected)
+
+	type = JSON_GetType(jsonID, "/tp")
+	CHECK_EQUAL_VAR(type, JSON_NULL)
+
+	JSON_Release(jsonID)
+End
+
+static Function CheckDAQStateChange_TP()
+	string device, actual, expected
+	variable headstage, i, jsonID, type
+
+	device = "my_device"
+	headstage = 0
+
+	MIES_PUB#PUB_DAQStateChange(device, TEST_PULSE_MODE, 1, 0)
+
+	jsonID = FetchAndParseMessage(DAQ_TP_STATE_CHANGE_FILTER)
+
+	actual = JSON_GetString(jsonID, "/tp")
+	expected = "stopping"
+	CHECK_EQUAL_STR(actual, expected)
+
+	type = JSON_GetType(jsonID, "/daq")
+	CHECK_EQUAL_VAR(type, JSON_NULL)
+
+	JSON_Release(jsonID)
+End

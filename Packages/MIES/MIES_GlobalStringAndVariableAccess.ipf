@@ -356,7 +356,7 @@ End
 Function/S GetTestpulseRunMode(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue=NaN)
+	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue=TEST_PULSE_NOT_RUNNING)
 End
 
 /// @brief Returns NI device list

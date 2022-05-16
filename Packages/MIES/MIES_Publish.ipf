@@ -514,3 +514,78 @@ Function PUB_AutoTPResult(string device, variable headstage, variable result)
 
 	PUB_Publish(jsonID, AUTO_TP_FILTER)
 End
+
+/// Filter: #DAQ_TP_STATE_CHANGE_FILTER
+///
+/// DAQ:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "daq": "starting",
+///      "device": "my_device",
+///      "headstage": "NaN",
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-16T17:12:24Z",
+///      "tp": null
+///    }
+///
+/// \endrst
+///
+/// TP:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "daq": null,
+///      "device": "my_device",
+///      "headstage": "NaN",
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-16T17:12:29Z",
+///      "tp": "stopping"
+///    }
+///
+/// \endrst
+///
+/// The strings for `daq`/`tp` are either `starting` or `stopping`.
+Function PUB_DAQStateChange(string device, variable mode, variable oldState, variable newState)
+	variable jsonID
+	string name, name_null
+
+	ASSERT(oldState != newState, "Unexpected old/new state combination")
+	ASSERT(IsFinite(oldState) && IsFinite(newState), "Both oldState and newState must be finite")
+
+	// here we also force the states to 0/1
+	// as we are only interested in the on/off state
+
+	switch(mode)
+		case DATA_ACQUISITION_MODE:
+			name = "daq"
+			name_null = "tp"
+			oldState = !(oldState == DAQ_NOT_RUNNING)
+			newState = !(newState == DAQ_NOT_RUNNING)
+			break
+		case TEST_PULSE_MODE:
+			name = "tp"
+			name_null = "daq"
+			oldState = !(oldState == TEST_PULSE_NOT_RUNNING)
+			newState = !(newState == TEST_PULSE_NOT_RUNNING)
+			break
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
+
+	jsonID = PUB_GetJSONTemplate(device, NaN)
+
+	if(oldState == 0 && newState == 1)
+		JSON_AddString(jsonID, name, "starting")
+	else
+		JSON_AddString(jsonID, name, "stopping")
+	endif
+
+	JSON_AddNull(jsonID, name_null)
+
+	PUB_Publish(jsonID, DAQ_TP_STATE_CHANGE_FILTER)
+End
