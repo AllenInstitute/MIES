@@ -1335,7 +1335,7 @@ End
 ///
 /// @return a selectData style wave with three columns
 ///         containing sweepNumber, channelType and channelNumber
-static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE channels, WAVE sweeps, variable fromDisplayed)
+static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z channels, WAVE/Z sweeps, variable fromDisplayed)
 
 	variable i, j, k, l, channelType, channelNumber, sweepNo, sweepNoT, outIndex
 	variable numSweeps, numInChannels, numSettings, maxChannels, activeChannel, numActiveChannels
@@ -1345,7 +1345,11 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE chan
 	variable numTraces
 	string setting, settingList, msg, device, dataFolder, singleSweepDFStr
 
-	if(!DimSize(sweeps, ROWS) || !DimSize(channels, ROWS))
+	if(!WaveExists(sweeps) || !DimSize(sweeps, ROWS))
+		return $""
+	endif
+
+	if(!WaveExists(channels) || !DimSize(channels, ROWS))
 		return $""
 	endif
 
@@ -2660,18 +2664,23 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numIndices)
-		WAVE channels = SF_ExecuteFormula("channels()", graph)
-		WAVE sweeps = SF_ExecuteFormula("sweeps()", graph)
+		WAVE/WAVE channelsRef = SF_ExecuteFormula("channels()", graph)
+		WAVE channels = channelsRef[0]
+		WAVE/WAVE sweepsRef = SF_ExecuteFormula("sweeps()", graph)
+		WAVE/Z sweeps = sweepsRef[0]
 	else
 		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
-		WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 0)
+		WAVE channels = arg[0]
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-		WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 1)
+		WAVE sweeps = arg[0]
 		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
 		if(numIndices == 3)
-			WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 2)
+			WAVE/T wMode = arg[0]
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
@@ -2679,12 +2688,16 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		endif
 	endif
 
-	WAVE/Z out = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"))
-	if(!WaveExists(out))
+	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"))
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_SELECT, 1)
+	output[0] = selectData
+
+	if(!WaveExists(selectData))
 		DebugPrint("Call to SF_GetSweepNumbersForSelect returned no results")
-		WAVE out = SF_GetDefaultEmptyWave()
 	endif
 
+	WAVE out = SF_GetOutputForExecutor(output)
 	return out
 End
 
