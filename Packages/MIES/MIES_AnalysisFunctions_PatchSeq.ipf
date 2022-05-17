@@ -5563,15 +5563,9 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 
 	[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_TRUE_REST_VM, s)
 
-	midsweepReturnValue = PSQ_EvaluateBaselinePassed(device, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage, chunk, ret)
+	PSQ_EvaluateBaselinePassed(device, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage, chunk, ret)
 
-	WAVE baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
-	if(baselineQCPassedLBN[s.headstage])
-		return NaN
-	endif
-
-	return midsweepReturnValue
+	return NaN
 End
 
 static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
