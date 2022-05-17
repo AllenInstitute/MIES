@@ -2007,11 +2007,19 @@ threadsafe Function KillOrMoveToTrash([wv, dfr])
 	DFREF dfr
 
 	if(!ParamIsDefault(wv) && WaveExists(wv))
-		KillOrMoveToTrashPath(GetWavesDataFolder(wv, 2))
+		if(IsFreeWave(wv))
+			KillWaves wv
+		else
+			KillOrMoveToTrashPath(GetWavesDataFolder(wv, 2))
+		endif
 	endif
 
 	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
-		KillOrMoveToTrashPath(GetDataFolder(1, dfr))
+		if(IsGlobalDataFolder(dfr))
+			KillOrMoveToTrashPath(GetDataFolder(1, dfr))
+		else
+			KillDataFolder dfr
+		endif
 	endif
 End
 
