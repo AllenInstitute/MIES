@@ -1592,7 +1592,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
 		case "BaselineChunkLength":
-			return "Length of a baseline QC chunk to evaluate"
+			return "Length of a baseline QC chunk to evaluate (defaults to " + num2str(PSQ_BL_EVAL_RANGE) + ")"
 		case "BaselineRMSLongThreshold":
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
@@ -5256,7 +5256,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE ) * MILLI_TO_ONE
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
@@ -5398,7 +5398,7 @@ End
 
 Function/S PSQ_TrueRestingMembranePotential_GetParams()
 	return "AbsoluteVoltageDiff:variable,"         + \
-	       "BaselineChunkLength:variable,"         + \
+	       "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "FailedLevel:variable,"                 + \
@@ -5667,7 +5667,7 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
-	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be present and finite")
+	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be finite")
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
