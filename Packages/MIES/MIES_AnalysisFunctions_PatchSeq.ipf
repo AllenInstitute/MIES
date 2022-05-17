@@ -5786,20 +5786,20 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG)
 	ED_AddEntryToLabnotebook(device, key, averageLBN, unit = "Volt", overrideSweepNo = sweepNo)
 
-	WAVE averageDiffLBN = LBN_GetNumericWave()
-	averageDiffLBN[INDEP_HEADSTAGE] = absoluteDiff
+	WAVE absoluteDiffLBN = LBN_GetNumericWave()
+	absoluteDiffLBN[INDEP_HEADSTAGE] = absoluteDiff
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF)
-	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, unit = "Volt", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, key, absoluteDiffLBN, unit = "Volt", overrideSweepNo = sweepNo)
 
 	WAVE averageAbsoluteQCPassedLBN = LBN_GetNumericWave()
 	averageAbsoluteQCPassedLBN[INDEP_HEADSTAGE] = averageAbsoluteQCPassed
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS)
 	ED_AddEntryToLabnotebook(device, key, averageAbsoluteQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
-	WAVE averageDiffLBN = LBN_GetNumericWave()
-	averageDiffLBN[INDEP_HEADSTAGE] = relativeDiff
+	WAVE relativeDiffLBN = LBN_GetNumericWave()
+	relativeDiffLBN[INDEP_HEADSTAGE] = relativeDiff
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF)
-	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, key, relativeDiffLBN, overrideSweepNo = sweepNo)
 
 	WAVE averageRelativeQCPassedLBN = LBN_GetNumericWave()
 	averageRelativeQCPassedLBN[INDEP_HEADSTAGE] = averageRelativeQCPassed
