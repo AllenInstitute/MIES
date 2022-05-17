@@ -2320,19 +2320,26 @@ End
 /// range (start[, stop[, step]])
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_RANGE)
+	WAVE/Z wv = input[0]
+	SF_ASSERT(WaveExists(wv), "Expected data input for range()")
 	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 	SF_ASSERT(DimSize(wv, COLS) <= 1, "Unhandled dimension")
 	if(DimSize(wv, ROWS) == 3)
-		Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE out = wv[0] + p * wv[2]
+		Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE range = wv[0] + p * wv[2]
 	elseif(DimSize(wv, ROWS) == 2)
-		Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE out = wv[0] + p
+		Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE range = wv[0] + p
 	elseif(DimSize(wv, ROWS) == 1)
-		Make/N=(abs(trunc(wv[0])))/FREE out = p
+		Make/N=(abs(trunc(wv[0])))/FREE range = p
 	else
 		SF_ASSERT(0, "Operation accepts 2-3 operands")
 	endif
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_RANGE, 1)
+	output[0] = range
+
+	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_RANGE, clearInput=input)
 	return out
 End
 
