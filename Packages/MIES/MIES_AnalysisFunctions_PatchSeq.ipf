@@ -5379,7 +5379,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. TODO image:: /dot/patch-seq-true-resting.svg
+///	.. image:: /dot/patch-seq-true-resting.svg
 /// \endrst
 ///
 /// @verbatim
