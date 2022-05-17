@@ -1,0 +1,185 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	n1	[label="Stadrt DAQ/RA"];
+	n2	[label="Pre DAQ Event"];
+	n1 -> n2;
+	n3	[label="Pre Set Event"];
+	n1 -> n3;
+	n4	[label="Pre Sweep\n Config Event"];
+	n1 -> n4;
+	n5	[label="Post Set Event"];
+	n1 -> n5;
+	n6	[label="Post DAQ Event"];
+	n1 -> n6;
+	n38	[label="Mid Sweep Event"];
+	n1 -> n38;
+	n47	[label="Post Sweep Event"];
+	n1 -> n47;
+	n7	[label="Enable Indexing"];
+	n2 -> n7;
+	n15	[label="Set analysis function version"];
+	n3 -> n15;
+	n21	[label="Check that we have three\n wavebuilder epochs"];
+	n4 -> n21;
+	n26	[label="Do we have PSQ_VM_NUM_SWEEPS_PASS passing sweeps?"];
+	n5 -> n26;
+	n29	[label="Publish ZeroMQ message"];
+	n5 -> n29;
+	n31	[label="Enable Get/Set ITI"];
+	n5 -> n31;
+	n32	[label="Update dashboard"];
+	n5 -> n32;
+	n6 -> n32;
+	n34	[label="Read Set QC\n from labnotebook"];
+	n6 -> n34;
+	n8	[label="Disable oodDAQ/dDAQ"];
+	n7 -> n8;
+	n9	[label="Enable repeated acquisition"];
+	n8 -> n9;
+	n10	[label="Enable \"Inserted TP\""];
+	n9 -> n10;
+	n11	[label="Check that we have only one active headstage"];
+	n10 -> n11;
+	n12	[label="Check that we don't have TTL channels"];
+	n11 -> n12;
+	n14	[label=Abort];
+	n11 -> n14	[label=Failed];
+	n13	[label="Check that the active headstage is in IC"];
+	n12 -> n13;
+	n12 -> n14	[label=Failed];
+	n13 -> n14	[label=Failed];
+	n16	[label="Set sampling multiplier from analysis parameter"];
+	n15 -> n16;
+	n17	[label="Disable Autobias "];
+	n16 -> n17;
+	n18	[label="Disable Holding potential"];
+	n17 -> n18;
+	n19	[label="Enable capacitance compensation"];
+	n18 -> n19;
+	n20	[label="Enable bridge balance"];
+	n19 -> n20;
+	n30	[label="Enable Get/Set ITI"];
+	n20 -> n30;
+	n21 -> n14	[label=Failed];
+	n23	[label="Check that epoch 0 and 2\n are at least \"BaselineChunkLength\" long?"];
+	n21 -> n23;
+	n23 -> n14	[label=Failed];
+	n25	[label="Add baseline selection epochs\n for epoch 0 and 2"];
+	n23 -> n25;
+	n27	[label="Add Set QC failed to labnotebook"];
+	n26 -> n27	[label=No];
+	n28	[label="Add Set QC passed to labnotebook"];
+	n26 -> n28	[label=Yes];
+	n33	[label="Set autobias target V\n to full average voltage\ from labnotebook"];
+	n28 -> n33;
+	n37	[label="Turn Autobias on"];
+	n33 -> n37;
+	n35	[label="Read optional \"NextStimsetName\" analysis parameter\n and set that as next stimulus set"];
+	n34 -> n35	[label="Passed?"];
+	n36	[label="Read \"NextIndexingEndStimsetName\" analysis parameter\n and set that as indexing end stimulus set.\n Enable Indexing if present."];
+	n35 -> n36;
+	n39	[label="Has BL QC passed?"];
+	n38 -> n39;
+	n40	[label="Do we have acquired the first\n baseline chunk selection epoch?"];
+	n39 -> n40	[label=No];
+	n41	[label="Check RMS short"];
+	n40 -> n41	[label=Yes];
+	n42	[label="Check RMS long"];
+	n41 -> n42	[label=Passed];
+	n43	[label="Add baseline chunk QC\n failed to labnotebook"];
+	n41 -> n43	[label=Failed];
+	n42 -> n43	[label=Failed];
+	n44	[label="Add baseline chunk QC\n passed to labnotebook"];
+	n42 -> n44	[label=Passed];
+	n45	[label="Add baseline QC\n failed to labnotebook"];
+	n43 -> n45;
+	n46	[label="Add baseline QC\n passed to labnotebook"];
+	n44 -> n46;
+	n48	[label="Read baseline QC\n from labnotebook"];
+	n47 -> n48;
+	n50	[label="Check sampling frequency\n and store in labnotebook"];
+	n47 -> n50;
+	n53	[label="Search for spikes in the stimset\n using the \"FailedLevel\" analysis parameter"];
+	n47 -> n53;
+	n49	[label="All four QC values are passing?"];
+	n48 -> n49	[label=All];
+	n69	[label="Enable SweepFormula"];
+	n48 -> n69	[label=Passed];
+	n74	[label="Store NaN as average voltages\n in labnotebook"];
+	n48 -> n74	[label=Failed];
+	n65	[label="Add sweep QC passed\nto labnotebook"];
+	n49 -> n65	[label=Yes];
+	n66	[label="Add sweep QC failed\nto labnotebook"];
+	n49 -> n66	[label=No];
+	n50 -> n49;
+	n57	[label="Store spike positions\n in labnotebook"];
+	n53 -> n57;
+	n54	[label="Do we have any spikes?"];
+	n55	[label="Add spike QC passed\n to labnotebook"];
+	n54 -> n55	[label=No];
+	n56	[label="Add spike QC failed\n to labnotebook"];
+	n54 -> n56	[label=Yes];
+	n58	[label="Enable Get/Set ITI"];
+	n55 -> n58;
+	n80	[label="Read spike QC\n from labnotebook"];
+	n55 -> n80;
+	n59	[label="Average the acquired AD data\n of the stimset ignoring\n \"SpikeFailureIgnoredTime\" around each found spike"];
+	n56 -> n59;
+	n56 -> n80;
+	n57 -> n54;
+	n60	[label="Add \"UserOffsetTargetVAutobias\" onto the average"];
+	n59 -> n60;
+	n61	[label="Set that value as autobias target V"];
+	n60 -> n61;
+	n62	[label="Turn Autobias on"];
+	n61 -> n62;
+	n63	[label="Set ITI to 10s"];
+	n62 -> n63;
+	n64	[label="Disable Get/Set ITI"];
+	n63 -> n64;
+	n68	[label="Jump to the end\n of the stimulus set"];
+	n65 -> n68;
+	n67	[label="Perform common checks\n if an early abort is required."];
+	n66 -> n67;
+	n70	[label="Execute formula for calculating\n the average voltage\n of epoch 0 and 2"];
+	n69 -> n70;
+	n71	[label="Store average voltages\n in labnotebook"];
+	n70 -> n71;
+	n75	[label="Calculate the average and relative difference\n of both  average voltages"];
+	n71 -> n75;
+	n74 -> n75;
+	n76	[label="Store in labnotebook"];
+	n75 -> n76;
+	n77	[label="Is the absolute voltage difference\n smaller than \"AbsoluteVoltageDiff\".\n Store QC result in labnotebook."];
+	n76 -> n77;
+	n78	[label="Is the relative voltage difference\n smaller than \"RelativeVoltageDiff\".\n Store QC result in labnotebook."];
+	n76 -> n78;
+	n79	[label="Store average QC result\n and'ing both intermediate QC results"];
+	n77 -> n79;
+	n78 -> n79;
+	n79 -> n49;
+	n80 -> n49;
+}
