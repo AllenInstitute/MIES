@@ -3307,12 +3307,17 @@ End
 
 static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort[, variable argNum])
 
+	string opSpec, argStr
+
 	if(ParamIsDefault(argNum))
 		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+		opSpec = "_argTop"
 	else
-		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(argNum), graph = graph)
+		argStr = num2istr(argNum)
+		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + argStr, graph = graph)
+		opSpec = "_arg" + argStr
 	endif
-	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort)
+	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + opSpec)
 
 	return input
 End
