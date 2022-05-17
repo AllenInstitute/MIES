@@ -166,6 +166,7 @@ static Function PS_CR1_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // BBAA but with zero value which results in PSQ_CR_RERUN
@@ -226,6 +227,7 @@ static Function PS_CR2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -286,6 +288,7 @@ static Function PS_CR2a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -346,6 +349,7 @@ static Function PS_CR2b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -406,6 +410,7 @@ static Function PS_CR3_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -468,6 +473,7 @@ static Function PS_CR4_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -558,6 +564,7 @@ static Function PS_CR4a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -648,6 +655,7 @@ static Function PS_CR4b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -738,6 +746,7 @@ static Function PS_CR5_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -829,6 +838,7 @@ static Function PS_CR6_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -920,6 +930,7 @@ static Function PS_CR7_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1007,6 +1018,7 @@ static Function PS_CR8_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1094,6 +1106,7 @@ static Function PS_CR9_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1186,6 +1199,7 @@ static Function PS_CR9a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1278,6 +1292,7 @@ static Function PS_CR9b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1370,6 +1385,7 @@ static Function PS_CR10_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
@@ -1462,6 +1478,7 @@ static Function PS_CR11_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1530,6 +1547,7 @@ static Function PS_CR12_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1596,6 +1614,7 @@ static Function PS_CR13_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
@@ -1672,6 +1691,7 @@ static Function PS_CR14_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var=10)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 End
 
 // Same as PS_CR1 but with failing sampling interval check
@@ -1734,6 +1754,7 @@ static Function PS_CR15_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
 End

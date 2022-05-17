@@ -625,9 +625,9 @@ Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
 			return NaN
-		else
-			return defValue
 		endif
+
+		return defValue
 	endif
 
 	contents = AFH_GetAnalysisParameter(name, params, expectedType = "variable")
@@ -661,9 +661,9 @@ Function/S AFH_GetAnalysisParamTextual(name, params, [defValue, percentDecoded])
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
 			return ""
-		else
-			return defValue
 		endif
+
+		return defValue
 	endif
 
 	contents = AFH_GetAnalysisParameter(name, params, expectedType = "string")
@@ -696,9 +696,9 @@ Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
 			return $""
-		else
-			return defValue
 		endif
+
+		return defValue
 	endif
 
 	contents = AFH_GetAnalysisParameter(name, params, expectedType = "wave")
@@ -735,9 +735,9 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecod
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
 			return $""
-		else
-			return defValue
 		endif
+
+		return defValue
 	endif
 
 	contents = AFH_GetAnalysisParameter(name, params, expectedType = "textwave")
