@@ -5756,15 +5756,9 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_AVERAGEV, chunk = 1)
 	ED_AddEntryToLabnotebook(device, key, voltageChunk1LBN, unit = "V", overrideSweepNo = sweepNo)
 
-	if(WaveExists(voltageChunk0LBN) && WaveExists(voltageChunk1LBN))
-		voltage      = (voltageChunk0LBN[headstage] + voltageChunk1LBN[headstage]) / 2
-		absoluteDiff = voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]
-		relativeDiff = (voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]) / voltageChunk0LBN[headstage]
-	else
-		voltage      = NaN
-		absoluteDiff = NaN
-		relativeDiff = NaN
-	endif
+	voltage      = (voltageChunk0LBN[headstage] + voltageChunk1LBN[headstage]) / 2
+	absoluteDiff = voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]
+	relativeDiff = (voltageChunk0LBN[headstage] - voltageChunk1LBN[headstage]) / voltageChunk0LBN[headstage]
 
 	absoluteDiffAllowed = AFH_GetAnalysisParamNumerical("AbsoluteVoltageDiff", params) * MILLI_TO_ONE
 	relativeDiffAllowed = AFH_GetAnalysisParamNumerical("RelativeVoltageDiff", params) * PERCENT_TO_ONE
