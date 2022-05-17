@@ -821,6 +821,66 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 	return out
 End
 
+static Function [WAVE/WAVE formulaResults_, WAVE/T dataTypes] SF_GatherFormulaResults(WAVE/T formulaPairs, string graph)
+
+	variable i, j, index, numResultsY, numResultsX, numFormulaPairs, xRefIndex
+	string xFormula, yFormula, dataType
+
+	Make/FREE/WAVE/N=(0, 2) formulaResults
+	SetDimLabel COLS, 0, FORMULAX, formulaResults
+	SetDimLabel COLS, 1, FORMULAY, formulaResults
+	Make/FREE/T/N=(0, 2) dataTypes
+
+	numFormulaPairs = DimSize(formulaPairs, ROWS)
+	for(i = 0; i < numFormulaPairs; i += 1)
+		xFormula = formulaPairs[i][%FORMULA_X]
+		yFormula = formulaPairs[i][%FORMULA_Y]
+		WAVE/WAVE/Z wvXRef = $""
+		if(!IsEmpty(xFormula))
+			WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph)
+			SF_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
+		endif
+		WAVE/WAVE wvYRef = SF_ExecuteFormula(yFormula, graph)
+		SF_ASSERT(WaveExists(wvYRef), "y part of formula returned no result.")
+		numResultsY = DimSize(wvYRef, ROWS)
+		if(WaveExists(wvXRef))
+			numResultsX = DimSize(wvXRef, ROWS)
+			SF_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
+		endif
+		EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
+		EnsureLargeEnoughWave(dataTypes, minimumSize=index + numResultsY)
+		dataType = GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+		for(j = 0; j < numResultsY; j += 1)
+			if(WaveExists(wvXRef))
+				formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : j]
+			endif
+			formulaResults[index][%FORMULAY] = wvYRef[j]
+			dataTypes[index] = dataType
+			index += 1
+		endfor
+	endfor
+	Redimension/N=(index, -1) formulaResults
+
+	return [formulaResults, dataTypes]
+End
+
+static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data)
+
+	variable channelNumber, channelType, sweepNo
+	string annotation, channelId
+
+	annotation = ""
+	if(!CmpStr(dataType, SF_DATATYPE_SWEEP))
+		channelNumber = GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+		channelType = GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+		sweepNo = GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
+		sprintf annotation, "Sweep %d %s", sweepNo, channelId
+	endif
+
+	return annotation
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -833,7 +893,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints
-	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
+	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation
 	string traceName = "formula"
 	string guideNameTemplate = "HOR"
 
@@ -851,10 +911,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	DFREF dfrWork = SF_GetWorkingDF(graph)
 	KillOrMoveToTrash(dfr=dfrWork)
 
+	WAVE/WAVE/Z formulaResults
+	WAVE/T/Z dataTypes
+	[formulaResults, dataTypes] = SF_GatherFormulaResults(formulaPairs, graph)
+
+	numGraphs = DimSize(formulaResults, ROWS)
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
-	numGraphs = DimSize(graphCode, ROWS)
-
 	if(winDisplayMode == SF_DM_SUBWINDOWS)
 		KillWindow/Z $winNameTemplate
 		NewPanel/N=$winNameTemplate
@@ -872,43 +935,40 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 	WAVE/Z wvX
 	for(j = 0; j < numGraphs; j += 1)
-		WaveClear wvX
-		xFormula = formulaPairs[j][%FORMULA_X]
-		if(!IsEmpty(xFormula))
-			WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph)
-			WAVE/Z wv = wvXRef[0] // TODO multiple results
-			SF_Assert(WaveExists(wv), "x part of formula returned no result.")
+		WAVE/Z wvResultX = formulaResults[j][%FORMULAX]
+		WAVE wvResultY = formulaResults[j][%FORMULAY]
+		if(WaveExists(wvResultX))
 
-			xPoints = DimSize(wv, ROWS)
-			dim1X = max(1, DimSize(wv, COLS))
-			dim2X = max(1, DimSize(wv, LAYERS))
+			xPoints = DimSize(wvResultX, ROWS)
+			dim1X = max(1, DimSize(wvResultX, COLS))
+			dim2X = max(1, DimSize(wvResultX, LAYERS))
 			xMxN = dim1X * dim2X
-			Redimension/N=(-1, xMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+			if(xMxN)
+				Redimension/N=(-1, xMxN)/E=1 wvResultX
+			endif
 
 			WAVE wvX = GetSweepFormulaX(dfr, j)
-			if(WaveType(wv, 1) == WaveType(wvX, 1))
-				Duplicate/O wv $GetWavesDataFolder(wvX, 2)
+			if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
+				Duplicate/O wvResultX $GetWavesDataFolder(wvX, 2)
 			else
-				MoveWaveWithOverWrite(wvX, wv)
+				MoveWaveWithOverWrite(wvX, wvResultX)
 			endif
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 		endif
 
-		WAVE/WAVE wvYRef = SF_ExecuteFormula(formulaPairs[j][%FORMULA_Y], graph)
-		WAVE/Z wv = wvYRef[0] // TODO multiple results
-		SF_Assert(WaveExists(wv), "y part of formula returned no result.")
-
-		yPoints = DimSize(wv, ROWS)
-		dim1Y = max(1, DimSize(wv, COLS))
-		dim2Y = max(1, DimSize(wv, LAYERS))
+		yPoints = DimSize(wvResultY, ROWS)
+		dim1Y = max(1, DimSize(wvResultY, COLS))
+		dim2Y = max(1, DimSize(wvResultY, LAYERS))
 		yMxN = dim1Y * dim2Y
-		Redimension/N=(-1, yMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+		if(yMxN)
+			Redimension/N=(-1, yMxN)/E=1 wvResultY
+		endif
 
 		WAVE wvY = GetSweepFormulaY(dfr, j)
-		if(WaveType(wv, 1) == WaveType(wvY, 1))
-			Duplicate/O wv $GetWavesDataFolder(wvY, 2)
+		if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
+			Duplicate/O wvResultY $GetWavesDataFolder(wvY, 2)
 		else
-			MoveWaveWithOverWrite(wvY, wv)
+			MoveWaveWithOverWrite(wvY, wvResultY)
 		endif
 		WAVE wvY = GetSweepFormulaY(dfr, j)
 		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
@@ -933,6 +993,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		WAVE axesRanges = GetAxesRanges(win)
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
+
+		annotation = SF_GetMetaDataAnnotationText(dataTypes[j], wvResultY)
+		if(!IsEmpty(annotation))
+			TextBox/W=$win/C/N=metadata/F=0 annotation
+		endif
 
 		if(IsTextWave(wvY) && WaveExists(wvX))
 			SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
