@@ -357,24 +357,6 @@ static Function CheckTrueRestMembPot()
 	JSON_Release(jsonID)
 End
 
-static Function CheckIVSCC()
-	string expected, actual
-	variable jsonID
-
-	MIES_PUB#PUB_IVS_QCState(123, "some text")
-
-	jsonID = FetchAndParseMessage(IVS_PUB_FILTER)
-	expected = JSON_GetString(jsonID, "/Issuer")
-	actual   = "CheckIVSCC"
-	CHECK_EQUAL_STR(actual, expected)
-
-	expected = JSON_GetString(jsonID, "/Description")
-	actual   = "some text"
-	CHECK_EQUAL_STR(actual, expected)
-
-	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/Value"), 123)
-End
-
 static Function CheckDAQStateChange_DAQ()
 	string device, actual, expected
 	variable headstage, i, jsonID, type
@@ -413,6 +395,74 @@ static Function CheckDAQStateChange_TP()
 
 	type = JSON_GetType(jsonID, "/daq")
 	CHECK_EQUAL_VAR(type, JSON_NULL)
+
+	JSON_Release(jsonID)
+End
+
+static Function CheckAccessResSmoke()
+	string device, msg, expected, actual
+	variable headstage, i, jsonID, value, sweepNo
+
+	device = "my_device"
+	headstage = 0
+	sweepNo = 0
+
+	// BEGIN required entries
+	ED_AddEntryToLabnotebook(device, "Access Res. Smoke Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Access Res. Smoke access resistance", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 123}, unit = "Ω", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Access Res. Smoke access resistance QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Access Res. Smoke access vs steady state ratio", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.5}, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Access Res. Smoke access vs steady state ratio QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(3, 1, 1) keys
+
+	values[headstage] = GetUniqueInteger()
+	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0] = "1"
+
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	// END required entries
+
+	MIES_PUB#PUB_AccessResistanceSmoke(device, sweepNo, headstage)
+
+	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_AR)
+
+	jsonID = JSON_Parse(msg)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual   = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke Set QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke Set QC/value")
+	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
+
+	expected = "Ω"
+	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access resistance/value")
+	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access resistance QC/value")
+	CHECK_EQUAL_WAVES(entries, {0}, mode = WAVE_DATA)
+
+	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio/unit")
+	CHECK_EMPTY_STR(actual)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio/value")
+	CHECK_EQUAL_WAVES(entries, {0.5}, mode = WAVE_DATA)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio QC/value")
+	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
 
 	JSON_Release(jsonID)
 End

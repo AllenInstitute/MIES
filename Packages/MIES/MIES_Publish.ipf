@@ -329,36 +329,6 @@ Function PUB_ClampModeChange(string device, variable headstage, variable oldClam
 	PUB_Publish(jsonID, AMPLIFIER_CLAMP_MODE_FILTER)
 End
 
-/// @brief Push QC results onto ZeroMQ Publisher socket
-///
-/// Filter: #IVS_PUB_FILTER
-///
-/// Payload: JSON-encoded string with three elements in the top-level object
-///
-/// Example:
-///
-/// \rst
-/// .. code-block:: json
-///
-///    {
-///      "Description": "some text",
-///      "Issuer": "My QC Function",
-///      "Value": 123
-///    }
-///
-/// \endrst
-Function PUB_IVS_QCState(variable result, string description)
-	variable jsonID
-
-	jsonID = JSON_New()
-	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "Issuer", GetRTStackInfo(2))
-	JSON_AddVariable(jsonID, "Value", result)
-	JSON_AddString(jsonID, "Description", description)
-
-	PUB_Publish(jsonID, IVS_PUB_FILTER)
-End
-
 /// Filter: #PRESSURE_STATE_FILTER
 ///
 /// Example:
@@ -588,4 +558,87 @@ Function PUB_DAQStateChange(string device, variable mode, variable oldState, var
 	JSON_AddNull(jsonID, name_null)
 
 	PUB_Publish(jsonID, DAQ_TP_STATE_CHANGE_FILTER)
+End
+
+/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_AccessResistanceSmoke()
+///
+/// Keys under `/results` are labnotebook keys. The arrays under
+/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
+/// This array has currently always one entry as #PSQ_AR_NUM_SWEEPS_PASS is one.
+/// The encoding is UTF-8.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": "my_device",
+///      "headstage": 0,
+///      "results": {
+///        "USER_Access Res. Smoke Set QC": {
+///          "unit": "On/Off",
+///          "value": [
+///            1.0
+///          ]
+///        },
+///        "USER_Access Res. Smoke access resistance": {
+///          "unit": "Ω",
+///          "value": [
+///            123.0
+///          ]
+///        },
+///        "USER_Access Res. Smoke access resistance QC": {
+///          "unit": "On/Off",
+///          "value": [
+///            0.0
+///          ]
+///        },
+///        "USER_Access Res. Smoke access vs steady state ratio": {
+///          "unit": "",
+///          "value": [
+///            0.5
+///          ]
+///        },
+///        "USER_Access Res. Smoke access vs steady state ratio QC": {
+///          "unit": "On/Off",
+///          "value": [
+///            1.0
+///          ]
+///        }
+///      },
+///      "sweep number": "NaN",
+///      "timestamp": "2022-05-07T13:59:39Z"
+///    }
+///
+/// .. Output created with Tests/CheckAccessResSmoke.
+///
+/// \endrst
+Function PUB_AccessResistanceSmoke(string device, variable sweepNo, variable headstage)
+	variable jsonID
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE numericalKeys   = GetLBNumericalKeys(device)
+
+	jsonID = PUB_GetJSONTemplate(device, headstage)
+
+	JSON_AddTreeObject(jsonID, "/results")
+
+	key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_AR_ACCESS_RESISTANCE, query = 1)
+	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_AR_RESISTANCE_RATIO, query = 1)
+	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS, query = 1)
+	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS, query = 1)
+	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	PUB_Publish(jsonID, ANALYSIS_FUNCTION_AR)
 End

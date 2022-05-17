@@ -22,6 +22,7 @@
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqSpikeControl"
+#include "UTF_PatchSeqAccessResistanceSmoke"
 #include "UTF_PatchSeqChirp"
 #include "UTF_PatchSeqDAScale"
 #include "UTF_PatchSeqPipetteInBath"
@@ -99,6 +100,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
 	// analysis functions
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqChirp.ipf", list)
 	list = AddListItem("UTF_PatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", inf)
@@ -1185,11 +1187,12 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
-	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                              \
-	                                  PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE, PSQ_FMT_LBN_SPIKE_COUNT,            \
-	                                  PSQ_FMT_LBN_CR_BOUNDS_ACTION, PSQ_FMT_LBN_INITIAL_SCALE, PSQ_FMT_LBN_FINAL_SCALE,      \
-	                                  MSQ_FMT_LBN_INITIAL_SCALE, MSQ_FMT_LBN_FINAL_SCALE, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS,    \
-	                                  MSQ_FMT_LBN_FAILED_PULSE_LEVEL, MSQ_FMT_LBN_RERUN_TRIAL, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF}
+	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                               \
+	                                  PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE, PSQ_FMT_LBN_SPIKE_COUNT,             \
+	                                  PSQ_FMT_LBN_CR_BOUNDS_ACTION, PSQ_FMT_LBN_INITIAL_SCALE, PSQ_FMT_LBN_FINAL_SCALE,       \
+	                                  MSQ_FMT_LBN_INITIAL_SCALE, MSQ_FMT_LBN_FINAL_SCALE, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS,     \
+	                                  MSQ_FMT_LBN_FAILED_PULSE_LEVEL, MSQ_FMT_LBN_RERUN_TRIAL, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF, \
+	                                  PSQ_FMT_LBN_AR_RESISTANCE_RATIO}
 
 	entriesWithoutUnit = CreateAnaFuncLBNKey(type, entriesWithoutUnit[p], query = 1)
 
@@ -1307,6 +1310,9 @@ Function CheckPublishedMessage(string device, variable type)
 			break
 		case PSQ_TRUE_REST_VM:
 			expectedFilter = ANALYSIS_FUNCTION_VM
+			break
+		case PSQ_ACC_RES_SMOKE:
+			expectedFilter = ANALYSIS_FUNCTION_AR
 			break
 		default:
 			PASS()

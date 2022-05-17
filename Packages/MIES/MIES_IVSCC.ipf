@@ -196,18 +196,10 @@ Function IVS_runBaselineCheckQC()
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-/// @brief Run the initial access resistance check from the WSE
-///
-/// This will check must be < 20MΩ or 15% of the R input.
-/// The EXTPBREAKN wave will also be run as a way of making sure the reading
-/// is recorded into the data set for post-experiment analysis
+/// @brief Run the initial access resistance smoke from the WSE
 Function IVS_runInitAccessResisQC()
-
-	string device
+	string device, ctrl
 	variable headstage
-	variable baselineValue, instResistanceVal, ssResistanceVal
-	variable qcResult, adChannel, tpBufferSetting
-	string ctrl
 
 	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
@@ -215,73 +207,7 @@ Function IVS_runInitAccessResisQC()
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "EXTPBREAKN*")
 
-	// save the current test pulse buffer setting
-	tpBufferSetting = GetSetVariable(device, "setvar_Settings_TPBuffer")
-
-	// set the test pulse buffer up to a higher value to account for noise...using 5 for now
-	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 5)
-
-	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(device))
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-	endif
-
-	// Set up the QC Wave so the background task can get the information it needs
-	Wave tempWave = GetIVSCCTemporaryWave(device)
-	tempWave[%tpBuffer] = tpBufferSetting
-
-	CtrlNamedBackground IVS_finishInitAccessQCCheck, period=2, proc=IVS_finishInitAccessQCCheck
-	CtrlNamedBackground IVS_finishInitAccessQCCheck, start
-End
-
-/// @brief Complete the Baseline QC check in the background
-///
-/// @ingroup BackgroundFunctions
-Function IVS_finishInitAccessQCCheck(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device
-	variable headstage, cycles
-	variable instResistanceVal, ssResistanceVal, tpBufferSetting
-	variable qcResult
-
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
-
-	Wave tempWave = GetIVSCCTemporaryWave(device)
-	tpBufferSetting = tempWave[%tpBuffer]
-
-	cycles = 5 //define how many cycles the test pulse must run
-	if(TP_TestPulseHasCycled(device, cycles))
-		print "Enough Cycles passed..."
-	else
-		PUB_IVS_QCState(qcResult, "Too few TP cycles")
-		return 0
-	endif
-
-	WAVE TPResults = GetTPResults(device)
-
-	instResistanceVal = TPResults[%ResistanceInst][headstage]
-	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
-
-	printf "Initial Access Resistance: %g\r", instResistanceVal
-	printf "SS Resistance: %g\r", ssResistanceVal
-
-	// See if we pass the baseline QC
-	if ((instResistanceVal < 20.0) && (instResistanceVal < (0.15 * ssResistanceVal)))
-		qcResult = instResistanceVal
-		PUB_IVS_QCState(qcResult, "Resistance check")
-	endif
-
-	// and now run the EXTPBREAKN wave so that things are saved into the data record
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-
-	PUB_IVS_QCState(qcResult, "Result before finishing")
-
-	// set the test pulse buffer back to 1
-	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = tpBufferSetting)
-
-	return 1
 End
 
 /// @brief Run PSQ_SealEvaluation()
