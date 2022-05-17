@@ -5488,7 +5488,7 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 
 			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && spikeQCPassed && averageVoltageQCPassed
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepPassedLBN = NaN
+			WAVE sweepPassedLBN = LBN_GetNumericWave()
 			sweepPassedLBN[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, sweepPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -5513,7 +5513,7 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_TRUE_REST_VM, s.sweepNo, s.headstage) >= PSQ_VM_NUM_SWEEPS_PASS
 
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
 			key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -5781,32 +5781,32 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 
 	averageQCPassed = averageAbsoluteQCPassed && averageRelativeQCPassed
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageLBN = NaN
+	WAVE averageLBN = LBN_GetNumericWave()
 	averageLBN[INDEP_HEADSTAGE] = voltage
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG)
 	ED_AddEntryToLabnotebook(device, key, averageLBN, unit = "Volt", overrideSweepNo = sweepNo)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageDiffLBN = NaN
+	WAVE averageDiffLBN = LBN_GetNumericWave()
 	averageDiffLBN[INDEP_HEADSTAGE] = absoluteDiff
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF)
 	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, unit = "Volt", overrideSweepNo = sweepNo)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageAbsoluteQCPassedLBN = NaN
+	WAVE averageAbsoluteQCPassedLBN = LBN_GetNumericWave()
 	averageAbsoluteQCPassedLBN[INDEP_HEADSTAGE] = averageAbsoluteQCPassed
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS)
 	ED_AddEntryToLabnotebook(device, key, averageAbsoluteQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageDiffLBN = NaN
+	WAVE averageDiffLBN = LBN_GetNumericWave()
 	averageDiffLBN[INDEP_HEADSTAGE] = relativeDiff
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF)
 	ED_AddEntryToLabnotebook(device, key, averageDiffLBN, overrideSweepNo = sweepNo)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageRelativeQCPassedLBN = NaN
+	WAVE averageRelativeQCPassedLBN = LBN_GetNumericWave()
 	averageRelativeQCPassedLBN[INDEP_HEADSTAGE] = averageRelativeQCPassed
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS)
 	ED_AddEntryToLabnotebook(device, key, averageRelativeQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) averageQCPassedLBN = NaN
+	WAVE averageQCPassedLBN = LBN_GetNumericWave()
 	averageQCPassedLBN[INDEP_HEADSTAGE] = averageQCPassed
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG_PASS)
 	ED_AddEntryToLabnotebook(device, key, averageQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
@@ -5828,12 +5828,12 @@ static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpi
 
 	spikeQCPassed = (numberOfSpikesFound == 0)
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikeQCPassedLBN = NaN
+	WAVE spikeQCPassedLBN = LBN_GetNumericWave()
 	spikeQCPassedLBN[headstage] = spikeQCPassed
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SPIKE_PASS)
 	ED_AddEntryToLabnotebook(device, key, spikeQCPassedLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
-	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsLBN
+	WAVE/T spikePositionsLBN = LBN_GetTextWave()
 	spikePositionsLBN[headstage] = NumericWaveToList(spikePositions, ";")
 	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SPIKE_POSITIONS)
 	ED_AddEntryToLabnotebook(device, key, spikePositionsLBN, unit = "ms", overrideSweepNo = sweepNo)
