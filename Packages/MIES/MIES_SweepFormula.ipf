@@ -2273,7 +2273,7 @@ static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string g
 
 	output[] = SF_OperationPlusImpl(input[p])
 
-	WAVE out = SF_GetOutputForExecutor(output, clearInput=input)
+	WAVE out = SF_GetOutputForExecutor(output, graph, opShort, clearInput=input)
 	return out
 End
 
@@ -2628,7 +2628,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_CHANNELS, 1)
 	output[0] = channels
 
-	WAVE out = SF_GetOutputForExecutor(output)
+	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_CHANNELS)
 	return out
 End
 
@@ -2648,7 +2648,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 		output[0] = sweeps
 	endif
 
-	WAVE out = SF_GetOutputForExecutor(output)
+	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_SWEEPS)
 	return out
 End
 
@@ -2697,7 +2697,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		DebugPrint("Call to SF_GetSweepNumbersForSelect returned no results")
 	endif
 
-	WAVE out = SF_GetOutputForExecutor(output)
+	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_SELECT)
 	return out
 End
 
@@ -3254,7 +3254,7 @@ static Function/WAVE SF_CreateSFRefWave(string win, string opShort, variable siz
 	string wName
 
 	DFREF dfrWork = SF_GetWorkingDF(win)
-	wName = CreateDataObjectName(dfrWork, "refOut_" + opShort, 1, 0, 0)
+	wName = CreateDataObjectName(dfrWork, opShort + "_output_", 1, 0, 4)
 
 	Make/WAVE/N=(size) dfrWork:$wName/WAVE=wv
 
@@ -3276,10 +3276,10 @@ static Function/WAVE SF_ParseArgument(string win, WAVE input, string opShort)
 		endif
 	endif
 
-	WAVE/WAVE wRef = SF_CreateSFRefWave(win, "refUserInput_" + opShort, 1)
+	WAVE/WAVE wRef = SF_CreateSFRefWave(win, opShort + "_refFromUserInput", 1)
 #ifdef SWEEPFORMULA_DEBUG
 	DFREF dfrWork = SF_GetWorkingDF(win)
-	wName = CreateDataObjectName(dfrWork, "dataInput_" + opShort, 1, 0, 0)
+	wName = CreateDataObjectName(dfrWork, opShort + "_dataInput_", 1, 0, 4)
 	Duplicate input, dfrWork:$wName
 	WAVE input = dfrWork:$wName
 #endif
@@ -3295,12 +3295,31 @@ static Function SF_CleanUpInput(WAVE input)
 #endif
 End
 
-static Function/WAVE SF_GetOutputForExecutor(WAVE output[, WAVE clearInput])
+static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win, string opShort)
+
+	string wName
+	variable i
+
+	for(data : output)
+		if(WaveExists(data) && IsFreeWave(data))
+			DFREF dfrWork = SF_GetWorkingDF(win)
+			wName = CreateDataObjectName(dfrWork, opShort + "_return_arg" + num2istr(i) + "_", 1, 0, 4)
+			MoveWave data, dfrWork:$wName
+		endif
+		i += 1
+	endfor
+End
+
+static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clearInput])
 
 	if(!ParamIsDefault(clearInput))
 		SF_CleanUpInput(clearInput)
 	endif
 	Make/FREE/T wRefPath = {SF_WREF_MARKER + GetWavesDataFolder(output, 2)}
+
+#ifdef SWEEPFORMULA_DEBUG
+	SF_ConvertAllReturnDataToPermanent(output, win, opShort)
+#endif
 
 	return wRefPath
 End
