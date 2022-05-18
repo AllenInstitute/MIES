@@ -4155,7 +4155,7 @@ End
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
-	Make/D/N=(1, 6, LABNOTEBOOK_LAYER_COUNT)/FREE wv
+	Make/D/N=(1, 7, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = Nan
 
 	SetDimLabel COLS, 0, ADOnOff, wv
@@ -4164,6 +4164,7 @@ Function/Wave GetAsyncSettingsWave()
 	SetDimLabel COLS, 3, AlarmMin, wv
 	SetDimLabel COLS, 4, AlarmMax, wv
 	SetDimLabel COLS, 5, MeasuredValue, wv
+	SetDimLabel COLS, 6, AlarmState, wv
 
 	return wv
 End
@@ -4190,7 +4191,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 
 	sprintf prefix, "Async %d", channel
 
-	Make/T/N=(3,6)/FREE wv
+	Make/T/N=(3,7)/FREE wv
 	wv = ""
 
 	CopyDimLabels settingsWave, wv
@@ -4229,6 +4230,12 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit
 	wv[%Tolerance][5] = "" // tolerance is calculated in ED_createAsyncWaveNoteTags()
+
+	sprintf prefix, "Async Alarm %d", channel
+
+	wv[%Parameter][6] = prefix + " State"
+	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
 
 	return wv
 End
