@@ -69,50 +69,6 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-Function TuneBrowser_IGNORE()
-
-	string databrowser, settingsHistoryPanel
-	variable i, numEntries
-
-	databrowser = DB_FindDataBrowser("ITC18USB_DEV_0")
-	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(databrowser)
-
-	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
-
-	STRUCT WMPopupAction pa
-	pa.win = settingsHistoryPanel
-	pa.eventCode = 2
-
-	Make/FREE/T keys = {                \
-	   MSQ_FMT_LBN_SPIKE_COUNTS,        \
-	   MSQ_FMT_LBN_FAILED_PULSE_LEVEL,  \
-	   MSQ_FMT_LBN_SPIKE_POSITIONS,     \
-	   MSQ_FMT_LBN_SPIKE_POSITION_PASS, \
-	   MSQ_FMT_LBN_SPIKE_COUNTS_STATE,  \
-	   MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS,  \
-	   MSQ_FMT_LBN_SPONT_SPIKE_PASS,    \
-	   MSQ_FMT_LBN_SET_PASS,            \
-	   MSQ_FMT_LBN_SWEEP_PASS,          \
-	   MSQ_FMT_LBN_HEADSTAGE_PASS,      \
-	   MSQ_FMT_LBN_RERUN_TRIAL,         \
-	   MSQ_FMT_LBN_RERUN_TRIAL_EXC}
-
-	numEntries = DimSize(keys, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		pa.popStr = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, keys[i], query = 1)
-		LBV_PopMenuProc_LabNotebookAndResults(pa)
-	endfor
-
-	pa.popStr = STIMSET_SCALE_FACTOR_KEY
-	LBV_PopMenuProc_LabNotebookAndResults(pa)
-
-	pa.popStr = "Set sweep count"
-	LBV_PopMenuProc_LabNotebookAndResults(pa)
-
-	pa.popStr = "Autobias Vcom"
-	LBV_PopMenuProc_LabNotebookAndResults(pa)
-End
-
 static Constant INDEP_EACH_SCI   = 0x01
 static Constant EACH_SCI         = 0x02
 static Constant INDEP            = 0x04
