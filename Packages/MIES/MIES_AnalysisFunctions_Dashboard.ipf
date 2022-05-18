@@ -942,6 +942,11 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				sprintf text, "Sweep %d failed: %s", sweepNo, msg
 			endif
 
+			if(IsEmpty(text))
+				text = AD_HasAsyncQCFailed(numericalValues, textualValues, anaFuncType, sweepNo, headstage)
+			endif
+		endif
+
 		if(IsEmpty(text))
 			BUG("Unknown reason for failure")
 			sprintf text, "Sweep %d failed: Unknown reasons", sweepNo
@@ -957,6 +962,43 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	endif
 
 	return RemoveEnding(msg, "\r")
+End
+
+static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, variable headstage)
+	string key, msg, str
+	string text = ""
+	variable chan, asyncAlarm
+
+	key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_ASYNC_PASS, query = 1)
+	WAVE/Z asyncChannelQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	if(WaveExists(asyncChannelQC) && asyncChannelQC[INDEP_HEADSTAGE])
+		// passed
+		return ""
+	endif
+
+	WAVE/T params = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
+	WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params[headstage])
+
+	for(chan: asyncChannels)
+		sprintf key, "Async Alarm %d State", chan
+		asyncAlarm = !GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
+
+		if(asyncAlarm)
+			continue
+		endif
+
+		sprintf str, "%d:%s", chan, ToPassFail(asyncAlarm)
+		text += str + ","
+	endfor
+
+	if(IsEmpty(text))
+		BUG("Broken async QC calculation")
+		text = "unknown"
+	endif
+
+	sprintf msg, "Sweep %d failed: The asynchronous channel QC check failed (%s).", sweepNo, RemoveEnding(text, ",")
+
+	return msg
 End
 
 /// @brief Show the sweeps of the given `index` entry into the listbox
