@@ -5691,7 +5691,7 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params) * MILLI_TO_ONE
+	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be finite")
 
 	wbBegin = 0
@@ -6007,7 +6007,7 @@ Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 End
 
 Function/S PSQ_AccessResistanceSmoke_GetParams()
-	return "BaselineChunkLength:variable,"                   + \
+	return "[BaselineChunkLength:variable],"                 + \
 	       "[BaselineRMSLongThreshold:variable],"            + \
 	       "[BaselineRMSShortThreshold:variable],"           + \
 	       "MaxAccessResistance:variable,"                   + \
