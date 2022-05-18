@@ -1059,6 +1059,7 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: Resistance A [MΩ]
 /// - 2: Resistance B [MΩ]
+/// - 3: Async Channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1152,9 +1153,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_SEAL_EVALUATION:
 			numChunks = 4
-			numLayers = 3
+			numLayers = 4
 			numRows = 2 // upper limit
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;ResistanceA;ResistanceB;AsyncQC"
 			break
 		case PSQ_TRUE_REST_VM:
 			numChunks = 4
@@ -5019,6 +5021,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 	string str
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -5048,6 +5051,7 @@ End
 Function/S PSQ_SealEvaluation_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -5067,7 +5071,8 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 End
 
 Function/S PSQ_SealEvaluation_GetParams()
-	return "[BaselineChunkLength:variable],"       + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "[NextIndexingEndStimSetName:string],"  + \
@@ -5133,7 +5138,7 @@ End
 /// @endverbatim
 Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, samplingFrequencyQCPassed, sealResistanceMax
-	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet, asyncAlarmPassed
 	variable expectedNumTestpulses, numTestPulses, sealResistanceA, sealResistanceB, sealResistanceQCPassed, testpulseGroupSel, sealThreshold
 	string key, ctrl, stimset, msg, databrowser, formula, pipetteResistanceStr, sweepStr
 	string sealResistanceGroupAStr, sealResistanceGroupBStr, str
@@ -5186,6 +5191,12 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			ret = PSQ_SE_CreateEpochs(device, s.headstage, s.params)
+			if(ret)
+				return 1
+			endif
+
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
 			if(ret)
 				return 1
 			endif
@@ -5350,7 +5361,10 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 
 			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SEAL_EVALUATION, s)
 
-			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && sealResistanceQCPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_SEAL_EVALUATION, s.sweepNo, asyncChannels)
+
+			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && sealResistanceQCPassed && asyncAlarmPassed
 
 			WAVE sweepPassedLBN = LBN_GetNumericWave()
 			sweepPassedLBN[INDEP_HEADSTAGE] = sweepPassed
