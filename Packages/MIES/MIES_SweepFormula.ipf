@@ -2419,11 +2419,7 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 		SF_ASSERT(0, "Operation accepts 2-3 operands")
 	endif
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_RANGE, 1)
-	output[0] = range
-
-	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_RANGE, clearInput=input)
-	return out
+	return SF_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, clearInput=input)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
@@ -2715,11 +2711,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		SF_CleanUpInput(arg)
 	endfor
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_CHANNELS, 1)
-	output[0] = channels
-
-	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_CHANNELS)
-	return out
+	return SF_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS)
 End
 
 /// `sweeps()`
@@ -2738,8 +2730,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 		output[0] = sweeps
 	endif
 
-	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_SWEEPS)
-	return out
+	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS)
 End
 
 /// `select([array channels, array sweeps, [string mode]])`
@@ -2758,19 +2749,25 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE channels = channelsRef[0]
 		WAVE/WAVE sweepsRef = SF_ExecuteFormula("sweeps()", graph)
 		WAVE/Z sweeps = sweepsRef[0]
+
+		SF_CleanUpInput(channelsRef)
+		SF_CleanUpInput(sweepsRef)
 	else
 		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
 		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
 		WAVE channels = arg[0]
+		SF_CleanUpInput(arg)
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
 		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
 		WAVE sweeps = arg[0]
+		SF_CleanUpInput(arg)
 		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
 		if(numIndices == 3)
 			WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
 			WAVE/T wMode = arg[0]
+			SF_CleanUpInput(arg)
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
@@ -2780,15 +2777,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"))
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_SELECT, 1)
-	output[0] = selectData
-
-	if(!WaveExists(selectData))
-		DebugPrint("Call to SF_GetSweepNumbersForSelect returned no results")
-	endif
-
-	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_SELECT)
-	return out
+	return SF_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT)
 End
 
 /// `data(array range[, array selectData])`
@@ -2831,8 +2820,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		DebugPrint("Call to SF_GetSweepsForFormula returned no results")
 	endif
 
-	WAVE out = SF_GetOutputForExecutor(output, graph, SF_OP_DATA)
-	return out
+	return SF_GetOutputForExecutor(output, graph, SF_OP_DATA)
 End
 
 /// `labnotebook(string key[, array selectData [, string entrySourceType]])`
@@ -3400,6 +3388,20 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 		endif
 		i += 1
 	endfor
+End
+
+static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, WAVE clearInput])
+
+	if(!ParamIsDefault(clearInput))
+		SF_CleanUpInput(clearInput)
+	endif
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 1)
+	if(WaveExists(data))
+		output[0] = data
+	endif
+
+	return SF_GetOutputForExecutor(output, graph, opShort)
 End
 
 static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clearInput])
