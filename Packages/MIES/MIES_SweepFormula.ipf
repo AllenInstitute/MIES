@@ -1146,7 +1146,12 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE selec
 			dataFolder = sweepMap[V_row][%DataFolder]
 			device     = sweepMap[V_row][%Device]
 			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
+		else
+			if(DB_SplitSweepsIfReq(graph, sweepNo))
+				continue
+			endif
 		endif
+
 		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
 		for(j = 0; j < numChannels; j += 1)
@@ -1420,6 +1425,10 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE chan
 				dataFolder = sweepMap[V_row][%DataFolder]
 				device     = sweepMap[V_row][%Device]
 				DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
+			else
+				if(DB_SplitSweepsIfReq(graph, sweepNo))
+					continue
+				endif
 			endif
 			singleSweepDFStr = GetSingleSweepFolderAsString(deviceDFR, sweepNo)
 			if(!DataFolderExists(singleSweepDFStr))
