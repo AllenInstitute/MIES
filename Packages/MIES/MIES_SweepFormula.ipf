@@ -115,10 +115,10 @@ static Constant SF_TRANSFER_ALL_DIMS = -1
 static StrConstant SF_WORKING_DF = "FormulaData"
 static StrConstant SF_WREF_MARKER = "\"WREF@\":"
 
-static StrConstant SF_META_DATATYPE = "DataType"
-static StrConstant SF_META_SWEEPNO = "SweepNumber"
-static StrConstant SF_META_CHANNELTYPE = "ChannelType"
-static StrConstant SF_META_CHANNELNUMBER = "ChannelNumber"
+static StrConstant SF_META_DATATYPE = "/DataType"
+static StrConstant SF_META_SWEEPNO = "/SweepNumber"
+static StrConstant SF_META_CHANNELTYPE = "/ChannelType"
+static StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber"
 
 static StrConstant SF_DATATYPE_SWEEP = "SweepData"
 
@@ -846,7 +846,7 @@ static Function [WAVE/WAVE formulaResults_, string dataType_] SF_GatherFormulaRe
 		SF_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
 	endif
 	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
-	dataType = GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	dataType = GetStringFromJSONWaveNote(wvYRef, SF_META_DATATYPE)
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
 			formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
@@ -866,9 +866,9 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 	string traceAnnotation = ""
 
 	if(!CmpStr(dataType, SF_DATATYPE_SWEEP))
-		channelNumber = GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
-		channelType = GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-		sweepNo = GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+		channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+		sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
 		channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 		sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 	endif
@@ -1246,7 +1246,7 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 	endif
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
-		SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
+		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 		return output
 	endif
 	SF_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
@@ -1305,16 +1305,16 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 		SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 		Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
-		SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
-		SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
-		SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+		SetNumberInJSONWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
+		SetNumberInJSONWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
+		SetNumberInJSONWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
 
 		output[index] = rangedSweepData
 		index += 1
 	endfor
 	Redimension/N=(index) output
 
-	SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 
 	return output
 End
