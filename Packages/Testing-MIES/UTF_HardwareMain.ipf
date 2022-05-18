@@ -1279,7 +1279,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						CHECK_LE_VAR(value, 12.5e9)
 						break
 					case "ms":
-						CHECK_GT_VAR(value, 0)
+						CHECK_GE_VAR(value, 0)
 						CHECK_LE_VAR(value, 15000)
 						break
 					case "% of Hz/pA":

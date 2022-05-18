@@ -67,6 +67,7 @@
 ///  PSQ_FMT_LBN_CR_BOUNDS_ACTION             Action according to min/max positions                       (none)   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_BOUNDS_STATE              Upper and Lower bounds state according to min/max pos.      (none)   Textual      CR                                   No           No
 ///  PSQ_FMT_LBN_CR_SPIKE_CHECK               Spike check was enabled/disabled                            (none)   Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_INIT_UOD                  Initial user onset delay                                    ms       Numerical    CR                                   No           No
 ///  FMT_LBN_ANA_FUNC_VERSION                 Integer version of the analysis function                    (none)   Numerical    All                                  No           Yes
 ///  PSQ_FMT_LBN_PB_RESISTANCE                Pipette Resistance                                          Ohm      Numerical    PB                                   No           No
 ///  PSQ_FMT_LBN_PB_RESISTANCE_PASS           Pipette Resistance QC                                       On/Off   Numerical    PB                                   No           No
@@ -1496,6 +1497,39 @@ static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
 		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], PSQ_DS_SUB))
 			return sweepNo
 		endif
+	endfor
+
+	return -1
+End
+
+/// @brief Return the sweep number of the last sweep using the PSQ_TrueRestingMembranePotential()
+///        analysis function
+static Function PSQ_GetLastPassingTrueRMP(string device, variable headstage)
+	variable numEntries, sweepNo, i, setQC
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	// PSQ_CHIRP with set QC
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_SET_PASS, query = 1)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+
+	if(!WaveExists(sweeps))
+		return -1
+	endif
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		sweepNo = sweeps[i]
+
+		setQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+		if(!setQC)
+			// set QC failed
+			continue
+		endif
+
+		return sweepNo
 	endfor
 
 	return -1
@@ -3849,6 +3883,37 @@ static Function PSQ_SetAutobiasTargetV(string device, variable headstage, variab
 	endif
 End
 
+/// @brief Set autobias target V from the average voltage of a passing PSQ_TrueRestingMembranePotential() sweep
+///
+/// @return 0 on success, 1 otherwise
+static Function PSQ_CR_SetAutobiasTargetVFromTrueRMP(string device, variable headstage, string params)
+	variable useTrueRestingMembPot, averageVoltage, sweepNo
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	useTrueRestingMembPot = AFH_GetAnalysisParamNumerical("UseTrueRestingMembranePotentialVoltage", params, defValue = PSQ_CR_USE_TRUE_RMP_DEF)
+
+	if(!useTrueRestingMembPot)
+		return 1
+	endif
+
+	sweepNo = PSQ_GetLastPassingTrueRMP(device, headstage)
+	if(!IsValidSweepNumber(sweepNo))
+		print "Warning: Could not find a passing set with \"PSQ_TrueRestingMembranePotential\" analysis function."
+		ControlWindowToFront()
+		return 1
+	endif
+
+	key = CreateAnaFuncLBNKey(PSQ_TRUE_REST_VM, PSQ_FMT_LBN_VM_FULL_AVG, query = 1)
+	averageVoltage = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE) * ONE_TO_MILLI
+	ASSERT(IsFinite(averageVoltage), "Invalid full average voltage")
+
+	PSQ_SetAutobiasTargetV(device, headstage, averageVoltage)
+
+	return 0
+End
+
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
@@ -3859,25 +3924,30 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
-		 case "BoundsEvaluationMode":
+		case "AutobiasTargetV":
+			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
+		case "AutobiasTargetVAtSetEnd":
+			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
+		case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
-		case "InnerRelativeBound":
-			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
-		case "OuterRelativeBound":
-			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
-		case "NumberOfChirpCycles":
-			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
-		case "SpikeCheck":
-			return "Toggle spike check during the chirp. Defaults to off."
 		case "DAScaleOperator":
 			return "Set the math operator to use for combining the DAScale and the "            \
 			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 		case "DAScaleModifier":
 			return "Modifier value to the DA Scale of headstages with spikes during chirp"
-		case "AutobiasTargetV":
-			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
-		case "AutobiasTargetVAtSetEnd":
-			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
+		case "InnerRelativeBound":
+			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
+		case "NumberOfChirpCycles":
+			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
+		case "OuterRelativeBound":
+			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
+		case "SpikeCheck":
+			return "Toggle spike check during the chirp. Defaults to off."
+		case "UserOnsetDelay":
+			return "Will be set as user onset delay in PRE_SET_EVENT, the current value will be set back in POST_SET_EVENT."
+		case "UseTrueRestingMembranePotentialVoltage":
+			return "Use the average voltage of a passing True RMS voltage set as Autobias targetV [mV] " + \
+			       "instead of \"AutobiasTargetVAtSetEnd\" in POST_SET_EVENT. Defaults to on."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3898,6 +3968,13 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
+		case "AutobiasTargetV":
+		case "AutobiasTargetVAtSetEnd":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val == 0)
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
@@ -3921,16 +3998,16 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 			endif
 			break
 		case "SpikeCheck":
+		case "UseTrueRestingMembranePotentialVoltage": // fallthrough-by-design
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
 			endif
 			break
-		case "AutobiasTargetV":
-		case "AutobiasTargetVAtSetEnd":
+		case "UserOnsetDelay":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || val == 0)
-				return "Invalid value " + num2str(val)
+			if(!IsFinite(val) || val < 0)
+				return "Must be a finite value"
 			endif
 			break
 		default:
@@ -3941,21 +4018,23 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "[AutobiasTargetV:variable],"           + \
-	       "[AutobiasTargetVAtSetEnd:variable],"   + \
-	       "[BaselineRMSLongThreshold:variable],"  + \
-	       "[BaselineRMSShortThreshold:variable]," + \
-	       "BoundsEvaluationMode:string,"          + \
-	       "[DAScaleModifier:variable],"           + \
-	       "[DAScaleOperator:string],"             + \
-	       "[FailedLevel:variable],"               + \
-	       "InnerRelativeBound:variable,"          + \
-	       "[NumberOfChirpCycles:variable],"       + \
-	       "NumberOfFailedSweeps:variable,"        + \
-	       "OuterRelativeBound:variable,"          + \
-	       "[SamplingFrequency:variable],"         + \
-	       "SamplingMultiplier:variable,"          + \
-	       "[SpikeCheck:variable]"
+	return "[AutobiasTargetV:variable],"                       + \
+	       "[AutobiasTargetVAtSetEnd:variable],"               + \
+	       "[BaselineRMSLongThreshold:variable],"              + \
+	       "[BaselineRMSShortThreshold:variable],"             + \
+	       "BoundsEvaluationMode:string,"                      + \
+	       "[DAScaleModifier:variable],"                       + \
+	       "[DAScaleOperator:string],"                         + \
+	       "[FailedLevel:variable],"                           + \
+	       "InnerRelativeBound:variable,"                      + \
+	       "[NumberOfChirpCycles:variable],"                   + \
+	       "NumberOfFailedSweeps:variable,"                    + \
+	       "OuterRelativeBound:variable,"                      + \
+	       "[SamplingFrequency:variable],"                     + \
+	       "SamplingMultiplier:variable,"                      + \
+	       "[SpikeCheck:variable],"                            + \
+	       "[UserOnsetDelay:variable],"                        + \
+	       "[UseTrueRestingMembranePotentialVoltage:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -4026,7 +4105,7 @@ Function PSQ_Chirp(device, s)
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
+	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
@@ -4162,6 +4241,16 @@ Function PSQ_Chirp(device, s)
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
 				SetDAScale(device, s.headstage, absolute=initialDAScale, roundTopA = 1)
+
+				WAVE result = LBN_GetNumericWave()
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
+				result[INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser")
+				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = "ms")
+
+				userOnsetDelay = AFH_GetAnalysisParamNumerical("UserOnsetDelay", s.params)
+				if(IsFinite(userOnsetDelay))
+					PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
+				endif
 			endif
 			break
 		case POST_SWEEP_EVENT:
@@ -4248,11 +4337,19 @@ Function PSQ_Chirp(device, s)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			if(setPassed)
-				PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
+				ret = PSQ_CR_SetAutobiasTargetVFromTrueRMP(device, s.headstage, s.params)
+
+				if(ret)
+					PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
+				endif
 			endif
 
-			AD_UpdateAllDatabrowser()
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD, query = 1)
+			userOnsetDelay = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+			ASSERT(IsFinite(userOnsetDelay), "Expected finite value for user onset delay")
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
 
+			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")

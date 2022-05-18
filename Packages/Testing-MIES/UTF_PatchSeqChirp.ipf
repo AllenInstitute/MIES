@@ -86,7 +86,7 @@ static Function/WAVE GetLBNEntriesWave_IGNORE()
 
 	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;"                   \
 	              + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck;" \
-	              + "samplingPass;autobiasTargetV"
+	              + "samplingPass;autobiasTargetV;initUserOnsetDelay;userOnsetDelay"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -113,6 +113,8 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%spikeCheck] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	wv[%autobiasTargetV] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Autobias Vcom")
+	wv[%initUserOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_UOD)
+	wv[%userOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Delay onset user")
 
 	return wv
 End
@@ -146,10 +148,13 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case STIMSET_SCALE_FACTOR_KEY:
 		case "Autobias Vcom":
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
+		case "Delay onset user":
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 		case PSQ_FMT_LBN_SET_PASS:
 		case PSQ_FMT_LBN_CR_SPIKE_CHECK:
 		case PSQ_FMT_LBN_INITIAL_SCALE:
 		case PSQ_FMT_LBN_CR_RESISTANCE:
+		case PSQ_FMT_LBN_CR_INIT_UOD:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
@@ -216,6 +221,10 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
 End
@@ -226,8 +235,14 @@ static Function PS_CR2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+End
+
+static Function PS_CR2_preAcq_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -236,7 +251,7 @@ static Function PS_CR2([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR2_IGNORE)
+	AcquireData(s, str, postInitializeFunc = PS_CR2_IGNORE, preAcquireFunc = PS_CR2_preAcq_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -277,8 +292,12 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 1)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
+	CheckPSQChunkTimes(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2})
 End
 
 static Function PS_CR2a_IGNORE(string device)
@@ -337,6 +356,10 @@ static Function PS_CR2a_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
@@ -399,6 +422,10 @@ static Function PS_CR2b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
@@ -459,6 +486,10 @@ static Function PS_CR3_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
@@ -547,6 +578,10 @@ static Function PS_CR4_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
@@ -639,6 +674,10 @@ static Function PS_CR4a_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -730,6 +769,10 @@ static Function PS_CR4b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -819,6 +862,10 @@ static Function PS_CR5_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
@@ -912,6 +959,10 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -1001,6 +1052,10 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
@@ -1088,6 +1143,10 @@ static Function PS_CR8_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
@@ -1183,6 +1242,10 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -1275,6 +1338,10 @@ static Function PS_CR9a_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
@@ -1369,6 +1436,10 @@ static Function PS_CR9b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -1458,6 +1529,10 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
@@ -1531,6 +1606,10 @@ static Function PS_CR11_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
 End
@@ -1597,6 +1676,10 @@ static Function PS_CR12_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
@@ -1673,6 +1756,10 @@ static Function PS_CR13_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
@@ -1741,6 +1828,10 @@ static Function PS_CR14_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
 End
@@ -1807,6 +1898,82 @@ static Function PS_CR15_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {45, 45, 45}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 55)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
+End
+
+// No a, b as boundsState evaluation is always passing
+
+static Function PS_CR16_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var=0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR16([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = PS_CR16_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	// all tests pass
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	// layer 3: Spikes check during chirp (not done)
+	//
+	// AutobiasTargetV/AutobiasTargetVAtSetEnd/UseTrueRestingMembranePotentialVoltage are present
+	wv[][][0] = 1
+	wv[][][1] = 35
+	wv[][][2] = -25
+End
+
+static Function PS_CR16_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 2
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {45, 45, 45}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 55)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
