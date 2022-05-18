@@ -8,19 +8,20 @@
 ///
 /// .. Column order: test overrides, analysis parameters
 ///
-/// ========================== ====================== =================== =================== ====================== ======================== ======================== ========================
-///  Test case                  Baseline QC            Seal Resistance A   Seal Resistance B   SamplingFrequency      NumSweepsFailed          BaselineChunkLength      TestPulseGroupSelector
-/// ========================== ====================== =================== =================== ====================== ======================== ======================== ========================
-///  PS_SE1                     -                      600                 800                 500 (✓)                3                        500                      Both
-///  PS_SE2                     ✓                      1400                1600                500 (✓)                3                        500                      Both
-///  PS_SE3                     ✓                      1400                800                 500 (✓)                3                        500                      First
-///  PS_SE4                     ✓                      600                 1600                500 (✓)                3                        500                      Second
-///  PS_SE5                     chunk0 ✓, chunk1 -     1400                1600                500 (✓)                3                        500                      Second
-///  PS_SE6                     chunk0 -,chunk1 ✓      1400                1600                500 (✓)                3                        500                      Second
-///  PS_SE7                     -                      1400                1600                500 (✓)                1                        500                      Both
-///  PS_SE8                     -                      1400                1600                500 (✓)                3                        60                       Both
-///  PS_SE9                     ✓                      1400                1600                10  (-)                3                        500                      Both
-/// ========================== ====================== =================== =================== ====================== ======================== ======================== ========================
+/// ========================== ====================== =================== =================== =================== ====================== ======================== ======================== ========================
+///  Test case                  Baseline QC            Seal Resistance A   Seal Resistance B   Async Channels QC   SamplingFrequency      NumSweepsFailed          BaselineChunkLength      TestPulseGroupSelector
+/// ========================== ====================== =================== =================== =================== ====================== ======================== ======================== ========================
+///  PS_SE1                     -                      600                 800                 ✓                   500 (✓)                3                        500                      Both
+///  PS_SE2                     ✓                      1400                1600                ✓                   500 (✓)                3                        500                      Both
+///  PS_SE3                     ✓                      1400                800                 ✓                   500 (✓)                3                        500                      First
+///  PS_SE4                     ✓                      600                 1600                ✓                   500 (✓)                3                        500                      Second
+///  PS_SE5                     chunk0 ✓, chunk1 -     1400                1600                ✓                   500 (✓)                3                        500                      Second
+///  PS_SE6                     chunk0 -,chunk1 ✓      1400                1600                ✓                   500 (✓)                3                        500                      Second
+///  PS_SE7                     -                      1400                1600                ✓                   500 (✓)                1                        500                      Both
+///  PS_SE7a                    ✓                      1400                1600                -                   500 (✓)                3                        500                      Both
+///  PS_SE8                     -                      1400                1600                ✓                   500 (✓)                3                        60                       Both
+///  PS_SE9                     ✓                      1400                1600                ✓                   10  (-)                3                        500                      Both
+/// ========================== ====================== =================== =================== =================== ====================== ======================== ======================== ========================
 ///
 /// @endrst
 
@@ -829,6 +830,87 @@ static Function PS_SE7_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
+	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
+	CHECK_WAVE(entries[%resultsResistanceB], TEXT_WAVE)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckTestPulseLikeEpochs(str, PSQ_SE_TGS_BOTH)
+	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
+End
+
+static Function PS_SE7a_IGNORE(device)
+	string device
+
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_SE7a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=PS_SE7a_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SEAL_EVALUATION)
+
+	// all tests pass, except async QC
+	wv[][][0] = 1
+	wv[][][1] = 1.4e3
+	wv[][][2] = 1.6e3
+	wv[][][3] = 0
+End
+
+static Function PS_SE7a_REENTRY([str])
+	string str
+
+	variable sweepNo, autobiasV
+	string lbl, failedPulses, spikeCounts, stimset, expected
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselineQCChunk1], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
+
+	Make/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
+	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
+
+	Make/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
+	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
+
+	Make/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
+	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
 	CHECK_WAVE(entries[%resultsResistanceB], TEXT_WAVE)
 
