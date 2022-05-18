@@ -8,18 +8,19 @@
 ///
 /// .. Column order: test overrides, analysis parameters
 ///
-/// =========== ==================== ================= =================== ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
-///  Test case   Baseline chunk0 QC   Leak Current QC   Access Resistance   Steady State Resistance   Max Access Resistance [MOhm]   Max Resistance Ratio [%]   Baseline Chunk Length   NumberOfFailedSweeps   NextStimSetName     NextIndexingEndStimSetName   Sampling Frequency QC
-/// =========== ==================== ================= =================== ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
-///  PS_AR1      -                    -                 20                  25                        10                             50                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR2      ✓                    ✓                 5                   6                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR3      ✓                    ✓                 5                   6                         4                              90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR4      ✓                    ✓                 5                   6                         10                             50                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR5      ✓                    -                 5                   6                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR6      [-,✓,✓,✓ ]           [-,✓,✓,✓ ]        [5, 15, 5, 5]       [6, 18, 3, 6]             10                             90                         500                     5                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR7      ✓                    ✓                 5                   6                         10                             90                         600                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
-///  PS_AR8      ✓                    ✓                 5                   6                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            0
-/// =========== ==================== ================= =================== ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
+/// =========== ==================== ================= =================== ========================= ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
+///  Test case   Baseline chunk0 QC   Leak Current QC   Access Resistance   Steady State Resistance   Async channels QC         Max Access Resistance [MOhm]   Max Resistance Ratio [%]   Baseline Chunk Length   NumberOfFailedSweeps   NextStimSetName     NextIndexingEndStimSetName   Sampling Frequency QC
+/// =========== ==================== ================= =================== ========================= ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
+///  PS_AR1      -                    -                 20                  25                        -                         10                             50                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR2      ✓                    ✓                 5                   6                         ✓                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR3      ✓                    ✓                 5                   6                         ✓                          4                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR4      ✓                    ✓                 5                   6                         ✓                         10                             50                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR5      ✓                    -                 5                   6                         ✓                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR6      [-,✓,✓,✓ ]           [-,✓,✓,✓ ]        [5, 15, 5, 5]       [6, 18, 3, 6]             ✓                         10                             90                         500                     5                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR6a     ✓                    ✓                 5                   6                         -                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR7      ✓                    ✓                 5                   6                         ✓                         10                             90                         600                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            1
+///  PS_AR8      ✓                    ✓                 5                   6                         ✓                         10                             90                         500                     3                      StimulusSetA_DA_0   StimulusSetB_DA_0            0
+/// =========== ==================== ================= =================== ========================= ========================= ============================== ========================== ======================= ====================== =================== ============================ =======================
 ///
 /// @endrst
 
@@ -151,6 +152,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE:
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
@@ -178,7 +180,7 @@ static Function/WAVE GetWave_IGNORE()
 	              "samplingPass;"                                                                + \
 	              "accResistance;accResistancePass;"                                             + \
 	              "ssResistance;resistanceRatio;resistanceRatioPass;"                            + \
-	              "resultsSweep;resultsPeakResistance;resultsSSResistance;"
+	              "resultsSweep;resultsPeakResistance;resultsSSResistance;asyncPass"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -207,6 +209,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%ssResistance]        = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE)
 	wv[%resistanceRatio]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_AR_RESISTANCE_RATIO)
 	wv[%resistanceRatioPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS)
+	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	wv[%resultsSweep] = GetResultsSingleEntry_IGNORE("Sweep Formula displayed Sweeps")
 	wv[%resultsSSResistance] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance]")
@@ -270,6 +273,11 @@ static Function PS_AR1_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -302,6 +310,8 @@ static Function PS_AR1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCurPass], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -337,6 +347,11 @@ static Function PS_AR2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -353,6 +368,7 @@ static Function PS_AR2([string str])
 	wv[][][0] = 1
 	wv[][][1] = 5
 	wv[][][2] = 6
+	wv[][][3] = 1
 End
 
 static Function PS_AR2_REENTRY([string str])
@@ -369,6 +385,8 @@ static Function PS_AR2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -406,6 +424,11 @@ static Function PS_AR3_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -422,6 +445,7 @@ static Function PS_AR3([string str])
 	wv[][][0] = 1
 	wv[][][1] = 5
 	wv[][][2] = 6
+	wv[][][3] = 1
 End
 
 static Function PS_AR3_REENTRY([string str])
@@ -438,6 +462,8 @@ static Function PS_AR3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -475,6 +501,11 @@ static Function PS_AR4_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -491,6 +522,7 @@ static Function PS_AR4([string str])
 	wv[][][0] = 1
 	wv[][][1] = 5
 	wv[][][2] = 6
+	wv[][][3] = 1
 End
 
 static Function PS_AR4_REENTRY([string str])
@@ -507,6 +539,8 @@ static Function PS_AR4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -544,6 +578,11 @@ static Function PS_AR5_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -561,6 +600,7 @@ static Function PS_AR5([string str])
 	wv[][][0][3] = 0
 	wv[][][1] = 5
 	wv[][][2] = 6
+	wv[][][3] = 1
 End
 
 static Function PS_AR5_REENTRY([string str])
@@ -577,6 +617,8 @@ static Function PS_AR5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -612,6 +654,11 @@ static Function PS_AR6_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	// not supplied: NextIndexingEndStimSetName
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -630,24 +677,28 @@ static Function PS_AR6([string str])
 	wv[][0][0][3] = 0
 	wv[][0][1]    = 5
 	wv[][0][2]    = 6
+	wv[][0][3]    = 1
 
 	// sweep 1:
 	// accessResistance fails, rest passes
 	wv[][1][0][] = 1
 	wv[][1][1]   = 15
 	wv[][1][2]   = 18
+	wv[][1][3]   = 1
 
 	// sweep 2:
 	// resistance ratio fails, rest passes
 	wv[][2][0][] = 1
 	wv[][2][1]   = 5
 	wv[][2][2]   = 3
+	wv[][2][3]   = 1
 
 	// sweep 3:
 	// everything passes
 	wv[][3][0][] = 1
 	wv[][3][1]   = 5
 	wv[][3][2]   = 6
+	wv[][3][3]   = 1
 End
 
 static Function PS_AR6_REENTRY([string str])
@@ -664,6 +715,8 @@ static Function PS_AR6_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1, 1}, mode = WAVE_DATA)
 
@@ -689,6 +742,83 @@ static Function PS_AR6_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str, sweep = 3)
 End
 
+static Function PS_AR6a_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxAccessResistance", var=10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxAccessToSteadyStateResistanceRatio", var=90)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_AR6a([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=PS_AR6a_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
+
+	// tests pass, except async QC
+	wv[][][0] = 1
+	wv[][][1] = 5
+	wv[][][2] = 6
+	wv[][][3] = 0
+End
+
+static Function PS_AR6a_REENTRY([string str])
+	variable sweepNo
+	string stimset, expected, stimsetIndexEnd
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	Make/FREE/D accResistanceRef = {5e6, 5e6, 5e6}
+	CHECK_EQUAL_WAVES(entries[%accResistance], accResistanceRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%accResistancePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	Make/FREE/D ssResistanceRef = {6e6, 6e6, 6e6}
+	CHECK_EQUAL_WAVES(entries[%ssResistance], ssResistanceRef, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%resistanceRatio], {0.83, 0.83, 0.83}, mode = WAVE_DATA, tol = 1e-2)
+	CHECK_EQUAL_WAVES(entries[%resistanceRatioPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries[%resultsSweep], TEXT_WAVE)
+	CHECK_WAVE(entries[%resultsPeakResistance], TEXT_WAVE)
+	CHECK_WAVE(entries[%resultsSSResistance], TEXT_WAVE)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckBaselineChunks(str, {20, 520})
+	CheckTestPulseLikeEpochs(str)
+End
+
 static Function PS_AR7_IGNORE(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -704,6 +834,11 @@ static Function PS_AR7_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -736,6 +871,11 @@ static Function PS_AR8_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -752,6 +892,7 @@ static Function PS_AR8([string str])
 	wv[][][0] = 1
 	wv[][][1] = 5
 	wv[][][2] = 6
+	wv[][][3] = 1
 End
 
 static Function PS_AR8_REENTRY([string str])
@@ -768,6 +909,8 @@ static Function PS_AR8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 

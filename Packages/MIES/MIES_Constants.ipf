@@ -1121,6 +1121,7 @@ StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS  = "%s access resistance QC"
 StrConstant PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE = "%s steady state resistance"
 StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO        = "%s access vs steady state ratio"
 StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS   = "%s access vs steady state ratio QC"
+StrConstant PSQ_FMT_LBN_ASYNC_PASS                 = "%s async QC"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"

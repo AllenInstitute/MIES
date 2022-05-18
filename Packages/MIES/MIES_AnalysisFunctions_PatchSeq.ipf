@@ -87,6 +87,7 @@
 ///  PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE   Steady state resistance of all TPs in the stimset           Ω        Numerical    AR                                   No           No
 ///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO          Ratio of access resistance to steady state                  (none)   Numerical    AR                                   No           No
 ///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS     Ratio of access resistance to steady state QC               On/Off   Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_ASYNC_PASS                   Combined alarm state of all async channels                  On/Off   Numerical    All                                  No           No
 ///  LBN_DELTA_I                              Delta current in pulse                                      Amperes  Numerical    RV, AD, DA (Sub)                     No           Yes
 ///  LBN_DELTA_V                              Delta voltage in pulse                                      Volts    Numerical    RV, AD, DA (Sub)                     No           Yes
 ///  LBN_RESISTANCE_FIT                       Fitted resistance from pulse                                Ohm      Numerical    RV, AD, DA (Sub)                     No           Yes
@@ -1095,6 +1096,7 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: Access Resistance [MΩ]
 /// - 2: Steady State Resistance [MΩ]
+/// - 3: Async Channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1107,6 +1109,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 
 	variable DAC, numCols, numRows, numLayers, numChunks
 	string stimset
+	string layerDimLabels = ""
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
 	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
@@ -1158,9 +1161,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_ACC_RES_SMOKE:
 			numChunks = 4
-			numLayers = 3
+			numLayers = 4
 			numRows = 1
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;AccessResistance;SteadyStateResistance;AsyncQC"
 			break
 		default:
 			ASSERT(0, "invalid type")
@@ -1175,6 +1179,8 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	endif
 
 	wv[] = 0
+
+	SetDimensionLabels(wv, layerDimLabels, LAYERS)
 
 	return wv
 End
@@ -1663,6 +1669,8 @@ End
 static Function/S PSQ_GetHelpCommon(variable type, string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
+			return "List of asynchronous channels with alarm enabled, which must *not* be in alarm state."
 		case "BaselineChunkLength":
 			return "Length of a baseline QC chunk to evaluate (defaults to " + num2str(PSQ_BL_EVAL_RANGE) + ")"
 		case "BaselineRMSLongThreshold":
@@ -1701,6 +1709,19 @@ static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct
 	endif
 
 	strswitch(name)
+		case "AsyncQCChannels":
+			WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
+			if(!WaveExists(wv))
+				return "Empty wave"
+			endif
+
+			Make/FREE/N=(NUM_ASYNC_CHANNELS)/D validValues = p
+			WAVE/Z diff = GetSetDifference(wv, validValues)
+
+			if(WaveExists(diff))
+				return "Invalid entries in wave: " + NumericWaveToList(wv, ";")
+			endif
+			break
 		case "BaselineChunkLength":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
@@ -6048,10 +6069,60 @@ static Function PSQ_VM_HandleFailingSpikeQC(string device, struct AnalysisFuncti
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 End
 
+static Function PSQ_CheckThatAlarmIsEnabled(string device, WAVE asyncChannels)
+	variable chan, alarmEnabled, enabled
+	string ctrl
+
+	for(chan : asyncChannels)
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+		enabled = DAG_GetNumericalValue(device, ctrl, index = chan)
+
+		if(!enabled)
+			printf "The async channel %d is not enabled.\r", chan
+			ControlWindowToFront()
+			return 1
+		endif
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		alarmEnabled = DAG_GetNumericalValue(device, ctrl, index = chan)
+
+		if(!alarmEnabled)
+			printf "The async channel %d does not have the alarm enabled.\r", chan
+			ControlWindowToFront()
+			return 1
+		endif
+	endfor
+End
+
+static Function PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(string device, variable type, variable sweepNo, WAVE asyncChannels)
+	variable chan, alarmState, alarmPassed
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	alarmPassed = 1
+	for(chan : asyncChannels)
+		sprintf key, "Async Alarm %d State", chan
+		alarmState = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
+		ASSERT(IsFinite(alarmState), "Invalid alarm state")
+
+		alarmPassed = alarmPassed && !alarmState
+	endfor
+
+	WAVE result = LBN_GetNumericWave()
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_ASYNC_PASS)
+	result[INDEP_HEADSTAGE] = alarmPassed
+	ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	return alarmPassed
+End
+
 Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -6084,6 +6155,7 @@ End
 Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -6106,7 +6178,8 @@ Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 End
 
 Function/S PSQ_AccessResistanceSmoke_GetParams()
-	return "[BaselineChunkLength:variable],"                 + \
+	return "AsyncQCChannels:wave,"                           + \
+	       "[BaselineChunkLength:variable],"                 + \
 	       "[BaselineRMSLongThreshold:variable],"            + \
 	       "[BaselineRMSShortThreshold:variable],"           + \
 	       "MaxAccessResistance:variable,"                   + \
@@ -6162,6 +6235,7 @@ End
 Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, numTestpulses, expectedNumTestpulses, ret, accessResistance, steadyStateResistance, chunk, baselineQCPassed, numSweepsFailedAllowed
 	variable accessResistanceQC, steadyStateResistanceQC, resistanceRatioQC, sweepPassed, setPassed, baselinePassed, samplingFrequencyPassed, midsweepReturnValue
+	variable asyncAlarmPassed
 	string cmd, str, key, msg, databrowser
 
 	switch(s.eventType)
@@ -6210,6 +6284,12 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			endif
 
 			ret = PSQ_CreateBaselineChunkSelectionEpochs(device, s.headstage, s.params, {0})
+			if(ret)
+				return 1
+			endif
+
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
 			if(ret)
 				return 1
 			endif
@@ -6283,9 +6363,12 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_ACC_RES_SMOKE, s)
 
-			sprintf msg, "SamplingFrequency %s, Sweep %s, BL QC %s, Access Resistance QC %s, Resistance Ratio QC %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(sweepPassed), ToPassFail(baselinePassed), ToPassFail(accessResistanceQC), ToPassFail(resistanceRatioQC)
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_ACC_RES_SMOKE, s.sweepNo, asyncChannels)
+
+			sprintf msg, "SamplingFrequency %s, Sweep %s, BL QC %s, Access Resistance QC %s, Resistance Ratio QC %s, Async alarm %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(sweepPassed), ToPassFail(baselinePassed), ToPassFail(accessResistanceQC), ToPassFail(resistanceRatioQC), ToPassFail(asyncAlarmPassed)
 			DEBUGPRINT(msg)
-			sweepPassed = baselinePassed && samplingFrequencyPassed && accessResistanceQC && resistanceRatioQC
+			sweepPassed = baselinePassed && samplingFrequencyPassed && accessResistanceQC && resistanceRatioQC && asyncAlarmPassed
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
