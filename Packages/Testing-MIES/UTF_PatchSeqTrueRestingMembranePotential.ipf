@@ -8,21 +8,22 @@
 ///
 /// .. Column order: test overrides, analysis parameters
 ///
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
-///  Test case   Baseline QC chunk 0   Average V chunk 0   Average V chunk 1   Number of Spikes   NumberOfFailedSweeps   BaselineChunkLength   AbsoluteVoltageDiff   RelativeVoltageDiff   Sampling Interval QC   NextStimSetName     NextIndexingEndStimSetName
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
-///  PS_VM1      -                     [12,13,14]          [16,17,18]          [1,2,3]            3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM2      ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM3      -                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM4      ✓                     [12,13,14]          [16,17,18]          0                  3                      500                   inf                   0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5      ✓                     [12,13,14]          [16,17,18]          0                  3                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5a     ✓                     [10,0.1,1]          [11,0.15,1.05]      0                  3                      500                   0.1                   10                    ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5b     ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   (none)
-///  PS_VM6      ✓                     [12,13,14]          [12,13,14]          0                  3                      600                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM7      ✓                     [12,13,14]          [12,13,14]          1                  1                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM7a     ✓                     [12,13,14]          [12,13,14]          [1, 0]             3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM8      ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     -                      StimulusSetA_DA_0   StimulusSetB_DA_0
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+///  Test case   Baseline QC chunk 0   Average V chunk 0   Average V chunk 1   Number of Spikes   Async Channels QC   NumberOfFailedSweeps   BaselineChunkLength   AbsoluteVoltageDiff   RelativeVoltageDiff   Sampling Interval QC   NextStimSetName     NextIndexingEndStimSetName
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+///  PS_VM1      -                     [12,13,14]          [16,17,18]          [1,2,3]            ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM2      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM3      -                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM4      ✓                     [12,13,14]          [16,17,18]          0                  ✓                  3                      500                   inf                   0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5      ✓                     [12,13,14]          [16,17,18]          0                  ✓                  3                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5a     ✓                     [10,0.1,1]          [11,0.15,1.05]      0                  ✓                  3                      500                   0.1                   10                    ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5b     ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   (none)
+///  PS_VM6      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      600                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7      ✓                     [12,13,14]          [12,13,14]          1                  ✓                  1                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7a     ✓                     [12,13,14]          [12,13,14]          [1, 0]             ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7b     ✓                     [12,13,14]          [12,13,14]          0                  -                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM8      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     -                      StimulusSetA_DA_0   StimulusSetB_DA_0
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
 ///
 /// @endrst
 
@@ -1293,6 +1294,120 @@ static Function PS_VM7a_REENTRY([string str])
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "SetVar_DataAcq_ITI"), 1)
 
 	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckBaselineChunks(str, {20, 520})
+End
+
+static Function PS_VM7b_IGNORE(device)
+	string device
+
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_VM7b([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=PS_VM7b_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
+
+	// tests pass, except async QC
+	wv[][][0]  = 1
+
+	// number of spikes
+	wv[][][1] = 0
+
+	// average voltages
+	// chunk 0
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
+
+	// chunk 1
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 0
+End
+
+static Function PS_VM7b_REENTRY([string str])
+	variable sweepNo
+	string stimset, stimsetIndexEnd, expected
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(entries[%rmsLongQCChunk0], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvg = {12e-3, 13e-3, 14e-3}
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvgADiff = {0, 0, 0}
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvgRDiff = {0, 0, 0}
+	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
+
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiffPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fullAvgRDiffPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fullAvgPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
+
+	// first sweep does not have autobias enabled
+	// and the last sweep's setting is only available in the GUI
+	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%autobias], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DataAcq_AutoBias"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%iti], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "SetVar_DataAcq_ITI"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
