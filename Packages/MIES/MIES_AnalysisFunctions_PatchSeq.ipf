@@ -1077,6 +1077,7 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: number of spikes (QC passes with 0)
 /// - 2: average voltage [mV]
+/// - 3: async channel QC
 ///
 /// Chunks (only for row/layer 0):
 /// - 0: RMS short baseline QC
@@ -1155,9 +1156,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_TRUE_REST_VM:
 			numChunks = 4
-			numLayers = 3
+			numLayers = 4
 			numRows = 2
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;NumberOfSpikes;AverageVoltage;AsyncQC"
 			break
 		case PSQ_ACC_RES_SMOKE:
 			numChunks = 4
@@ -5479,6 +5481,7 @@ Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, struct Check
 	string str
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -5522,6 +5525,7 @@ End
 Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
@@ -5548,7 +5552,8 @@ Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 End
 
 Function/S PSQ_TrueRestingMembranePotential_GetParams()
-	return "AbsoluteVoltageDiff:variable,"         + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "AbsoluteVoltageDiff:variable,"         + \
 	       "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
@@ -5601,7 +5606,7 @@ End
 Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, ret, preActiveHS, chunk, baselineQCPassed, spikeQCPassed, IsFinished, targetV, iti
 	variable averageVoltageQCPassed, samplingFrequencyQCPassed, setPassed, sweepPassed, DAC, level, totalOnsetDelay, ignoredTime
-	variable numSweepsFailedAllowed, averageVoltage, numSpikes, position, midsweepReturnValue
+	variable numSweepsFailedAllowed, averageVoltage, numSpikes, position, midsweepReturnValue, asyncAlarmPassed
 	string key, msg, stimset, nextIndexingEndStimSetName, ctrl
 
 	switch(s.eventType)
@@ -5664,6 +5669,12 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 				return 1
 			endif
 
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -5683,7 +5694,10 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 
 			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s)
 
-			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && spikeQCPassed && averageVoltageQCPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s.sweepNo, asyncChannels)
+
+			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && spikeQCPassed && averageVoltageQCPassed && asyncAlarmPassed
 
 			WAVE sweepPassedLBN = LBN_GetNumericWave()
 			sweepPassedLBN[INDEP_HEADSTAGE] = sweepPassed

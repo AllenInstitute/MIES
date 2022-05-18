@@ -118,6 +118,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
 	strswitch(name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
@@ -170,7 +171,7 @@ static Function/WAVE GetWave_IGNORE()
 	              "rmsShortQCChunk0;rmsShortQCChunk1;"                     + \
 	              "rmsLongQCChunk0;rmsLongQCChunk1;"                       + \
 	              "averageVChunk0;averageVChunk1;"                         + \
-	              "iti;getsetiti"
+	              "iti;getsetiti;asyncPass"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -189,6 +190,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	wv[%spikePass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	wv[%spikePositions] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_POSITIONS)
 
@@ -243,6 +245,11 @@ static Function PS_VM1_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -289,6 +296,8 @@ static Function PS_VM1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -341,6 +350,11 @@ static Function PS_VM2_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -370,6 +384,9 @@ static Function PS_VM2([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM2_REENTRY([string str])
@@ -387,6 +404,8 @@ static Function PS_VM2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -444,6 +463,11 @@ static Function PS_VM3_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -474,6 +498,9 @@ static Function PS_VM3([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM3_REENTRY([string str])
@@ -491,6 +518,8 @@ static Function PS_VM3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -543,6 +572,11 @@ static Function PS_VM4_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=inf)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -572,6 +606,9 @@ static Function PS_VM4([str])
 	wv[1][0][2] = 16
 	wv[1][1][2] = 17
 	wv[1][2][2] = 18
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM4_REENTRY([string str])
@@ -589,6 +626,8 @@ static Function PS_VM4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -646,6 +685,11 @@ static Function PS_VM5_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=inf)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -675,6 +719,9 @@ static Function PS_VM5([str])
 	wv[1][0][2] = 16
 	wv[1][1][2] = 17
 	wv[1][2][2] = 18
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5_REENTRY([string str])
@@ -692,6 +739,8 @@ static Function PS_VM5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -748,6 +797,11 @@ static Function PS_VM5a_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0.1)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=10)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -784,6 +838,9 @@ static Function PS_VM5a([str])
 	wv[1][0][2] = 11
 	wv[1][1][2] = 0.15
 	wv[1][2][2] = 1.05
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5a_REENTRY([string str])
@@ -801,6 +858,8 @@ static Function PS_VM5a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -858,6 +917,11 @@ static Function PS_VM5b_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -887,6 +951,9 @@ static Function PS_VM5b([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5b_REENTRY([string str])
@@ -904,6 +971,8 @@ static Function PS_VM5b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -961,6 +1030,11 @@ static Function PS_VM6_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -991,6 +1065,9 @@ static Function PS_VM6([str])
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
 
+	// async QC
+	wv[][][3] = 1
+
 	// DAQ is not started as PRE_SWEEP_CONFIG_EVENT fails due to non-matching BaselineChunkLength
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
@@ -1014,6 +1091,11 @@ static Function PS_VM7_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1043,6 +1125,9 @@ static Function PS_VM7([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM7_REENTRY([string str])
@@ -1060,6 +1145,8 @@ static Function PS_VM7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -1117,6 +1204,11 @@ static Function PS_VM7a_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1147,6 +1239,9 @@ static Function PS_VM7a([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM7a_REENTRY([string str])
@@ -1164,6 +1259,8 @@ static Function PS_VM7a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
@@ -1221,6 +1318,11 @@ static Function PS_VM8_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=100)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1250,6 +1352,9 @@ static Function PS_VM8([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM8_REENTRY([string str])
@@ -1267,6 +1372,8 @@ static Function PS_VM8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
