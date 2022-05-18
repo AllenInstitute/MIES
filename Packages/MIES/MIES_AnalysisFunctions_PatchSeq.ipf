@@ -1087,7 +1087,7 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: Acccess Resistance [MΩ]
+/// - 1: Access Resistance [MΩ]
 /// - 2: Steady State Resistance [MΩ]
 ///
 /// Chunks (only for layer 0):
