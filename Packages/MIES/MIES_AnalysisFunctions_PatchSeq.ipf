@@ -1039,6 +1039,7 @@ End
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: averaged steady state resistance [MΩ]
+/// - 2: async channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1144,9 +1145,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks = 4
-			numLayers = 2
+			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;SteadyStateResistance;AsyncQC"
 			break
 		case PSQ_SEAL_EVALUATION:
 			numChunks = 4
@@ -4605,6 +4607,7 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruc
 	string str
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
@@ -4630,6 +4633,7 @@ End
 Function/S PSQ_PipetteInBath_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
@@ -4650,7 +4654,8 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 End
 
 Function/S PSQ_PipetteInBath_GetParams()
-	return "[BaselineRMSLongThreshold:variable],"  + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "MaxLeakCurrent:variable,"              + \
 	       "MaxPipetteResistance:variable,"        + \
@@ -4699,7 +4704,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
-	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
+	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed, asyncAlarmPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
 	string key, ctrl, stimset, msg, databrowser, formula
@@ -4752,6 +4757,12 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 				return 1
 			endif
 
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -4796,7 +4807,10 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 
 			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s)
 
-			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && pipetteResistanceQCPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s.sweepNo, asyncChannels)
+
+			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && pipetteResistanceQCPassed && asyncAlarmPassed
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
