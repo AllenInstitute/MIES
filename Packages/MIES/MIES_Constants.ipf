@@ -11,6 +11,62 @@
 
 /// @defgroup BackgroundFunctions All background functions
 
+/// @name Version constants
+/// @anchor VersioningConstants
+/// @{
+
+Constant DAQ_CONFIG_WAVE_VERSION = 2
+
+/// Used to upgrade the GuiStateWave as well as the DA Ephys panel
+Constant DA_EPHYS_PANEL_VERSION           = 55
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 41
+Constant WAVEBUILDER_PANEL_VERSION        = 13
+Constant ANALYSISBROWSER_PANEL_VERSION    =  1
+
+/// Version of the stimset wave note
+Constant STIMSET_NOTE_VERSION = 7
+
+/// Version of the epoch information for DA data
+Constant SWEEP_EPOCH_VERSION = 5
+
+/// Version of the labnotebooks and results (numerical and textual) waves
+///
+/// Has to be increased on the following occasions:
+/// - New/Removed entries
+/// - Changed names of entries
+/// - Changed units or meaning of entries
+/// - New/Changed layers of entries
+///
+/// @{
+Constant LABNOTEBOOK_VERSION = 60
+Constant RESULTS_VERSION     = 2
+/// @}
+
+/// @name Analysis function versions
+/// @{
+Constant PSQ_PIPETTE_BATH_VERSION    = 2
+Constant PSQ_ACC_RES_SMOKE_VERSION   = 0
+Constant PSQ_CHIRP_VERSION           = 8
+Constant PSQ_DA_SCALE_VERSION        = 3
+Constant PSQ_RAMP_VERSION            = 4
+Constant PSQ_RHEOBASE_VERSION        = 3
+Constant PSQ_SQUARE_PULSE_VERSION    = 2
+Constant PSQ_SEAL_EVALUATION_VERSION = 2
+Constant PSQ_TRUE_REST_VM_VERSION    = 0
+Constant MSQ_FAST_RHEO_EST_VERSION   = 1
+Constant MSQ_DA_SCALE_VERSION        = 1
+Constant SC_SPIKE_CONTROL_VERSION    = 1
+/// @}
+
+/// Especially interesting for PXP consumers like the analysis browser.
+Constant EXPERIMENT_VERSION = 2
+
+/// All experiment versions up to the given value are supported
+Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
+
+Constant PA_SETTINGS_STRUCT_VERSION = 6
+/// @}
+
 /// @name Constans for the number of channels
 /// @anchor NUM_CHANNELS_CONSTANTS
 /// @{
@@ -69,12 +125,6 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 /// Max and min pressure regulator pressure in psi
 Constant MAX_REGULATOR_PRESSURE =  9.9
 Constant MIN_REGULATOR_PRESSURE = -9.9
-/// @}
-
-/// @name Latest version of config wave
-/// @anchor DaqConfigWaveVersion
-/// @{
-Constant DAQ_CONFIG_WAVE_VERSION = 2
 /// @}
 
 /// The indizies correspond to the values from @ref XopChannelConstants
@@ -674,31 +724,6 @@ Constant HARDWARE_DAC_DEFAULT_TRIGGER  = 0x0
 Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
-/// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 55
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 41
-Constant WAVEBUILDER_PANEL_VERSION        = 13
-Constant ANALYSISBROWSER_PANEL_VERSION    =  1
-
-/// Version of the labnotebooks and results (numerical and textual) waves
-///
-/// Has to be increased on the following occasions:
-/// - New/Removed entries
-/// - Changed names of entries
-/// - Changed units or meaning of entries
-/// - New/Changed layers of entries
-///
-/// @{
-Constant LABNOTEBOOK_VERSION = 60
-Constant RESULTS_VERSION     = 2
-/// @}
-
-/// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 7
-
-/// Version of the epoch information for DA data
-Constant SWEEP_EPOCH_VERSION = 5
-
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
 /// @{
@@ -1100,22 +1125,6 @@ StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS   = "%s access vs steady state 
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
-/// @name Analysis function versions
-/// @{
-Constant PSQ_PIPETTE_BATH_VERSION    = 2
-Constant PSQ_ACC_RES_SMOKE_VERSION   = 0
-Constant PSQ_CHIRP_VERSION           = 8
-Constant PSQ_DA_SCALE_VERSION        = 3
-Constant PSQ_RAMP_VERSION            = 4
-Constant PSQ_RHEOBASE_VERSION        = 3
-Constant PSQ_SQUARE_PULSE_VERSION    = 2
-Constant PSQ_SEAL_EVALUATION_VERSION = 2
-Constant PSQ_TRUE_REST_VM_VERSION    = 0
-Constant MSQ_FAST_RHEO_EST_VERSION   = 1
-Constant MSQ_DA_SCALE_VERSION        = 1
-Constant SC_SPIKE_CONTROL_VERSION    = 1
-/// @}
-
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
 /// @anchor SpecialAnalysisFunctionTypes
 ///
@@ -1356,12 +1365,6 @@ Constant EPOCH_ENTRY   = 0x4
 Constant STIMSET_ENTRY = 0x8
 /// @}
 
-/// Especially interesting for PXP consumers like the analysis browser.
-Constant EXPERIMENT_VERSION = 2
-
-/// All experiment versions up to the given value are supported
-Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
-
 /// @name Mode flag for AFH_GetListOfAnalysisParams()
 /// @anchor GetListOfParamsModeFlags
 /// @{
@@ -1552,7 +1555,6 @@ Constant EPOCH_COL_TAGS = 2
 Constant EPOCH_COL_TREELEVEL = 3
 
 /// @}
-Constant PA_SETTINGS_STRUCT_VERSION = 6
 Constant PA_IMAGE_SPECIAL_ENTRIES_RANGE = 0.065
 Constant PA_IMAGE_FAILEDMARKERSTART = 0.9
 
