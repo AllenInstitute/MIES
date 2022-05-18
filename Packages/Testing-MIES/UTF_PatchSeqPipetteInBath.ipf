@@ -76,47 +76,6 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-static Function TuneBrowser_IGNORE()
-
-	string databrowser, settingsHistoryPanel
-	variable i, numEntries
-
-	databrowser = DB_FindDataBrowser("ITC18USB_DEV_0")
-	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(databrowser)
-
-	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
-
-	STRUCT WMPopupAction pa
-	pa.win = settingsHistoryPanel
-	pa.eventCode = 2
-
-	Make/FREE/T keys = {                                 \
-	                     PSQ_FMT_LBN_RMS_SHORT_PASS,     \
-	                     PSQ_FMT_LBN_RMS_LONG_PASS,      \
-	                     PSQ_FMT_LBN_LEAKCUR_PASS,       \
-	                     PSQ_FMT_LBN_LEAKCUR,            \
-	                     PSQ_FMT_LBN_LEAKCUR_PASS,       \
-	                     PSQ_FMT_LBN_CHUNK_PASS,         \
-	                     PSQ_FMT_LBN_BL_QC_PASS,         \
-	                     PSQ_FMT_LBN_SWEEP_PASS,         \
-	                     PSQ_FMT_LBN_SET_PASS,           \
-	                     PSQ_FMT_LBN_PB_RESISTANCE,      \
-	                     PSQ_FMT_LBN_PB_RESISTANCE_PASS  \
-	                   }
-
-	numEntries = DimSize(keys, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-
-		if(!cmpstr(keys[i], PSQ_FMT_LBN_RMS_SHORT_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_RMS_LONG_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_CHUNK_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_LEAKCUR) || !cmpstr(keys[i], PSQ_FMT_LBN_LEAKCUR_PASS))
-			pa.popStr = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, keys[i], chunk = 0, query = 1)
-		else
-			pa.popStr = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, keys[i], query = 1)
-		endif
-
-		LBV_PopMenuProc_LabNotebookAndResults(pa)
-	endfor
-End
-
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	WAVE/T textualResultsValues = GetTextualResultsValues()
 
