@@ -2295,7 +2295,7 @@ static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string g
 
 	string opShort = "plus"
 
-	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, opShort)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
 	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
 	Note/K output, note(input)
 
@@ -2348,7 +2348,7 @@ End
 /// range (start[, stop[, step]])
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_RANGE)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonID, jsonPath, graph, SF_OP_RANGE)
 	WAVE/Z wv = input[0]
 	SF_ASSERT(WaveExists(wv), "Expected data input for range()")
 	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
@@ -2633,7 +2633,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
 	WAVE channels = SF_NewChannelsWave(numIndices ? numIndices : 1)
 	for(i = 0; i < numIndices; i += 1)
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_CHANNELS, argNum = i)
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_CHANNELS, i)
 		SF_ASSERT(DimSize(arg, ROWS) == 1, "Only one channels pattern can be specified per argument.")
 		WAVE chanSpec = arg[0]
 		channelName = ""
@@ -2705,16 +2705,16 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE/Z sweeps = sweepsRef[0]
 	else
 		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 0)
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
 		WAVE channels = arg[0]
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 1)
+		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
 		WAVE sweeps = arg[0]
 		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
 		if(numIndices == 3)
-			WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, argNum = 2)
+			WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
 			WAVE/T wMode = arg[0]
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
@@ -2749,7 +2749,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SF_ASSERT(numIndices >= 1, "data function requires at least 1 argument.")
 	SF_ASSERT(numIndices <= 2, "data function has maximal 2 arguments.")
 
-	WAVE/WAVE rangeRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, argNum = 0)
+	WAVE/WAVE rangeRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, 0)
 	WAVE/Z range = rangeRef[0]
 	SF_ASSERT(WaveExists(range), "Expected data input for range argument for data")
 	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
@@ -2761,7 +2761,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	endif
 
 	if(numIndices == 2)
-		WAVE/WAVE selectRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, argNum = 1)
+		WAVE/WAVE selectRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 	else
 		WAVE/WAVE selectRef = SF_ExecuteFormula("select()", graph)
 	endif
@@ -3361,18 +3361,26 @@ static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opS
 	return wRefPath
 End
 
-static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort[, variable argNum])
+/// @brief Executes the complete arguments of the JSON and parses the resulting data to a waveRef type
+///        DEPRECATED: executing all arguments e.g. as array in the executor poses issues as soon as data types get mixed.
+///                    e.g. operation(0, A, [1, 2, 3]) fails as [0, A, [1, 2, 3]] can not be converted to an Igor wave.
+///                    Thus, it is strongly recommended to parse each argument separately.
+static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string graph, string opShort)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + "_argTop")
+
+	return input
+End
+
+/// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
+static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	string opSpec, argStr
 
-	if(ParamIsDefault(argNum))
-		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-		opSpec = "_argTop"
-	else
-		argStr = num2istr(argNum)
-		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + argStr, graph = graph)
-		opSpec = "_arg" + argStr
-	endif
+	argStr = num2istr(argNum)
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + argStr, graph = graph)
+	opSpec = "_arg" + argStr
 	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + opSpec)
 
 	return input
