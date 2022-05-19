@@ -1021,6 +1021,7 @@ End
 ///      others are ignored], use NaN to use the real values
 /// - 3: passing spike check in chirp region or not [first row only,
 ///      others are ignored]
+/// - 4: async channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1140,9 +1141,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_CHIRP:
 			numChunks = 4
-			numLayers = 4
+			numLayers = 5
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;MaxInChirp;MinInChirp;SpikeQC;AsyncQC"
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks = 4
@@ -3945,6 +3947,7 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "FailedLevel":
@@ -3987,6 +3990,7 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "DAScaleOperator":
@@ -4046,7 +4050,8 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "[AutobiasTargetV:variable],"                       + \
+	return "AsyncQCChannels:wave,"                             + \
+	       "[AutobiasTargetV:variable],"                       + \
 	       "[AutobiasTargetVAtSetEnd:variable],"               + \
 	       "[BaselineRMSLongThreshold:variable],"              + \
 	       "[BaselineRMSShortThreshold:variable],"             + \
@@ -4133,7 +4138,7 @@ Function PSQ_Chirp(device, s)
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay
+	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
@@ -4281,6 +4286,13 @@ Function PSQ_Chirp(device, s)
 				endif
 			endif
 			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
@@ -4305,7 +4317,10 @@ Function PSQ_Chirp(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_CHIRP, s)
 
-			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_CHIRP, s.sweepNo, asyncChannels)
+
+			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && asyncAlarmPassed == 1)
 
 			if(spikeCheck)
 				sweepPassed = (sweepPassed == 1 && spikeCheckPassed == 1)
