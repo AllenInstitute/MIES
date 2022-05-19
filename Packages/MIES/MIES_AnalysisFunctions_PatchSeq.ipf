@@ -4277,10 +4277,10 @@ Function PSQ_Chirp(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_CHIRP, s)
 
+			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
+
 			if(spikeCheck)
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && spikeCheckPassed == 1)
-			else
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
+				sweepPassed = (sweepPassed == 1 && spikeCheckPassed == 1)
 			endif
 
 			WAVE result = LBN_GetNumericWave()
