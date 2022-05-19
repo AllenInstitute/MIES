@@ -978,6 +978,7 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
+/// - 2: async channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1124,9 +1125,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numChunks = 4
-			numLayers = 2
+			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_DA_SCALE:
 			numChunks = 4
@@ -3067,7 +3069,8 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
-	return "[BaselineRMSLongThreshold:variable],"  + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "NumberOfSpikes:variable,"              + \
 	       "[SamplingFrequency:variable],"         + \
@@ -3077,6 +3080,7 @@ End
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
@@ -3095,6 +3099,7 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
@@ -3157,7 +3162,7 @@ Function PSQ_Ramp(device, s)
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale, samplingFrequencyPassed
 	variable lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
-	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, asyncAlarmPassed
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier, chunk
 	string key, msg, stimset
@@ -3236,6 +3241,13 @@ Function PSQ_Ramp(device, s)
 			return 0
 
 			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
@@ -3245,7 +3257,10 @@ Function PSQ_Ramp(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RAMP, s)
 
-			sweepPassed = baselinePassed[s.headstage] && samplingFrequencyPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_RAMP, s.sweepNo, asyncChannels)
+
+			sweepPassed = baselinePassed[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed
