@@ -1893,10 +1893,14 @@ static Function PS_CR13([str])
 	wv[][1][3] = 1
 	wv[][2][3] = 1
 	wv[][3][3] = 0
-	wv[][4][3] = 0
+	wv[][4][3] = 1
 
 	// async QC passes
-	wv[][][4] = 1
+	wv[][0][4] = 1
+	wv[][1][4] = 1
+	wv[][2][4] = 1
+	wv[][3][4] = 1
+	wv[][4][4] = 0
 End
 
 static Function PS_CR13_REENTRY([str])
@@ -1911,14 +1915,14 @@ static Function PS_CR13_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", ""}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, PSQ_CR_PASS}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
@@ -1937,7 +1941,7 @@ static Function PS_CR13_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 3)
-	CheckPSQChunkTimes(str, {20, 520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
 End
 
 // No a, b as boundsState evaluation is always passing
