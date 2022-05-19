@@ -210,13 +210,6 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function/S GetStimset_IGNORE(string device)
-	variable DAC
-
-	DAC = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
-	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-End
-
 static Function CheckTestPulseLikeEpochs(string device, variable testpulseGroupSel)
 
 	switch(testpulseGroupSel)
@@ -304,7 +297,7 @@ static Function PS_SE1_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 2
 
@@ -331,10 +324,6 @@ static Function PS_SE1_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0, 0}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PatchSeqSealChec_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -381,7 +370,7 @@ static Function PS_SE2_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 0
 
@@ -408,10 +397,6 @@ static Function PS_SE2_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -458,7 +443,7 @@ static Function PS_SE3_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 0
 
@@ -484,10 +469,6 @@ static Function PS_SE3_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -534,7 +515,7 @@ static Function PS_SE4_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 0
 
@@ -560,10 +541,6 @@ static Function PS_SE4_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "StimulusSetA_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], NULL_WAVE)
@@ -611,7 +588,7 @@ static Function PS_SE5_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 2
 
@@ -638,10 +615,6 @@ static Function PS_SE5_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PatchSeqSealChec_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -689,7 +662,7 @@ static Function PS_SE6_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 2
 
@@ -716,10 +689,6 @@ static Function PS_SE6_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PatchSeqSealChec_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;", "1;", "2;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -766,7 +735,7 @@ static Function PS_SE7_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 0
 
@@ -793,10 +762,6 @@ static Function PS_SE7_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PatchSeqSealChec_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
@@ -875,7 +840,7 @@ static Function PS_SE9_REENTRY([str])
 	string str
 
 	variable sweepNo, autobiasV
-	string lbl, failedPulses, spikeCounts, stimset, expected
+	string lbl, failedPulses, spikeCounts
 
 	sweepNo = 0
 
@@ -902,10 +867,6 @@ static Function PS_SE9_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
-
-	stimset  = GetStimset_IGNORE(str)
-	expected = "PatchSeqSealChec_DA_0"
-	CHECK_EQUAL_STR(stimset, expected)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%resultsSweep], {"0;"}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%resultsResistanceA], TEXT_WAVE)
