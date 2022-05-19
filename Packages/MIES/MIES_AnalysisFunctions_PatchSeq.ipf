@@ -956,7 +956,13 @@ End
 /// #PSQ_SQUARE_PULSE:
 ///
 /// Rows:
-/// - x position in ms where the spike is in each sweep/step
+/// - Only one
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
 /// #PSQ_RHEOBASE/#PSQ_RAMP:
@@ -1122,8 +1128,9 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_SQUARE_PULSE:
-			numRows = IDX_NumberOfSweepsInSet(stimset)
-			numCols = 0
+			numRows = 1
+			numCols = IDX_NumberOfSweepsInSet(stimset)
+			numLayers = 1
 			break
 		case PSQ_CHIRP:
 			numChunks = 4
@@ -1297,7 +1304,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 				numSpikesFoundOverride = overrideValue > 0
 				break
 			case PSQ_SQUARE_PULSE:
-				overrideValue = overrideResults[count]
+				overrideValue = overrideResults[0][count][0]
 				numSpikesFoundOverride = overrideValue > 0
 				break
 			case PSQ_RAMP:
