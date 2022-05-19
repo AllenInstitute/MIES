@@ -583,11 +583,11 @@ static Function PS_RB6([str])
 	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB6_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes, async QC passes and first two spike not, third does
+	// baseline QC passes, async QC passes (except first) and first two spike not, third does
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][2][1]   = 1
-	wv[][][2]    = 1
+	wv[][1,2][2] = 1
 End
 
 static Function PS_RB6_REENTRY([str])
@@ -613,13 +613,13 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -627,7 +627,9 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
+	Make/FREE/D/N=(numEntries) stimScaleRef
+	stimScaleRef[0, 1] = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
+	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 1) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
