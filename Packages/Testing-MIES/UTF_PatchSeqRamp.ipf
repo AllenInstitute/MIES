@@ -759,11 +759,24 @@ static Function PS_RA6([str])
 	AcquireData(s, str, preAcquireFunc = PS_RA6_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
-	// baseline QC passes and first two spike not, third does, async QC passes
+	// baseline QC passes
 	wv = 0
 	wv[0,1][][0] = 1
-	wv[][2][1]   = SPIKE_POSITION_MS
-	wv[][][2] = 1
+
+	// sweep 0
+	// spike passes, async QC passes
+	wv[][0][1] = SPIKE_POSITION_MS
+	wv[][0][2] = 1
+
+	// sweep 1
+	// no spike, async QC fails
+	wv[][1][1] = 0
+	wv[][1][2] = 0
+
+	// sweep 2/3
+	// spikes, async QC passes
+	wv[][2, 3][1] = SPIKE_POSITION_MS
+	wv[][2, 3][2] = 1
 End
 
 static Function PS_RA6_REENTRY([str])
@@ -772,7 +785,7 @@ static Function PS_RA6_REENTRY([str])
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
 
-	sweepNo = 2
+	sweepNo = 3
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -780,50 +793,56 @@ static Function PS_RA6_REENTRY([str])
 	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(sweepQCWave, {1, 0, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 0, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
-	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "", "10000;"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "", "10000;", "10000;"}, mode = WAVE_DATA)
 
 	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0, 1})
+	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 0, 1, 1})
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
+	CHECK_EQUAL_VAR(numEntries, 4)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
 		CHECK_WAVE(durations, NUMERIC_WAVE)
 	else
-		CHECK_GT_VAR(durations[0], 15000 - PSQ_BL_EVAL_RANGE)
+		CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
 		CHECK_GT_VAR(durations[1], 15000 - PSQ_BL_EVAL_RANGE)
 		CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
 		CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+		CHECK_GT_VAR(durations[3], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[3], SPIKE_POSITION_TEST_DELAY_MS)
 	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
-	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 0)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 0)
+	[chunkstart, chunkend] = GetPostBaseLineInterval(str, 2, 1)
 	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 1)
-	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 2, 1)
-	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 2)
+	checkpsqchunktimes(str, {20, 520, chunkstart, chunkend}, sweep = 2)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 3, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 3)
 End
 
 static Function PS_RA7_IGNORE(string device)
