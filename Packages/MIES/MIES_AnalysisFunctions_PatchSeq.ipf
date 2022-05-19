@@ -2653,7 +2653,8 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
-	return "[BaselineRMSLongThreshold:variable],"  + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable"
@@ -2662,6 +2663,7 @@ End
 Function/S PSQ_Rheobase_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
@@ -2675,6 +2677,7 @@ End
 Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
@@ -2729,7 +2732,7 @@ Function PSQ_Rheobase(device, s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize, samplingFrequencyPassed
-	variable totalOnsetDelay
+	variable totalOnsetDelay, asyncAlarmPassed
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier, chunk
 	string key, msg
 
@@ -2811,6 +2814,13 @@ Function PSQ_Rheobase(device, s)
 			return 0
 
 			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, s.headstage)
@@ -2848,7 +2858,10 @@ Function PSQ_Rheobase(device, s)
 
 			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
 
-			sprintf msg, "numSweeps %d, baselineQCPassed %d, samplingFrequencyPassed %d", numSweeps, baselineQCPassed, samplingFrequencyPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_RHEOBASE, s.sweepNo, asyncChannels)
+
+			sprintf msg, "numSweeps %d, baselineQCPassed %d, samplingFrequencyPassed %d, asyncAlarmPassed %d", numSweeps, baselineQCPassed, samplingFrequencyPassed, asyncAlarmPassed
 			DEBUGPRINT(msg)
 
 			if(!samplingFrequencyPassed)
@@ -2861,8 +2874,7 @@ Function PSQ_Rheobase(device, s)
 				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
 				break
 			endif
-
-			if(!baselineQCPassed)
+			if(!baselineQCPassed || !asyncAlarmPassed)
 				break
 			endif
 
