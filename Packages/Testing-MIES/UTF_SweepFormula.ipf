@@ -31,6 +31,40 @@ static Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
+static Function [string win, string device] CreateFakeDataBrowserWindow()
+
+	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	win = DATABROWSER_WINDOW_TITLE
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+	MIES_DB#DB_SetUserData(win, device)
+End
+
+static Function/WAVE GetMultipleResults(string formula, string win)
+
+	WAVE wTextRef = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=win)
+	CHECK(IsTextWave(wTextRef))
+	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
+	return MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+End
+
+static Function/WAVE GetSingleResult(string formula, string win)
+
+	WAVE/WAVE wRefResult = GetMultipleResults(formula, win)
+	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
+
+	return wRefResult[0]
+End
+
 static Function FailFormula(string code)
 
 	try
