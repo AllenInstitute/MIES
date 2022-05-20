@@ -79,7 +79,7 @@ static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireF
 	OpenDatabrowser()
 End
 
-Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
+static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 	string device
 	variable sweepNo, chunk
 	string name
@@ -144,7 +144,7 @@ Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub1([str])
+static Function PS_DS_Sub1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -156,7 +156,7 @@ Function PS_DS_Sub1([str])
 	wv = 0
 End
 
-Function PS_DS_Sub1_REENTRY([str])
+static Function PS_DS_Sub1_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -281,7 +281,7 @@ Function PS_DS_Sub1_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub2([str])
+static Function PS_DS_Sub2([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -294,7 +294,7 @@ Function PS_DS_Sub2([str])
 	wv[0][] = 1
 End
 
-Function PS_DS_Sub2_REENTRY([str])
+static Function PS_DS_Sub2_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -467,7 +467,7 @@ Function PS_DS_Sub2_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub3([str])
+static Function PS_DS_Sub3([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -481,7 +481,7 @@ Function PS_DS_Sub3([str])
 	wv[0,1][] = 1
 End
 
-Function PS_DS_Sub3_REENTRY([str])
+static Function PS_DS_Sub3_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -628,7 +628,7 @@ Function PS_DS_Sub3_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub4([str])
+static Function PS_DS_Sub4([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -643,7 +643,7 @@ Function PS_DS_Sub4([str])
 	wv[DimSize(wv, ROWS) - 1][] = 1
 End
 
-Function PS_DS_Sub4_REENTRY([str])
+static Function PS_DS_Sub4_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -834,7 +834,7 @@ Function PS_DS_Sub4_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub5([str])
+static Function PS_DS_Sub5([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -848,7 +848,7 @@ Function PS_DS_Sub5([str])
 	wv[0][] = 0
 End
 
-Function PS_DS_Sub5_REENTRY([str])
+static Function PS_DS_Sub5_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -973,7 +973,7 @@ Function PS_DS_Sub5_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub6([str])
+static Function PS_DS_Sub6([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -988,7 +988,7 @@ Function PS_DS_Sub6([str])
 	wv[2][] = 1
 End
 
-Function PS_DS_Sub6_REENTRY([str])
+static Function PS_DS_Sub6_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1180,7 +1180,7 @@ Function PS_DS_Sub6_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub7([str])
+static Function PS_DS_Sub7([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1195,7 +1195,7 @@ Function PS_DS_Sub7([str])
 	wv[0, 1][2,6] = 1
 End
 
-Function PS_DS_Sub7_REENTRY([str])
+static Function PS_DS_Sub7_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1349,7 +1349,7 @@ Function PS_DS_Sub7_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub8([str])
+static Function PS_DS_Sub8([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1368,7 +1368,7 @@ Function PS_DS_Sub8([str])
 	wv[0, 1][8] = 1
 End
 
-Function PS_DS_Sub8_REENTRY([str])
+static Function PS_DS_Sub8_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1526,7 +1526,7 @@ Function PS_DS_Sub8_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 8)
 End
 
-Function PS_DS_Sub9_Ignore(device)
+static Function PS_DS_Sub9_IGNORE(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSShortThreshold", var = 0.150)
@@ -1535,7 +1535,7 @@ End
 
 // Same as PS_DS_Sub1 but with custom RMS short/long thresholds
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub9([str])
+static Function PS_DS_Sub9([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1547,7 +1547,7 @@ Function PS_DS_Sub9([str])
 	wv = 0
 End
 
-Function PS_DS_Sub9_REENTRY([str])
+static Function PS_DS_Sub9_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1670,7 +1670,7 @@ Function PS_DS_Sub9_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
-Function PS_DS_Sub10_Ignore(device)
+static Function PS_DS_Sub10_IGNORE(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "SamplingFrequency", var = 10)
@@ -1678,7 +1678,7 @@ End
 
 // Same as PS_DS_Sub3, but with non-matching sampling interval
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Sub10([str])
+static Function PS_DS_Sub10([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1692,7 +1692,7 @@ Function PS_DS_Sub10([str])
 	wv[0,1][] = 1
 End
 
-Function PS_DS_Sub10_REENTRY([str])
+static Function PS_DS_Sub10_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1842,7 +1842,7 @@ End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Supra1([str])
+static Function PS_DS_Supra1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1861,7 +1861,7 @@ Function PS_DS_Supra1([str])
 	wv[0][][2] = 1 + q
 End
 
-Function PS_DS_Supra1_REENTRY([str])
+static Function PS_DS_Supra1_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -1940,7 +1940,7 @@ End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Supra2([str])
+static Function PS_DS_Supra2([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -1959,7 +1959,7 @@ Function PS_DS_Supra2([str])
 	wv[0][][2] = q + 1
 End
 
-Function PS_DS_Supra2_REENTRY([str])
+static Function PS_DS_Supra2_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -2038,7 +2038,7 @@ static Function PS_DS_Supra3_IGNORE(device)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Supra3([str])
+static Function PS_DS_Supra3([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2057,7 +2057,7 @@ Function PS_DS_Supra3([str])
 	wv[0][][2] = q + 1
 End
 
-Function PS_DS_Supra3_REENTRY([str])
+static Function PS_DS_Supra3_REENTRY([str])
 	string str
 
 	variable sweepNo, numEntries
@@ -2136,7 +2136,7 @@ static Function PS_DS_Supra4_IGNORE(device)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Supra4([str])
+static Function PS_DS_Supra4([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2155,7 +2155,7 @@ Function PS_DS_Supra4([str])
 	wv[0][][2] = q^3 + 1
 End
 
-Function PS_DS_Supra4_REENTRY([str])
+static Function PS_DS_Supra4_REENTRY([str])
 	string str
 
 	variable sweepNo,  numEntries
@@ -2238,7 +2238,7 @@ static Function PS_DS_Supra5_IGNORE(device)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function PS_DS_Supra5([str])
+static Function PS_DS_Supra5([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2257,7 +2257,7 @@ Function PS_DS_Supra5([str])
 	wv[0][][2] = q^2 + 1
 End
 
-Function PS_DS_Supra5_REENTRY([str])
+static Function PS_DS_Supra5_REENTRY([str])
 	string str
 
 	variable sweepNo,  numEntries
