@@ -1532,7 +1532,7 @@ static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, rStart, rDelta
 	string str, epochStr, name, trace
-	string win = DATABROWSER_WINDOW_TITLE
+	string win, device
 	variable mode = DATA_ACQUISITION_MODE
 	variable numSweeps = 2
 	variable dataSize = 10
@@ -1542,16 +1542,9 @@ static Function TestOperationData()
 	variable rangeEnd1 = 8
 	string channelTypeList = "DA;AD;DA;AD;"
 	string channelNumberList = "2;6;3;7;"
-	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
 
-	if(windowExists(win))
-		DoWindow/K $win
-	endif
-
-	Display/N=$win as device
-	BSP_SetDataBrowser(win)
-	BSP_SetDevice(win, device)
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	sweepNo = 0
 
