@@ -1540,7 +1540,7 @@ static Function PS_DS_Sub9([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub9_Ignore)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub9_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
@@ -1683,7 +1683,7 @@ static Function PS_DS_Sub10([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub10_Ignore)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub10_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
