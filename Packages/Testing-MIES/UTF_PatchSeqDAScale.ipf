@@ -1932,9 +1932,7 @@ static Function PS_DS_Supra1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
-Function PS_SetOffsetOp_IGNORE(device)
-	string device
-
+static Function PS_DS_Supra2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
 End
 
@@ -1945,7 +1943,7 @@ static Function PS_DS_Supra2([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, postInitializeFunc = PS_SetOffsetOp_IGNORE)
+	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, preAcquireFunc = PS_DS_Supra2_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
