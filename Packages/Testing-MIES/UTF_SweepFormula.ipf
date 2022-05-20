@@ -735,50 +735,54 @@ End
 
 static Function TestOperationChannels()
 
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
 	Make/FREE input = {{0}, {NaN}}
 	SetDimLabel COLS, 0, channelType, input
 	SetDimLabel COLS, 1, channelNumber, input
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD)"))
+	WAVE output = GetSingleResult("channels(AD)", win)
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD0)"))
+	WAVE output = GetSingleResult("channels(AD0)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD0,AD1)"))
+	WAVE output = GetSingleResult("channels(AD0,AD1)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD0,DA1)"))
+	WAVE output = GetSingleResult("channels(AD0,DA1)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(DA0,DA0)"))
+	WAVE output = GetSingleResult("channels(DA0,DA0)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD,DA)"))
+	WAVE output = GetSingleResult("channels(AD,DA)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {1}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(1)"))
+	WAVE output = GetSingleResult("channels(1)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN, NaN}, {1, 3}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(1,3)"))
+	WAVE output = GetSingleResult("channels(1,3)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0,1,NaN},{1,2,3}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels(AD1,DA2,3)"))
+	WAVE output = GetSingleResult("channels(AD1,DA2,3)", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {NaN}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("channels()"))
+	WAVE output = GetSingleResult("channels()", win)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	try
-		SF_FormulaExecutor(DirectToFormulaParser("channels(unknown)"))
+		GetSingleResult("channels(unknown)", win)
 		FAIL()
 	catch
 		PASS()
