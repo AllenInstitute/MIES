@@ -1528,9 +1528,47 @@ static Function TestOperationSelect()
 
 End
 
+static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex[, WAVE ranges])
+
+	variable i
+
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), numResults)
+	for(i = 0; i < numResults; i += 1)
+		WAVE sweepData = dataWref[i]
+		Duplicate/FREE/RMD=[][chanIndex[i]] sweepRef, sweepDataRef
+		Redimension/N=(-1) sweepDataRef
+		if(!ParamIsDefault(ranges))
+			Duplicate/FREE/RMD=[ranges[i][0], ranges[i][1]] sweepDataRef, sweepDataRanged
+			WAVE sweepDataRef = sweepDataRanged
+		endif
+
+		REQUIRE_EQUAL_WAVES(sweepDataRef, sweepData, mode = WAVE_DATA)
+	endfor
+End
+
+static Function CheckSweepsMetaData(WAVE/WAVE dataWref, WAVE channelTypes, WAVE channelNumbers, WAVE sweepNumbers, string dataTypeRef)
+
+	variable i, numResults
+	string dataType
+	variable channelNumber, channelType, sweepNo
+
+	dataType = GetStringFromJSONWaveNote(dataWref, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(dataTypeRef, dataType)
+	numResults = DimSize(dataWref, ROWS)
+	for(i = 0; i < numResults; i += 1)
+		WAVE sweepData = dataWref[i]
+		sweepNo = GetNumberFromJSONWaveNote(sweepData, SF_META_SWEEPNO)
+		channelNumber = GetNumberFromJSONWaveNote(sweepData, SF_META_CHANNELNUMBER)
+		channelType = GetNumberFromJSONWaveNote(sweepData, SF_META_CHANNELTYPE)
+		CHECK_EQUAL_VAR(sweepNumbers[i], sweepNo)
+		CHECK_EQUAL_VAR(channelTypes[i], channelType)
+		CHECK_EQUAL_VAR(channelNumbers[i], channelNumber)
+	endfor
+End
+
 static Function TestOperationData()
 
-	variable i, j, numChannels, sweepNo, rStart, rDelta
+	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef
 	string str, epochStr, name, trace
 	string win, device
 	variable mode = DATA_ACQUISITION_MODE
@@ -1549,9 +1587,7 @@ static Function TestOperationData()
 	sweepNo = 0
 
 	CreateFakeSweepData(device, sweepNo=sweepNo)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
 	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo + 1)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0"
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
@@ -1564,66 +1600,65 @@ static Function TestOperationData()
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 
-	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, numChannels / 2) dataRef
-	dataRef[][][] = sweepRef[p]
+	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
-	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, 1) dataRef
-	dataRef[][][] = sweepRef[p]
+	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * 1
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1})
+	CheckSweepsMetaData(dataWref, {0}, {6}, {0}, SF_DATATYPE_SWEEP)
 
-	Make/FREE/N=(rangeEnd0 - rangeStart0 + 1, 1, numChannels / 2) dataRef
-	dataRef[][][] = sweepRef[p + rangeStart0]
+	sweepCnt = 1
 	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = rangeStart0
+	ranges[][1] = rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
-	Make/FREE/N=(rangeEnd1 - rangeStart1 + 1, 1, numChannels / 2) dataRef
-	dataRef[][][] = sweepRef[p + rangeStart1]
+	sweepCnt = 1
 	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = rangeStart1
+	ranges[][1] = rangeEnd1
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {1, 1}, SF_DATATYPE_SWEEP)
 
-	rStart = min(rangeStart0, rangeStart1)
-	Make/FREE/N=(max(rangeEnd0, rangeEnd1) - rStart + 1, 2, numChannels / 2) dataRef = NaN
-	dataRef[rangeStart0 - rStart, rangeEnd0 - rStart][0][] = sweepRef[p + rStart]
-	dataRef[rangeStart1 - rStart, rangeEnd1 - rStart][1][] = sweepRef[p + rStart]
-	SetDimLabel COLS, 0, sweep0, dataRef
-	SetDimLabel COLS, 1, sweep1, dataRef
-	SetDimLabel LAYERS, 0, AD6, dataRef
-	SetDimLabel LAYERS, 1, AD7, dataRef
+	sweepCnt = 2
 	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_LABELS)
-
-	// use a 3-dim range specification
-	str = "[[[" + num2istr(rangeStart0) + "," + num2istr(rangeStart0) + "],[" + num2istr(rangeStart1) + "," + num2istr(rangeStart1) + "]],"
-	str = str + "[[" + num2istr(rangeEnd0) + "," + num2istr(rangeEnd0) + "],[" + num2istr(rangeEnd1) + "," + num2istr(rangeEnd1) + "]]]"
-	str = "data(" + str + ",select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = p >= 2 ? rangeStart1 : rangeStart0
+	ranges[][1] = p >= 2 ? rangeEnd1 : rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 7, 6, 7}, {0, 0, 1, 1}, SF_DATATYPE_SWEEP)
 
 	// FAIL Tests
-	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
-
 	// non existing channel
 	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
 	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 2) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// range begin
 	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
 		FAIL()
 	catch
 		PASS()
@@ -1632,18 +1667,19 @@ static Function TestOperationData()
 	// range end
 	str = "data([0, 11],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	// One sweep does not exist, it is not result of select, we end up with one sweep
-	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, numChannels / 2) dataRef = NaN
-	dataRef[][0][] = sweepRef[p]
+	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	// Setup graph with equivalent data
 	TUD_Clear(win)
@@ -1664,13 +1700,20 @@ static Function TestOperationData()
 
 	Make/FREE/N=(DimSize(sweepRef, ROWS), 2, numChannels) dataRef
 	dataRef[][][] = sweepRef[p]
-	str = "data(cursors(A,B),select())"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
-	str = "data(cursors(A,B))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
+	sweepCnt = 2
+	str = "data(cursors(A,B),select())"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
+	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
+	str = "data(cursors(A,B))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
+	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
+
+	return NaN
+	// TODO TestOperationCursors
 	// Using the setup from data we also test cursors operation
 	Cursor/W=$win/A=1/P A, $trace, 0
 	Cursor/W=$win/A=1/P B, $trace, trunc(dataSize / 2)
