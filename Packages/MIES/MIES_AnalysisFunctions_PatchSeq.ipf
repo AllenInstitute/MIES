@@ -1000,6 +1000,7 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 /// - 2: Number of spikes
+/// - 3: Async channel QC
 ///
 /// Chunks (only for layer 0):
 /// - 0: RMS short baseline QC
@@ -1133,9 +1134,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			break
 		case PSQ_DA_SCALE:
 			numChunks = 4
-			numLayers = 3
+			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
+			layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 			break
 		case PSQ_SQUARE_PULSE:
 			numRows = 1
@@ -1810,7 +1812,8 @@ End
 
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
-	return "[BaselineRMSLongThreshold:variable],"  + \
+	return "AsyncQCChannels:wave,"                 + \
+	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "[DAScaleModifier:variable],"           + \
 	       "DAScales:wave,"                        + \
@@ -1827,6 +1830,7 @@ End
 Function/S PSQ_DAScale_GetHelp(string name)
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
@@ -1864,6 +1868,7 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
+		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "DAScaleModifier":
@@ -2037,7 +2042,7 @@ Function PSQ_DAScale(device, s)
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam
-	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed
 	string msg, stimset, key, opMode, offsetOp, textboxString, str
 	variable daScaleOffset = NaN
 	variable finalSlopePercent = NaN
@@ -2130,6 +2135,13 @@ Function PSQ_DAScale(device, s)
 			KillWindow/Z $SPIKE_FREQ_GRAPH
 
 			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			ret = PSQ_CheckThatAlarmIsEnabled(device, asyncChannels)
+			if(ret)
+				return 1
+			endif
+			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
@@ -2147,7 +2159,10 @@ Function PSQ_DAScale(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_DA_SCALE, s)
 
-			sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed
+			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
+			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_DA_SCALE, s.sweepNo, asyncChannels)
+
+			sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = sweepPassed

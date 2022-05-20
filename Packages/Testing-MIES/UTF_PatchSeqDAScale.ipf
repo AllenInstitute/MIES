@@ -103,6 +103,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED:
 		case PSQ_FMT_LBN_CHUNK_PASS:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_ASYNC_PASS:
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_DA_OPMODE:
@@ -143,13 +144,20 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 	endswitch
 End
 
+static Function PS_DS_Sub1_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub1([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub1_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
@@ -173,6 +181,9 @@ static Function PS_DS_Sub1_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -280,18 +291,26 @@ static Function PS_DS_Sub1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
+static Function PS_DS_Sub2_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub2([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub2_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
-	// only pre pulse chunk pass, others fail
-	wv[]    = 0
-	wv[0][] = 1
+	// only pre pulse chunk pass, async QC passes, others fail
+	wv[]      = 0
+	wv[0][]   = 1
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub2_REENTRY([str])
@@ -311,6 +330,9 @@ static Function PS_DS_Sub2_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -466,19 +488,28 @@ static Function PS_DS_Sub2_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
+static Function PS_DS_Sub3_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub3([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub3_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
+	// async QC passes
 	wv[]      = 0
 	wv[0,1][] = 1
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub3_REENTRY([str])
@@ -498,6 +529,9 @@ static Function PS_DS_Sub3_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -627,20 +661,29 @@ static Function PS_DS_Sub3_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
+static Function PS_DS_Sub4_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub4([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub4_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// last post pulse chunk pass
+	// async QC passes
 	wv[] = 0
 	wv[0][] = 1
 	wv[DimSize(wv, ROWS) - 1][] = 1
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub4_REENTRY([str])
@@ -660,6 +703,9 @@ static Function PS_DS_Sub4_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -833,19 +879,28 @@ static Function PS_DS_Sub4_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
+static Function PS_DS_Sub5_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub5([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub5_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails
 	// all post pulse chunk pass
-	wv[]    = 1
-	wv[0][] = 0
+	// async QC passes
+	wv[]      = 1
+	wv[0][]   = 0
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub5_REENTRY([str])
@@ -865,6 +920,9 @@ static Function PS_DS_Sub5_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -972,20 +1030,29 @@ static Function PS_DS_Sub5_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
+static Function PS_DS_Sub6_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub6([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub6_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv[]    = 0
-	wv[0][] = 1
-	wv[2][] = 1
+	// async QC passes
+	wv[]      = 0
+	wv[0][]   = 1
+	wv[2][]   = 1
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub6_REENTRY([str])
@@ -1006,6 +1073,9 @@ static Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -1179,20 +1249,29 @@ static Function PS_DS_Sub6_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020})
 End
 
+static Function PS_DS_Sub7_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub7([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub7_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweeps 2-6
+	// async QC passes
 	wv[]          = 0
 	wv[0, 1][2,6] = 1
+	wv[][][3]     = 1
 End
 
 static Function PS_DS_Sub7_REENTRY([str])
@@ -1213,6 +1292,9 @@ static Function PS_DS_Sub7_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -1348,24 +1430,33 @@ static Function PS_DS_Sub7_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 6)
 End
 
+static Function PS_DS_Sub8_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Sub8([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub8_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweep 0, 3, 6, 7 , 8
+	// async QC passes
 	wv[]        = 0
 	wv[0, 1][0] = 1
 	wv[0, 1][3] = 1
 	wv[0, 1][6] = 1
 	wv[0, 1][7] = 1
 	wv[0, 1][8] = 1
+	wv[][][3]   = 1
 End
 
 static Function PS_DS_Sub8_REENTRY([str])
@@ -1389,6 +1480,9 @@ static Function PS_DS_Sub8_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -1531,6 +1625,11 @@ static Function PS_DS_Sub9_IGNORE(device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSShortThreshold", var = 0.150)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSLongThreshold", var = 0.250)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Same as PS_DS_Sub1 but with custom RMS short/long thresholds
@@ -1564,6 +1663,9 @@ static Function PS_DS_Sub9_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -1674,6 +1776,11 @@ static Function PS_DS_Sub10_IGNORE(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "SamplingFrequency", var = 10)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Same as PS_DS_Sub3, but with non-matching sampling interval
@@ -1688,8 +1795,10 @@ static Function PS_DS_Sub10([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
+	// async QC passes
 	wv[]      = 0
 	wv[0,1][] = 1
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Sub10_REENTRY([str])
@@ -1709,6 +1818,9 @@ static Function PS_DS_Sub10_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1}, mode = WAVE_DATA)
 
 	// BEGIN baseline QC
 
@@ -1840,6 +1952,13 @@ End
 
 // no baseline checks for supra
 
+static Function PS_DS_Supra1_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_DS_Supra1([str])
@@ -1847,7 +1966,7 @@ static Function PS_DS_Supra1([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str)
+	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, preAcquireFunc = PS_DS_Supra1_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -1859,6 +1978,8 @@ static Function PS_DS_Supra1([str])
 	wv[0][][1] = 1
 	// increasing number of spikes
 	wv[0][][2] = 1 + q
+	// async QC passes
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Supra1_REENTRY([str])
@@ -1879,6 +2000,9 @@ static Function PS_DS_Supra1_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	CHECK_EQUAL_WAVES(sweepPassed, baselineQCPassed)
@@ -1934,6 +2058,11 @@ End
 
 static Function PS_DS_Supra2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
@@ -1955,6 +2084,8 @@ static Function PS_DS_Supra2([str])
 	wv[0][][1] = mod(q, 2) == 0
 	// increasing number of spikes
 	wv[0][][2] = q + 1
+	// async QC passes
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Supra2_REENTRY([str])
@@ -1974,6 +2105,9 @@ static Function PS_DS_Supra2_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	CHECK_EQUAL_WAVES(sweepPassed, baselineQCPassed)
@@ -2033,6 +2167,11 @@ static Function PS_DS_Supra3_IGNORE(device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 100)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -2053,6 +2192,8 @@ static Function PS_DS_Supra3([str])
 	wv[0][][1] = mod(q, 2) == 0
 	// increasing number of spikes
 	wv[0][][2] = q + 1
+	// async QC passes
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Supra3_REENTRY([str])
@@ -2072,6 +2213,9 @@ static Function PS_DS_Supra3_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -2131,6 +2275,11 @@ static Function PS_DS_Supra4_IGNORE(device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 60)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -2151,6 +2300,8 @@ static Function PS_DS_Supra4([str])
 	wv[0][][1] = mod(q, 2) == 0
 	// increasing number of spikes
 	wv[0][][2] = q^3 + 1
+	// async QC passes
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Supra4_REENTRY([str])
@@ -2170,6 +2321,9 @@ static Function PS_DS_Supra4_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -2233,6 +2387,11 @@ static Function PS_DS_Supra5_IGNORE(device)
 	AFH_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
 	AFH_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
 	AFH_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -2253,6 +2412,8 @@ static Function PS_DS_Supra5([str])
 	wv[0][][1] = 1
 	// increasing number of spikes
 	wv[0][][2] = q^2 + 1
+	// async QC passes
+	wv[][][3] = 1
 End
 
 static Function PS_DS_Supra5_REENTRY([str])
@@ -2272,6 +2433,9 @@ static Function PS_DS_Supra5_REENTRY([str])
 
 	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
