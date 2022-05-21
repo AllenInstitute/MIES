@@ -506,6 +506,11 @@ End
 /// @brief Return the absolute path to the repurposed sweep time global variable.
 ///
 /// Units are seconds.
+///
+/// This value is added on *top* of the left over sweep time. Use a negative
+/// value to have a shorter ITI than what is left over in the sweep.
+///
+/// @sa LeftOverSweepTime()
 Function/S GetRepurposedSweepTime(device)
 	string device
 

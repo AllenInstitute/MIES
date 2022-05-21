@@ -5849,16 +5849,22 @@ Function UpdateLeftOverSweepTime(device, fifoPos)
 
 	string msg
 
-	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
+	NVAR repurposedTime = $GetRepurposedSweepTime(device)
 
-	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-	NVAR repurposedTime      = $GetRepurposedSweepTime(device)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-
-	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
+	repurposedTime += LeftOverSweepTime(device, fifoPos)
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
+End
+
+Function LeftOverSweepTime(string device, variable fifoPos)
+
+	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
+
+	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
+
+	return max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
 End
 
 /// @brief Calculate deltaI/deltaV from a testpulse like stimset in "Current Clamp" mode
