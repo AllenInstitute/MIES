@@ -780,8 +780,14 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		elseif(!rmsLongPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
 		elseif(!targetVPassedAll)
-			NVAR repurposedTime = $GetRepurposedSweepTime(device)
-			repurposedTime = 10
+			if(type == PSQ_CHIRP)
+				NVAR repurposedTime = $GetRepurposedSweepTime(device)
+				repurposedTime = 6 - LeftOverSweepTime(device, fifoInStimsetTime + totalOnsetDelay)
+			else
+				NVAR repurposedTime = $GetRepurposedSweepTime(device)
+				repurposedTime = 10
+			endif
+
 			return ANALYSIS_FUNC_RET_REPURP_TIME
 		elseif(!leakCurPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP

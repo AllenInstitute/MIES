@@ -2305,3 +2305,88 @@ static Function PS_CR16_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
+
+static Function PS_CR17_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	// AmpBesselFilter/AmpBesselFilterRestore defaults
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR17([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, preAcquireFunc = PS_CR17_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
+
+	// BL targetV fails for 1 first chunk in first sweep
+	wv[][][0] = 1
+	wv[0][0][0][2] = 0
+
+	wv[][][1] = 35
+	wv[][][2] = -25
+	wv[][][4] = 1
+End
+
+static Function PS_CR17_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 3
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"","BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
+	CheckMCCLPF(str, LPF_BYPASS)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+End

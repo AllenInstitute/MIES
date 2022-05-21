@@ -46,7 +46,7 @@ Constant RESULTS_VERSION     = 2
 /// @{
 Constant PSQ_PIPETTE_BATH_VERSION    = 3
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 1
-Constant PSQ_CHIRP_VERSION           = 10
+Constant PSQ_CHIRP_VERSION           = 11
 Constant PSQ_DA_SCALE_VERSION        = 4
 Constant PSQ_RAMP_VERSION            = 5
 Constant PSQ_RHEOBASE_VERSION        = 4
