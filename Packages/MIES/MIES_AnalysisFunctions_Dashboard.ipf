@@ -734,7 +734,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
-	variable avgCheckPass
+	variable avgCheckPass, stopReason
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -757,6 +757,19 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 		if(WaveExists(sweepPass) && sweepPass[i])
 			sprintf text, "Sweep %d passed", sweeps[i]
+			perSweepFailedMessage += text + "\r"
+			continue
+		endif
+
+		stopReason = GetLastSettingIndep(numericalValues, sweepNo, "DAQ stop reason", UNKNOWN_MODE)
+		if(!IsNaN(stopReason) && stopReason != DQ_STOP_REASON_FINISHED)
+			if(stopReason == DQ_STOP_REASON_DAQ_BUTTON)
+				msg = "DAQ was stopped early via button"
+			else
+				sprintf msg, "DAQ was stopped early (%#X)", stopReason
+			endif
+			sprintf text, "Sweep %d failed: %s", sweepNo, msg
+
 			perSweepFailedMessage += text + "\r"
 			continue
 		endif
