@@ -1341,13 +1341,9 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						break
 					case "Ohm":
 					case "Ω":
-
 						value = abs(value)
 						CHECK_GT_VAR(value, 0)
-
-						/// @todo adapt once https://github.com/AllenInstitute/MIES/pull/1316
-						/// is merged
-						CHECK_LE_VAR(value, 12.5e9)
+						CHECK_LE_VAR(value, 12.5e6)
 						break
 					case "ms":
 						CHECK_GE_VAR(value, 0)
