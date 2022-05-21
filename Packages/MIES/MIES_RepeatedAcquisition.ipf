@@ -16,11 +16,23 @@
 static Function RA_RecalculateITI(device)
 	string device
 
-	variable ITI
+	variable ITI, sweepNo
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(device)
 	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
 	repurposedTime = 0
+
+	sweepNo = AS_GetSweepNumber(device)
+	ASSERT(IsValidSweepNumber(sweepNo), "Invalid sweep nuber")
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	vals[0][0][INDEP_HEADSTAGE] = ITI
+	Make/T/FREE/N=(3, 1) keys
+	keys[0] = "Inter-trial interval (effective)"
+	keys[1] = "s"
+	keys[2] = LABNOTEBOOK_NO_TOLERANCE
+
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
 
 	return ITI
 End
