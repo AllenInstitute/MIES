@@ -754,13 +754,13 @@ Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength
 	ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
 	ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
-	FitResistance(device)
+	FitResistance(device, headstage)
 End
 
-/// Plot the resistance of the sweeps of the same RA cycle
+/// Plot the resistance of the sweeps of the same SCI
 ///
 /// Usually called by PSQ_AdjustDAScale().
-Function FitResistance(string device, [variable showPlot])
+Function FitResistance(string device, variable headstage, [variable showPlot])
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
 	variable lastWrittenSweep
 	string graph, textBoxString, trace
@@ -778,10 +778,10 @@ Function FitResistance(string device, [variable showPlot])
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 	if(!WaveExists(sweeps))
-		printf "The last sweep %d did not hold any repeated acquisition cycle information.\r", sweepNo
+		printf "The last sweep %d did not hold any stimset cycle information.\r", sweepNo
 		ControlWindowToFront()
 		return NaN
 	endif
@@ -1027,6 +1027,7 @@ End
 ///   number of sweeps must be larger than the number of rows in the targetVoltages wave below.
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
+/// - All active IC headstages must run this analysis function
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MΩ
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
@@ -1163,7 +1164,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
-			FitResistance(device, showPlot = 1)
+			FitResistance(device, s.headstage, showPlot = 1)
 
 			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
