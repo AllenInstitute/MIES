@@ -18,13 +18,14 @@ def get_version():
 # sphinx config
 extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', \
               'sphinxcontrib.fulltoc', 'sphinxcontrib.images',    \
-              'sphinxembeddedvideos.youtube']
+              'sphinxcontrib.youtube']
 
 master_doc = "index"
 project= "MIES Igor"
 
 html_static_path = ['_static']
 
+html_copy_source = False
 html_show_sourcelink = False
 
 exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications']
