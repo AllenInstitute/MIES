@@ -760,15 +760,19 @@ End
 /// Plot the resistance of the sweeps of the same SCI
 ///
 /// Usually called by PSQ_AdjustDAScale().
-Function FitResistance(string device, variable headstage, [variable showPlot])
+Function FitResistance(string device, variable headstage, [variable showPlot, variable anaFuncType])
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
-	variable lastWrittenSweep
-	string graph, textBoxString, trace
+	variable lastWrittenSweep, sweepPassed
+	string graph, textBoxString, trace, key
 
 	if(ParamIsDefault(showPlot))
 		showPlot = 1
 	else
 		showPlot = !!showPlot
+	endif
+
+	if(ParamIsDefault(anaFuncType))
+		anaFuncType = NaN
 	endif
 
 	sweepNo = AFH_GetLastSweepAcquired(device)
@@ -808,6 +812,15 @@ Function FitResistance(string device, variable headstage, [variable showPlot])
 		WAVE/Z deltaV = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V, UNKNOWN_MODE)
 
 		if(!WaveExists(deltaI) || !WaveExists(deltaV))
+			if(IsFinite(anaFuncType))
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+				sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(sweepPassed) && !sweepPassed)
+					continue
+				endif
+			endif
+
 			print "Could not find all required labnotebook keys"
 			ControlWindowToFront()
 			continue
