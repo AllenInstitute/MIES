@@ -479,8 +479,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(device, listOfFunctions, startTim
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
 	elseif(addOrRemoveDevice == -1) // remove a DAQ device
-		Duplicate/FREE/R=[][0] ActiveDevTimeParam ListOfdeviceID
-		FindValue/V=(deviceID) ListOfdeviceID
+		FindValue/V=(deviceID)/RMD=[][0] ActiveDevTimeParam
 		rowToRemove = V_Value
 		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
 		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
