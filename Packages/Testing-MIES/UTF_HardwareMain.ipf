@@ -1358,6 +1358,10 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						CHECK_GE_VAR(value, 0)
 						CHECK_LE_VAR(value, 100)
 						break
+					case "Hz":
+						CHECK_GT_VAR(value, 0)
+						CHECK_LE_VAR(value, 1e6)
+						break
 					default:
 						printf "missing %s with unit %s\r", entry, unit
 						CHECK(0)

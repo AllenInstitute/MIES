@@ -68,6 +68,7 @@
 ///  PSQ_FMT_LBN_CR_BOUNDS_STATE              Upper and Lower bounds state according to min/max pos.      (none)   Textual      CR                                   No           No
 ///  PSQ_FMT_LBN_CR_SPIKE_CHECK               Spike check was enabled/disabled                            (none)   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_INIT_UOD                  Initial user onset delay                                    ms       Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_INIT_LPF                  Initial MCC low pass filter                                 Hz       Numerical    CR                                   No           No
 ///  FMT_LBN_ANA_FUNC_VERSION                 Integer version of the analysis function                    (none)   Numerical    All                                  No           Yes
 ///  PSQ_FMT_LBN_PB_RESISTANCE                Pipette Resistance                                          Ohm      Numerical    PB                                   No           No
 ///  PSQ_FMT_LBN_PB_RESISTANCE_PASS           Pipette Resistance QC                                       On/Off   Numerical    PB                                   No           No
@@ -4012,6 +4013,11 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
+		case "AmpBesselFilter":
+			return "Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz]," \
+			+ "pass \"" + num2str(LPF_BYPASS, "%g") + "\" to select \"Bypass\"."
+		case "AmpBesselFilterRestore":
+			return "Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
 		case "AutobiasTargetV":
 			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
 		case "AutobiasTargetVAtSetEnd":
@@ -4057,6 +4063,18 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
+		case "AmpBesselFilter":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val <= 0)
+				return "Must be a positive value."
+			endif
+			break
+		case "AmpBesselFilterRestore":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
 		case "AutobiasTargetV":
 		case "AutobiasTargetVAtSetEnd":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
@@ -4107,7 +4125,9 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "AsyncQCChannels:wave,"                             + \
+	return "[AmpBesselFilter:variable],"                       + \
+	       "[AmpBesselFilterRestore:variable],"                + \
+	       "AsyncQCChannels:wave,"                             + \
 	       "[AutobiasTargetV:variable],"                       + \
 	       "[AutobiasTargetVAtSetEnd:variable],"               + \
 	       "[BaselineRMSLongThreshold:variable],"              + \
@@ -4194,9 +4214,9 @@ Function PSQ_Chirp(device, s)
 
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
-	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
+	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale, initLPF, ampBesselFilter
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
-	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
+	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
 
@@ -4341,6 +4361,18 @@ Function PSQ_Chirp(device, s)
 				if(IsFinite(userOnsetDelay))
 					PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
 				endif
+
+				WAVE result = LBN_GetNumericWave()
+				initLPF = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+				ASSERT(IsFinite(initLPF), "Queried LPF value from MCC amp is non-finite")
+				result[INDEP_HEADSTAGE] = initLPF
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_LPF)
+				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = "Hz")
+
+				ampBesselFilter = AFH_GetAnalysisParamNumerical("AmpBesselFilter", s.params, defValue = PSQ_CR_DEFAULT_LPF)
+
+				ret = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, ampBesselFilter, selectAmp = 0)
+				ASSERT(!ret, "Could not set LPF in MCC")
 			endif
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
@@ -4448,6 +4480,15 @@ Function PSQ_Chirp(device, s)
 			userOnsetDelay = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			ASSERT(IsFinite(userOnsetDelay), "Expected finite value for user onset delay")
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = userOnsetDelay)
+
+			besselFilterRestore = !!AFH_GetAnalysisParamNumerical("AmpBesselFilterRestore", s.params, defValue = 1)
+			if(besselFilterRestore)
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_LPF, query = 1)
+				ampBesselFilter = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+				ASSERT(IsFinite(ampBesselFilter), "Expected finite value for the amplifier bessel filter")
+				ret = AI_SendToAmp(device, s.headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, ampBesselFilter)
+				ASSERT(IsFinite(ret), "Can not set LPF value in MCC amp")
+			endif
 
 			AD_UpdateAllDatabrowser()
 			break
