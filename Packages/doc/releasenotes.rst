@@ -6,8 +6,6 @@ Release notes
 Release 2.5
 ===========
 
-Current up to ad78a346 (Merge pull request #1329 from AllenInstitute/feature/1312-mh_remove_instru_helper_fun, 2022-04-08).
-
 Controls
 --------
 
