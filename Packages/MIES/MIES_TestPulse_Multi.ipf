@@ -389,8 +389,7 @@ static Function TPM_RemoveDevice(device)
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
 	ASSERT(idx >= 0, "Invalid index")
 
-	Duplicate/FREE/R=[0, idx][0] ActiveDevicesTPMD, deviceIDs
-	FindValue/V=(deviceID) deviceIDs
+	FindValue/V=(deviceID)/RMD=[0, idx][0] ActiveDevicesTPMD
 	ASSERT(V_Value != -1, "Could not find the device")
 
 	// overwrite the to be removed device with the last one
