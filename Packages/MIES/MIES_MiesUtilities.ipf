@@ -7071,6 +7071,7 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
+			break
 		case PSQ_SEAL_EVALUATION:
 			prefix = PSQ_SE_LBN_PREFIX
 			break
