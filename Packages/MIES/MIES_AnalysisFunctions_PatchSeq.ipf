@@ -4671,11 +4671,7 @@ End
 /// Epoch borders
 /// -------------
 ///
-///                |   |     |   |   |     |   |   |     |   |
-///
-/// So for this stimset we have two epochs at the very beginning and end, plus
-/// three epochs per test pulse and three test pulses, which gives eleven in
-/// total.
+///       0        | 1 |  2  | 3 | 4 |  5  | 6 | 7 |  8  | 9 |     10
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
