@@ -4723,10 +4723,8 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
-			if(expectedNumTestpulses != numTestpulses)
-				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
-				ControlWindowToFront()
+			ret = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
+			if(ret)
 				return 1
 			endif
 
@@ -4885,21 +4883,22 @@ End
 ///
 /// Assumes that all sweeps in the stimset are the same.
 ///
-/// @return number of found testpulses
-static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
-	variable DAC, numTestPulses, prePulseTP, DAScale, tpIndex
-	variable offset, numEpochs, i, idx, totalOnsetDelay
+/// @return 0 on success, 1 on failure
+static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, variable numTestPulses)
+	variable DAC, prePulseTP, DAScale, tpIndex
+	variable offset, numEpochs, i, idx, totalOnsetDelay, requiredEpochs
 	string setName
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
 
 	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
-	numTestPulses = (numEpochs - 2) / 3
+	requiredEpochs = numTestPulses * 3 + 2
 
-	if(!IsInteger(numTestPulses) || numTestPulses <= 0)
-		printf "(%s) The stimset %s does not follow the expected format", device, setName
-		return NaN
+	if(numEpochs < requiredEpochs)
+		printf "For the requested number of test pulses (%g) we need at least %g epochs, but the stimset only has %g.\r", numTestpulses, requiredEpochs, numEpochs
+		ControlWindowToFront()
+		return 1
 	endif
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
@@ -4921,7 +4920,7 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
 		offset = PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, offset, idx, tpIndex++)
 	endfor
 
-	return numTestPulses
+	return 0
 End
 
 static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
@@ -6204,10 +6203,8 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
-			if(expectedNumTestpulses != numTestpulses)
-				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
-				ControlWindowToFront()
+			ret = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
+			if(ret)
 				return 1
 			endif
 
