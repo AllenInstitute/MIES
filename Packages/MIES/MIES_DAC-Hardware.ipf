@@ -1297,6 +1297,11 @@ Function HW_ITC_ReadADC(deviceID, channel, [flags])
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
+	// @todo ITCXOP: manually return NaN on error until https://github.com/AllenInstitute/ITCXOP2/issues/19 is fixed
+	if(V_ITCError != 0 || V_ITCXOPError != 0)
+		return NaN
+	endif
+
 	return V_Value
 End
 
@@ -1324,6 +1329,11 @@ Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	// @todo ITCXOP: manually return NaN on error until https://github.com/AllenInstitute/ITCXOP2/issues/19 is fixed
+	if(V_ITCError != 0 || V_ITCXOPError != 0)
+		return NaN
+	endif
 
 	return V_Value
 End
