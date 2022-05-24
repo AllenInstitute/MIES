@@ -513,6 +513,12 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		indizes[i] = idx
 		numAdditions += 1
 
+		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
+
+		if(isUserEntry)
+			continue
+		endif
+
 		if(logbookType == LBT_LABNOTEBOOK)
 			if(!WaveExists(desc) && IsNumericWave(values))
 				WAVE/T desc = GetLBNumericalDescription()
@@ -523,12 +529,6 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 		// check description wave if available
 		if(!WaveExists(desc))
-			continue
-		endif
-
-		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
-
-		if(isUserEntry)
 			continue
 		endif
 
