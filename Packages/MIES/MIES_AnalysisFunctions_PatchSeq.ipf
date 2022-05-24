@@ -4584,6 +4584,7 @@ Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruc
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "NumberOfTestpulses":
@@ -4608,6 +4609,7 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 		case "MaxLeakCurrent":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "NumberOfTestpulses":
@@ -4629,6 +4631,7 @@ Function/S PSQ_PipetteInBath_GetParams()
 	       "MaxLeakCurrent:variable,"              + \
 	       "MaxPipetteResistance:variable,"        + \
 	       "MinPipetteResistance:variable,"        + \
+	       "[NextIndexingEndStimSetName:string],"  + \
 	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "NumberOfTestpulses:variable,"          + \
@@ -4668,11 +4671,7 @@ End
 /// Epoch borders
 /// -------------
 ///
-///                |   |     |   |   |     |   |   |     |   |
-///
-/// So for this stimset we have two epochs at the very beginning and end, plus
-/// three epochs per test pulse and three test pulses, which gives eleven in
-/// total.
+///       0        | 1 |  2  | 3 | 4 |  5  | 6 | 7 |  8  | 9 |     10
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
@@ -4724,10 +4723,8 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
-			if(expectedNumTestpulses != numTestpulses)
-				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
-				ControlWindowToFront()
+			ret = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
+			if(ret)
 				return 1
 			endif
 
@@ -4886,21 +4883,22 @@ End
 ///
 /// Assumes that all sweeps in the stimset are the same.
 ///
-/// @return number of found testpulses
-static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
-	variable DAC, numTestPulses, prePulseTP, DAScale, tpIndex
-	variable offset, numEpochs, i, idx, totalOnsetDelay
+/// @return 0 on success, 1 on failure
+static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, variable numTestPulses)
+	variable DAC, prePulseTP, DAScale, tpIndex
+	variable offset, numEpochs, i, idx, totalOnsetDelay, requiredEpochs
 	string setName
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
 
 	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
-	numTestPulses = (numEpochs - 2) / 3
+	requiredEpochs = numTestPulses * 3 + 2
 
-	if(!IsInteger(numTestPulses) || numTestPulses <= 0)
-		printf "(%s) The stimset %s does not follow the expected format", device, setName
-		return NaN
+	if(numEpochs < requiredEpochs)
+		printf "For the requested number of test pulses (%g) we need at least %g epochs, but the stimset only has %g.\r", numTestpulses, requiredEpochs, numEpochs
+		ControlWindowToFront()
+		return 1
 	endif
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
@@ -4922,7 +4920,7 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage)
 		offset = PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, offset, idx, tpIndex++)
 	endfor
 
-	return numTestPulses
+	return 0
 End
 
 static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
@@ -4932,15 +4930,15 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 
 	prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex)
-	ASSERT(amplitude == 0, "Invald amplitude")
+	ASSERT(amplitude == 0, "Invalid amplitude, expected zero for pre TP pulse BL")
 
 	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 1) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 1)
-	ASSERT(amplitude != 0, "Invald amplitude")
+	ASSERT(amplitude != 0, "Invalid amplitude, expected non-zero for TP pulse")
 
 	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 2) * MILLI_TO_ONE
 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 2)
-	ASSERT(amplitude == 0, "Invald amplitude")
+	ASSERT(amplitude == 0, "Invalid amplitude, expected zero for post TP pulse BL")
 
 	// full TP
 	epBegin = start
@@ -4986,6 +4984,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
@@ -5014,6 +5013,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "BaselineChunkLength":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "NextIndexingEndStimSetName":
 		case "NextStimSetName":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
@@ -5032,6 +5032,7 @@ Function/S PSQ_SealEvaluation_GetParams()
 	return "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[NextIndexingEndStimSetName:string],"  + \
 	       "[NextStimSetName:string],"             + \
 	       "NumberOfFailedSweeps:variable,"        + \
 	       "[SamplingFrequency:variable],"         + \
@@ -6202,10 +6203,8 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
 			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_CreateTestpulseEpochs(device, s.headstage)
-			if(expectedNumTestpulses != numTestpulses)
-				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
-				ControlWindowToFront()
+			ret = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
+			if(ret)
 				return 1
 			endif
 
