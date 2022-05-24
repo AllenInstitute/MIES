@@ -492,13 +492,6 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
 
 	WAVE/T/Z desc
-	if(logbookType == LBT_LABNOTEBOOK)
-		if(IsNumericWave(values))
-			WAVE/T desc = GetLBNumericalDescription()
-		else
-			// @todo not yet done for text waves
-		endif
-	endif
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
@@ -519,6 +512,14 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 		indizes[i] = idx
 		numAdditions += 1
+
+		if(logbookType == LBT_LABNOTEBOOK)
+			if(!WaveExists(desc) && IsNumericWave(values))
+				WAVE/T desc = GetLBNumericalDescription()
+			else
+				// @todo not yet done for text waves
+			endif
+		endif
 
 		// check description wave if available
 		if(!WaveExists(desc))
