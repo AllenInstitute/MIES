@@ -481,7 +481,7 @@ End
 /// @retval colIndizes column indizes of the entries from incomingKey
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
-	variable numCols, col, row, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable numCols, numKeyRows, numKeyCols, i, j, numAdditions, idx
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
@@ -504,13 +504,10 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	for(i = 0; i < numCols; i += 1)
 		searchStr = incomingKey[0][i]
 
-		FindValue/TXOP=4/TEXT=(searchStr) key
-		col = floor(V_value / numKeyRows)
+		FindValue/TXOP=4/TEXT=(searchStr)/RMD=[0][] key
 
-		if(col >= 0)
-			row = V_value - col * numKeyRows
-			ASSERT(row == 0, "Unexpected match in a row not being zero")
-			indizes[i] = col
+		if(V_col >= 0)
+			indizes[i] = V_col
 			continue
 		endif
 
