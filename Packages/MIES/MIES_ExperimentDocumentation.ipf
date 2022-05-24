@@ -489,7 +489,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	numKeyCols = DimSize(key, COLS)
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
-	Make/FREE/U/I/N=(DimSize(incomingKey, COLS)) indizes = NaN
+	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
 
 	WAVE/T/Z desc
 	if(logbookType == LBT_LABNOTEBOOK)
