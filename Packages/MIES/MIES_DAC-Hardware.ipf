@@ -787,10 +787,10 @@ Function/S HW_ITC_ListDevices()
 	return list
 End
 
-/// @brief Output an informative error message for the ITC XOP2 operations (threadsafe variant)
+/// @brief Output an informative error message for the ITC XOP2 operations
 ///
 /// @return 0 on success, 1 otherwise
-threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
+threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	variable flags, ITCError, ITCXOPError
 
 	// we only need the lower 32bits of the error
@@ -814,61 +814,14 @@ threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
 	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
-
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
-
 		BUG_TS("The ITC XOP was called incorrectly!")
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
 	if(ITCXOPError != 0 || ITCError != 0)
 		ASSERT_TS(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
-	endif
-
-	return ITCXOPError != 0 || ITCError != 0
-#else
-	ClearRTError()
-	return 0
-#endif
-End
-
-/// @brief Output an informative error message for the ITC XOP2 operations
-///
-/// @return 0 on success, 1 otherwise
-Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
-	variable flags, ITCError, ITCXOPError
-
-	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-	ITCXOPError = ConvertXOPErrorCode(ITCXOPError)
-
-	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
-
-		do
-			ITCGetErrorString2/X itcError
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		print S_errorMEssage
-		print "Some hints you might want to try!"
-		print "- Is the correct ITC device type selected?"
-		print "- Is your ITC Device connected to a power socket?"
-		print "- Is your ITC Device connected to your computer?"
-		print "- Have you tried unlocking/locking the device already?"
-		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
-		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
-		printf "Responsible function: %s\r", GetRTStackInfo(2)
-		printf "Complete call stack: %s\r", GetRTStackInfo(3)
-		BUG("The ITC XOP was called incorrectly!")
-	endif
-
-#ifndef EVIL_KITTEN_EATING_MODE
-	if(ITCXOPError != 0 || ITCError != 0)
-		ControlWindowToFront()
-		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
 	endif
 
 	return ITCXOPError != 0 || ITCError != 0
@@ -1089,14 +1042,14 @@ threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
 		ITCStopAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(prepareForDAQ)
 		do
 			ITCConfigChannelUpload2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-		HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	endif
 End
 
@@ -1197,7 +1150,7 @@ threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 		ITCUpdateFIFOPositionAll2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags)) fifoPos_t
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @brief Reset the AD/DA channel FIFOs
@@ -1258,7 +1211,7 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 			break
 	endswitch
 
-	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_StartAcq
@@ -1505,7 +1458,7 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=(HW_ITC_GetZValue(flags)) config_t, fifoAvail_t
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
 
@@ -1588,12 +1541,6 @@ End
 Function/S HW_ITC_ListDevices()
 
 	DEBUGPRINT("Unimplemented")
-End
-
-threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
-	variable flags, ITCError, ITCXOPError
-
-	DEBUGPRINT_TS("Unimplemented")
 End
 
 Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
