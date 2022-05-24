@@ -12,7 +12,7 @@
 /// @brief Check if the given asynchronous channel is in alarm state
 Function ASD_CheckAsynAlarmState(variable value, variable minValue, variable maxValue)
 
-	return value >= maxValue || value <= minValue
+	return IsNaN(value) || value >= maxValue || value <= minValue
 End
 
 /// @brief Read the given asynchronous channel and return the scaled value
