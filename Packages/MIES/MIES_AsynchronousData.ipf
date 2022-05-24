@@ -21,12 +21,13 @@ Function ASD_ReadChannel(device, channel)
 	variable channel
 
 	string ctrl
-	variable gain, deviceChannelOffset, rawChannelValue
+	variable gain, deviceChannelOffset, rawChannelValue, hardwareType
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(device)
 
-	rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, deviceID, channel + deviceChannelOffset)
+	hardwareType = GetHardwareType(device)
+	rawChannelValue = HW_ReadADC(hardwareType, deviceID, channel + deviceChannelOffset)
 
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	gain = DAG_GetNumericalValue(device, ctrl, index = channel)
