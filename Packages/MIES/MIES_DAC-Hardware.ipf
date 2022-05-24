@@ -793,11 +793,19 @@ End
 threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	variable flags, ITCError, ITCXOPError
 
+	variable outputErrorMessage
+
+	if(ITCError == 0 && ITCXOPError == 0)
+		// no errors
+		return 0
+	endif
+
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
 	ITCXOPError = ConvertXOPErrorCode(ITCXOPError)
+	outputErrorMessage = !(flags & HARDWARE_PREVENT_ERROR_MESSAGE)
 
-	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+	if(ITCError != 0 && outputErrorMessage)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 
 		do
@@ -811,7 +819,8 @@ threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Is your ITC Device connected to your computer?"
 		print "- Have you tried unlocking/locking the device already?"
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+		BUG_TS("The ITC XOP returned an error!")
+	elseif(ITCXOPError != 0 && outputErrorMessage)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
@@ -820,11 +829,9 @@ threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
-	if(ITCXOPError != 0 || ITCError != 0)
-		ASSERT_TS(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
-	endif
+	ASSERT_TS(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
 
-	return ITCXOPError != 0 || ITCError != 0
+	return 1
 #else
 	ClearRTError()
 	return 0
