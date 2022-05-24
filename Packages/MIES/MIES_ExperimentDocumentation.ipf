@@ -491,7 +491,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
 
-	WAVE/T/Z desc
+	WAVE/T/ZZ desc
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
