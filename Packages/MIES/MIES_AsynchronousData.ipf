@@ -10,7 +10,14 @@
 /// @brief __ASD__ Support functions for the asynchronous channels
 
 /// @brief Check if the given asynchronous channel is in alarm state
-Function ASD_CheckAsynAlarmState(variable value, variable minValue, variable maxValue)
+Function ASD_CheckAsynAlarmState(string device, variable value, variable minValue, variable maxValue)
+
+	if(TestOverrideActive())
+		WAVE overrideResults = GetOverrideResults()
+		NVAR count = $GetCount(device)
+
+		return !overrideResults[0][count][%AsyncQC]
+	endif
 
 	return IsNaN(value) || value >= maxValue || value <= minValue
 End
