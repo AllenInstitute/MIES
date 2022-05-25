@@ -36,8 +36,10 @@ digraph G {
 	n3 -> n9;
 	n10	[label="Post DAQ Event"];
 	n3 -> n10;
-	n36	[label="Check that the stimset has\n PSQ_SE_REQUIRED_EPOCHS (22) epochs"];
-	n5 -> n36;
+	n91	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	n5 -> n91;
 	n21	[label="Turn indexing off"];
 	n6 -> n21;
 	n29	[label="Check that only one headstage is active"];
@@ -48,6 +50,10 @@ digraph G {
 	n7 -> n15;
 	n19	[label="Set analysis function version"];
 	n8 -> n19;
+	n92	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	n9 -> n92;
 	n47	[label="Iterate over all baseline QC\n selection user epochs"];
 	n9 -> n47;
 	n55	[label="Check used sampling frequency\n and store result in labnotebook"];
@@ -57,8 +63,10 @@ digraph G {
 	n10 -> n11;
 	n12	[label="Read Set QC from labnotebook"];
 	n10 -> n12;
+	n36	[label="Check that the stimset has\n PSQ_SE_REQUIRED_EPOCHS (22) epochs"];
 	n37	[label="Read \"TestPulseGroupSelector\" analysis parameter"];
 	n36 -> n37;
+	n91 -> n36;
 	n22	[label="Turn multi device support on"];
 	n21 -> n22;
 	n30	[label="Check that no TTL channels are active"];
@@ -69,9 +77,10 @@ digraph G {
 	n15 -> n17	[label=Yes];
 	n20	[label="Set sampling rate multiplier\n analysis parameter and check it"];
 	n19 -> n20;
+	n56	[label="All four QC labnotebook\n entries are passing?"];
+	n92 -> n56;
 	n48	[label="Read \"TestpulseGroupSelector\" analysis parameter"];
 	n47 -> n48	[label="Done?"];
-	n56	[label="All three QC labnotebook\n entries are passing?"];
 	n55 -> n56;
 	n58	[label="Read steady state resistance\n from results wave for group B"];
 	n57 -> n58	[label=Second];
@@ -138,8 +147,16 @@ digraph G {
 	n68 -> n69;
 	n62	[label="Enable Indexing"];
 	n61 -> n62;
+	n45	[label="Check that the baseline QC user epochs\n have the same length as the\n analysis parameter \"BaselineChunkLength\""];
+	n42 -> n45;
+	n43 -> n45;
+	n44 -> n45;
 	n25	[label="Turn off dDAQ"];
 	n24 -> n25;
+	n52 -> n56;
+	n53 -> n56;
+	n66 -> n56;
+	n69 -> n56;
 	n26	[label="Turn on inserted Testpulse"];
 	n25 -> n26;
 	n27	[label="Open and bind databrowser"];
@@ -148,14 +165,6 @@ digraph G {
 	n27 -> n28;
 	n35	[label="Set SweepFormula respecting\n \"TestPulseGroupSelector\" analysis parameter"];
 	n28 -> n35;
-	n45	[label="Check that the baseline QC user epochs\n have the same length as the\n analysis parameter \"BaselineChunkLength\""];
-	n42 -> n45;
-	n43 -> n45;
-	n44 -> n45;
 	n46	[label="Check that each Testpulse has three epochs\n and that the pulse has amplitude one."];
 	n45 -> n46;
-	n52 -> n56;
-	n53 -> n56;
-	n66 -> n56;
-	n69 -> n56;
 }

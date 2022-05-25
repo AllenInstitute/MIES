@@ -38,6 +38,10 @@ digraph G {
 	n3 -> n10;
 	n51	[label="Mid Sweep Event"];
 	n3 -> n51;
+	n91	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	n5 -> n91;
 	n73	[label="Check that the length of epoch 0\n matches \"BaselineChunkLength\"\n analysis parameter"];
 	n5 -> n73;
 	n29	[label="Check that only one headstage is active"];
@@ -50,6 +54,10 @@ digraph G {
 	n7 -> n15;
 	n19	[label="Set analysis function version"];
 	n8 -> n19;
+	n92	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	n9 -> n92;
 	n55	[label="Check used sampling frequency\n and store result in labnotebook"];
 	n9 -> n55;
 	n49	[label="Read BL QC from labnotebook"];
@@ -78,7 +86,7 @@ digraph G {
 	n15 -> n17	[label=Yes];
 	n20	[label="Set sampling rate multiplier\n analysis parameter and check it"];
 	n19 -> n20;
-	n56	[label="Are all four QC labnotebook\n entries passing?"];
+	n56	[label="Are all five QC labnotebook\n entries passing?"];
 	n55 -> n56;
 	n49 -> n56;
 	n58	[label="Set formula for getting the peak and access resistance\n of all TPs in the stimset"];
@@ -106,9 +114,19 @@ digraph G {
 	n58 -> n62;
 	n86	[label="Read optional \"NextIndexingEndStimsetName\" analysis parameter\n and set that as indexing end stimulus set"];
 	n85 -> n86;
-	n31 -> n61	[label=Failure];
 	n72	[label="Check RMS short"];
 	n47 -> n72;
+	n77	[label="Create TP-like epochs"];
+	n75 -> n77;
+	n31 -> n61	[label=Failure];
+	n25	[label="Turn off dDAQ"];
+	n24 -> n25;
+	n52	[label="Usual checks for early abort possibilities"];
+	n59 -> n52;
+	n53	[label="Jump to end of set"];
+	n60 -> n53;
+	n63	[label="Store both resistances\n in the labnotebook"];
+	n62 -> n63;
 	n78	[label="Check RMS long"];
 	n72 -> n78	[label=Passed];
 	n80	[label="Add BL chunk QC failed\n labnotebook entry"];
@@ -118,25 +136,15 @@ digraph G {
 	n78 -> n79	[label=Passed];
 	n82	[label="Add BL QC failed\n labnotebook entry"];
 	n80 -> n82;
-	n52	[label="Usual checks for early abort possibilities"];
-	n59 -> n52;
-	n53	[label="Jump to end of set"];
-	n60 -> n53;
-	n25	[label="Turn off dDAQ"];
-	n24 -> n25;
-	n26	[label="Turn on inserted Testpulse"];
-	n25 -> n26;
-	n77	[label="Create TP-like epochs"];
-	n75 -> n77;
 	n79 -> n80	[label=Failed];
 	n81	[label="Add BL chunk QC passed\n labnotebook entry"];
 	n79 -> n81	[label=Passed];
 	n84	[label="Early sweep stop"];
 	n82 -> n84;
+	n26	[label="Turn on inserted Testpulse"];
+	n25 -> n26;
 	n83	[label="Add BL QC passed\n labnotebook entry"];
 	n81 -> n83;
-	n63	[label="Store both resistances\n in the labnotebook"];
-	n62 -> n63;
 	n64	[label="Is Access Resistance / Steady State Resistance\n smaller than the \"MaxAccessToSteadyStateResistanceRatio\"\n analysis parameter?"];
 	n63 -> n64;
 	n65	[label="Is the access resistance smaller\n than the \"MaxAccessResistance\" analysis parameter?"];

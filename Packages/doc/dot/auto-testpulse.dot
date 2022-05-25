@@ -33,11 +33,13 @@ digraph G {
 	n37	[label="Auto TP enabled?"];
 	n36 -> n37;
 	n1	[label="Iterate over all IC headstages"];
+	n2 -> n1	[label=Yes];
+	n30	[label="Check if auto TP amplitude and baseline\n passed three times in a row?"];
+	n37 -> n30	[label=Yes];
 	n3	[label="Auto TP enabled?"];
 	n1 -> n3;
 	n4	[label="Are two testpulse waveforms\n present from the same TP cycle ID?"];
 	n3 -> n4	[label=Yes];
-	n2 -> n1	[label=Yes];
 	n5	[label="Calculate delta V using\nelevated and baseline steady state voltages"];
 	n4 -> n5	[label=Yes];
 	n14	[label="Does the sign of the target voltage\n and the IC amplitude differ?"];
@@ -50,14 +52,14 @@ digraph G {
 	n7 -> n8	[label=Yes];
 	n15	[label="Concatenate the two testpulses\n and perform an exponential fit"];
 	n7 -> n15	[label=No];
+	n13 -> n7;
 	n11	[label="Mark Auto TP amplitude as failed"];
+	n13 -> n11;
 	n8 -> n11;
 	n18	[label="Store Fit result in TPStorage"];
 	n15 -> n18;
 	n12	[label="Set the new IC amplitude"];
 	n11 -> n12;
-	n13 -> n7;
-	n13 -> n11;
 	n16	[Label="Did the fit fail?",
 		label="Fit suceeded?"];
 	n18 -> n16;
@@ -87,7 +89,6 @@ digraph G {
 	n29	[label="Is the IC amplitude in range?"];
 	n28 -> n29;
 	n29 -> n11	[label=Yes];
-	n30	[label="Check if auto TP amplitude and baseline\n passed three times in a row?"];
 	n32	[label="Do we have 10 baseline range exceeded entries in a row?"];
 	n30 -> n32	[label=No];
 	n33	[label="Turn off Auto TP on that headstage"];
@@ -95,5 +96,4 @@ digraph G {
 	n32 -> n33	[label=Yes];
 	n31	[label="Store result in the labnotebook\n and send out zeromq message"];
 	n33 -> n31;
-	n37 -> n30	[label=Yes];
 }

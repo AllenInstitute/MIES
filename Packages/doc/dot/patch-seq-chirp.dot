@@ -24,6 +24,7 @@ digraph G {
 		style=solid
 	];
 	"Start DAQ/RA" -> "Mid Sweep Event";
+	"Start DAQ/RA" -> "Pre Sweep Config Event";
 	"Start DAQ/RA" -> "Post DAQ Event";
 	"Start DAQ/RA" -> "Post Set Event";
 	"Start DAQ/RA" -> "Post Sweep Event";
@@ -32,13 +33,19 @@ digraph G {
 	"Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?";
 	n63	[label="Is \"SpikeCheck\" enabled?\n (Given by optional analysis parameter\n \"SpikeCheck\" defaulting to 1)"];
 	"Mid Sweep Event" -> n63;
+	n91	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	"Pre Sweep Config Event" -> n91;
 	"Post DAQ Event" -> "Update Dashboard";
 	"Post Set Event" -> "Update Dashboard";
 	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]";
 	n84	[label="Set \"Delay onset user\" back from labnotebook entry"];
 	"Post Set Event" -> n84;
-	n73	[label="\"Spike Check\" labnotebook entry is true?"];
-	"Post Sweep Event" -> n73;
+	n92	[URL="../_static/images/async-qc-channels.svg",
+		label="Standard AsyncQCChannels handling",
+		target=_graphviz];
+	"Post Sweep Event" -> n92;
 	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
 	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
 	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=No];
@@ -49,9 +56,11 @@ digraph G {
 	n63 -> n65;
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	[label=No];
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	[label=Yes];
+	n73	[label="\"Spike Check\" labnotebook entry is true?"];
 	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=No];
 	n74	[label="Spike QC passed?"];
 	n73 -> n74	[label=Yes];
+	n92 -> n73;
 	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
 	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
 	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	[label="Have one"];
@@ -96,8 +105,9 @@ digraph G {
 	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set"	[label=Yes];
 	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?"	[label=No];
 	n85 -> "Mark sweep as failed\n in labnotebook"	[label=No];
-	n85 -> "Mark sweep as passed\n in labnotebook"	[label=Yes];
 	n85 -> "Skip to end of DAQ"	[label=No];
+	n93	[label="Has Async Channels QC\n labnotebook entry passed?"];
+	n85 -> n93	[label=Yes];
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
 	"Check if mode is IC" -> "Check if only one headstage is active";
 	"Check RMS short" -> "Check RMS long"	[label=Passed];
@@ -149,4 +159,6 @@ digraph G {
 	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
 	n83 -> "All checks passed";
 	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
+	n93 -> "Mark sweep as failed\n in labnotebook"	[label=No];
+	n93 -> "Mark sweep as passed\n in labnotebook"	[label=Yes];
 }

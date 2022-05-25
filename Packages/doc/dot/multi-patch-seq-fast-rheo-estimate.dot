@@ -34,6 +34,7 @@ digraph G {
 	"Set DAScale to 100pA\nfor all active IC headstages" -> "Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages";
 	"Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages" -> "Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages";
 	"Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages" -> "Store active headstages in labnotebook";
+	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages";
 	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ/Pre Set Event";
 	"Start DAQ/RA (only call for last active headstage)" -> "Post Sweep Event";
 	"Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event";
@@ -82,14 +83,13 @@ digraph G {
 	"Offset DAScale by +100pA" -> "Mark headstage as failed";
 	"Mark headstage as passed" -> "Set DAScale to zero";
 	"Mark headstage as failed" -> "\"MaximumDAScale\" analysis parameter is not NaN?";
-	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages";
 	"\"MaximumDAScale\" analysis parameter is not NaN?" -> "DAScale is larger than \"MaximumDAScale\"?"	[label=Yes];
+	"Turn off active non-IC headstages" -> "Set \"User onset delay\" to 0ms";
+	"DAScale is larger than \"MaximumDAScale\"?" -> "Mark headstage as \"DAScale exceeded\"\nin labnotebook"	[label=Yes];
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP during ITI\" to disabled";
 	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
 	"Set \"ITI\" to 100ms" -> "Set \"TP inserting\" to disabled";
-	"Turn off active non-IC headstages" -> "Set \"User onset delay\" to 0ms";
 	"Set \"User onset delay\" to 0ms" -> "Set \"Termination delay\" to 0 ms";
 	"Set \"Termination delay\" to 0 ms" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-	"DAScale is larger than \"MaximumDAScale\"?" -> "Mark headstage as \"DAScale exceeded\"\nin labnotebook"	[label=Yes];
 	"Mark headstage as \"DAScale exceeded\"\nin labnotebook" -> "Set DAScale to zero";
 }
