@@ -2669,14 +2669,14 @@ End
 /// returns [[channelName, channelNumber]+]
 static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, channelType
+	variable numArgs, i, channelType
 	string channelName, channelNumber
 	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
-	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
-	WAVE channels = SF_NewChannelsWave(numIndices ? numIndices : 1)
-	for(i = 0; i < numIndices; i += 1)
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	WAVE channels = SF_NewChannelsWave(numArgs ? numArgs : 1)
+	for(i = 0; i < numArgs; i += 1)
 		WAVE/Z chanSpec = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CHANNELS, i)
 		SF_ASSERT(WaveExists(chanSpec), "Channel specification returned null wave.")
 		channelName = ""
@@ -2708,10 +2708,10 @@ End
 /// returns all possible sweeps as 1d array
 static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices
+	variable numArgs
 
-	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
-	SF_ASSERT(numIndices == 0, "Sweep function takes no arguments.")
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 0, "Sweep function takes no arguments.")
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
@@ -2724,24 +2724,24 @@ End
 /// returns n x 3 with columns [sweepNr][channelType][channelNr]
 static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices
+	variable numArgs
 	string mode = "displayed"
 
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
-	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
-	if(!numIndices)
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(!numArgs)
 		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1)
 		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
 	else
-		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
+		SF_ASSERT(numArgs >= 2 && numArgs <= 3, "Function requires None, 2 or 3 arguments.")
 		WAVE channels = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
 		WAVE sweeps = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
 		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
-		if(numIndices == 3)
+		if(numArgs == 3)
 			WAVE/T wMode = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
@@ -2760,13 +2760,13 @@ End
 /// returns [sweepData][sweeps][channelTypeNumber] for all sweeps selected by selectData
 static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices
+	variable numArgs
 
-	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
 
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-	SF_ASSERT(numIndices >= 1, "data function requires at least 1 argument.")
-	SF_ASSERT(numIndices <= 2, "data function has maximal 2 arguments.")
+	SF_ASSERT(numArgs >= 1, "data function requires at least 1 argument.")
+	SF_ASSERT(numArgs <= 2, "data function has maximal 2 arguments.")
 
 	WAVE/Z range = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0)
 	SF_ASSERT(WaveExists(range), "Expected data input for range argument for data")
@@ -2778,7 +2778,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
 	endif
 
-	if(numIndices == 2)
+	if(numArgs == 2)
 		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 	else
 		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
@@ -2927,23 +2927,23 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 
 	variable i
 	string info
-	variable numIndices
+	variable numArgs
 
-	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
-	if(!numIndices)
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	if(!numArgs)
 		Make/FREE/T wvT = {"A", "B"}
-		numIndices = 2
+		numArgs = 2
 	else
-		Make/FREE/T/N=(numIndices) wvT
-		for(i = 0; i < numIndices; i += 1)
+		Make/FREE/T/N=(numArgs) wvT
+		for(i = 0; i < numArgs; i += 1)
 			WAVE csrName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(i), graph = graph)
 			SF_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
 			WAVE/T csrNameT = csrName
 			wvT[i] = csrNameT[0]
 		endfor
 	endif
-	Make/FREE/N=(numIndices) out = NaN
-	for(i = 0; i < numIndices; i += 1)
+	Make/FREE/N=(numArgs) out = NaN
+	for(i = 0; i < numArgs; i += 1)
 		SF_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
 		if(IsEmpty(graph))
 			out[i] = xcsr($wvT[i])
