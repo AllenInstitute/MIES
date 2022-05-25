@@ -90,6 +90,9 @@ digraph G {
 	n68 -> n69	[label=Yes];
 	n71	[label="Has acquired past the end of chirp?"];
 	n68 -> n71	[label=No];
+	n88 -> n80	[label=None];
+	n90	[label="Read full average voltage from labnotebook\n from that sweep and set it as autobias target voltage."];
+	n88 -> n90	[label=Found];
 	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set"	[label=Yes];
 	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?"	[label=No];
 	n85 -> "Mark sweep as failed\n in labnotebook"	[label=No];
@@ -144,9 +147,6 @@ digraph G {
 	n83	[label=" Is the analysis parameter \"UserOnsetDelay\" present?\n If yes, set it."];
 	n82 -> n83;
 	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
-	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
 	n83 -> "All checks passed";
-	n88 -> n80	[label=None];
-	n90	[label="Read full average voltage from labnotebook\n from that sweep and set it as autobias target voltage."];
-	n88 -> n90	[label=Found];
+	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
 }

@@ -20,6 +20,7 @@ cd $top_level/Packages/doc/dot
 for i in $(ls *patch-seq*.dot auto-testpulse.dot async-qc-channels.dot)
 do
   dot -T canon $i -o $i.opt
+  sed -i 's/\t */\t/g' $i.opt
   dos2unix -q $i.opt
   mv $i.opt $i
 done
