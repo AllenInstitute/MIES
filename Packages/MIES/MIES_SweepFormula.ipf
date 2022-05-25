@@ -2349,8 +2349,7 @@ static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string g
 
 	output[] = SF_OperationPlusImpl(input[p])
 
-	WAVE out = SF_GetOutputForExecutor(output, graph, opShort, clearInput=input)
-	return out
+	return SF_GetOutputForExecutor(output, graph, opShort, clearInput=input)
 End
 
 static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
@@ -2677,9 +2676,8 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
 	WAVE channels = SF_NewChannelsWave(numIndices ? numIndices : 1)
 	for(i = 0; i < numIndices; i += 1)
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_CHANNELS, i)
-		SF_ASSERT(DimSize(arg, ROWS) == 1, "Only one channels pattern can be specified per argument.")
-		WAVE chanSpec = arg[0]
+		WAVE/Z chanSpec = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CHANNELS, i)
+		SF_ASSERT(WaveExists(chanSpec), "Channel specification returned null wave.")
 		channelName = ""
 		if(IsNumericWave(chanSpec))
 			channels[i][%channelNumber] = chanSpec[0]
@@ -2700,8 +2698,6 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 				channels[i][%channelType] = channelType
 			endif
 		endif
-
-		SF_CleanUpInput(arg)
 	endfor
 
 	return SF_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS)
@@ -2717,11 +2713,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 	SF_ASSERT(numIndices == 0, "Sweep function takes no arguments.")
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_SWEEPS, 1)
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
-	if(WaveExists(sweeps))
-		output[0] = sweeps
-	endif
 
 	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS)
 End
@@ -2738,29 +2730,18 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numIndices = SF_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numIndices)
-		WAVE/WAVE channelsRef = SF_ExecuteFormula("channels()", graph)
-		WAVE channels = channelsRef[0]
-		WAVE/WAVE sweepsRef = SF_ExecuteFormula("sweeps()", graph)
-		WAVE/Z sweeps = sweepsRef[0]
-
-		SF_CleanUpInput(channelsRef)
-		SF_CleanUpInput(sweepsRef)
+		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1)
+		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
 	else
 		SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires None, 2 or 3 arguments.")
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
-		WAVE channels = arg[0]
-		SF_CleanUpInput(arg)
+		WAVE channels = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-		WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
-		WAVE sweeps = arg[0]
-		SF_CleanUpInput(arg)
+		WAVE sweeps = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
 		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
 		if(numIndices == 3)
-			WAVE/WAVE arg = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
-			WAVE/T wMode = arg[0]
-			SF_CleanUpInput(arg)
+			WAVE/T wMode = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
@@ -2786,8 +2767,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SF_ASSERT(numIndices >= 1, "data function requires at least 1 argument.")
 	SF_ASSERT(numIndices <= 2, "data function has maximal 2 arguments.")
 
-	WAVE/WAVE rangeRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, 0)
-	WAVE/Z range = rangeRef[0]
+	WAVE/Z range = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0)
 	SF_ASSERT(WaveExists(range), "Expected data input for range argument for data")
 	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
 	if(IsTextWave(range))
@@ -2798,11 +2778,10 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	endif
 
 	if(numIndices == 2)
-		WAVE/WAVE selectRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_DATA, 1)
+		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 	else
-		WAVE/WAVE selectRef = SF_ExecuteFormula("select()", graph)
+		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
 	endif
-	WAVE/Z selectData = selectRef[0]
 	if(WaveExists(selectData))
 		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
 		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
@@ -3294,10 +3273,15 @@ Function SF_SetFormula(string databrowser, string formula)
 	ReplaceNotebookText(nb, formula)
 End
 
-// Executes a given formula without changing the current SweepFormula notebook
-Function/WAVE SF_ExecuteFormula(string formula, string databrowser)
+/// @brief Executes a given formula without changing the current SweepFormula notebook
+/// @param formula formula string to execute
+/// @param databrowser name of databrowser window
+/// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
+Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable singleResult])
 
 	variable jsonId
+
+	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
 
 	formula = SF_PreprocessInput(formula)
 	formula = SF_FormulaPreParser(formula)
@@ -3306,6 +3290,13 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser)
 	JSON_Release(jsonId, ignoreErr=1)
 
 	WAVE/WAVE out = SF_ParseArgument(databrowser, result, "FormulaExecution")
+	if(singleResult)
+		SF_ASSERT(DimSize(out, ROWS) == 1, "Expected only a single dataSet")
+		WAVE/Z data = out[0]
+		SF_CleanUpInput(out)
+		return data
+	endif
+
 	return out
 End
 
@@ -3434,4 +3425,15 @@ static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string gra
 	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + opSpec)
 
 	return input
+End
+
+/// @brief Retrieves from an argument the first dataset and disposes the argument
+static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+
+	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, opShort, argNum)
+	SF_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
+	WAVE/Z data = input[0]
+	SF_CleanUpInput(input)
+
+	return data
 End
