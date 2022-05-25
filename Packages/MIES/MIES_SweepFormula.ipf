@@ -817,10 +817,9 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 	return out
 End
 
-static Function [WAVE/WAVE formulaResults_, string dataType_] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
+static Function [WAVE/WAVE formulaResults, string dataType] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
 
 	variable i, index, numResultsY, numResultsX, numFormulaPairs, xRefIndex
-	string dataType
 
 	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 
