@@ -2349,7 +2349,7 @@ static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string g
 
 	output[] = SF_OperationPlusImpl(input[p])
 
-	return SF_GetOutputForExecutor(output, graph, opShort, clearInput=input)
+	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
 End
 
 static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
@@ -2411,7 +2411,7 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 		SF_ASSERT(0, "Operation accepts 2-3 operands")
 	endif
 
-	return SF_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, clearInput=input)
+	return SF_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, clear=input)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
@@ -3374,10 +3374,10 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 	endfor
 End
 
-static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, WAVE clearInput])
+static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, WAVE clear])
 
-	if(!ParamIsDefault(clearInput))
-		SF_CleanUpInput(clearInput)
+	if(!ParamIsDefault(clear))
+		SF_CleanUpInput(clear)
 	endif
 
 	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 1)
@@ -3388,10 +3388,10 @@ static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, st
 	return SF_GetOutputForExecutor(output, graph, opShort)
 End
 
-static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clearInput])
+static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
 
-	if(!ParamIsDefault(clearInput))
-		SF_CleanUpInput(clearInput)
+	if(!ParamIsDefault(clear))
+		SF_CleanUpInput(clear)
 	endif
 	Make/FREE/T wRefPath = {SF_WREF_MARKER + GetWavesDataFolder(output, 2)}
 
