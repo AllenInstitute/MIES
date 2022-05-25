@@ -182,7 +182,7 @@ static Function PS_CR1([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR1_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR1_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
@@ -238,9 +238,6 @@ static Function PS_CR2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
-End
-
-static Function PS_CR2_preAcq_IGNORE(string device)
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 1)
 End
@@ -251,7 +248,7 @@ static Function PS_CR2([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR2_IGNORE, preAcquireFunc = PS_CR2_preAcq_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR2_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -316,7 +313,7 @@ static Function PS_CR2a([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR2a_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR2a_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -381,7 +378,7 @@ static Function PS_CR2b([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR2b_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR2b_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -446,7 +443,7 @@ static Function PS_CR3([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR3_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR3_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// BL fails, rest passes
@@ -513,7 +510,7 @@ static Function PS_CR4([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR4_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR4_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -608,7 +605,7 @@ static Function PS_CR4a([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR4a_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR4a_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -703,7 +700,7 @@ static Function PS_CR4b([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR4b_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR4b_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -798,7 +795,7 @@ static Function PS_CR5([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR5_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR5_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -894,7 +891,7 @@ static Function PS_CR6([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR6_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR6_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -990,7 +987,7 @@ static Function PS_CR7([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR7_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR7_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1082,7 +1079,7 @@ static Function PS_CR8([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR8_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR8_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1176,7 +1173,7 @@ static Function PS_CR9([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR9_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR9_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1273,7 +1270,7 @@ static Function PS_CR9a([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR9a_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR9a_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1370,7 +1367,7 @@ static Function PS_CR9b([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR9b_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR9b_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1467,7 +1464,7 @@ static Function PS_CR10([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR10_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR10_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1562,7 +1559,7 @@ static Function PS_CR11([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR11_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR11_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
@@ -1635,7 +1632,7 @@ static Function PS_CR12([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR12_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR12_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -1708,7 +1705,7 @@ static Function PS_CR13([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR13_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR13_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1856,7 +1853,7 @@ static Function PS_CR15([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR15_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR15_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -1928,7 +1925,7 @@ static Function PS_CR16([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, postInitializeFunc = PS_CR16_IGNORE)
+	AcquireData(s, str, preAcquireFunc = PS_CR16_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass

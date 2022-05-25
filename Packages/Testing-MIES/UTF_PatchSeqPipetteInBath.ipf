@@ -76,47 +76,6 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-static Function TuneBrowser_IGNORE()
-
-	string databrowser, settingsHistoryPanel
-	variable i, numEntries
-
-	databrowser = DB_FindDataBrowser("ITC18USB_DEV_0")
-	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(databrowser)
-
-	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
-
-	STRUCT WMPopupAction pa
-	pa.win = settingsHistoryPanel
-	pa.eventCode = 2
-
-	Make/FREE/T keys = {                                 \
-	                     PSQ_FMT_LBN_RMS_SHORT_PASS,     \
-	                     PSQ_FMT_LBN_RMS_LONG_PASS,      \
-	                     PSQ_FMT_LBN_LEAKCUR_PASS,       \
-	                     PSQ_FMT_LBN_LEAKCUR,            \
-	                     PSQ_FMT_LBN_LEAKCUR_PASS,       \
-	                     PSQ_FMT_LBN_CHUNK_PASS,         \
-	                     PSQ_FMT_LBN_BL_QC_PASS,         \
-	                     PSQ_FMT_LBN_SWEEP_PASS,         \
-	                     PSQ_FMT_LBN_SET_PASS,           \
-	                     PSQ_FMT_LBN_PB_RESISTANCE,      \
-	                     PSQ_FMT_LBN_PB_RESISTANCE_PASS  \
-	                   }
-
-	numEntries = DimSize(keys, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-
-		if(!cmpstr(keys[i], PSQ_FMT_LBN_RMS_SHORT_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_RMS_LONG_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_CHUNK_PASS) || !cmpstr(keys[i], PSQ_FMT_LBN_LEAKCUR) || !cmpstr(keys[i], PSQ_FMT_LBN_LEAKCUR_PASS))
-			pa.popStr = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, keys[i], chunk = 0, query = 1)
-		else
-			pa.popStr = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, keys[i], query = 1)
-		endif
-
-		LBV_PopMenuProc_LabNotebookAndResults(pa)
-	endfor
-End
-
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	WAVE/T textualResultsValues = GetTextualResultsValues()
 
@@ -166,6 +125,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_PB_RESISTANCE:
 		case PSQ_FMT_LBN_PB_RESISTANCE_PASS:
+		case PSQ_FMT_LBN_SAMPLING_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
@@ -189,7 +149,8 @@ End
 
 static Function/WAVE GetWave_IGNORE()
 
-	string list = "sweepPass;setPass;rmsShortPass;rmsLongPass;leakCur;leakCurPass;baselinePass;resistance;resistancePass;resultsSweep;resultsResistance"
+	string list = "sweepPass;setPass;rmsShortPass;rmsLongPass;leakCur;leakCurPass;baselinePass;" + \
+	              "resistance;resistancePass;resultsSweep;resultsResistance;samplingPass;"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -205,6 +166,8 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 
 	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
 	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+
+	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 
 	wv[%rmsShortPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_SHORT_PASS)
 	wv[%rmsLongPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
@@ -292,6 +255,8 @@ static Function PS_PB1_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCurPass], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
@@ -353,6 +318,8 @@ static Function PS_PB2_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)
@@ -428,6 +395,8 @@ static Function PS_PB3_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1, NaN, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCur], NUMERIC_WAVE)
@@ -492,6 +461,8 @@ static Function PS_PB4_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0}, mode = WAVE_DATA)
 
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
+
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%leakCurPass], NULL_WAVE)
 	CHECK_WAVE(entries[%leakCur], NULL_WAVE)
@@ -555,6 +526,8 @@ static Function PS_PB5_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -621,6 +594,8 @@ static Function PS_PB6_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -689,6 +664,8 @@ static Function PS_PB7_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%leakCurPass], {1}, mode = WAVE_DATA)

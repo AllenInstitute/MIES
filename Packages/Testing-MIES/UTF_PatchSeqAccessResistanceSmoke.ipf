@@ -713,7 +713,7 @@ static Function PS_AR7([string str])
 
 	AcquireData(s, str, preAcquireFunc=PS_AR7_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SEAL_EVALUATION)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
 	// DAQ is not started as PRE_SWEEP_CONFIG_EVENT fails due to non-matching BaselineChunkLength
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -746,7 +746,7 @@ static Function PS_AR8([string str])
 
 	AcquireData(s, str, preAcquireFunc=PS_AR8_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SEAL_EVALUATION)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
 	// all tests pass but sampling QC check fails
 	wv[][][0] = 1

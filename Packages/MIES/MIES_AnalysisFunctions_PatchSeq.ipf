@@ -956,7 +956,13 @@ End
 /// #PSQ_SQUARE_PULSE:
 ///
 /// Rows:
-/// - x position in ms where the spike is in each sweep/step
+/// - Only one
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
 /// #PSQ_RHEOBASE/#PSQ_RAMP:
@@ -1087,7 +1093,7 @@ End
 ///
 /// Layers:
 /// - 0: 1 if the chunk has passing baseline QC or not
-/// - 1: Acccess Resistance [MΩ]
+/// - 1: Access Resistance [MΩ]
 /// - 2: Steady State Resistance [MΩ]
 ///
 /// Chunks (only for layer 0):
@@ -1122,8 +1128,9 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_SQUARE_PULSE:
-			numRows = IDX_NumberOfSweepsInSet(stimset)
-			numCols = 0
+			numRows = 1
+			numCols = IDX_NumberOfSweepsInSet(stimset)
+			numLayers = 1
 			break
 		case PSQ_CHIRP:
 			numChunks = 4
@@ -1297,7 +1304,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 				numSpikesFoundOverride = overrideValue > 0
 				break
 			case PSQ_SQUARE_PULSE:
-				overrideValue = overrideResults[count]
+				overrideValue = overrideResults[0][count][0]
 				numSpikesFoundOverride = overrideValue > 0
 				break
 			case PSQ_RAMP:
@@ -1787,40 +1794,34 @@ End
 Function/S PSQ_DAScale_GetHelp(string name)
 
 	strswitch(name)
-		case "DAScales":
-			 return "DA Scale Factors in pA"
-			 break
-		case "OperationMode":
-			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
-			 break
-		case "SamplingFrequency":
-		case "SamplingMultiplier":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
+		case "DAScaleModifier":
+			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
+					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\"."
+		case "DAScales":
+			 return "DA Scale Factors in pA"
+		case "FinalSlopePercent":
+			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
+		case "MaximumSpikeCount":
+			 return "[Optional] The upper limit of the number of spikes. Ignored for \"Sub\"."
+		case "MinimumSpikeCount":
+			 return "[Optional] The lower limit of the number of spikes. Ignored for \"Sub\"."
 		case "OffsetOperator":
 			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
 					+ "combining the rheobase DAScale value from the previous run and "    \
 					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
 					+ "(multiplication). Ignored for \"Sub\"."
-			 break
+		case "OperationMode":
+			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 		case "ShowPlot":
 			 return "[Optional, defaults to true] Show the resistance (\"Sub\") or the f-I (\"Supra\") plot."
-			 break
-		case "FinalSlopePercent":
-			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
-					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
-			 break
-		 case "MinimumSpikeCount":
-			 return "[Optional] The lower limit of the number of spikes. Ignored for \"Sub\"."
-		 case "MaximumSpikeCount":
-			 return "[Optional] The upper limit of the number of spikes. Ignored for \"Sub\"."
-		 case "DAScaleModifier":
-			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
-					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\"."
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
-			 break
 	endswitch
 End
 
@@ -2811,6 +2812,11 @@ Function PSQ_Rheobase(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RHEOBASE, s)
 
+			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
+
 			sprintf msg, "numSweeps %d, baselineQCPassed %d, samplingFrequencyPassed %d", numSweeps, baselineQCPassed, samplingFrequencyPassed
 			DEBUGPRINT(msg)
 
@@ -2824,11 +2830,6 @@ Function PSQ_Rheobase(device, s)
 				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
 				break
 			endif
-
-			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
-			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
 
 			if(!baselineQCPassed)
 				break
@@ -4277,10 +4278,10 @@ Function PSQ_Chirp(device, s)
 
 			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_CHIRP, s)
 
+			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
+
 			if(spikeCheck)
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && spikeCheckPassed == 1)
-			else
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
+				sweepPassed = (sweepPassed == 1 && spikeCheckPassed == 1)
 			endif
 
 			WAVE result = LBN_GetNumericWave()

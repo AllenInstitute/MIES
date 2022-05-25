@@ -10,27 +10,9 @@
 /// @brief __ASD__ Support functions for the asynchronous channels
 
 /// @brief Check if the given asynchronous channel is in alarm state
-///
-/// @return true if in alarm state, false if not in alarm state or not enabled.
-Function ASD_CheckAsynAlarmState(device, channel, value)
-	string device
-	variable channel, value
+Function ASD_CheckAsynAlarmState(variable value, variable minValue, variable maxValue)
 
-	string minCtrl, maxCtrl, checkCtrl
-	variable paramMin, paramMax
-
-	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-
-	if(!DAG_GetNumericalValue(device, checkCtrl, index = channel))
-		return 0
-	endif
-
-	minCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	maxCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-	paramMin = DAG_GetNumericalValue(device, minCtrl, index = channel)
-	paramMax = DAG_GetNumericalValue(device, maxCtrl, index = channel)
-
-	return value >= ParamMax || value <= ParamMin
+	return value >= maxValue || value <= minValue
 End
 
 /// @brief Read the given asynchronous channel and return the scaled value

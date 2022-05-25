@@ -175,7 +175,7 @@ static Function PS_SP2([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
 	// spike before pulse, does not count
-	wv = 2.5
+	wv[][][0] = 2.5
 End
 
 static Function PS_SP2_REENTRY([str])
@@ -235,8 +235,8 @@ static Function PS_SP3([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second sweep, but never again
-	wv[]  = 0
-	wv[1] = 1
+	wv[][][0]  = 0
+	wv[][1][0] = 1
 End
 
 static Function PS_SP3_REENTRY([str])
@@ -296,8 +296,8 @@ static Function PS_SP4([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second and third sweep, but never again
-	wv[]    = 0
-	wv[1,2] = 1
+	wv[][][0]    = 0
+	wv[][1,2][0] = 1
 End
 
 static Function PS_SP4_REENTRY([str])
@@ -358,8 +358,8 @@ static Function PS_SP5([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on first and third sweep -> success
 	wv[]  = 0
-	wv[1] = 1
-	wv[3] = 1
+	wv[][1][0] = 1
+	wv[][3][0] = 1
 End
 
 static Function PS_SP5_REENTRY([str])
@@ -420,8 +420,8 @@ static Function PS_SP6([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected so that we get a DAScale zero with spike LBN entry and success
 	wv[] = 0
-	wv[0,2] = 1
-	wv[4] = 1
+	wv[][0,2][0] = 1
+	wv[][4][0] = 1
 End
 
 static Function PS_SP6_REENTRY([str])
@@ -482,7 +482,7 @@ static Function PS_SP7([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// always spikes -> failure due to DAScaleZero handling
-	wv[] = 1
+	wv[][][0] = 1
 End
 
 static Function PS_SP7_REENTRY([str])
@@ -549,7 +549,7 @@ static Function PS_SP8([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
-	wv = 0
+	wv[][][0] = 0
 End
 
 static Function PS_SP8_REENTRY([str])

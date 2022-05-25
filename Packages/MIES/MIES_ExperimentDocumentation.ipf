@@ -709,7 +709,7 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 
 	string title, unit, str, ctrl
 	variable minSettingValue, maxSettingValue, i, scaledValue
-	variable redoLastSweep
+	variable redoLastSweep, alarmState, alarmEnabled
 
 	WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
 
@@ -741,7 +741,8 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		asyncSettingsWave[0][%ADGain][INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, ctrl, index = i)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, ctrl, index = i)
+		alarmEnabled = DAG_GetNumericalValue(device, ctrl, index = i)
+		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = alarmEnabled
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 		minSettingValue = DAG_GetNumericalValue(device, ctrl, index = i)
@@ -763,7 +764,9 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncSettingsWave[0][%MeasuredValue][INDEP_HEADSTAGE] = scaledValue
 
-		if(ASD_CheckAsynAlarmState(device, i, scaledValue))
+		alarmState = alarmEnabled ? ASD_CheckAsynAlarmState(scaledValue, minSettingValue, maxSettingValue) : NaN
+
+		if(alarmEnabled && alarmState)
 			beep
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()

@@ -4149,7 +4149,7 @@ End
 ///  - One row
 ///
 /// Columns:
-/// - Same as GetAsyncSettingsWave
+/// - Same as GetAsyncSettingsKeyWave
 ///
 /// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
