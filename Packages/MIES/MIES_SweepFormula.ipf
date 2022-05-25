@@ -3318,7 +3318,7 @@ static Function/WAVE SF_CreateSFRefWave(string win, string opShort, variable siz
 	string wName
 
 	DFREF dfrWork = SF_GetWorkingDF(win)
-	wName = CreateDataObjectName(dfrWork, opShort + "_output_", 1, 0, 4)
+	wName = UniqueWaveName(dfrWork, opShort + "_output_")
 
 	Make/WAVE/N=(size) dfrWork:$wName/WAVE=wv
 
@@ -3343,7 +3343,7 @@ static Function/WAVE SF_ParseArgument(string win, WAVE input, string opShort)
 	WAVE/WAVE wRef = SF_CreateSFRefWave(win, opShort + "_refFromUserInput", 1)
 #ifdef SWEEPFORMULA_DEBUG
 	DFREF dfrWork = SF_GetWorkingDF(win)
-	wName = CreateDataObjectName(dfrWork, opShort + "_dataInput_", 1, 0, 4)
+	wName = UniqueWaveName(dfrWork, opShort + "_dataInput_")
 	Duplicate input, dfrWork:$wName
 	WAVE input = dfrWork:$wName
 #endif
@@ -3367,7 +3367,7 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 	for(data : output)
 		if(WaveExists(data) && IsFreeWave(data))
 			DFREF dfrWork = SF_GetWorkingDF(win)
-			wName = CreateDataObjectName(dfrWork, opShort + "_return_arg" + num2istr(i) + "_", 1, 0, 4)
+			wName = UniqueWaveName(dfrWork, opShort + "_return_arg" + num2istr(i) + "_")
 			MoveWave data, dfrWork:$wName
 		endif
 		i += 1
