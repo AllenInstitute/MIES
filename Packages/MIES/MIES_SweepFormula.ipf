@@ -6,7 +6,8 @@
 #pragma ModuleName=MIES_SF
 #endif
 
-// define SWEEPFORMULA_DEBUG to enable debug mode with more persistent data
+// to enable debug mode with more persistent data
+// #define SWEEPFORMULA_DEBUG
 
 /// @file MIES_SweepFormula.ipf
 ///
