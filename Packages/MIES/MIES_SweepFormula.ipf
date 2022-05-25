@@ -876,17 +876,21 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.green = 0x0000
 	s.blue = 0x0000
 
-	if(!CmpStr(dataType, SF_DATATYPE_SWEEP))
-		channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-		channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-		sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
-
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		if(WaveExists(numericalValues))
-			headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-			[s] = GetHeadstageColor(headstage)
-		endif
+	if(CmpStr(dataType, SF_DATATYPE_SWEEP))
+		return [s]
 	endif
+
+	channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+	channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+	sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	if(WaveExists(numericalValues))
+		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+		[s] = GetHeadstageColor(headstage)
+	endif
+
+	return [s]
 End
 
 static Function/S SF_CreateTraceName(variable dataNum, variable &traceNum)
