@@ -893,14 +893,12 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	return [s]
 End
 
-static Function/S SF_CreateTraceName(variable dataNum, variable &traceNum)
+static Function [string traceName, variable traceCnt] SF_CreateTraceName(variable dataNum)
 
-	string traceName
+	traceName = SF_PLOTTER_TRACENAME + "_" + num2istr(dataNum) + "_" + num2istr(traceCnt)
+	traceCnt += 1
 
-	traceName = SF_PLOTTER_TRACENAME + "_" + num2istr(dataNum) + "_" + num2istr(traceNum)
-	traceNum += 1
-
-	return traceName
+	return [traceName, traceCnt]
 End
 
 static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
@@ -1048,7 +1046,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!WaveExists(wvX))
 				numTraces = yMxN
 				for(i = 0; i < numTraces; i += 1)
-					trace = SF_CreateTraceName(k, traceCnt)
+					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
 					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
 				endfor
@@ -1056,14 +1054,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				if(yPoints == 1) // 0D vs 1D
 					numTraces = xPoints
 					for(i = 0; i < numTraces; i += 1)
-						trace = SF_CreateTraceName(k, traceCnt)
+						[trace, traceCnt] = SF_CreateTraceName(k)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
 						annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
 					endfor
 				elseif(xPoints == 1) // 1D vs 0D
 					numTraces = yPoints
 					for(i = 0; i < numTraces; i += 1)
-						trace = SF_CreateTraceName(k, traceCnt)
+						[trace, traceCnt] = SF_CreateTraceName(k)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
 						annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
 					endfor
@@ -1074,7 +1072,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						DebugPrint("Unmatched Data Alignment in ROWS.")
 					endif
 					for(i = 0; i < numTraces; i += 1)
-						trace = SF_CreateTraceName(k, traceCnt)
+						[trace, traceCnt] = SF_CreateTraceName(k)
 						splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 						splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
@@ -1084,7 +1082,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			elseif(yMxN == 1) // 1D vs 2D
 				numTraces = xMxN
 				for(i = 0; i < numTraces; i += 1)
-					trace = SF_CreateTraceName(k, traceCnt)
+					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
 					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
 				endfor
@@ -1096,7 +1094,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				endif
 				numTraces = yMxN
 				for(i = 0; i < numTraces; i += 1)
-					trace = SF_CreateTraceName(k, traceCnt)
+					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
 					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
 				endfor
@@ -1109,7 +1107,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					DebugPrint("Size mismatch in entity columns for plotting waves.")
 				endif
 				for(i = 0; i < numTraces; i += 1)
-					trace = SF_CreateTraceName(k, traceCnt)
+					[trace, traceCnt] = SF_CreateTraceName(k)
 					if(WaveExists(wvX))
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
 					else
