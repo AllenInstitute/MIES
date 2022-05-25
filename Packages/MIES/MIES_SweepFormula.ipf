@@ -864,6 +864,10 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 		sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 	endif
 
+	if(IsEmpty(traceAnnotation))
+		return ""
+	endif
+
 	annotation = "\\s(" + traceName + ") " + traceAnnotation + "\r"
 
 	return annotation
