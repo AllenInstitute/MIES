@@ -822,9 +822,7 @@ static Function [WAVE/WAVE formulaResults_, string dataType_] SF_GatherFormulaRe
 	variable i, index, numResultsY, numResultsX, numFormulaPairs, xRefIndex
 	string dataType
 
-	Make/FREE/WAVE/N=(0, 2) formulaResults
-	SetDimLabel COLS, 0, FORMULAX, formulaResults
-	SetDimLabel COLS, 1, FORMULAY, formulaResults
+	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 
 	WAVE/WAVE/Z wvXRef = $""
 	if(!IsEmpty(xFormula))

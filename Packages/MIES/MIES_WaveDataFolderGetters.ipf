@@ -7464,3 +7464,16 @@ Function/DF GetAsyncHomeDF()
 End
 
 /// @}
+
+/// @brief Returns a free wave for gathering formula results
+///
+/// The wave stores the wave reference waves returned from SF_ExecuteFormula for the X and Y formulas.
+/// In SF_GatherFormulaResults() all formula pairs for on graph subwindow are gathered.
+Function/WAVE GetFormulaGatherWave()
+
+	Make/FREE/WAVE/N=(0, 2) formulaResults
+	SetDimLabel COLS, 0, FORMULAX, formulaResults
+	SetDimLabel COLS, 1, FORMULAY, formulaResults
+
+	return formulaResults
+End
