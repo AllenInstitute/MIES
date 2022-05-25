@@ -3403,7 +3403,7 @@ static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opS
 End
 
 /// @brief Executes the complete arguments of the JSON and parses the resulting data to a waveRef type
-///        DEPRECATED: executing all arguments e.g. as array in the executor poses issues as soon as data types get mixed.
+///        @deprecated: executing all arguments e.g. as array in the executor poses issues as soon as data types get mixed.
 ///                    e.g. operation(0, A, [1, 2, 3]) fails as [0, A, [1, 2, 3]] can not be converted to an Igor wave.
 ///                    Thus, it is strongly recommended to parse each argument separately.
 static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string graph, string opShort)
