@@ -481,7 +481,7 @@ End
 /// @retval colIndizes column indizes of the entries from incomingKey
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
-	variable numCols, col, row, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable numCols, numKeyRows, numKeyCols, i, j, numAdditions, idx
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
@@ -489,28 +489,18 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	numKeyCols = DimSize(key, COLS)
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
-	Make/FREE/U/I/N=(DimSize(incomingKey, COLS)) indizes = NaN
+	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
 
-	WAVE/T/Z desc
-	if(logbookType == LBT_LABNOTEBOOK)
-		if(IsNumericWave(values))
-			WAVE/T desc = GetLBNumericalDescription()
-		else
-			// @todo not yet done for text waves
-		endif
-	endif
+	WAVE/T/ZZ desc
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
 		searchStr = incomingKey[0][i]
 
-		FindValue/TXOP=4/TEXT=(searchStr) key
-		col = floor(V_value / numKeyRows)
+		FindValue/TXOP=4/TEXT=(searchStr)/RMD=[0][] key
 
-		if(col >= 0)
-			row = V_value - col * numKeyRows
-			ASSERT(row == 0, "Unexpected match in a row not being zero")
-			indizes[i] = col
+		if(V_col >= 0)
+			indizes[i] = V_col
 			continue
 		endif
 
@@ -523,14 +513,22 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		indizes[i] = idx
 		numAdditions += 1
 
-		// check description wave if available
-		if(!WaveExists(desc))
-			continue
-		endif
-
 		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
 
 		if(isUserEntry)
+			continue
+		endif
+
+		if(logbookType == LBT_LABNOTEBOOK)
+			if(!WaveExists(desc) && IsNumericWave(values))
+				WAVE/T desc = GetLBNumericalDescription()
+			else
+				// @todo not yet done for text waves
+			endif
+		endif
+
+		// check description wave if available
+		if(!WaveExists(desc))
 			continue
 		endif
 

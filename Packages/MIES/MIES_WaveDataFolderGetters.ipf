@@ -1572,16 +1572,15 @@ End
 
 static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 
+	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	DFREF dfr = GetStaticDataFolder()
 	WAVE/T/Z/SDFR=dfr wv = $name
 
-	if(WaveExists(wv))
-		if(forceReload)
-			KillOrMoveToTrash(wv = wv)
-		else
-			return wv
-		endif
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave) && !forceReload)
+		return wv
 	endif
+
+	KillOrMoveToTrash(wv = wv)
 
 	WAVE/T/Z wv = LoadWaveFromDisk(name)
 	ASSERT(WaveExists(wv), "Missing wave")
@@ -1594,6 +1593,7 @@ static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 	Duplicate/FREE/RMD=[0][] wv, labels
 	Redimension/N=(numpnts(labels)) labels
 	SetDimensionLabels(wv, TextWaveToList(labels, ";"), COLS)
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
