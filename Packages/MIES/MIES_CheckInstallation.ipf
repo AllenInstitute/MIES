@@ -38,10 +38,15 @@ static Function CHI_CheckJSONXOPVersion(state)
 	id = JSON_Parse(info)
 	version = JSON_GetString(id, "/XOP/version", ignoreErr = 1)
 
-	if(!cmpstr(version, CHI_JSON_XOP_VERSION))
-		printf "JSON XOP: Present in the right version (%s) (Nice!)\r", version
+	CHI_OutputVersionCheckResult(state, "JSON", CHI_JSON_XOP_VERSION, version)
+End
+
+static Function CHI_OutputVersionCheckResult(STRUCT CHI_InstallationState &state, string xopName, string expectedVersion, string foundVersion)
+
+	if(!cmpstr(foundVersion, expectedVersion))
+		printf "%s XOP: Present in the right version (%s) (Nice!)\r", xopName, foundVersion
 	else
-		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", CHI_JSON_XOP_VERSION, version
+		printf "%s XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", xopName, expectedVersion, foundVersion
 		state.numErrors += 1
 	endif
 End
