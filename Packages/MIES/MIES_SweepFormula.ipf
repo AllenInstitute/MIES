@@ -1898,8 +1898,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/WAVE selectDataRef = SF_ExecuteFormula("select()", graph)
-	WAVE/Z selectData = selectDataRef[0]
+	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
 	if(WaveExists(selectData))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
@@ -2733,7 +2732,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numArgs)
-		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1)
+		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1)
 		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
 	else
 		SF_ASSERT(numArgs >= 2 && numArgs <= 3, "Function requires None, 2 or 3 arguments.")
@@ -3281,11 +3280,13 @@ End
 /// @param formula formula string to execute
 /// @param databrowser name of databrowser window
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
-Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable singleResult])
+/// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
+Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable singleResult, variable checkExist])
 
 	variable jsonId
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
+	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	formula = SF_PreprocessInput(formula)
 	formula = SF_FormulaPreParser(formula)
@@ -3297,6 +3298,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 	if(singleResult)
 		SF_ASSERT(DimSize(out, ROWS) == 1, "Expected only a single dataSet")
 		WAVE/Z data = out[0]
+		SF_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet returned from executed formula.")
 		SF_CleanUpInput(out)
 		return data
 	endif
