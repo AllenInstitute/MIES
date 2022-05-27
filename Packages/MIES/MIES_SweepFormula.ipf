@@ -2938,10 +2938,9 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 	else
 		Make/FREE/T/N=(numArgs) wvT
 		for(i = 0; i < numArgs; i += 1)
-			WAVE csrName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(i), graph = graph)
+			WAVE/T csrName = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CURSORS, i, checkExist=1)
 			SF_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
-			WAVE/T csrNameT = csrName
-			wvT[i] = csrNameT[0]
+			wvT[i] = csrName[0]
 		endfor
 	endif
 	Make/FREE/N=(numArgs) out = NaN
@@ -2958,7 +2957,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 		endif
 	endfor
 
-	return out
+	return SF_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS)
 End
 
 // findlevel(data, level, [edge])
