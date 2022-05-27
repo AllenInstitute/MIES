@@ -2680,8 +2680,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	WAVE channels = SF_NewChannelsWave(numArgs ? numArgs : 1)
 	for(i = 0; i < numArgs; i += 1)
-		WAVE/Z chanSpec = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CHANNELS, i)
-		SF_ASSERT(WaveExists(chanSpec), "Channel specification returned null wave.")
+		WAVE chanSpec = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CHANNELS, i, checkExist=1)
 		channelName = ""
 		if(IsNumericWave(chanSpec))
 			channels[i][%channelNumber] = chanSpec[0]
@@ -2738,14 +2737,16 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
 	else
 		SF_ASSERT(numArgs >= 2 && numArgs <= 3, "Function requires None, 2 or 3 arguments.")
-		WAVE channels = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0)
+		WAVE channels = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-		WAVE sweeps = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
-		SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+		WAVE/Z sweeps = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
+		if(WaveExists(sweeps))
+			SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+		endif
 
 		if(numArgs == 3)
-			WAVE/T wMode = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2)
+			WAVE/T wMode = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2, checkExist=1)
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
@@ -2771,8 +2772,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SF_ASSERT(numArgs >= 1, "data function requires at least 1 argument.")
 	SF_ASSERT(numArgs <= 2, "data function has maximal 2 arguments.")
 
-	WAVE/Z range = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0)
-	SF_ASSERT(WaveExists(range), "Expected data input for range argument for data")
+	WAVE range = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0, checkExist=1)
 	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
 	if(IsTextWave(range))
 		SF_ASSERT(DimSize(range, ROWS) == 1, "For range from epoch only a single name is supported.")
@@ -3432,11 +3432,14 @@ static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string gra
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
+
+	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, opShort, argNum)
 	SF_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
 	WAVE/Z data = input[0]
+	SF_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
 	SF_CleanUpInput(input)
 
 	return data
