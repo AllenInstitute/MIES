@@ -2963,26 +2963,48 @@ End
 // findlevel(data, level, [edge])
 static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices
+	variable numArgs, i, numResults, sweepNo
+	string inDataType
 
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
-	SF_ASSERT(numIndices > 1, "At least two arguments.")
-	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	SF_ASSERT(numArgs <=3, "Findlevel has 3 arguments at most.")
+	SF_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 0)
+	WAVE level = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist=1)
 	SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 	SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
-	if(numIndices == 3)
-		WAVE edge = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
-		SF_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter level")
-		SF_ASSERT(IsNumericWave(edge), "level parameter must be numeric")
+	if(numArgs == 3)
+		WAVE edge = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 2, checkExist=1)
+		SF_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter edge")
+		SF_ASSERT(IsNumericWave(edge), "edge parameter must be numeric")
+		SF_ASSERT(edge[0] == FINDLEVEL_EDGE_BOTH || edge[0] == FINDLEVEL_EDGE_INCREASING ||  edge[0] == FINDLEVEL_EDGE_DECREASING, "edge parameter is invalid")
 	else
-		Make/FREE edge = {0}
+		Make/FREE edge = {FINDLEVEL_EDGE_BOTH}
 	endif
 
-	WAVE out = FindLevelWrapper(data, level[0], edge[0], FINDLEVEL_MODE_SINGLE)
+	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_FINDLEVEL, DimSize(dataRef, ROWS))
+	results = FindLevelWrapper(dataRef[p], level[0], edge[0], FINDLEVEL_MODE_SINGLE)
 
-	return out
+	SetStringInJSONWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_FINDLEVEL)
+	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SetStringInJSONWaveNote(results, SF_META_XAXISLABEL, "Sweeps")
+		numResults = DimSize(results, ROWS)
+		for(i = 0; i < numResults; i += 1)
+			WAVE/Z inData = dataRef[i]
+			WAVE/Z outData = results[i]
+			if(WaveExists(inData) && WaveExists(outData))
+				Note/K outData, note(inData)
+				sweepNo = GetNumberFromJSONWaveNote(outData, SF_META_SWEEPNO)
+				if(IsNaN(sweepNo))
+					continue
+				endif
+				SetWaveInJSONWaveNote(outData, SF_META_XVALUES, {sweepNo})
+			endif
+		endfor
+	endif
+
+	return SF_GetOutputForExecutor(results, graph, SF_OP_FINDLEVEL)
 End
 
 // apfrequency(data, [frequency calculation method], [spike detection crossing level])
