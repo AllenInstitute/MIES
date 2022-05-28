@@ -818,7 +818,7 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 	return out
 End
 
-static Function [WAVE/WAVE formulaResults, string dataType] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
+static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
 
 	variable i, index, numResultsY, numResultsX, numFormulaPairs, xRefIndex
 
@@ -837,7 +837,8 @@ static Function [WAVE/WAVE formulaResults, string dataType] SF_GatherFormulaResu
 		SF_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
 	endif
 	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
-	dataType = GetStringFromJSONWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData.dataType = GetStringFromJSONWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData.xAxisLabel = GetStringFromJSONWaveNote(wvYRef, SF_META_XAXISLABEL)
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
 			formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
@@ -847,7 +848,7 @@ static Function [WAVE/WAVE formulaResults, string dataType] SF_GatherFormulaResu
 	endfor
 	Redimension/N=(index, -1) formulaResults
 
-	return [formulaResults, dataType]
+	return [formulaResults, plotMetaData]
 End
 
 static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, string traceName)
@@ -881,19 +882,26 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.green = 0x0000
 	s.blue = 0x0000
 
-	if(CmpStr(dataType, SF_DATATYPE_SWEEP))
-		return [s]
-	endif
+	strswitch(dataType)
+		case SF_DATATYPE_FINDLEVEL:
+		case SF_DATATYPE_SWEEP:
+			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			if(!IsValidSweepNumber(sweepNo))
+				break
+			endif
 
-	channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-	channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-	sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			if(WaveExists(numericalValues))
+				headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+				[s] = GetHeadstageColor(headstage)
+			endif
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	if(WaveExists(numericalValues))
-		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-		[s] = GetHeadstageColor(headstage)
-	endif
+			break
+		default:
+			break
+	endswitch
 
 	return [s]
 End
@@ -935,11 +943,12 @@ End
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
 static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
-	string trace, dataType
+	string trace
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints
 	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation
+	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
@@ -992,7 +1001,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		ModifyGraph/W=$win swapXY = 0
 
 		WAVE/WAVE/Z formulaResults
-		[formulaResults, dataType] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
+		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
 		numData = DimSize(formulaResults, ROWS)
 		for(k = 0; k < numData; k += 1)
 
@@ -1002,7 +1011,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				continue
 			endif
 
-			[color] = SF_GetTraceColor(graph, dataType, wvResultY)
+			[color] = SF_GetTraceColor(graph, plotMetaData.dataType, wvResultY)
+
+			if(!WaveExists(wvResultX))
+				WAVE/Z wvResultX = GetWaveFromJSONWaveNote(wvResultY, SF_META_XVALUES)
+			endif
 
 			if(WaveExists(wvResultX))
 
@@ -1053,7 +1066,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
-					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 				endfor
 			elseif((xMxN == 1) && (yMxN == 1)) // 1D
 				if(yPoints == 1) // 0D vs 1D
@@ -1061,14 +1074,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					for(i = 0; i < numTraces; i += 1)
 						[trace, traceCnt] = SF_CreateTraceName(k)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
-						annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 					endfor
 				elseif(xPoints == 1) // 1D vs 0D
 					numTraces = yPoints
 					for(i = 0; i < numTraces; i += 1)
 						[trace, traceCnt] = SF_CreateTraceName(k)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
-						annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 					endfor
 				else // 1D vs 1D
 					splitTraces = min(yPoints, xPoints)
@@ -1081,7 +1094,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 						splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
-						annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 					endfor
 				endif
 			elseif(yMxN == 1) // 1D vs 2D
@@ -1089,7 +1102,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
-					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 				endfor
 			elseif(xMxN == 1) // 2D vs 1D or 0D
 				if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -1101,7 +1114,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
-					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 				endfor
 			else // 2D vs 2D
 				numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
@@ -1118,7 +1131,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					else
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
 					endif
-					annotation += SF_GetMetaDataAnnotationText(dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
 				endfor
 			endif
 
@@ -1134,6 +1147,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(!IsEmpty(annotation))
 			annotation = RemoveEnding(annotation, "\r")
 			Legend/W=$win/C/N=metadata/F=0 annotation
+		endif
+		if(!IsEmpty(plotMetaData.xAxisLabel))
+			Label/W=$win bottom plotMetaData.xAxisLabel
 		endif
 
 		RestoreCursors(win, cursorInfos)
