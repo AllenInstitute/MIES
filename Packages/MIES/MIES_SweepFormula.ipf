@@ -2979,7 +2979,7 @@ End
 // findlevel(data, level, [edge])
 static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i, numResults, sweepNo
+	variable numArgs
 	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
@@ -3004,20 +3004,7 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	SetStringInJSONWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_FINDLEVEL)
 	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SetStringInJSONWaveNote(results, SF_META_XAXISLABEL, "Sweeps")
-		numResults = DimSize(results, ROWS)
-		for(i = 0; i < numResults; i += 1)
-			WAVE/Z inData = dataRef[i]
-			WAVE/Z outData = results[i]
-			if(WaveExists(inData) && WaveExists(outData))
-				Note/K outData, note(inData)
-				sweepNo = GetNumberFromJSONWaveNote(outData, SF_META_SWEEPNO)
-				if(IsNaN(sweepNo))
-					continue
-				endif
-				SetWaveInJSONWaveNote(outData, SF_META_XVALUES, {sweepNo})
-			endif
-		endfor
+		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
 	endif
 
 	return SF_GetOutputForExecutor(results, graph, SF_OP_FINDLEVEL)
@@ -3482,4 +3469,28 @@ static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, stri
 	SF_CleanUpInput(input)
 
 	return data
+End
+
+/// @brief Transfer wavenote from input data sets to output data sets, set a label for a x-axis and use the value from keyForXAxis for x-Value
+static Function SF_TransferFormulaDataWaveNote(WAVE/WAVE input, WAVE/WAVE output, string xLabel, string keyForXAxis)
+
+	variable xAxisValue, numResults, i
+
+	numResults = DimSize(input, ROWS)
+	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
+	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, xLabel)
+	for(i = 0; i < numResults; i += 1)
+		WAVE/Z inData = input[i]
+		WAVE/Z outData = output[i]
+		if(!WaveExists(inData) || !WaveExists(outData))
+			continue
+		endif
+
+		Note/K outData, note(inData)
+		xAxisValue = GetNumberFromJSONWaveNote(outData, keyForXAxis)
+		if(IsNaN(xAxisValue))
+			continue
+		endif
+		SetWaveInJSONWaveNote(outData, SF_META_XVALUES, {xAxisValue})
+	endfor
 End
