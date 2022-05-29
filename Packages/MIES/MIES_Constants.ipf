@@ -1894,4 +1894,5 @@ StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
+StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
 /// @}

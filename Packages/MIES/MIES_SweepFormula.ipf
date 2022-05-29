@@ -883,6 +883,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_APFREQUENCY:
 		case SF_DATATYPE_FINDLEVEL:
 		case SF_DATATYPE_SWEEP:
 			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
@@ -3013,23 +3014,24 @@ End
 // apfrequency(data, [frequency calculation method], [spike detection crossing level])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i
+	variable numArgs, i
+	string inDataType
 
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
-	SF_ASSERT(numIndices >= 1, "At least one argument.")
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	SF_ASSERT(numArgs <=3, "ApFrequency has 3 arguments at most.")
+	SF_ASSERT(numArgs >= 1, "ApFrequency needs at least one argument.")
 
-	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	if(numIndices == 3)
-		WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
+	if(numArgs == 3)
+		WAVE level = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 2, checkExist=1)
 		SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 		SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
 	else
-		Make/FREE/N=1 level = {0}
+		Make/FREE level = {0}
 	endif
 
-	if(numIndices >= 2)
-		WAVE method = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	if(numArgs >= 2)
+		WAVE method = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 1, checkExist=1)
 		SF_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
 		SF_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
 		SF_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
@@ -3037,12 +3039,28 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		Make/FREE method = {SF_APFREQUENCY_FULL}
 	endif
 
-	WAVE levels = FindLevelWrapper(data, level[0], FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
-	variable numSets = DimSize(levels, ROWS)
+	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(dataRef, ROWS))
+	results = SF_OperationApFrequencyImpl(dataRef[p], level[0], method[0])
+
+	SetStringInJSONWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_APFREQUENCY)
+	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
+	endif
+
+	return SF_GetOutputForExecutor(results, graph, SF_OP_APFREQUENCY)
+End
+
+static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method)
+
+	variable numSets, i
+
+	WAVE levels = FindLevelWrapper(data, level, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+	numSets = DimSize(levels, ROWS)
 	Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
 
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
-	switch(method[0])
+	switch(method)
 		case SF_APFREQUENCY_FULL:
 			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE)
 			break
