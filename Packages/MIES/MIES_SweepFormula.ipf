@@ -839,6 +839,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
 	plotMetaData.dataType = GetStringFromJSONWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.xAxisLabel = GetStringFromJSONWaveNote(wvYRef, SF_META_XAXISLABEL)
+	plotMetaData.yAxisLabel = GetStringFromJSONWaveNote(wvYRef, SF_META_YAXISLABEL)
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
 			formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
@@ -1152,6 +1153,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(!IsEmpty(plotMetaData.xAxisLabel))
 			Label/W=$win bottom plotMetaData.xAxisLabel
 		endif
+		if(!IsEmpty(plotMetaData.yAxisLabel))
+			Label/W=$win left plotMetaData.yAxisLabel
+		endif
+		ModifyGraph/W=$win zapTZ(bottom)=1
 
 		RestoreCursors(win, cursorInfos)
 		SetAxesRanges(win, axesRanges)

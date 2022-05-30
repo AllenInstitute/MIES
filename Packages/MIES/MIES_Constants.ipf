@@ -1891,6 +1891,7 @@ StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
 StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
 StrConstant SF_META_XVALUES = "/XValues" // numeric wave
 StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
+StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
