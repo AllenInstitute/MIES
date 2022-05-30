@@ -2920,15 +2920,40 @@ End
 
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	if(IsTextWave(wv))
-		WAVE/T wt = wv
-		print wt[0]
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG)
+	elseif(numArgs == 1)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_LOG, 0)
 	else
-		print wv[0]
+		Make/FREE/N=0 data
+		return SF_GetOutputForExecutorSingle(data, graph, SF_OP_LOG)
+	endif
+	for(w : input)
+		SF_OperationLogImpl(w)
+	endfor
+
+	return SF_GetOutputForExecutor(input, graph, SF_OP_LOG)
+End
+
+static Function SF_OperationLogImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return NaN
 	endif
 
-	return wv
+	if(!DimSize(input, ROWS))
+		return NaN
+	endif
+
+	if(IsTextWave(input))
+		WAVE/T wt = input
+		print wt[0]
+	else
+		print input[0]
+	endif
 End
 
 static Function/WAVE SF_OperationLog10(variable jsonId, string jsonPath, string graph)
