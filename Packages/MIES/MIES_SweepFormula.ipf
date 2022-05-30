@@ -3087,16 +3087,20 @@ End
 
 // `store(name, ...)`
 static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string graph)
+
 	string rawCode, preProcCode
 	variable maxEntries, numEntries
 
-	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 2, "Function accepts only two arguments")
+	SF_ASSERT(SF_GetNumberOfArguments(jsonID, jsonPath) == 2, "Function accepts only two arguments")
 
-	WAVE/T name = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	WAVE/T name = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_STORE, 0)
 	SF_ASSERT(IsTextWave(name), "name parameter must be textual")
 	SF_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
 
-	WAVE out = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_STORE, 1)
+	SF_ASSERT(DimSize(dataRef, ROWS) == 1, "Multiple dataSets not supported yet for store().")
+	WAVE/Z out = dataRef[0]
+	SF_ASSERT(WaveExists(out), "No data retrieved for store().")
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
@@ -3105,7 +3109,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 
 	// return second argument unmodified
-	return out
+	return SF_GetOutputForExecutor(dataRef, graph, SF_OP_STORE)
 End
 
 static Function/WAVE SF_SplitCodeToGraphs(string code)
