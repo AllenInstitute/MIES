@@ -1896,4 +1896,5 @@ StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
 StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
+StrConstant SF_DATATYPE_LABNOTEBOOK = "LabNotebook"
 /// @}

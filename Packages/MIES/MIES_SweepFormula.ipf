@@ -884,6 +884,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_LABNOTEBOOK:
 		case SF_DATATYPE_APFREQUENCY:
 		case SF_DATATYPE_FINDLEVEL:
 		case SF_DATATYPE_SWEEP:
@@ -2825,23 +2826,24 @@ End
 /// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, j, mode, JSONtype, index, sweepNo, numSweeps, numChannels
-	string str, lbnKey
+	variable numArgs, mode
+	string lbnKey
 
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
-	numIndices = SF_GetNumberOfArguments(jsonID, jsonPath)
-	SF_ASSERT(numIndices <= 3, "Maximum number of three arguments exceeded.")
-	SF_ASSERT(numIndices >= 1, "At least one argument is required.")
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	SF_ASSERT(numArgs <= 3, "Maximum number of three arguments exceeded.")
+	SF_ASSERT(numArgs >= 1, "At least one argument is required.")
 
-	if(numIndices == 3)
-		WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+	if(numArgs == 3)
+		WAVE/T wMode = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist=1)
 		SF_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
 		strswitch(wMode[0])
 			case "UNKNOWN_MODE":
 				mode = UNKNOWN_MODE
 				break
 			case "DATA_ACQUISITION_MODE":
+				mode = DATA_ACQUISITION_MODE
 				break
 			case "TEST_PULSE_MODE":
 				mode = TEST_PULSE_MODE
@@ -2856,32 +2858,44 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 		mode = DATA_ACQUISITION_MODE
 	endif
 
-	if(numIndices >= 2)
-		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	if(numArgs >= 2)
+		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", graph)
+		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	endif
+	if(WaveExists(selectData))
+		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 	endif
 
-	if(SF_IsDefaultEmptyWave(selectData))
-		return selectData
-	endif
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-
-	WAVE/T wLbnKey = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	WAVE/T wLbnKey = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist=1)
 	SF_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
 	lbnKey = wLbnKey[0]
 
-	WAVE/Z sweeps
-	WAVE/Z activeChannels
-	[sweeps, activeChannels] = SF_ReCreateOldSweepsChannelLayout(selectData)
-	numSweeps = DimSize(sweeps, ROWS)
-	numChannels = DimSize(activeChannels, ROWS)
+	WAVE/WAVE output = SF_OperationLabnotebookImpl(graph, lbnKey, selectData, mode, SF_OP_LABNOTEBOOK)
 
-	Make/D/FREE/N=(numSweeps, numChannels) outD = NaN
-	Make/T/FREE/N=(numSweeps, numChannels) outT
-	for(i = 0; i < numSweeps; i += 1)
-		sweepNo = sweeps[i]
+	return SF_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
+End
+
+static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WAVE/Z selectData, variable mode, string opShort)
+
+	variable i, numSelected, index, settingsIndex
+	variable sweepNo, chanNr, chanType
+
+	if(!WaveExists(selectData))
+		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+		return output
+	endif
+
+	numSelected = DimSize(selectData, ROWS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, numSelected)
+
+	for(i = 0; i < numSelected; i += 1)
+
+		sweepNo = selectData[i][%SWEEP]
+		chanNr = selectData[i][%CHANNELNUMBER]
+		chanType = selectData[i][%CHANNELTYPE]
 
 		if(!IsValidSweepNumber(sweepNo))
 			continue
@@ -2893,34 +2907,33 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 			continue
 		endif
 
-		for(j = 0; j <  numChannels; j += 1)
-			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], lbnKey, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
-			if(!WaveExists(settings))
-				continue
-			endif
-			if(IsNumericWave(settings))
-				outD[i][j] = settings[index]
-				WAVE out = outD
-			elseif(IsTextWave(settings))
-				WAVE/T settingsT = settings
-				outT[i][j] = settingsT[index]
-				WAVE out = outT
-			endif
-		endfor
+		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
+		if(!WaveExists(settings))
+			continue
+		endif
+		if(IsNumericWave(settings))
+			Make/FREE/D outD = {settings[settingsIndex]}
+			WAVE out = outD
+		elseif(IsTextWave(settings))
+			WAVE/T settingsT = settings
+			Make/FREE/T outT = {settingsT[settingsIndex]}
+			WAVE out = outT
+		endif
+
+		SetNumberInJSONWaveNote(out, SF_META_SWEEPNO, sweepNo)
+		SetNumberInJSONWaveNote(out, SF_META_CHANNELTYPE, chanType)
+		SetNumberInJSONWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+		SetWaveInJSONWaveNote(out, SF_META_XVALUES, {sweepNo})
+
+		output[index] = out
+		index += 1
 	endfor
+	Redimension/N=(index) output
 
-	if(!WaveExists(out))
-		DebugPrint("labnotebook entry not found.")
-		WAVE out = SF_GetDefaultEmptyWave()
-		return out
-	endif
-
-	for(i = 0; i < numChannels; i += 1)
-		str = StringFromList(activeChannels[i][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
-		SetDimLabel COLS, i, $str, out
-	endfor
-
-	return out
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	SetStringInJSONWaveNote(output, SF_META_YAXISLABEL, lbnKey)
+	return output
 End
 
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
