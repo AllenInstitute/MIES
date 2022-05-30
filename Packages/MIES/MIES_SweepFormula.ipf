@@ -108,6 +108,8 @@ static StrConstant SF_CHAR_NEWLINE = "\n"
 
 static StrConstant MIXED_UNITS = "** undefined **"
 
+static Constant SF_TRANSFER_ALL_DIMS = -1
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
@@ -1261,23 +1263,31 @@ End
 
 /// @brief transfer the wave scaling from one wave to another
 ///
-/// Note: wave scale transfer requires wave units for the first wave in the array that
+/// Note: wave scale transfer requires wave units for the first wave or second wave
 ///
 /// @param source    Wave whos scaling should get transferred
 /// @param dest      Wave that accepts the new scaling
-/// @param dimSource dimension of the source wave
+/// @param dimSource dimension of the source wave, if SF_TRANSFER_ALL_DIMS is used then all scales and units are transferred on the same dimensions,
+///                  dimDest is ignored in that case, no unit check is applied in that case
 /// @param dimDest   dimension of the destination wave
-///
-/// @return 0 if wave scaling was transferred, 1 if not
 static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dimSource, variable dimDest)
 
 	string sourceUnit, destUnit
+
+	if(dimSource == SF_TRANSFER_ALL_DIMS)
+		CopyScales/P source, dest
+		return NaN
+	endif
+
+	if(!(WaveDims(source) > dimSource && dimSource >= 0) || !(WaveDims(dest) > dimDest && dimDest >= 0))
+		return NaN
+	endif
 
 	sourceUnit = WaveUnits(source, dimSource)
 	destUnit = WaveUnits(dest, dimDest)
 
 	if(IsEmpty(sourceUnit) && IsEmpty(destUnit))
-		return 1
+		return NaN
 	endif
 
 	switch(dimDest)
@@ -1294,10 +1304,8 @@ static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dim
 			SetScale/P t, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
 			break
 		default:
-			return 1
+			ASSERT(0, "Invalid dimDest")
 	endswitch
-
-	return 0
 End
 
 /// @brief Use the labnotebook information to return the active channel numbers
