@@ -2933,13 +2933,33 @@ End
 
 static Function/WAVE SF_OperationLog10(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	MatrixOP/FREE out = log(wv)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	variable numArgs
 
-	return out
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG10)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_LOG10, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_LOG10, DimSize(input, ROWS))
+	Note/K output, note(input)
+
+	output[] = SF_OperationLog10Impl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_LOG10, clear=input)
+End
+
+static Function/WAVE SF_OperationLog10Impl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+	SF_ASSERT(IsNumericWave(input), "log10 requires numeric input data.")
+	MatrixOP/FREE output = log(input)
+	Note/K output, note(input)
+	SF_FormulaWaveScaleTransfer(input, output, SF_TRANSFER_ALL_DIMS, NaN)
+
+	return output
 End
 
 static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, string graph)
