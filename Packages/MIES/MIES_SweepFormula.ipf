@@ -594,6 +594,25 @@ static Function/S SF_EscapeJsonPath(string str)
 	return ReplaceString("/", str, "~1")
 End
 
+static Function SF_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
+
+	if(!WaveExists(out))
+		return NaN
+	endif
+
+	SF_FormulaWaveScaleTransfer(subArray, out, ROWS, COLS)
+	SF_FormulaWaveScaleTransfer(subArray, out, COLS, LAYERS)
+	SF_FormulaWaveScaleTransfer(subArray, out, LAYERS, CHUNKS)
+	// Copy max 3d subarray to data
+	if(IsTextWave(out))
+		WAVE/T outT = out
+		WAVE/T subArrayT = subArray
+		Multithread outT[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArrayT[q][r][s]
+	else
+		Multithread out[index][0, max(0, DimSize(subArray, ROWS) - 1)][0, max(0, DimSize(subArray, COLS) - 1)][0, max(0, DimSize(subArray, LAYERS) - 1)] = subArray[q][r][s]
+	endif
+End
+
 /// @brief Execute the formula parsed by SF_FormulaParser
 ///
 /// Recursively executes the formula parsed into jsonID.
@@ -604,7 +623,8 @@ End
 Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph])
 
 	string opName
-	variable JSONType, i
+	variable JSONType, numArrObjElems, arrayElemJSONType, effectiveArrayDimCount, dim
+	variable colSize, layerSize, chunkSize, arrOrObjAtIndex, operationsWithScalarResultCount
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -625,61 +645,144 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 	JSONtype = JSON_GetType(jsonID, jsonPath)
 	if(JSONtype == JSON_NUMERIC)
 		Make/FREE out = { JSON_GetVariable(jsonID, jsonPath) }
-		return out
+		return SF_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 	elseif(JSONtype == JSON_STRING)
 		Make/FREE/T outT = { JSON_GetString(jsonID, jsonPath) }
-		return outT
+		return SF_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
 	elseif(JSONtype == JSON_ARRAY)
+		// Evaluate an array consisting of any elements including subarrays and objects (operations)
+
+		// If we want to return an Igor Pro data wave the final dimensionality can not exceed 4
 		WAVE topArraySize = JSON_GetMaxArraySize(jsonID, jsonPath)
-		Make/FREE/N=(topArraySize[0])/B types = JSON_GetType(jsonID, jsonPath + "/" + num2istr(p))
-
-		if(topArraySize[0] != 0 && types[0] == JSON_STRING)
-			SF_ASSERT(DimSize(topArraySize, ROWS) <= 1, "Text Waves Must Be 1-dimensional.", jsonId=jsonId)
-			return JSON_GetTextWave(jsonID, jsonPath)
+		effectiveArrayDimCount = DimSize(topArraySize, ROWS)
+		SF_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId=jsonId)
+		// Check against empty array
+		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
+			Make/FREE/N=0 out
+			return SF_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 		endif
-		EXTRACT/FREE types, strings, types[p] == JSON_STRING
-		SF_ASSERT(DimSize(strings, ROWS) == 0, "Object evaluation For Mixed Text/Numeric Arrays Is Not Allowed", jsonId=jsonId)
-		WaveClear strings
 
-		SF_ASSERT(DimSize(topArraySize, ROWS) < 4, "Unhandled Data Alignment. Only 3 Dimensions Are Supported For Operations.", jsonId=jsonId)
-		WAVE out = JSON_GetWave(jsonID, jsonPath)
+		// Get all types of current level (row)
+		Make/FREE/N=(topArraySize[0]) types = JSON_GetType(jsonID, jsonPath + "/" + num2istr(p))
+		// Do not allow null, that can happen if a formula like "integrate()" is executed and SF_GetArgumentTop attempts to parse all arguments into one array
+		FindValue/V=(JSON_NULL) types
+		SF_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId=jsonId)
 
-		Redimension/N=4 topArraySize
+		WAVE/T/Z outT = JSON_GetTextWave(jsonID, jsonPath, ignoreErr=1)
+		WAVE/Z out = JSON_GetWave(jsonID, jsonPath, ignoreErr=1)
+		SF_ASSERT(WaveExists(out) || WaveExists(outT), "Mixed types in array not supported.")
+
+		// Increase dimensionality of data to 4D
+		Redimension/N=(MAX_DIMENSION_COUNT) topArraySize
 		topArraySize[] = topArraySize[p] != 0 ? topArraySize[p] : 1
-		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
-
-		EXTRACT/FREE/INDX types, indices, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
-		if(DimSize(indices, ROWS) == 1 && DimSize(out, ROWS) == 1)
-			return SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(indices[0]), graph = graph)
+		if(WaveExists(out))
+			Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
 		endif
-		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			WAVE element = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(indices[i]), graph = graph)
-			if(DimSize(element, CHUNKS) > 1)
-				DebugPrint("Merging Chunks To Layers for object: " + jsonPath + "/" + num2istr(indices[i]))
-				Redimension/N=(-1, -1, max(1, DimSize(element, LAYERS)) * DimSize(element, CHUNKS), 0)/E=1 element
-			endif
-			topArraySize[1,*] = max(topArraySize[p], DimSize(element, p - 1))
-			if((DimSize(out, ROWS)   < topArraySize[0]) || \
-			   (DimSize(out, COLS)   < topArraySize[1]) || \
-			   (DimSize(out, LAYERS) < topArraySize[2]) || \
-			   (DimSize(out, CHUNKS) < topArraySize[3]))
-				Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) out
-			endif
-			SF_FormulaWaveScaleTransfer(element, out, ROWS, COLS)
-			SF_FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
-			SF_FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
-			Multithread out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
-		endfor
+		if(WaveExists(outT))
+			Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 outT
+		endif
 
-		EXTRACT/FREE/INDX types, indices, types[p] == JSON_NUMERIC
-		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			Multithread out[indices[i]][][][] = out[indices[i]][0][0][0]
-		endfor
+		// Get indices of Objects and Arrays on current level
+		EXTRACT/FREE/INDX types, arrOrObjAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
+		numArrObjElems = DimSize(arrOrObjAt, ROWS)
+		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
+		// Iterate over all subarrays and objects on current level
+		for(index : arrOrObjAt)
+			WAVE subArray = SF_GetArgumentSingle(jsonID, jsonPath, graph, "ExecutorSubArrayEvaluation", index, checkExist=1)
+			SF_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
+			// Type check, decide on type
+			if(IsNumericWave(subArray))
+				WAVE/T/Z outT = $""
+			endif
+			if(IsTextWave(subArray))
+				WAVE/Z out = $""
+				WAVE/T subArrayT = subArray
+			endif
+			SF_ASSERT(WaveExists(out) || WaveExists(outT), "Mixed types in array not supported.")
 
-		topArraySize[1,*] = topArraySize[p] == 1 ? 0 : topArraySize[p]
+			SF_ASSERT(WaveDims(subArray) < MAX_DIMENSION_COUNT, "Encountered 4d sub array at " + jsonPath)
+
+			// Promote WaveNote with meta data if topArray is 1 point.
+			// The single topArray element is object or array at this point
+			if(WaveExists(out) && numpnts(out) == 1)
+				Note/K out, note(subArray)
+			endif
+			if(WaveExists(outT) && numpnts(outT) == 1)
+				Note/K outT, note(subArray)
+			endif
+
+			// subArray will be inserted into the current array, thus the dimension will be WaveDims(subArray) + 1
+			// Thus, [1, [2]] returns the correct wave of size (2, 1) with {{1, 2}}.
+			effectiveArrayDimCount = max(effectiveArrayDimCount, WaveDims(subArray) + 1)
+
+			// If the whole JSON array consists of STRING or NUMERIC types then topArraySize already is of the correct size.
+			// If we encounter an Object aka operation it could return an array that is larger than a single element,
+			// then we might have to resize beyond the original topArraySize.
+			// Increase 4D array size tracking according to new data
+			topArraySize[1,*] = max(topArraySize[p], DimSize(subArray, p - 1))
+			WAVE outCombinedType = SelectWave(WaveExists(outT), out, outT)
+			// resize data according to new topArraySize adapted by sub array size and fill new elements with NaN
+			if((DimSize(outCombinedType, COLS)   < topArraySize[1]) || \
+			   (DimSize(outCombinedType, LAYERS) < topArraySize[2]) || \
+			   (DimSize(outCombinedType, CHUNKS) < topArraySize[3]))
+
+				if(WaveExists(out))
+					Duplicate/FREE out, outTmp
+					Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) outTmp
+					FastOp outTmp = (NaN)
+					Multithread outTmp[0, DimSize(out, ROWS) - 1][0, DimSize(out, COLS) - 1][0, DimSize(out, LAYERS) - 1][0, DimSize(out, CHUNKS) - 1] = out[p][q][r][s]
+					WAVE out = outTmp
+				endif
+				if(WaveExists(outT))
+					Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) outT
+				endif
+			endif
+			SF_PlaceSubArrayAt(out, subArray, index)
+			SF_PlaceSubArrayAt(outT, subArrayT, index)
+
+			// Save indices of operation/subArray evaluations that returned scalar results
+			if(numpnts(subArray) == 1)
+				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, minimumSize=operationsWithScalarResultCount + 1)
+				indicesOfOperationsWithScalarResult[operationsWithScalarResultCount] = index
+				operationsWithScalarResultCount += 1
+			endif
+			arrOrObjAtIndex += 1
+		endfor
+		Redimension/N=(operationsWithScalarResultCount) indicesOfOperationsWithScalarResult
+
+		// SCALAR EXTENSION
+		// Find all indices that are not subArray or objects but either string or numeric, depending on final type determined above
+		// As the first element is string or numeric, the array element itself is a skalar.
+		// We also consider operations/subArrays that returned a scalar result that we gathered above.
+		// The non-skalar case:
+		// If from object elements (operations) the topArraySize is increased and as example one operations returns a 3x3 array
+		// and another operation a 2x2 array, then for the first operation the topArraySize increase happens, the data from the
+		// second operation is just filled in the array with remaining "untouched" elements in that row. These elements stay with the fill
+		// value NaN or "".
+		arrayElemJSONType = WaveExists(outT) ? JSON_STRING : JSON_NUMERIC
+		EXTRACT/FREE/INDX types, indices, types[p] == arrayElemJSONType
+		Concatenate/FREE/NP {indicesOfOperationsWithScalarResult}, indices
+		if(WaveExists(outT))
+			for(index : indices)
+				Multithread outT[index][][][] = outT[index][0][0][0]
+			endfor
+		else
+			for(index : indices)
+				Multithread out[index][][][] = out[index][0][0][0]
+			endfor
+		endif
+
+		// out can be text or numeric, afterwards if following code has no type expectations
+		if(WaveExists(outT))
+			WAVE out = outT
+		endif
+		// shrink data to actual array size
+		for(dim = effectiveArrayDimCount; dim < MAX_DIMENSION_COUNT; dim += 1)
+			ASSERT(topArraySize[dim] == 1, "Inconsistent array dimension size")
+			topArraySize[dim] = 0
+		endfor
 		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
-
-		return out
+		return SF_GetOutputForExecutorSingle(out, graph, "ExecutorArrayReturn")
 	endif
 
 	// operation evaluation
