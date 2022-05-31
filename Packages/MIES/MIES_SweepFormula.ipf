@@ -2680,12 +2680,26 @@ End
 
 static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	MatrixOP/FREE transposed = wv^T
-	Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2istr(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2istr(q))))
-	SetScale/P x, 0, 1, "", out
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MERGE)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_MERGE, DimSize(input, ROWS))
+
+	output[] = SF_OperationMergeImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_MERGE, clear=input)
+End
+
+static Function/WAVE SF_OperationMergeImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "Operand for " + SF_OP_MERGE + " must be numeric.")
+	SF_ASSERT(DimSize(input, LAYERS) <= 1, "input for merge must be 2d")
+	SF_ASSERT(DimSize(input, CHUNKS) <= 1, "input for merge must be 2d")
+	MatrixOP/FREE transposed = input^T
+	Extract/FREE transposed, out, !IsNaN(transposed[p][q])
+
 	return out
 End
 
