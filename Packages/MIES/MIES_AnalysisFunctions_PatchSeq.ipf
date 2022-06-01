@@ -2143,7 +2143,7 @@ Function PSQ_DAScale(device, s)
 					ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
 					ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
-					FitResistance(device, showPlot = showPlot)
+					FitResistance(device, s.headstage, showPlot = showPlot, anaFuncType = PSQ_DA_SCALE)
 
 				elseif(!cmpstr(opMode, PSQ_DS_SUPRA))
 					totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
