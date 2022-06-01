@@ -2706,9 +2706,36 @@ End
 
 static Function/WAVE SF_OperationXValues(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
-	return out
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs > 0, "xvalues requires at least one argument.")
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_XVALUES)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_XVALUES, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_XVALUES, DimSize(input, ROWS))
+
+	output[] = SF_OperationXValuesImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_XVALUES, clear=input)
+End
+
+static Function/WAVE SF_OperationXValuesImpl(WAVE/Z input)
+
+	variable offset, delta
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	Make/FREE/D/N=(DimSize(input, ROWS), DimSize(input, COLS), DimSize(input, LAYERS), DimSize(input, CHUNKS)) output
+	offset =DimOffset(input, ROWS)
+	delta = DimDelta(input, ROWS)
+	Multithread output = offset + p * delta
+
+	return output
 End
 
 static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
