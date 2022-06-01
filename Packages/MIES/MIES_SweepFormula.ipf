@@ -958,16 +958,36 @@ End
 static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, string traceName)
 
 	variable channelNumber, channelType, sweepNo
-	string annotation, channelId
-	string traceAnnotation = ""
+	string annotation, channelId, prefix
+	string traceAnnotation
 
-	if(!CmpStr(dataType, SF_DATATYPE_SWEEP))
-		channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-		channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-		sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
-		channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-		sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
-	endif
+	strswitch(dataType)
+		case SF_DATATYPE_SWEEP:
+			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
+			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
+			break
+		case SF_DATATYPE_LABNOTEBOOK:
+		case SF_DATATYPE_APFREQUENCY:
+		case SF_DATATYPE_FINDLEVEL:
+		case SF_DATATYPE_BUTTERWORTH:
+			prefix = dataType
+			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			if(!IsNaN(channelNumber) && !IsNaN(channelType) && !IsNaN(sweepNo))
+				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
+				sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+			else
+				traceAnnotation = ""
+			endif
+			break
+		default:
+			traceAnnotation = ""
+			break
+	endswitch
 
 	if(IsEmpty(traceAnnotation))
 		return ""
@@ -987,6 +1007,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_BUTTERWORTH:
 		case SF_DATATYPE_LABNOTEBOOK:
 		case SF_DATATYPE_APFREQUENCY:
 		case SF_DATATYPE_FINDLEVEL:
@@ -2684,24 +2705,45 @@ static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string g
 	return out
 End
 
+/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, string graph)
 
-	/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
-	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")
-	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	WAVE lowPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
+
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0)
+	WAVE lowPassCutoff = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist=1)
 	SF_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
 	SF_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-	WAVE highPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+	WAVE highPassCutoff = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist=1)
 	SF_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
 	SF_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-	WAVE order = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+	WAVE order = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist=1)
 	SF_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
 	SF_ASSERT(IsNumericWave(order), "order parameter must be numeric")
-	FilterIIR/HI=(highPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order[0])/DIM=(ROWS) data
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(dataRef, ROWS))
+
+	output[] = SF_OperationButterworthImpl(dataRef[p], lowPassCutoff[0], highPassCutoff[0], order[0])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_BUTTERWORTH)
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_BUTTERWORTH, clear=dataRef)
+End
+
+static Function/WAVE SF_OperationButterworthImpl(WAVE/Z input, variable lowPassCutoff, variable highPassCutoff, variable order)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "butterworth requires numeric input data.")
+	FilterIIR/HI=(highPassCutoff / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order)/DIM=(ROWS) input
 	SF_ASSERT(V_flag == 0, "FilterIIR returned error")
 
-	return data
+	return input
 End
 
 static Function/WAVE SF_OperationXValues(variable jsonId, string jsonPath, string graph)
