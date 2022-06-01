@@ -2775,10 +2775,16 @@ End
 
 static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string graph)
 
-	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "First argument is wave")
-	WAVE/T wavelocation = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
+	variable numArgs
 
-	return $(wavelocation[0])
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 1, "wave expects exactly one argument.")
+	WAVE/T wavelocation = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_WAVE, 0, checkExist=1)
+	SF_ASSERT(IsTextWave(waveLocation), "First argument must be textual.")
+
+	WAVE/Z output = $(wavelocation[0])
+
+	return SF_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE)
 End
 
 static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
