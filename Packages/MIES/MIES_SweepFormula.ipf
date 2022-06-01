@@ -2713,11 +2713,35 @@ End
 
 static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT
-	Multithread outT = num2strHighPrec(wv[p][q][r][s], precision=7)
-	CopyScales wv outT
-	return outT
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs > 0, "text requires at least one argument.")
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_TEXT)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_TEXT, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_TEXT, DimSize(input, ROWS))
+
+	output[] = SF_OperationTextImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_TEXT, clear=input)
+End
+
+static Function/WAVE SF_OperationTextImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "text requires numeric input data.")
+	Make/FREE/T/N=(DimSize(input, ROWS), DimSize(input, COLS), DimSize(input, LAYERS), DimSize(input, CHUNKS)) output
+	Multithread output = num2strHighPrec(input[p][q][r][s], precision=7)
+	CopyScales input, output
+	Note/K output, note(input)
+
+	return output
 End
 
 /// `setscale(data, dim, [dimOffset, [dimDelta[, unit]]])`
