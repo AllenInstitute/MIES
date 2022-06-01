@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_AREA:
 		case SF_DATATYPE_LABNOTEBOOK:
 		case SF_DATATYPE_APFREQUENCY:
 		case SF_DATATYPE_FINDLEVEL:
@@ -1007,6 +1008,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_AREA:
 		case SF_DATATYPE_BUTTERWORTH:
 		case SF_DATATYPE_LABNOTEBOOK:
 		case SF_DATATYPE_APFREQUENCY:
@@ -2678,30 +2680,55 @@ End
 
 static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string graph)
 
-	variable zero,numArgs
+	variable zero, numArgs
+	string inDataType
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs >= 1, "area requires at least one argument.")
+	SF_ASSERT(numArgs <= 2, "area requires at most two arguments.")
 
-	numArgs = JSON_GetArraySize(jsonID, jsonPath)
-	if(numArgs == 1)
-		zero = 1
-	else
-		SF_ASSERT(numArgs == 2, "area requires at most 2 arguments")
-		WAVE zeroWave = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_AREA, 0)
+
+	zero = 1
+	if(numArgs == 2)
+		WAVE zeroWave = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_AREA, 1, checkExist=1)
 		SF_ASSERT(DimSize(zeroWave, ROWS) == 1, "Too many input values for parameter zero")
 		SF_ASSERT(IsNumericWave(zeroWave), "zero parameter must be numeric")
 		zero = !!zeroWave[0]
 	endif
 
-	if(zero)
-		Differentiate/DIM=0/EP=1 wv
-		Integrate/DIM=0 wv
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_AREA, DimSize(dataRef, ROWS))
+
+	output[] = SF_OperationAreaImpl(dataRef[p], zero)
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AREA)
+	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SF_TransferFormulaDataWaveNote(dataRef, output, "Sweeps", SF_META_SWEEPNO)
 	endif
 
-	Make/FREE out_integrate
-	Integrate/METH=1/DIM=(ROWS) wv/D=out_integrate
-	Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out = out_integrate[DimSize(wv, ROWS) - 1][p][q]
+	return SF_GetOutputForExecutor(output, graph, SF_OP_AREA, clear=dataRef)
+End
+
+static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "area requires numeric input data.")
+	if(zero)
+		SF_ASSERT(DimSize(input, ROWS) >= 3, "Requires at least three points of data.")
+		Differentiate/DIM=(ROWS)/EP=1 input
+		Integrate/DIM=(ROWS) input
+	endif
+	SF_ASSERT(DimSize(input, ROWS) >= 1, "integrate requires at least one data point.")
+
+	WAVE out_integrate = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+	Integrate/METH=1/DIM=(ROWS) input/D=out_integrate
+	Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out
+	Multithread out = out_integrate[DimSize(input, ROWS) - 1][p][q]
+
 	return out
 End
 
