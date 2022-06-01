@@ -2720,57 +2720,78 @@ static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string g
 	return outT
 End
 
+/// `setscale(data, dim, [dimOffset, [dimDelta[, unit]]])`
 static Function/WAVE SF_OperationSetScale(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices
+	variable numArgs
 
-	/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])`
-	numIndices = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
-	SF_ASSERT(numIndices > 1, "At least two arguments.")
-	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	WAVE/T dimension = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-	SF_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[x,y,z,t]") , "undefined input for dimension")
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs < 6, "Maximum number of arguments exceeded.")
+	SF_ASSERT(numArgs > 1, "At least two arguments.")
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_SETSCALE, 0)
+	WAVE/T dimension = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 1, checkExist=1)
+	SF_ASSERT(IsTextWave(dimension), "Expected d, x, y, z or t as dimension.")
+	SF_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[d,x,y,z,t]") , "undefined input for dimension")
 
-	if(numIndices >= 3)
-		WAVE offset = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
-		SF_ASSERT(DimSize(offset, ROWS) == 1, "wrong usage of argument")
+	if(numArgs >= 3)
+		WAVE offset = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 2, checkExist=1)
+		SF_ASSERT(IsNumericWave(offset) && DimSize(offset, ROWS) == 1, "Expected a number as offset.")
 	else
 		Make/FREE/N=1 offset  = {0}
 	endif
-	if(numIndices >= 4)
-		WAVE delta = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
-		SF_ASSERT(DimSize(delta, ROWS) == 1, "wrong usage of argument")
+	if(numArgs >= 4)
+		WAVE delta = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 3, checkExist=1)
+		SF_ASSERT(IsNumericWave(delta) && DimSize(delta, ROWS) == 1, "Expected a number as delta.")
 	else
 		Make/FREE/N=1 delta = {1}
 	endif
-	if(numIndices == 5)
-		WAVE/T unit = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
-		SF_ASSERT(DimSize(unit, ROWS) == 1, "wrong usage of argument")
+	if(numArgs == 5)
+		WAVE/T unit = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 4, checkExist=1)
+		SF_ASSERT(IsTextWave(unit) && DimSize(unit, ROWS) == 1, "Expected a string as unit.")
 	else
 		Make/FREE/N=1/T unit = {""}
 	endif
 
-	strswitch(dimension[0])
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_SETSCALE, DimSize(dataRef, ROWS))
+
+	output[] = SF_OperationSetScaleImpl(dataRef[p], dimension[0], offset[0], delta[0], unit[0])
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_SETSCALE, clear=dataRef)
+End
+
+static Function/WAVE SF_OperationSetScaleImpl(WAVE/Z input, string dim, variable offset, variable delta, string unit)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	if(CmpStr(dim, "d") && delta == 0)
+		delta = 1
+	endif
+
+	strswitch(dim)
+		case "d":
+			SetScale d, offset, delta, unit, input
+			break
 		case "x":
-			SetScale/P x, offset[0], delta[0], unit[0], data
-			ASSERT(DimDelta(data, ROWS) == delta[0], "Encountered Igor Bug.")
+			SetScale/P x, offset, delta, unit, input
+			ASSERT(DimDelta(input, ROWS) == delta, "Encountered Igor Bug.")
 			break
 		case "y":
-			SetScale/P y, offset[0], delta[0], unit[0], data
-			ASSERT(DimDelta(data, COLS) == delta[0], "Encountered Igor Bug.")
+			SetScale/P y, offset, delta, unit, input
+			ASSERT(DimDelta(input, COLS) == delta, "Encountered Igor Bug.")
 			break
 		case "z":
-			SetScale/P z, offset[0], delta[0], unit[0], data
-			ASSERT(DimDelta(data, LAYERS) == delta[0], "Encountered Igor Bug.")
+			SetScale/P z, offset, delta, unit, input
+			ASSERT(DimDelta(input, LAYERS) == delta, "Encountered Igor Bug.")
 			break
 		case "t":
-			SetScale/P t, offset[0], delta[0], unit[0], data
-			ASSERT(DimDelta(data, CHUNKS) == delta[0], "Encountered Igor Bug.")
+			SetScale/P t, offset, delta, unit, input
+			ASSERT(DimDelta(input, CHUNKS) == delta, "Encountered Igor Bug.")
 			break
 	endswitch
 
-	return data
+	return input
 End
 
 static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string graph)
