@@ -1900,4 +1900,5 @@ StrConstant SF_DATATYPE_LABNOTEBOOK = "LabNotebook"
 StrConstant SF_DATATYPE_BUTTERWORTH = "Butterworth"
 StrConstant SF_DATATYPE_AREA = "Area"
 StrConstant SF_DATATYPE_INTEGRATE = "Integrate"
+StrConstant SF_DATATYPE_DERIVATIVE = "Derivative"
 /// @}

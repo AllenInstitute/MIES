@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_DERIVATIVE:
 		case SF_DATATYPE_INTEGRATE:
 		case SF_DATATYPE_AREA:
 		case SF_DATATYPE_LABNOTEBOOK:
@@ -1009,6 +1010,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_DERIVATIVE:
 		case SF_DATATYPE_INTEGRATE:
 		case SF_DATATYPE_AREA:
 		case SF_DATATYPE_BUTTERWORTH:
@@ -2660,12 +2662,36 @@ End
 
 static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE out
-	SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not differentiate single point waves")
-	Differentiate/DIM=(ROWS) wv/D=out
-	CopyScales wv, out
-	SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "d/dx", out
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_DERIVATIVE)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_DERIVATIVE, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_DERIVATIVE, DimSize(input, ROWS))
+
+	output[] = SF_OperationDerivativeImpl(input[p])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_DERIVATIVE)
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_DERIVATIVE, clear=input)
+End
+
+static Function/WAVE SF_OperationDerivativeImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "derivative requires numeric input data.")
+	SF_ASSERT(DimSize(input, ROWS) > 1, "Can not differentiate single point waves")
+	WAVE out = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
+	Differentiate/DIM=(ROWS) input/D=out
+	CopyScales input, out
+	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "d/dx", out
+
 	return out
 End
 
