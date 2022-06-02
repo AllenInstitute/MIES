@@ -1899,4 +1899,5 @@ StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
 StrConstant SF_DATATYPE_LABNOTEBOOK = "LabNotebook"
 StrConstant SF_DATATYPE_BUTTERWORTH = "Butterworth"
 StrConstant SF_DATATYPE_AREA = "Area"
+StrConstant SF_DATATYPE_INTEGRATE = "Integrate"
 /// @}
