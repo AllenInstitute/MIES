@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_RMS:
 		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
 		case SF_DATATYPE_DERIVATIVE:
@@ -1012,6 +1013,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_RMS:
 		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
 		case SF_DATATYPE_DERIVATIVE:
@@ -2636,11 +2638,41 @@ End
 
 static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	MatrixOP/FREE out = sqrt(averageCols(magsqr(wv)))^t
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	variable numArgs
+	string inDataType
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs > 0, "rms requires at least one argument")
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RMS)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_RMS, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_RMS, DimSize(input, ROWS))
+
+	output[] = SF_OperationRMSImpl(input[p])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RMS)
+	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
+	endif
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_RMS, clear=input)
+End
+
+static Function/WAVE SF_OperationRMSImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "rms requires numeric data as input")
+	SF_ASSERT(WaveDims(input) <= 2, "rms accepts only upto 2d data")
+	SF_ASSERT(DimSize(input, ROWS) > 0, "rms requires at least one data point")
+	MatrixOP/FREE out = sqrt(averageCols(magsqr(input)))^t
+	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
+
 	return out
 End
 
