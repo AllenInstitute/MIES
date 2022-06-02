@@ -1,0 +1,41 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Post Sweep Event";
+	"Start DAQ/RA" -> "Pre Sweep Config Event";
+	n9	[label="Iterate over all asynchronous channels\n given in \"AsyncQCChannels\""];
+	"Post Sweep Event" -> n9;
+	n5	[label="Iterate over all asynchronous channels\n given in \"AsyncQCChannels\""];
+	"Pre Sweep Config Event" -> n5;
+	n10	[label="Collect alarm state of all\n asynchronous channels and store\n the and'ed result in the labnotebook"];
+	n9 -> n10;
+	n6	[label="Is it enabled?"];
+	n5 -> n6;
+	n7	[label="Is the alarm enabled?"];
+	n5 -> n7;
+	n4	[label=Abort];
+	n6 -> n4	[label=No];
+	n7 -> n4	[label=No];
+}

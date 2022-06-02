@@ -38,21 +38,21 @@ Constant SWEEP_EPOCH_VERSION = 5
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 60
+Constant LABNOTEBOOK_VERSION = 61
 Constant RESULTS_VERSION     = 2
 /// @}
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_PIPETTE_BATH_VERSION    = 2
-Constant PSQ_ACC_RES_SMOKE_VERSION   = 0
-Constant PSQ_CHIRP_VERSION           = 8
-Constant PSQ_DA_SCALE_VERSION        = 3
-Constant PSQ_RAMP_VERSION            = 4
-Constant PSQ_RHEOBASE_VERSION        = 3
-Constant PSQ_SQUARE_PULSE_VERSION    = 2
-Constant PSQ_SEAL_EVALUATION_VERSION = 2
-Constant PSQ_TRUE_REST_VM_VERSION    = 0
+Constant PSQ_PIPETTE_BATH_VERSION    = 3
+Constant PSQ_ACC_RES_SMOKE_VERSION   = 1
+Constant PSQ_CHIRP_VERSION           = 9
+Constant PSQ_DA_SCALE_VERSION        = 4
+Constant PSQ_RAMP_VERSION            = 5
+Constant PSQ_RHEOBASE_VERSION        = 4
+Constant PSQ_SQUARE_PULSE_VERSION    = 3
+Constant PSQ_SEAL_EVALUATION_VERSION = 3
+Constant PSQ_TRUE_REST_VM_VERSION    = 1
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
 Constant MSQ_DA_SCALE_VERSION        = 1
 Constant SC_SPIKE_CONTROL_VERSION    = 1
@@ -1121,6 +1121,7 @@ StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS  = "%s access resistance QC"
 StrConstant PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE = "%s steady state resistance"
 StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO        = "%s access vs steady state ratio"
 StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS   = "%s access vs steady state ratio QC"
+StrConstant PSQ_FMT_LBN_ASYNC_PASS                 = "%s async QC"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"

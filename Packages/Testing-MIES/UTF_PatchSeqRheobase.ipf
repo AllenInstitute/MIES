@@ -135,16 +135,36 @@ static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_ASYNC_PASS, query = 1)
+	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+End
+
+static Function PS_RB1_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB1([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB1_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// all tests fail, baseline QC and alternating spike finding
+	// all tests fail, baseline QC, async QC and alternating spike finding
 	wv = 0
 End
 
@@ -169,6 +189,9 @@ static Function PS_RB1_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -215,18 +238,28 @@ static Function PS_RB1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
+static Function PS_RB2_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB2([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB2_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and no spikes at all
+	// baseline QC passes, async QC passes and no spikes at all
 	wv = 0
 	wv[0,1][][0] = 1
+	wv[0,1][][0] = 1
+	wv[][][2] = 1
 End
 
 static Function PS_RB2_REENTRY([str])
@@ -250,6 +283,9 @@ static Function PS_RB2_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -284,19 +320,28 @@ static Function PS_RB2_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB3_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB3([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB3_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and always spikes
+	// baseline QC passes, async QC passes and always spikes
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][][1]    = 1
+	wv[][][2]    = 1
 End
 
 static Function PS_RB3_REENTRY([str])
@@ -320,6 +365,9 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -354,19 +402,28 @@ static Function PS_RB3_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB4_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB4([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB4_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and first spikes, second not
+	// baseline QC passes, async QC passes and first spikes, second not
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][0][1]   = 1
+	wv[][][2]    = 1
 End
 
 static Function PS_RB4_REENTRY([str])
@@ -390,6 +447,9 @@ static Function PS_RB4_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
@@ -424,19 +484,28 @@ static Function PS_RB4_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB5_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB5([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB5_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and first spikes not, second does
+	// baseline QC passes, async QC passes and first spikes not, second does
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][1][1]   = 1
+	wv[][][2]    = 1
 End
 
 static Function PS_RB5_REENTRY([str])
@@ -460,6 +529,9 @@ static Function PS_RB5_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
@@ -494,19 +566,28 @@ static Function PS_RB5_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB6_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB6([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB6_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and first two spike not, third does
+	// baseline QC passes, async QC passes (except first) and first two spike not, third does
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][2][1]   = 1
+	wv[][1,2][2] = 1
 End
 
 static Function PS_RB6_REENTRY([str])
@@ -531,11 +612,14 @@ static Function PS_RB6_REENTRY([str])
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
-	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -543,7 +627,9 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
-	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
+	Make/FREE/D/N=(numEntries) stimScaleRef
+	stimScaleRef[0, 1] = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
+	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 1) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -564,20 +650,29 @@ static Function PS_RB6_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB7_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB7([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB7_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// frist two sweeps: baseline QC fails
 	// rest:baseline QC passes
-	// all: no spikes
+	// all: no spikes, async QC passes
 	wv = 0
 	wv[0,1][2, inf][0] = 1
+	wv[][][2] = 1
 End
 
 static Function PS_RB7_REENTRY([str])
@@ -601,6 +696,9 @@ static Function PS_RB7_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -641,16 +739,24 @@ static Function PS_RB7_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 7)
 End
 
+static Function PS_RB8_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB8([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_LOW, str)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_LOW, str, preAcquireFunc = PS_RB8_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes
+	// baseline QC passes, async QC passes
 	// 0: spike
 	// 1-2: no-spike
 	// 3: spike
@@ -658,6 +764,7 @@ static Function PS_RB8([str])
 	wv[0,1][][0] = 1
 	wv[][0][1]   = 1
 	wv[][3][1]   = 1
+	wv[][][2] = 1
 End
 
 static Function PS_RB8_REENTRY([str])
@@ -681,6 +788,9 @@ static Function PS_RB8_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
@@ -721,6 +831,14 @@ static Function PS_RB8_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB9_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB9([str])
@@ -728,14 +846,15 @@ static Function PS_RB9([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE, str)
+	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE, str, preAcquireFunc = PS_RB9_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and first spikes, second not, third spikes
+	// baseline QC passes, async QC passes and first spikes, second not, third spikes
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][0][1]   = 1
 	wv[][2][1]   = 1
+	wv[][][2]    = 1
 End
 
 static Function PS_RB9_REENTRY([str])
@@ -759,6 +878,9 @@ static Function PS_RB9_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -798,6 +920,14 @@ static Function PS_RB9_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
+static Function PS_RB10_IGNORE(string device)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB10([str])
@@ -805,14 +935,15 @@ static Function PS_RB10([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, -8e-12, str)
+	AcquireData(s, -8e-12, str, preAcquireFunc = PS_RB10_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
-	// baseline QC passes and first spikes not, rest spikes
+	// baseline QC passes, async QC passes and first spikes not, rest spikes
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][0][1]   = 0
 	wv[][1,inf][1] = 1
+	wv[][][2] = 1
 End
 
 static Function PS_RB10_REENTRY([str])
@@ -836,6 +967,9 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
@@ -875,6 +1009,11 @@ End
 
 static Function PS_RB11_IGNORE(string device)
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var=10)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Same as PS_RB1 but with failing sampling frequency check
@@ -913,6 +1052,9 @@ static Function PS_RB11_REENTRY([str])
 
 	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0}, mode = WAVE_DATA)

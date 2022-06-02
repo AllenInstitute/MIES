@@ -500,3 +500,30 @@ Function RetrieveAllWindowsInCI()
 
 	DoIgorMenu "Control" "Retrieve All Windows"
 End
+
+Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
+	variable chan
+	string ctrl, title, unit
+
+	for(chan :  asyncChannels)
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
+
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
+
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		PGC_SetAndActivateControl(device, ctrl, val = minValue)
+
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		PGC_SetAndActivateControl(device, ctrl, val = maxValue)
+
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+		sprintf title, "title %d", chan
+		PGC_SetAndActivateControl(device, ctrl, str = title)
+
+		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+		sprintf unit, "unit %d", chan
+		PGC_SetAndActivateControl(device, ctrl, str = unit)
+	endfor
+End

@@ -60,6 +60,8 @@ if hash dot 2>/dev/null; then
     dot -Tsvg -o "${output}.svg" "$i"
   done
 
+  cp async-qc-channels.svg ../_static/images
+
   cd ..
 
 else

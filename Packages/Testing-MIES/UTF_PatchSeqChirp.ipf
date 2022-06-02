@@ -86,7 +86,7 @@ static Function/WAVE GetLBNEntriesWave_IGNORE()
 
 	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;"                   \
 	              + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck;" \
-	              + "samplingPass;autobiasTargetV;initUserOnsetDelay;userOnsetDelay"
+	              + "samplingPass;autobiasTargetV;initUserOnsetDelay;userOnsetDelay;asyncPass"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -115,6 +115,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%autobiasTargetV] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Autobias Vcom")
 	wv[%initUserOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_UOD)
 	wv[%userOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Delay onset user")
+	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	return wv
 End
@@ -135,6 +136,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
 		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
@@ -172,6 +174,11 @@ static Function PS_CR1_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // BBAA but with zero value which results in PSQ_CR_RERUN
@@ -190,6 +197,7 @@ static Function PS_CR1([str])
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv = 0
 End
 
@@ -207,6 +215,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -240,6 +249,11 @@ static Function PS_CR2_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 1)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -256,9 +270,11 @@ static Function PS_CR2([str])
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = -25
+	wv[][][4] = 1
 End
 
 static Function PS_CR2_REENTRY([str])
@@ -275,6 +291,7 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -305,6 +322,11 @@ static Function PS_CR2a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -321,9 +343,11 @@ static Function PS_CR2a([str])
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (0)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = 0
+	wv[][][4] = 1
 End
 
 static Function PS_CR2a_REENTRY([str])
@@ -340,6 +364,7 @@ static Function PS_CR2a_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -370,6 +395,11 @@ static Function PS_CR2b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -386,9 +416,11 @@ static Function PS_CR2b([str])
 	// layer 1: Maximum of AD (0)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv[][][0] = 1
 	wv[][][1] = 0
 	wv[][][2] = -25
+	wv[][][4] = 1
 End
 
 static Function PS_CR2b_REENTRY([str])
@@ -405,6 +437,7 @@ static Function PS_CR2b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -435,6 +468,11 @@ static Function PS_CR3_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -451,9 +489,11 @@ static Function PS_CR3([str])
 	// layer 1: Maximum of AD (35 would be PSQ_CR_PASS but we abort early due to baseline not passing)
 	// layer 2: Minimum of AD (-25 would be PSQ_CR_PASS but we abort early due to baseline not passing)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv[][][0] = 0
 	wv[][][1] = 35
 	wv[][][2] = -25
+	wv[][][4] = 1
 End
 
 static Function PS_CR3_REENTRY([str])
@@ -470,6 +510,7 @@ static Function PS_CR3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -502,6 +543,11 @@ static Function PS_CR4_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -518,10 +564,14 @@ static Function PS_CR4([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp
+	// layer 4: async QC
 
 	// INCREASE (BAAA)
 	wv[][0][1] = 35
@@ -562,6 +612,7 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -597,6 +648,11 @@ static Function PS_CR4a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -613,10 +669,14 @@ static Function PS_CR4a([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp
+	// layer 4: async QC
 
 	// INCREASE (BB__)
 	wv[][0][1] = 15
@@ -657,6 +717,7 @@ static Function PS_CR4a_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 
@@ -692,6 +753,11 @@ static Function PS_CR4b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -708,10 +774,14 @@ static Function PS_CR4b([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp
+	// layer 4: async QC
 
 	// INCREASE (__AA)
 	wv[][0][1] = 0
@@ -752,6 +822,7 @@ static Function PS_CR4b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -787,6 +858,11 @@ static Function PS_CR5_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -803,9 +879,13 @@ static Function PS_CR5([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 4: async QC
 
 	// INCREASE (BBBA)
 	wv[][0][1] = 15
@@ -846,6 +926,7 @@ static Function PS_CR5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -883,6 +964,11 @@ static Function PS_CR6_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -899,9 +985,14 @@ static Function PS_CR6([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// INCREASE (BBAA)
 	wv[][0][1] = 15
@@ -942,6 +1033,7 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -979,6 +1071,11 @@ static Function PS_CR7_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -995,10 +1092,14 @@ static Function PS_CR7([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// RERUN (AAAA)
 	wv[][0][1] = 45
@@ -1035,6 +1136,7 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -1071,6 +1173,11 @@ static Function PS_CR8_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1086,6 +1193,9 @@ static Function PS_CR8([str])
 
 	// BL passes
 	wv[][][0] = 1
+
+	// async QC passes
+	wv[][][4] = 1
 
 	// layer 0: BL
 	// layer 1: Maximum of AD
@@ -1127,6 +1237,7 @@ static Function PS_CR8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -1163,6 +1274,11 @@ static Function PS_CR9_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1181,10 +1297,14 @@ static Function PS_CR9([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// PASS
 	wv[][0][1] = 38
@@ -1225,6 +1345,7 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
@@ -1260,6 +1381,11 @@ static Function PS_CR9a_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1278,10 +1404,14 @@ static Function PS_CR9a([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// PASS
 	wv[][0][1] = 38
@@ -1322,6 +1452,7 @@ static Function PS_CR9a_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
@@ -1357,6 +1488,11 @@ static Function PS_CR9b_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -1375,10 +1511,14 @@ static Function PS_CR9b([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// PASS
 	wv[][0][1] = 0
@@ -1419,6 +1559,7 @@ static Function PS_CR9b_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
@@ -1454,6 +1595,11 @@ static Function PS_CR10_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
@@ -1472,10 +1618,14 @@ static Function PS_CR10([str])
 	// BL passes
 	wv[][][0] = 1
 
+	// async QC passes
+	wv[][][4] = 1
+
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 
 	// PASS
 	wv[][0][1] = 38
@@ -1512,6 +1662,7 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, NaN, 1, NaN, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
@@ -1551,6 +1702,11 @@ static Function PS_CR11_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1567,6 +1723,7 @@ static Function PS_CR11([str])
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 3: Spikes check during chirp fails
+	// layer 4: async QC
 
 	// first BL chunk passes, later ones fail. This is done so that
 	// we reach the chirp region for performing spike checks.
@@ -1589,6 +1746,7 @@ static Function PS_CR11_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%baselinePass], NULL_WAVE)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -1624,6 +1782,11 @@ static Function PS_CR12_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1640,10 +1803,12 @@ static Function PS_CR12([str])
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
 	// layer 3: Spikes check during chirp passes
+	// layer 4: async QC
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = -25
 	wv[][][3] = 1
+	wv[][][4] = 1
 End
 
 static Function PS_CR12_REENTRY([str])
@@ -1660,6 +1825,7 @@ static Function PS_CR12_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -1695,6 +1861,11 @@ static Function PS_CR13_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
@@ -1722,7 +1893,14 @@ static Function PS_CR13([str])
 	wv[][1][3] = 1
 	wv[][2][3] = 1
 	wv[][3][3] = 0
-	wv[][4][3] = 0
+	wv[][4][3] = 1
+
+	// async QC passes
+	wv[][0][4] = 1
+	wv[][1][4] = 1
+	wv[][2][4] = 1
+	wv[][3][4] = 1
+	wv[][4][4] = 0
 End
 
 static Function PS_CR13_REENTRY([str])
@@ -1737,13 +1915,14 @@ static Function PS_CR13_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", ""}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, PSQ_CR_PASS}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
@@ -1762,7 +1941,7 @@ static Function PS_CR13_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 3)
-	CheckPSQChunkTimes(str, {20, 520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -1776,6 +1955,11 @@ static Function PS_CR14_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var=10)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // Same as PS_CR1 but with failing sampling interval check
@@ -1794,6 +1978,7 @@ static Function PS_CR14([str])
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	wv = 0
 End
 
@@ -1811,6 +1996,7 @@ static Function PS_CR14_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -1845,6 +2031,11 @@ static Function PS_CR15_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1861,11 +2052,13 @@ static Function PS_CR15([str])
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	//
 	// AutobiasTargetV/AutobiasTargetVAtSetEnd are present
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = -25
+	wv[][][4] = 1
 End
 
 static Function PS_CR15_REENTRY([str])
@@ -1882,6 +2075,7 @@ static Function PS_CR15_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -1917,6 +2111,11 @@ static Function PS_CR16_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1933,11 +2132,13 @@ static Function PS_CR16([str])
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
 	// layer 3: Spikes check during chirp (not done)
+	// layer 4: async QC
 	//
 	// AutobiasTargetV/AutobiasTargetVAtSetEnd/UseTrueRestingMembranePotentialVoltage are present
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = -25
+	wv[][][4] = 1
 End
 
 static Function PS_CR16_REENTRY([str])
@@ -1954,6 +2155,7 @@ static Function PS_CR16_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)

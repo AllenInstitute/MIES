@@ -762,7 +762,8 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncSettingsWave[0][%MeasuredValue][INDEP_HEADSTAGE] = scaledValue
 
-		alarmState = alarmEnabled ? ASD_CheckAsynAlarmState(scaledValue, minSettingValue, maxSettingValue) : NaN
+		alarmState = alarmEnabled ? ASD_CheckAsynAlarmState(device, scaledValue, minSettingValue, maxSettingValue) : NaN
+		asyncSettingsWave[0][%AlarmState][INDEP_HEADSTAGE] = alarmState
 
 		if(alarmEnabled && alarmState)
 			beep

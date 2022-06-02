@@ -4357,7 +4357,7 @@ Function AsyncAcquisitionLBN_IGNORE(string device)
 	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 
 	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 
 	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	PGC_SetAndActivateControl(device, ctrl, val = 5)
@@ -4406,7 +4406,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	CHECK_EQUAL_VAR(var, 5)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm 2 On/Off", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(var, CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(var, CHECKBOX_SELECTED)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm 2 Min", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(var, 0.1)
@@ -4414,7 +4414,12 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm  2 Max", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(var, 0.5)
 
+	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm 2 State", DATA_ACQUISITION_MODE)
+	CHECK(IsFinite(var))
+
 	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
+	// we don't know if the alarm was triggered or not
+	// but we also only care that the value is finite
 	CHECK(IsFinite(var))
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)

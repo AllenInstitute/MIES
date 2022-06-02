@@ -8,21 +8,22 @@
 ///
 /// .. Column order: test overrides, analysis parameters
 ///
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
-///  Test case   Baseline QC chunk 0   Average V chunk 0   Average V chunk 1   Number of Spikes   NumberOfFailedSweeps   BaselineChunkLength   AbsoluteVoltageDiff   RelativeVoltageDiff   Sampling Interval QC   NextStimSetName     NextIndexingEndStimSetName
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
-///  PS_VM1      -                     [12,13,14]          [16,17,18]          [1,2,3]            3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM2      ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM3      -                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM4      ✓                     [12,13,14]          [16,17,18]          0                  3                      500                   inf                   0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5      ✓                     [12,13,14]          [16,17,18]          0                  3                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5a     ✓                     [10,0.1,1]          [11,0.15,1.05]      0                  3                      500                   0.1                   10                    ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM5b     ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   (none)
-///  PS_VM6      ✓                     [12,13,14]          [12,13,14]          0                  3                      600                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM7      ✓                     [12,13,14]          [12,13,14]          1                  1                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM7a     ✓                     [12,13,14]          [12,13,14]          [1, 0]             3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
-///  PS_VM8      ✓                     [12,13,14]          [12,13,14]          0                  3                      500                   0                     0                     -                      StimulusSetA_DA_0   StimulusSetB_DA_0
-/// =========== ===================== =================== =================== ================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+///  Test case   Baseline QC chunk 0   Average V chunk 0   Average V chunk 1   Number of Spikes   Async Channels QC   NumberOfFailedSweeps   BaselineChunkLength   AbsoluteVoltageDiff   RelativeVoltageDiff   Sampling Interval QC   NextStimSetName     NextIndexingEndStimSetName
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
+///  PS_VM1      -                     [12,13,14]          [16,17,18]          [1,2,3]            ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM2      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM3      -                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM4      ✓                     [12,13,14]          [16,17,18]          0                  ✓                  3                      500                   inf                   0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5      ✓                     [12,13,14]          [16,17,18]          0                  ✓                  3                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5a     ✓                     [10,0.1,1]          [11,0.15,1.05]      0                  ✓                  3                      500                   0.1                   10                    ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM5b     ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   (none)
+///  PS_VM6      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      600                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7      ✓                     [12,13,14]          [12,13,14]          1                  ✓                  1                      500                   0                     inf                   ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7a     ✓                     [12,13,14]          [12,13,14]          [1, 0]             ✓                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM7b     ✓                     [12,13,14]          [12,13,14]          0                  -                  3                      500                   0                     0                     ✓                      StimulusSetA_DA_0   StimulusSetB_DA_0
+///  PS_VM8      ✓                     [12,13,14]          [12,13,14]          0                  ✓                  3                      500                   0                     0                     -                      StimulusSetA_DA_0   StimulusSetB_DA_0
+/// =========== ===================== =================== =================== ================== =================== ====================== ===================== ===================== ===================== ====================== =================== ============================
 ///
 /// @endrst
 
@@ -118,6 +119,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
 	strswitch(name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
+		case PSQ_FMT_LBN_ASYNC_PASS:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
@@ -170,7 +172,7 @@ static Function/WAVE GetWave_IGNORE()
 	              "rmsShortQCChunk0;rmsShortQCChunk1;"                     + \
 	              "rmsLongQCChunk0;rmsLongQCChunk1;"                       + \
 	              "averageVChunk0;averageVChunk1;"                         + \
-	              "iti;getsetiti"
+	              "iti;getsetiti;asyncPass"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -189,6 +191,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	wv[%spikePass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	wv[%spikePositions] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_POSITIONS)
 
@@ -243,6 +246,11 @@ static Function PS_VM1_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -289,6 +297,8 @@ static Function PS_VM1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -341,6 +351,11 @@ static Function PS_VM2_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -370,6 +385,9 @@ static Function PS_VM2([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM2_REENTRY([string str])
@@ -387,6 +405,8 @@ static Function PS_VM2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -444,6 +464,11 @@ static Function PS_VM3_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -474,6 +499,9 @@ static Function PS_VM3([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM3_REENTRY([string str])
@@ -491,6 +519,8 @@ static Function PS_VM3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongQCChunk0], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -543,6 +573,11 @@ static Function PS_VM4_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=inf)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -572,6 +607,9 @@ static Function PS_VM4([str])
 	wv[1][0][2] = 16
 	wv[1][1][2] = 17
 	wv[1][2][2] = 18
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM4_REENTRY([string str])
@@ -589,6 +627,8 @@ static Function PS_VM4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -646,6 +686,11 @@ static Function PS_VM5_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=inf)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -675,6 +720,9 @@ static Function PS_VM5([str])
 	wv[1][0][2] = 16
 	wv[1][1][2] = 17
 	wv[1][2][2] = 18
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5_REENTRY([string str])
@@ -692,6 +740,8 @@ static Function PS_VM5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -748,6 +798,11 @@ static Function PS_VM5a_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0.1)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=10)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -784,6 +839,9 @@ static Function PS_VM5a([str])
 	wv[1][0][2] = 11
 	wv[1][1][2] = 0.15
 	wv[1][2][2] = 1.05
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5a_REENTRY([string str])
@@ -801,6 +859,8 @@ static Function PS_VM5a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
@@ -858,6 +918,11 @@ static Function PS_VM5b_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -887,6 +952,9 @@ static Function PS_VM5b([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM5b_REENTRY([string str])
@@ -904,6 +972,8 @@ static Function PS_VM5b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -961,6 +1031,11 @@ static Function PS_VM6_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -991,6 +1066,9 @@ static Function PS_VM6([str])
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
 
+	// async QC
+	wv[][][3] = 1
+
 	// DAQ is not started as PRE_SWEEP_CONFIG_EVENT fails due to non-matching BaselineChunkLength
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
@@ -1014,6 +1092,11 @@ static Function PS_VM7_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1043,6 +1126,9 @@ static Function PS_VM7([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM7_REENTRY([string str])
@@ -1060,6 +1146,8 @@ static Function PS_VM7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
@@ -1117,6 +1205,11 @@ static Function PS_VM7a_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1147,6 +1240,9 @@ static Function PS_VM7a([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM7a_REENTRY([string str])
@@ -1164,6 +1260,8 @@ static Function PS_VM7a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
@@ -1202,6 +1300,120 @@ static Function PS_VM7a_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
+static Function PS_VM7b_IGNORE(device)
+	string device
+
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_VM7b([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=PS_VM7b_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
+
+	// tests pass, except async QC
+	wv[][][0]  = 1
+
+	// number of spikes
+	wv[][][1] = 0
+
+	// average voltages
+	// chunk 0
+	wv[0][0][2] = 12
+	wv[0][1][2] = 13
+	wv[0][2][2] = 14
+
+	// chunk 1
+	wv[1][0][2] = 12
+	wv[1][1][2] = 13
+	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 0
+End
+
+static Function PS_VM7b_REENTRY([string str])
+	variable sweepNo
+	string stimset, stimsetIndexEnd, expected
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(entries[%rmsLongQCChunk0], NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%averageVChunk0], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
+	CHECK_EQUAL_WAVES(entries[%averageVChunk1], {12e-3, 13e-3, 14e-3}, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvg = {12e-3, 13e-3, 14e-3}
+	CHECK_EQUAL_WAVES(entries[%fullAvg], fullAvg, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvgADiff = {0, 0, 0}
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiff], fullAvgADiff, mode = WAVE_DATA, tol = 1e-12)
+
+	Make/D/FREE fullAvgRDiff = {0, 0, 0}
+	CHECK_EQUAL_WAVES(entries[%fullAvgRDiff], fullAvgRDiff, mode = WAVE_DATA, tol = 1e-2)
+
+	CHECK_EQUAL_WAVES(entries[%fullAvgADiffPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fullAvgRDiffPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fullAvgPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries[%spikePositions], NULL_WAVE)
+
+	// first sweep does not have autobias enabled
+	// and the last sweep's setting is only available in the GUI
+	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%autobias], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DataAcq_AutoBias"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%iti], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "SetVar_DataAcq_ITI"), 0)
+
+	CHECK_EQUAL_WAVES(entries[%getsetiti], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "Check_DataAcq_Get_Set_ITI"), 1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckBaselineChunks(str, {20, 520})
+End
+
 static Function PS_VM8_IGNORE(device)
 	string device
 
@@ -1221,6 +1433,11 @@ static Function PS_VM8_IGNORE(device)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=100)
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1250,6 +1467,9 @@ static Function PS_VM8([str])
 	wv[1][0][2] = 12
 	wv[1][1][2] = 13
 	wv[1][2][2] = 14
+
+	// async QC
+	wv[][][3] = 1
 End
 
 static Function PS_VM8_REENTRY([string str])
@@ -1267,6 +1487,8 @@ static Function PS_VM8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsShortQCChunk0], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongQCChunk0], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
