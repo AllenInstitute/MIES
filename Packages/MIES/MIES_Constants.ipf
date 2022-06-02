@@ -1902,4 +1902,5 @@ StrConstant SF_DATATYPE_AREA = "Area"
 StrConstant SF_DATATYPE_INTEGRATE = "Integrate"
 StrConstant SF_DATATYPE_DERIVATIVE = "Derivative"
 StrConstant SF_DATATYPE_STDEV = "StDev"
+StrConstant SF_DATATYPE_VARIANCE = "Variance"
 /// @}

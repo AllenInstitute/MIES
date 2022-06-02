@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
 		case SF_DATATYPE_DERIVATIVE:
 		case SF_DATATYPE_INTEGRATE:
@@ -1011,6 +1012,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
 		case SF_DATATYPE_DERIVATIVE:
 		case SF_DATATYPE_INTEGRATE:
@@ -2644,11 +2646,41 @@ End
 
 static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	variable numArgs
+	string inDataType
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs > 0, "variance requires at least one argument")
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_VARIANCE)
+	else
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_VARIANCE, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_VARIANCE, DimSize(input, ROWS))
+
+	output[] = SF_OperationVarianceImpl(input[p])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_VARIANCE)
+	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
+	endif
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_VARIANCE, clear=input)
+End
+
+static Function/WAVE SF_OperationVarianceImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "variance requires numeric data as input")
+	SF_ASSERT(WaveDims(input) <= 2, "variance accepts only upto 2d data")
+	SF_ASSERT(DimSize(input, ROWS) > 0, "variance requires at least one data point")
+	MatrixOP/FREE out = (sumCols(magSqr(input - rowRepeat(averageCols(input), numRows(input))))/(numRows(input) - 1))^t
+	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
+
 	return out
 End
 
