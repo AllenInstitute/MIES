@@ -1482,6 +1482,10 @@ static Function/S WBP_TranslateControlContents(control, direction, data)
 	endswitch
 End
 
+static Function WBP_ClearFolders()
+	KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
+End
+
 /// @brief Wavebuilder panel window hook
 ///
 /// The epoch selection is done on the mouseup event if there exists no marquee.
@@ -1496,7 +1500,7 @@ Function WBP_MainWindowHook(s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILL:
-			KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
+			WBP_ClearFolders()
 			break
 #ifdef DEBUGGING_ENABLED
 		case EVENT_WINDOW_HOOK_MOUSEMOVED:
