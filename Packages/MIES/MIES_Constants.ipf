@@ -1905,4 +1905,5 @@ StrConstant SF_DATATYPE_STDEV = "StDev"
 StrConstant SF_DATATYPE_VARIANCE = "Variance"
 StrConstant SF_DATATYPE_RMS = "RMS"
 StrConstant SF_DATATYPE_AVG = "Average"
+StrConstant SF_DATATYPE_MAX = "Max"
 /// @}
