@@ -112,9 +112,7 @@ Function/S WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	KillOrMoveToTrash(wv=GetSegmentTypeWave())
-	KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
-	KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+	WBP_ClearFolders()
 
 	Execute "WaveBuilder()"
 	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
