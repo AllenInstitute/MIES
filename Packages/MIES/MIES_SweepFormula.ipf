@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_AVG:
 		case SF_DATATYPE_RMS:
 		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
@@ -1013,6 +1014,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_AVG:
 		case SF_DATATYPE_RMS:
 		case SF_DATATYPE_VARIANCE:
 		case SF_DATATYPE_STDEV:
@@ -2618,21 +2620,44 @@ End
 
 static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string graph)
 
-	variable i, j
+	variable numArgs
+	string inDataType
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	if(DimSize(wv, LAYERS) > 1)
-		i = DimSize(wv, COLS)
-		j = DimSize(wv, LAYERS)
-		Redimension/E=1/N=(-1, i * j, 0) wv
-		MatrixOP/FREE out = averageCols(wv)
-		Redimension/E=1/N=(i, j) out
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs > 0, "avg requires at least one argument")
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_AVG)
 	else
-		MatrixOP/FREE out = averageCols(wv)^t
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_AVG, 0)
 	endif
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_AVG, DimSize(input, ROWS))
+
+	output[] = SF_OperationAvgImpl(input[p])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AVG)
+	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
+		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
+	endif
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_AVG, clear=input)
+End
+
+// averages each column, 1d waves are treated like 1 column (n,1)
+static Function/WAVE SF_OperationAvgImpl(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	SF_ASSERT(IsNumericWave(input), "avg requires numeric data as input")
+	SF_ASSERT(WaveDims(input) <= 2, "avg accepts only upto 2d data")
+	SF_ASSERT(DimSize(input, ROWS) > 0, "avg requires at least one data point")
+	MatrixOP/FREE out = averageCols(input)^t
+	CopyScales input, out
+	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "", out
+	SF_FormulaWaveScaleTransfer(input, out, COLS, ROWS)
+
 	return out
 End
 
