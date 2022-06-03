@@ -22,6 +22,8 @@ static Function RA_RecalculateITI(device)
 	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
 	repurposedTime = 0
 
+	ASSERT(IsFinite(ITI), "The recalculated ITI must be finite")
+
 	sweepNo = AS_GetSweepNumber(device)
 	ASSERT(IsValidSweepNumber(sweepNo), "Invalid sweep nuber")
 
