@@ -179,6 +179,8 @@ static StrConstant EXPCONFIG_JSON_USERPRESSDA = "DA"
 static StrConstant EXPCONFIG_JSON_AMP_HOLD_VC = "Holding"
 static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC = "Holding Enable"
 
+static StrConstant EXPCONFIG_JSON_AMP_LPF = "LPF primary output"
+
 static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC = "Pipette Offset"
 
 static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE = "Whole Cell Capacitance"
@@ -2033,6 +2035,9 @@ static Function CONF_GetAmplifierSettings(device)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2num(GetPopupMenuString(device, "Popup_Settings_VC_DA")))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2num(GetPopupMenuString(device, "Popup_Settings_VC_AD")))
 
+			// MCC settings without GUI control
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
+
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
 			JSON_AddTreeObject(jsonID, jsonPath)
 			jsonPath += "/"
@@ -2058,6 +2063,9 @@ static Function CONF_GetAmplifierSettings(device)
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA")))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD")))
+
+			// MCC settings without GUI control
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
 
 			if(clampMode != I_CLAMP_MODE)
 				DAP_ChangeHeadStageMode(device, clampMode, i, DO_MCC_MIES_SYNCING)
@@ -2103,7 +2111,7 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 	variable headStage, jsonID
 	string basePath
 
-	variable clampMode
+	variable clampMode, val, ret
 	string path
 
 	clampMode = DAG_GetHeadstageMode(device, headstage)
@@ -2129,6 +2137,13 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 	PGC_SetAndActivateControl(device,"check_DatAcq_RsCompEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE))
 	PGC_SetAndActivateControl(device,"check_DataAcq_Amp_Chain", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_COMP_CHAIN))
 
+	// MCC settings without GUI control
+	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
+	if(!IsNaN(val))
+		ret = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, val)
+		ASSERT(ret == 0, "Could not set LPF primary output")
+	endif
+
 	// set IC settings
 	DAP_ChangeHeadStageMode(device, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 
@@ -2149,6 +2164,13 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_AUTOBIAS))
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_IC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC))
+
+	// MCC settings without GUI control
+	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
+	if(!IsNaN(val))
+		ret = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, val)
+		ASSERT(ret == 0, "Could not set LPF primary output")
+	endif
 
 	if(clampMode != I_CLAMP_MODE)
 		DAP_ChangeHeadStageMode(device, clampMode, headStage, DO_MCC_MIES_SYNCING)
