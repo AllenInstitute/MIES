@@ -5864,7 +5864,22 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
-	return max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
+	switch(GetHardwareType(device))
+		case HARDWARE_ITC_DAC:
+			// nothing to do
+			break
+		case HARDWARE_NI_DAC:
+			// we need to use one of the channel waves
+			WAVE/WAVE ref = DAQDataWave
+			WAVE DAQDataWave = ref[0]
+			break
+		default:
+			ASSERT(0, "Invalid hardware type")
+	endswitch
+
+	variable lastAcquiredPoint = IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)
+
+	return max(0, lastAcquiredPoint) * MILLI_TO_ONE
 End
 
 /// @brief Calculate deltaI/deltaV from a testpulse like stimset in "Current Clamp" mode

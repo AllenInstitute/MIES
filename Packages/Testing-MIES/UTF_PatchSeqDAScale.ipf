@@ -1030,6 +1030,157 @@ static Function PS_DS_Sub5_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
+static Function PS_DS_Sub5a_IGNORE(string device)
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_DS_Sub5a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub5a_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	// pre pulse chunk fails due to targetV
+	// all post pulse chunk pass
+	// async QC passes
+	wv[]          = 1
+	wv[0][][0][2] = 0
+	wv[][][3]     = 1
+End
+
+static Function PS_DS_Sub5a_REENTRY([str])
+	string str
+
+	variable sweepNo, numEntries
+
+	sweepNo = 4
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	// BEGIN baseline QC
+
+	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, baselineQCPassed)
+
+	WAVE/Z baselineShortThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineShortThreshold, {PSQ_RMS_SHORT_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	// we only test-override chunk passed, so for the others we can just check if they exist or not
+
+	// chunk 0
+	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineChunkPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z baselineRMSShortPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineRMSShortPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineRMSLongPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineRMSLongPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineTargetVPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
+	CHECK_WAVE(targetV, NUMERIC_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
+	// chunk 1 does not exist due to early abort
+	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
+	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShortPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = 1)
+	CHECK_WAVE(baselineRMSShortPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSLongPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = 1)
+	CHECK_WAVE(baselineRMSLongPassed, NULL_WAVE)
+
+	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
+	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
+	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
+	// END baseline QC
+
+	WAVE/Z spikeDetection = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_DETECT)
+	CHECK_WAVE(spikeDetection, NULL_WAVE)
+
+	WAVE/Z spikeCount = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_COUNT)
+	CHECK_WAVE(spikeCount, NULL_WAVE)
+
+	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
+	CHECK_WAVE(pulseDuration, NULL_WAVE)
+
+	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
+	CHECK_WAVE(fISlope, NULL_WAVE)
+
+	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
+	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
+
+	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
+	CHECK_WAVE(deltaI, NULL_WAVE)
+
+	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
+	CHECK_WAVE(deltaV, NULL_WAVE)
+
+	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
+	CHECK_WAVE(resistance, NULL_WAVE)
+
+	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
+	CHECK_WAVE(resistanceErr, NULL_WAVE)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = -30
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520})
+End
+
 static Function PS_DS_Sub6_IGNORE(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
