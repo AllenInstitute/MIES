@@ -2716,7 +2716,13 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 			needResetting = 1
 		endif
 
-		if((!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) && clampMode != I_EQUAL_ZERO_MODE) || (clampMode == I_EQUAL_ZERO_MODE && !CheckIfSmall(DAGainMCC)))
+		if(clampMode == I_EQUAL_ZERO_MODE && !CheckIfSmall(DAGainMCC))
+			printf "(%s) The DA gain for the DA channel %d in I=0 clamp mode is expected to be zero but the configured gain is %g.\r", device, DACchannel, DAGainMCC
+			return 2
+		elseif(clampMode != I_EQUAL_ZERO_MODE && CheckIfSmall(DAGainMCC))
+			printf "(%s) The DA gain for the DA channel %d is zero, this is an MCC bug. Please reset the  MultiClamp Commander to default settings and restart MIES.\r", device, DACchannel
+			return 2
+		elseif(clampMode != I_EQUAL_ZERO_MODE && !CheckIfClose(DAGain, DAGainMCC, tol=1e-4))
 			printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, DACchannel, DAGain, DAGainMCC
 			needResetting = 1
 		endif
