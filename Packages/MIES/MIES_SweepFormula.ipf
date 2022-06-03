@@ -2563,23 +2563,49 @@ End
 /// range (start[, stop[, step]])
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonID, jsonPath, graph, SF_OP_RANGE)
-	WAVE/Z wv = input[0]
-	SF_ASSERT(WaveExists(wv), "Expected data input for range()")
-	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-	SF_ASSERT(DimSize(wv, COLS) <= 1, "Unhandled dimension")
-	if(DimSize(wv, ROWS) == 3)
-		Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE range = wv[0] + p * wv[2]
-	elseif(DimSize(wv, ROWS) == 2)
-		Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE range = wv[0] + p
-	elseif(DimSize(wv, ROWS) == 1)
-		Make/N=(abs(trunc(wv[0])))/FREE range = p
+	variable numArgs
+	string inDataType
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	if(numArgs > 1)
+		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RANGE)
 	else
-		SF_ASSERT(0, "Operation accepts 2-3 operands")
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_RANGE, 0)
+	endif
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_RANGE, DimSize(input, ROWS))
+
+	output[] = SF_OperationRangeImpl(input[p])
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RANGE)
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_RANGE, clear=input)
+End
+
+static Function/WAVE SF_OperationRangeImpl(WAVE/Z input)
+
+	variable numArgs
+
+	if(!WaveExists(input))
+		return $""
 	endif
 
-	return SF_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, clear=input)
+	SF_ASSERT(IsNumericWave(input), "range requires numeric data as input")
+	SF_ASSERT(WaveDims(input) == 1, "range requires 1d data input.")
+	numArgs = DimSize(input, ROWS)
+	if(numArgs == 3)
+		Make/N=(ceil(abs((input[0] - input[1]) / input[2])))/FREE range
+		Multithread range[] = input[0] + p * input[2]
+	elseif(numArgs == 2)
+		Make/N=(abs(trunc(input[0])-trunc(input[1])))/FREE range
+		Multithread range[] = input[0] + p
+	elseif(numArgs == 1)
+		Make/N=(abs(trunc(input[0])))/FREE range
+		Multithread range[] = p
+	else
+		SF_ASSERT(0, "range accepts 1-3 args per specification")
+	endif
+
+	return range
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
