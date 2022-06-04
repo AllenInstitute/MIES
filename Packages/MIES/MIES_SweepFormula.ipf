@@ -2494,16 +2494,35 @@ End
 
 static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	string opShort = "minus"
+
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	Note/K output, note(input)
+
+	output[] = SF_OperationMinusImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+End
+
+static Function/WAVE SF_OperationMinusImpl(WAVE/Z wv)
+
+	if(!WaveExists(wv))
+		return $""
+	endif
+	SF_ASSERT(IsNumericWave(wv), "Operand for - must be numeric.")
 	if(DimSize(wv, ROWS) == 1)
 		MatrixOP/FREE out = sumCols((-1) * wv)^t
 	else
 		MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
 	endif
+	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
 	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	Note/K out, note(wv)
+
 	return out
 End
 
@@ -2539,24 +2558,62 @@ End
 
 static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	string opShort = "div"
+
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	Note/K output, note(input)
+
+	output[] = SF_OperationDivImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+End
+
+static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
+
+	if(!WaveExists(wv))
+		return $""
+	endif
+	SF_ASSERT(IsNumericWave(wv), "Operand for / must be numeric.")
 	SF_ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 	MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
 	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	Note/K out, note(wv)
+
 	return out
 End
 
 static Function/WAVE SF_OperationMult(variable jsonId, string jsonPath, string graph)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	string opShort = "mult"
+
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	Note/K output, note(input)
+
+	output[] = SF_OperationMultImpl(input[p])
+
+	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+End
+
+static Function/WAVE SF_OperationMultImpl(WAVE/Z wv)
+
+	if(!WaveExists(wv))
+		return $""
+	endif
+	SF_ASSERT(IsNumericWave(wv), "Operand for * must be numeric.")
 	MatrixOP/FREE out = productCols(wv)^t
+	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
 	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	Note/K out, note(wv)
+
 	return out
 End
 
