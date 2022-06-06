@@ -5610,9 +5610,11 @@ End
 /// Debug note: Tracking the connection state can be done via
 /// `netstat | grep $port`. The binded port only shows up *after* a
 /// successfull connection with zeromq_client_connect() is established.
+///
+/// @return NaN if already running, otherwise it returns the number of trials
+///         it had to iterate for an unused port.
 Function StartZeroMQSockets([variable forceRestart])
-
-	variable i, port, err, numBinds, flags
+	variable i, port, err, numBinds, flags, numTrials
 
 	if(ParamIsDefault(forceRestart))
 		forceRestart = 0
@@ -5654,6 +5656,8 @@ Function StartZeroMQSockets([variable forceRestart])
 		endif
 	endfor
 
+	numTrials += i
+
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_PUB_PORT + i
 		AssertOnAndClearRTError()
@@ -5666,8 +5670,12 @@ Function StartZeroMQSockets([variable forceRestart])
 		endif
 	endfor
 
+	numTrials += i
+
 	ASSERT(numBinds == 2, "Could not establish ZeroMQ bind connections.")
 	zeromq_handler_start()
+
+	return numTrials
 End
 
 /// @brief Split an DAQDataWave into one 1D-wave per channel/ttlBit
