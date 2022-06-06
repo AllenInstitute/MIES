@@ -39,3 +39,7 @@ static Function EnsureEnoughDiscSpace()
 	REQUIRE(V_flag)
 	REQUIRE(HasEnoughDiskspaceFree(S_path, MINIMUM_FREE_DISK_SPACE))
 End
+
+static Function CheckThatZeroMQMessagingWorks()
+	PrepareForPublishTest()
+End
