@@ -5849,16 +5849,37 @@ Function UpdateLeftOverSweepTime(device, fifoPos)
 
 	string msg
 
-	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
+	NVAR repurposedTime = $GetRepurposedSweepTime(device)
 
-	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-	NVAR repurposedTime      = $GetRepurposedSweepTime(device)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-
-	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) * MILLI_TO_ONE
+	repurposedTime += LeftOverSweepTime(device, fifoPos)
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
+End
+
+Function LeftOverSweepTime(string device, variable fifoPos)
+
+	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
+
+	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
+
+	switch(GetHardwareType(device))
+		case HARDWARE_ITC_DAC:
+			// nothing to do
+			break
+		case HARDWARE_NI_DAC:
+			// we need to use one of the channel waves
+			WAVE/WAVE ref = DAQDataWave
+			WAVE DAQDataWave = ref[0]
+			break
+		default:
+			ASSERT(0, "Invalid hardware type")
+	endswitch
+
+	variable lastAcquiredPoint = IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)
+
+	return max(0, lastAcquiredPoint) * MILLI_TO_ONE
 End
 
 /// @brief Calculate deltaI/deltaV from a testpulse like stimset in "Current Clamp" mode

@@ -42,12 +42,16 @@ digraph G {
 	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]";
 	n84	[label="Set \"Delay onset user\" back from labnotebook entry"];
 	"Post Set Event" -> n84;
+	n97	[label="Read analysis parameter\n \"AmpBesselFilterRestore\",\n defaulting to true."];
+	"Post Set Event" -> n97;
 	n92	[URL="../_static/images/async-qc-channels.svg",
 		label="Standard AsyncQCChannels handling",
 		target=_graphviz];
 	"Post Sweep Event" -> n92;
 	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
 	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+	n95	[label="Store amplifier setting\n LPF primary output in labnotebook"];
+	"Prepare DAQ/Pre Set Event" -> n95;
 	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=No];
 	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"	[label=No];
 	n64	[label="Store Spike check in labnotebook"];
@@ -57,9 +61,6 @@ digraph G {
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	[label=No];
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	[label=Yes];
 	n73	[label="\"Spike Check\" labnotebook entry is true?"];
-	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=No];
-	n74	[label="Spike QC passed?"];
-	n73 -> n74	[label=Yes];
 	n92 -> n73;
 	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
 	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
@@ -70,6 +71,9 @@ digraph G {
 	n65 -> n66	[label=No];
 	n87	[label="Read analysis parameter \"UseTrueRestingMembranePotentialVoltage\",\n defaulting to true."];
 	"Mark set as passed\n in labnotebook" -> n87;
+	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=No];
+	n74	[label="Spike QC passed?"];
+	n73 -> n74	[label=Yes];
 	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	[label=No];
 	n76	[label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
 	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	[label=Yes];
@@ -126,7 +130,8 @@ digraph G {
 	n71 -> n72	[label=Yes];
 	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ"	[label=Yes];
 	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Set can still pass?"	[label=No];
-	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
+	n93 -> "Mark sweep as failed\n in labnotebook"	[label=No];
+	n93 -> "Mark sweep as passed\n in labnotebook"	[label=Yes];
 	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
 	"Check if only one headstage is active" -> "All checks passed";
 	"Check RMS long" -> "Add BL QC failed labnotebook entry"	[label=Failed];
@@ -138,6 +143,7 @@ digraph G {
 	n75	[label="Abort sweep"];
 	n67 -> n75;
 	"Set can still pass?" -> "Skip to end of DAQ"	[label=No];
+	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
 	n89	[label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
 	"Enable \"Insert TP\"" -> n89;
 	"All checks passed" -> Abort	[label=No];
@@ -159,6 +165,8 @@ digraph G {
 	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
 	n83 -> "All checks passed";
 	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
-	n93 -> "Mark sweep as failed\n in labnotebook"	[label=No];
-	n93 -> "Mark sweep as passed\n in labnotebook"	[label=Yes];
+	n96	[label="Use \"AmpBesselFilter\" analysis parameter\n (defaulting to 10e3 if not present)\n as LPF primary output"];
+	n95 -> n96;
+	n98	[label="Set amplifier setting\n LPF primary output\n from labnotebook entry"];
+	n97 -> n98	[label=True];
 }

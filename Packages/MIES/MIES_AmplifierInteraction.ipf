@@ -1498,8 +1498,6 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave()
 	WAVE ampParamStorage       = GetAmplifierParamStorageWave(device)
 
-	ampSettingsWave = NaN
-
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])

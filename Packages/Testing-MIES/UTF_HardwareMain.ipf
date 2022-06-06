@@ -1341,12 +1341,8 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						break
 					case "Ohm":
 					case "Ω":
-
 						value = abs(value)
 						CHECK_GT_VAR(value, 0)
-
-						/// @todo adapt once https://github.com/AllenInstitute/MIES/pull/1316
-						/// is merged
 						CHECK_LE_VAR(value, 12.5e9)
 						break
 					case "ms":
@@ -1357,6 +1353,10 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						value = abs(value)
 						CHECK_GE_VAR(value, 0)
 						CHECK_LE_VAR(value, 100)
+						break
+					case "Hz":
+						CHECK_GT_VAR(value, 0)
+						CHECK_LE_VAR(value, 1e6)
 						break
 					default:
 						printf "missing %s with unit %s\r", entry, unit

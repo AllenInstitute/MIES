@@ -3049,6 +3049,8 @@ Function/WAVE GetAmplifierSettingsWave()
 
 	Make/FREE/N=(1, 47, LABNOTEBOOK_LAYER_COUNT)/D wv
 
+	wv = NaN
+
 	return wv
 End
 

@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(186,6)	labnotebook_numerical_description
+WAVES/T/N=(187,6)	labnotebook_numerical_description
 BEGIN
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -28,6 +28,7 @@ BEGIN
 	"Set Sweep Count"	""	"0.1"	"Non-negative sweep (timeseries)  index for the stimulus set."	"ALL"	""
 	"TP Insert Checkbox"	"On/Off"	"-"	"Inserted Testpulse:"	"INDEP"	""
 	"Inter-trial interval"	"s"	"0.01"	"Target interval for consecutive sweeps, start to start, in seconds"	"INDEP"	""
+	"Inter-trial interval (effective)"	"s"	"-"	"Realised interval for consecutive sweeps, start to start, in seconds including repurposed time"	"INDEP"	""
 	"TTL rack zero bits"	"bit mask"	"-"	"ITC hardware specific: Bit mask for active DAEphys TTL channels of rack zero.\r\rSee also https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable and https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable."	"INDEP"	""
 	"TTL rack one bits"	"bit mask"	"-"	"ITC hardware specific: Bit mask for active DAEphys TTL channels of rack one.\r\rSee also https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlbits#_CPPv310GetTTLBits4wave8variable8variable and https://alleninstitute.github.io/MIES/file/_m_i_e_s___mies_utilities_8ipf.html?highlight=getttlstimsets#_CPPv314GetTTLStimSets4wave4wave8variable."	"INDEP"	""
 	"TTL rack zero channel"	""	"-"	"ITC hardware specific: ITC XOP TTL hardware channel for rack zero, e.g., ITC 1600 = 0, ITC 18USB = 1"	"INDEP"	""

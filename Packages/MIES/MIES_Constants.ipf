@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 5
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 61
+Constant LABNOTEBOOK_VERSION = 63
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -46,7 +46,7 @@ Constant RESULTS_VERSION     = 2
 /// @{
 Constant PSQ_PIPETTE_BATH_VERSION    = 3
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 1
-Constant PSQ_CHIRP_VERSION           = 9
+Constant PSQ_CHIRP_VERSION           = 11
 Constant PSQ_DA_SCALE_VERSION        = 4
 Constant PSQ_RAMP_VERSION            = 5
 Constant PSQ_RHEOBASE_VERSION        = 4
@@ -442,6 +442,9 @@ Constant MCC_SETSECONDARYSIGNALLPF_FUNC  = 10060
 Constant MCC_GETSECONDARYSIGNALLPF_FUNC  = 10061
 Constant MCC_END_INVALID_FUNC            = 10062
 /// @}
+
+/// Magic value for selecting "Bypass" in the bessel filter for the primary output
+Constant LPF_BYPASS = 100e3
 
 Constant CHECKBOX_SELECTED     = 1
 Constant CHECKBOX_UNSELECTED   = 0
@@ -1101,6 +1104,7 @@ StrConstant PSQ_FMT_LBN_CR_CYCLES                  = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE            = "%s bounds state"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK             = "%s spike check"
 StrConstant PSQ_FMT_LBN_CR_INIT_UOD                = "%s initial user onset delay"
+StrConstant PSQ_FMT_LBN_CR_INIT_LPF                = "%s initial low pass filter"
 StrConstant PSQ_FMT_LBN_SPIKE_PASS                 = "%s spike QC"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE              = "%s pipette resistance"
 StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS         = "%s pipette resistance QC"
@@ -1206,6 +1210,7 @@ Constant PSQ_CR_BASELINE_V_FAKE  = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_LOW   = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_HIGH  = 100 // mV
 Constant PSQ_CR_USE_TRUE_RMP_DEF = 1
+Constant PSQ_CR_DEFAULT_LPF      = 10e3 // Hz
 /// @}
 
 /// @name PatchSeq Pipette
