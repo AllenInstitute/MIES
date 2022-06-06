@@ -3,10 +3,325 @@ Release notes
 
 .. toctree::
 
-Release 2.5
+Release 2.6
 ===========
 
-Current up to ad78a346 (Merge pull request #1329 from AllenInstitute/feature/1312-mh_remove_instru_helper_fun, 2022-04-08).
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Rework builtin help
+  - Index with links at the bottom, with back buttons
+  - In-Editor help via tooltip
+  - Enhance it in various places
+- Add basic syntax coloring to Editor
+- Enhance test coverag
+
+AnalysisBrowser
+---------------
+
+None
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Fix ``Selected`` checkbox in Logbook panel
+
+Dashboard
+~~~~~~~~~
+
+- Handle manually stopped sweeps better
+
+DA\_Ephys
+---------
+
+None
+
+JSON Configuration
+------------------
+
+- Add ``LPF primary output``
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- ``PSQ_Chirp``:
+
+  - Add ``UserOnsetDelay``/``UseTrueRestingMembranePotentialVoltage``/``AsyncQCChannels`` analysis parameter
+  - Make ``SamplingMultiplier``/``NumberOfFailedSweeps`` an required analysis parameter
+
+- ``PSQ_SealEvaluation``:
+
+  - Make ``BaselineChunkLength`` a lower limit for WaveBuilder epoch length
+    instead of an exact match. This allows to have longer epochs that what is
+    used for baseline evaluation.
+  - Made SweepFormula execution more robust
+  - Make it work with other DACs than zero
+  - Make ``SamplingMultiplier``/``BaselineRMSShortThreshold``/``BaselineRMSLongThreshold``
+    required analysis parameters
+  - Add ``NextIndexingEndStimSetName``/``AsyncQCChannels`` analysis parameter
+
+- Add ``PSQ_AccessResistanceSmoke``
+
+- Add ``PSQ_TrueRestingMembranePotential``
+
+- ``PSQ_PipetteInBath``:
+
+  - Made SweepFormula execution more robust
+  - Make ``SamplingMultiplier``/``BaselineRMSShortThreshold``/``BaselineRMSLongThreshold``
+    required analysis parameters
+  - Add ``NextIndexingEndStimSetName``/``AsyncQCChannels`` analysis parameter
+
+- Allow to change the indexing state in ``POST_DAQ_EVENT``
+
+- ``PSQ_SquarePulse``:
+
+  - Use the correct labnotebook prefix again and not the one for
+    ``PSQ_SealEvaluation``. Broken since 1a64ca17 (PSQ_SealEvaluation: Add it,
+    2022-02-22).
+  - Add ``AsyncQCChannels`` analysis parameter
+
+- ``PSQ_DAScale``:
+
+  - Avoid warning from FitResistance about missing labnotebook keys if the sweep did not pass.
+  - Add ``AsyncQCChannels`` analysis parameter
+
+- ``PSQ_Rheobase``:
+
+  - Add ``AsyncQCChannels`` analysis parameter
+
+- ``PSQ_Ramp``:
+
+  - Add ``AsyncQCChannels`` analysis parameter
+
+Foreign Function interface
+--------------------------
+
+None
+
+Publisher
+---------
+
+- Reorganize ZeroMQ publishing functions and move all of them into :ref:`File MIES_Publish.ipf`
+- Add example output for each message
+- Publish DAQ/TP start and stop, see also :cpp:func:`PUB_DAQStateChange`. There is no message sent for TP during ITI.
+
+Pulse Average Plot
+------------------
+
+None
+
+General
+-------
+
+- Fix invalid backup path syntax which newer IP9 versions don't accept
+- Remove support for Igor Pro 8
+- Use Xoshiro++256 as default pseudo random number generator
+- Asynchronous channels: Make them work with NI hardware
+- Output special error message on MCC bug where the DA gain is always zero
+
+TUF XOP
+-------
+
+None
+
+ITC XOP 2
+----------
+
+None
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+- Added generic getter functions :cpp:func:`LBN_GetNumericWave` and
+  :cpp:func:`LBN_GetTextWave` for input waves required by :cpp:func:`ED_AddEntryToLabnotebook`
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``Get/Set Inter-trial interval``
+- ``PSQ_FMT_LBN_AR_ACCESS_RESISTANCE``
+- ``PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS``
+- ``PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE``
+- ``PSQ_FMT_LBN_AR_RESISTANCE_RATIO``
+- ``PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS``
+- ``PSQ_FMT_LBN_VM_FULL_AVG``
+- ``PSQ_FMT_LBN_VM_FULL_AVG_ADIFF``
+- ``PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS``
+- ``PSQ_FMT_LBN_VM_FULL_AVG_RDIFF``
+- ``PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS``
+- ``PSQ_FMT_LBN_VM_FULL_AVG_PASS``
+- ``PSQ_FMT_LBN_ASYNC_PASS``
+- ``Async Alarm XX State``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+None
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Epoch information
+-----------------
+
+- ``EP_GetEpochs``: Allow to query epoch information during ``MID_SWEEP_EVENT``
+
+NWB/IPNWB
+---------
+
+None
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Use Xoshiro++266 as pseudo random number generator (PRNG) for new stimsets.
+  For compatibility reasons the existing PRNGs are kept for existing stimsets.
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Add new option ``PROP_GREP`` to :cpp:func:`FindIndizes`
+- Update documentation toolchain
+
+Tests
+-----
+
+None
+
+Async Framework
+---------------
+
+None
+
+Logging
+-------
+
+None
+
+Installer
+---------
+
+- Remove support for IP8 and add support for IP10 (not yet available though at the time of writing)
+
+Release 2.5
+===========
 
 Controls
 --------
