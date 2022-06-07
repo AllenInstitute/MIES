@@ -1746,18 +1746,30 @@ End
 
 /// @brief Return a wave reference to the textual results keys
 ///
+/// One user of the results wave is Sweep Formula. It stores the code and
+/// various meta information in it every time it is executed.
+///
 /// Rows:
 /// - 0: Parameter Name
 /// - 1: Parameter Unit
 /// - 2: Parameter Tolerance
 ///
 /// Columns:
-/// - 0: Sweep Number (always NaN)
-/// - 1: Time Stamp in local time zone
-/// - 2: Time Stamp in UTC
-/// - 3: Source entry type, one of @ref DataAcqModes
-/// - 4: Acquisition state, one of @ref AcquisitionStates
-/// - other columns are filled at runtime
+/// - SweepNum: Sweep number (always NaN)
+/// - TimeStamp: Time stamp in local time zone since igor epoch
+/// - TimeStampSinceIgorEpochUTC: time stamp in UTC since igor epoch
+/// - EntrySourceType: One of @ref DataAcqModes
+/// - AcquisitionState: One of @ref AcquisitionStates
+/// - Sweep Formula code: Executed code from SweepFormula
+/// - Sweep Formula displayed sweeps: Displayed sweeps
+/// - Sweep Formula active channels: Active channels
+/// - Sweep Formula experiment: Name of the experiment
+/// - Sweep Formula device: Device
+/// - Sweep Formula cursor X: Information about each available cursor, see
+///                           GetCursorInfos() for the exact format.
+/// - Sweep Formula store [X]: Stored data from SweepFormula `store` operation.
+///                            The `X` is dynamic and the first argument passed.
+/// - Other columns are created and filled at runtime
 Function/Wave GetTextualResultsKeys()
 	string name
 	variable versionOfNewWave
