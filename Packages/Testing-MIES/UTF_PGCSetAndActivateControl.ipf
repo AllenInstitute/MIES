@@ -599,3 +599,110 @@ static Function PGCT_SliderOutOfRange()
 	NVAR/Z called
 	CHECK(!NVAR_Exists(called))
 End
+
+static Function PGCT_NonExistingWindow()
+
+	try
+		PGC_SetAndActivateControl("I DON'T EXIST", "slider_ctrl", val = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function PGCT_NonExistingControl()
+	SVAR/SDFR=root: panel
+
+	try
+		PGC_SetAndActivateControl(panel, "I DON'T EXIST", val = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function PGCT_SetVariableVarWorks()
+
+	variable refValue, setVarNum
+	string refString, setVarStr
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	refValue  = V_Value
+	refString = S_Value
+	CHECK_EMPTY_STR(refString)
+
+	refValue += 1
+
+	PGC_SetAndActivateControl(panel, "setvar_num_ctrl", val = refValue)
+
+	NVAR setVarNumNVAR = dVal
+	setVarNum = setVarNumNVAR
+
+	SVAR setVarStrSVAR = sVal
+	setVarStr = setVarStrSVAR
+	refString = num2str(setVarNum)
+
+	CHECK_EQUAL_VAR(refValue, setVarNum)
+	CHECK_EQUAL_STR(refString, setVarStr)
+
+	// and now with str parameter
+
+	refValue += 1
+
+	PGC_SetAndActivateControl(panel, "setvar_num_ctrl", str = num2str(refValue))
+
+	NVAR setVarNumNVAR = dVal
+	setVarNum = setVarNumNVAR
+
+	SVAR setVarStrSVAR = sVal
+	setVarStr = setVarStrSVAR
+	refString = num2str(setVarNum)
+
+	CHECK_EQUAL_VAR(refValue, setVarNum)
+	CHECK_EQUAL_STR(refString, setVarStr)
+End
+
+static Function PGCT_SetVariableStrWorks()
+
+	variable refValue, setVarNum
+	string refString, setVarStr
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel setvar_str_ctrl
+	refValue  = V_Value
+	refString = S_Value
+	CHECK_EQUAL_VAR(refValue, NaN)
+
+	refString += "some stuff"
+
+	PGC_SetAndActivateControl(panel, "setvar_str_ctrl", str = refString)
+
+	NVAR setVarNumNVAR = dVal
+	setVarNum = setVarNumNVAR
+
+	SVAR setVarStrSVAR = sVal
+	setVarStr = setVarStrSVAR
+
+	CHECK_EQUAL_VAR(0, setVarNum)
+	CHECK_EQUAL_STR(refString, setVarStr)
+
+	// and now with var parameter
+
+	refValue = 123
+
+	PGC_SetAndActivateControl(panel, "setvar_str_ctrl", val = refValue)
+
+	NVAR setVarNumNVAR = dVal
+	setVarNum = setVarNumNVAR
+
+	SVAR setVarStrSVAR = sVal
+	setVarStr = setVarStrSVAR
+
+	refString = num2str(refValue)
+
+	CHECK_EQUAL_VAR(0, setVarNum)
+	CHECK_EQUAL_STR(refString, setVarStr)
+End
