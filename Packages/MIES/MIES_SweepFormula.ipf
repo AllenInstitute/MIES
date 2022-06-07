@@ -1777,6 +1777,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
+		SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
 		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
 	endif
 
@@ -2925,7 +2926,6 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 	WAVE/T name = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	SF_ASSERT(IsTextWave(name), "name parameter must be textual")
 	SF_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
-	SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
 
 	WAVE out = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 
