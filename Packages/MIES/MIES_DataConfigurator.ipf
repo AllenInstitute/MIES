@@ -956,7 +956,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		DC_DocumentChannelProperty(device, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setChecksum)
 
 		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, s.setName[i], s.setCycleCount[i], setChecksum, s.dataAcqOrTP)
+			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, s.setName[i], s.setCycleCount[i], setChecksum)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(device, fingerprint, channel)
 
 			DC_DocumentChannelProperty(device, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
@@ -1546,9 +1546,7 @@ static Function DC_GetStimsetAcqCycleID(device, fingerprint, DAC)
 
 	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(device)
 
-	if(!IsFinite(fingerprint))
-		return NaN
-	endif
+	ASSERT(IsFinite(fingerprint), "Invalid fingerprint")
 
 	if(fingerprint == stimsetAcqIDHelper[DAC][%fingerprint])
 		return stimsetAcqIDHelper[DAC][%id]
@@ -1570,18 +1568,12 @@ End
 ///
 /// Always then this fingerprint changes, a new stimset acquisition cycle ID has
 /// to be generated.
-///
-/// Returns NaN for the testpulse.
-static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount, setChecksum, dataAcqOrTP)
+static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount, setChecksum)
 	variable raCycleID
 	string setName
-	variable setChecksum, setCycleCount, dataAcqOrTP
+	variable setChecksum, setCycleCount
 
 	variable crc
-
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		return NaN
-	endif
 
 	ASSERT(IsInteger(raCycleID) && raCycleID > 0, "Invalid raCycleID")
 	ASSERT(IsInteger(setCycleCount), "Invalid setCycleCount")
