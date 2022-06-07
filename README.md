@@ -49,7 +49,7 @@ acquisition, and analysis.
 ## Required Software
 
 - Windows 10 x64
-- [Igor Pro 8.04 (nightly) or later](https://www.wavemetrics.com/)
+- [Igor Pro 9 (nightly) or later](https://alleninstitute.github.io/MIES/installation.html#igor-pro-update-nightly)
 - [NIDAQ MX XOP](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 
 ## Getting started

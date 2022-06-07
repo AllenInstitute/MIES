@@ -7,7 +7,7 @@ principles behind MIES.
 Coding Guidelines
 -----------------
 
-Can be found `here <http://www.igorexchange.com/project/CodingConventions>`_.
+Can be found `here <https://github.com/byte-physics/igor-pro-coding-conventions>`_.
 
 Documentation
 -------------
