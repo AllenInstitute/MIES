@@ -180,7 +180,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%resistance] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_PB_RESISTANCE)
 	wv[%resistancePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_PB_RESISTANCE_PASS)
 
-	wv[%resultsSweep] = GetResultsSingleEntry_IGNORE("Sweep Formula displayed Sweeps")
+	wv[%resultsSweep] = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
 	wv[%resultsResistance] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance]")
 
 	return wv

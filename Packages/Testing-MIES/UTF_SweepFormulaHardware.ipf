@@ -367,14 +367,10 @@ static Function TestSweepFormulaCodeResults_REENTRY([string str])
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 
 	// check other entries of last invocation
-	CHECK_EQUAL_VAR(DimSize(textualResultsValues, COLS), 20)
+	CHECK_EQUAL_VAR(DimSize(textualResultsValues, COLS), 19)
 
-	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", UNKNOWN_MODE)
-	contentRef = "2;"
-	CHECK_EQUAL_STR(content, contentRef)
-
-	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula active channels", UNKNOWN_MODE)
-	contentRef = "0;1;,"
+	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", UNKNOWN_MODE)
+	contentRef = "2;0;1;,"
 	CHECK_EQUAL_STR(content, contentRef)
 
 	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula experiment", UNKNOWN_MODE)

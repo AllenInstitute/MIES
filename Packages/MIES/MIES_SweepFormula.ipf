@@ -1762,17 +1762,16 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
 	numCursors = ItemsInList(CURSOR_NAMES)
-	numBasicEntries = 5
+	numBasicEntries = 4
 	numEntries = numBasicEntries + numCursors + hasStoreEntry
 
 	Make/T/FREE/N=(1, numEntries) keys
 	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
 
 	keys[0][0]                                                 = "Sweep Formula code"
-	keys[0][1]                                                 = "Sweep Formula displayed sweeps"
-	keys[0][2]                                                 = "Sweep Formula active channels"
-	keys[0][3]                                                 = "Sweep Formula experiment"
-	keys[0][4]                                                 = "Sweep Formula device"
+	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
+	keys[0][2]                                                 = "Sweep Formula experiment"
+	keys[0][3]                                                 = "Sweep Formula device"
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
@@ -1788,11 +1787,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
 	if(!SF_IsDefaultEmptyWave(selectData))
-		WAVE/Z sweeps
-		WAVE/Z channels
-		[sweeps, channels] = SF_ReCreateOldSweepsChannelLayout(selectData)
-		values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
-		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(channels, ";")
+		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
 
 	shPanel = LBV_GetSettingsHistoryPanel(graph)
