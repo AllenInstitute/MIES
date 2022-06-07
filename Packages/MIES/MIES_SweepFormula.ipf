@@ -1715,8 +1715,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			try
 				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
 
-				WAVE/T/Z keys, values
-				[keys, values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
+				[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
@@ -2931,8 +2930,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	WAVE/T/Z keys, values
-	[keys, values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+	[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 
