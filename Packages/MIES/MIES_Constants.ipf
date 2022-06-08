@@ -1908,4 +1908,5 @@ StrConstant SF_DATATYPE_AVG = "Average"
 StrConstant SF_DATATYPE_MAX = "Max"
 StrConstant SF_DATATYPE_MIN = "Min"
 StrConstant SF_DATATYPE_RANGE = "Range"
+StrConstant SF_DATATYPE_EPOCHS = "Epochs"
 /// @}

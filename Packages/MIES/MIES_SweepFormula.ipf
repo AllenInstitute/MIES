@@ -969,6 +969,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_EPOCHS:
 		case SF_DATATYPE_MIN:
 		case SF_DATATYPE_MAX:
 		case SF_DATATYPE_AVG:
@@ -1016,6 +1017,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_EPOCHS:
 		case SF_DATATYPE_MIN:
 		case SF_DATATYPE_MAX:
 		case SF_DATATYPE_AVG:
@@ -2354,16 +2356,15 @@ End
 // returns 2xN wave for type = range except for a single range result
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, numEpochs, sweepNo
-	string str, epName, epShortName
+	variable numArgs, epType
 
 	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
 	SF_ASSERT(numArgs >= 1 && numArgs <= 3, "epochs requires at least 1 and at most 3 arguments")
 
 	if(numArgs == 3)
-		WAVE/T epochType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-		SF_ASSERT(DimSize(epochType, ROWS) == 1, "Too many input values for parameter type")
-		SF_ASSERT(IsTextWave(epochType), "type parameter must be textual")
+		WAVE/T epochType = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 2, checkExist=1)
+		SF_ASSERT(DimSize(epochType, ROWS) == 1, "Epoch type must be a single value.")
+		SF_ASSERT(IsTextWave(epochType), "Epoch type argument must be textual")
 		strswitch(epochType[0])
 			case SF_OP_EPOCHS_TYPE_RANGE:
 				epType = EPOCHS_TYPE_RANGE
@@ -2379,50 +2380,59 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 				break
 		endswitch
 
-		SF_ASSERT(epType != EPOCHS_TYPE_INVALID, "type must be either " + SF_OP_EPOCHS_TYPE_RANGE + ", " + SF_OP_EPOCHS_TYPE_NAME + " or " + SF_OP_EPOCHS_TYPE_TREELEVEL)
+		SF_ASSERT(epType != EPOCHS_TYPE_INVALID, "Epoch type must be either " + SF_OP_EPOCHS_TYPE_RANGE + ", " + SF_OP_EPOCHS_TYPE_NAME + " or " + SF_OP_EPOCHS_TYPE_TREELEVEL)
 	else
 		epType = EPOCHS_TYPE_RANGE
 	endif
 
 	if(numArgs >= 2)
-		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", graph)
+		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	endif
+	if(WaveExists(selectData))
+		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 	endif
 
-	if(SF_IsDefaultEmptyWave(selectData))
-		return selectData
+	WAVE/T epochName = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
+	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Epoch name must be a single string.")
+	SF_ASSERT(IsTextWave(epochName), "Epoch name argument must be textual")
+
+	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochName[0], selectData, epType, SF_OP_EPOCHS)
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_EPOCHS)
+End
+
+Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE/Z selectData, variable epType, string opShort)
+
+	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex
+	string epName, epShortName, epEntry, yAxisLabel
+
+	ASSERT(WindowExists(graph), "graph window does not exist")
+
+	if(!WaveExists(selectData))
+		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
+		return output
 	endif
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 
-	WAVE/T epochName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Too many input values for parameter name")
-	SF_ASSERT(IsTextWave(epochName), "name parameter must be textual")
-
-	WAVE/Z activeChannels
-	WAVE/Z sweeps
-	[sweeps, activeChannels] = SF_ReCreateOldSweepsChannelLayout(selectData)
-
-	sweepCnt = DimSize(sweeps, ROWS)
-	activeChannelCnt = DimSize(activeChannels, ROWS)
+	numSelected = DimSize(selectData, ROWS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, numSelected)
 
 	if(epType == EPOCHS_TYPE_NAME)
-		Make/T/FREE/N=(activeChannelCnt * sweepCnt) outNames
-		WAVE out = outNames
+		yAxisLabel = "epoch " + epochName + " name"
 	elseif(epType == EPOCHS_TYPE_TREELEVEL)
-		Make/D/FREE/N=(activeChannelCnt * sweepCnt) outTreeLevel
-		MultiThread outTreeLevel = NaN
-		WAVE out = outTreeLevel
+		yAxisLabel = "epoch " + epochName + " tree level"
 	else
-		Make/D/FREE/N=(2, activeChannelCnt * sweepCnt) outRange
-		MultiThread outRange = NaN
-		WAVE out = outRange
+		yAxisLabel = "epoch " + epochName + " range"
 	endif
 
-	outCnt = 0
-	for(i = 0; i < sweepCnt; i += 1)
-		sweepNo = sweeps[i]
+	for(i = 0; i < numSelected; i += 1)
+
+		sweepNo = selectData[i][%SWEEP]
+		chanNr = selectData[i][%CHANNELNUMBER]
+		chanType = selectData[i][%CHANNELTYPE]
 
 		if(!IsValidSweepNumber(sweepNo))
 			continue
@@ -2434,62 +2444,56 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 			continue
 		endif
 
-		for(j = 0; j <  activeChannelCnt; j += 1)
-			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
-
-			if(WaveExists(settings))
-				WAVE/T settingsT = settings
-				str = settingsT[index]
-				SF_ASSERT(!IsEmpty(str), "Encountered channels without epoch information.")
-				WAVE/T epochInfo = EP_EpochStrToWave(str)
-				numEpochs = DimSize(epochInfo, ROWS)
-				Make/FREE/N=(numEpochs)/T epNames
-				for(k = 0; k < numEpochs; k += 1)
-					epName = epochInfo[k][EPOCH_COL_TAGS]
-					epShortName = EP_GetShortName(epName)
-					epNames[k] = SelectString(IsEmpty(epShortName), epShortName, epName)
-				endfor
-
-				FindValue/TXOP=4/TEXT=epochName[0] epNames
-				if(V_Row >= 0)
-					SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_TAGS], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
-				endif
-			endif
-			outCnt +=1
-		endfor
-	endfor
-
-	if(epType == EPOCHS_TYPE_NAME || epType == EPOCHS_TYPE_TREELEVEL)
-		Redimension/N=(outCnt) out
-	else
-		if(outCnt == 1)
-			Redimension/N=2 out
-		elseif(outCnt == 0)
-			WAVE out = SF_GetDefaultEmptyWave()
-		else
-			Redimension/N=(-1, outCnt) out
+		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, chanNr, chanType, DATA_ACQUISITION_MODE)
+		if(!WaveExists(settings))
+			continue
 		endif
-	endif
 
-	return out
-End
+		WAVE/T settingsT = settings
+		epEntry = settingsT[settingsIndex]
+		SF_ASSERT(!IsEmpty(epEntry), "Encountered sweep/channel without epoch information.")
+		WAVE/T epochInfo = EP_EpochStrToWave(epEntry)
+		numEpochs = DimSize(epochInfo, ROWS)
+		Make/FREE/T/N=(numEpochs) epNames
+		for(j = 0; j < numEpochs; j += 1)
+			epName = epochInfo[j][EPOCH_COL_TAGS]
+			epShortName = EP_GetShortName(epName)
+			epNames[j] = SelectString(IsEmpty(epShortName), epShortName, epName)
+		endfor
 
-static Function SF_EpochsSetOutValues(variable epType, WAVE out, variable outCnt[, string name, string treeLevel, string startTime, string endtime])
+		FindValue/TXOP=4/TEXT=epochName epNames
+		if(V_Row == -1)
+			index += 1
+			continue
+		endif
+		epIndex = V_Row
 
-	if(epType == EPOCHS_TYPE_NAME)
-		ASSERT(!ParamIsDefault(name), "name expected")
-		ASSERT(!IsNull(name), "Epoch name can not be null")
-		WAVE/T outNames = out
-		outNames[outCnt] = name
-	elseif(epType == EPOCHS_TYPE_TREELEVEL)
-		ASSERT(!ParamIsDefault(treeLevel), "treeLevel expected")
-		out[outCnt] = str2num(treeLevel)
-	else
-		ASSERT(!ParamIsDefault(startTime), "startTime expected")
-		ASSERT(!ParamIsDefault(endTime), "endTime expected")
-		out[0][outCnt] = str2num(startTime) * ONE_TO_MILLI
-		out[1][outCnt] = str2num(endTime) * ONE_TO_MILLI
-	endif
+		if(epType == EPOCHS_TYPE_NAME)
+			Make/FREE/T wt = {epochInfo[epIndex][EPOCH_COL_TAGS]}
+			WAVE out = wt
+		elseif(epType == EPOCHS_TYPE_TREELEVEL)
+			Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
+			WAVE out = wv
+		else
+			Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
+			WAVE out = wv
+		endif
+
+		SetNumberInJSONWaveNote(out, SF_META_SWEEPNO, sweepNo)
+		SetNumberInJSONWaveNote(out, SF_META_CHANNELTYPE, chanType)
+		SetNumberInJSONWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+		SetWaveInJSONWaveNote(out, SF_META_XVALUES, {sweepNo})
+
+		output[index] = out
+		index +=1
+	endfor
+	Redimension/N=(index) output
+
+	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
+	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	SetStringInJSONWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
+
+	return output
 End
 
 static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
