@@ -1295,10 +1295,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			annotation = RemoveEnding(annotation, "\r")
 			Legend/W=$win/C/N=metadata/F=0 annotation
 		endif
-		if(!IsEmpty(plotMetaData.xAxisLabel))
+		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
 			Label/W=$win bottom plotMetaData.xAxisLabel
 		endif
-		if(!IsEmpty(plotMetaData.yAxisLabel))
+		if(!IsEmpty(plotMetaData.yAxisLabel) && traceCnt > 0)
 			Label/W=$win left plotMetaData.yAxisLabel
 		endif
 		ModifyGraph/W=$win zapTZ(bottom)=1
