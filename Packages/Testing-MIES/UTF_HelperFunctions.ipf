@@ -85,7 +85,9 @@ End
 
 Function PrepareForPublishTest()
 
-	StartZeroMQSockets(forceRestart = 1)
+	variable numTrials = StartZeroMQSockets(forceRestart = 1)
+	REQUIRE_EQUAL_VAR(numTrials, 0)
+
 	zeromq_sub_remove_filter("")
 
 	zeromq_sub_add_filter("")
