@@ -109,8 +109,6 @@ static StrConstant SF_CHAR_COMMENT = "#"
 static StrConstant SF_CHAR_CR = "\r"
 static StrConstant SF_CHAR_NEWLINE = "\n"
 
-static StrConstant MIXED_UNITS = "** undefined **"
-
 static Constant SF_TRANSFER_ALL_DIMS = -1
 
 static StrConstant SF_WORKING_DF = "FormulaData"
@@ -969,6 +967,7 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
+		case SF_DATATYPE_TP:
 		case SF_DATATYPE_EPOCHS:
 		case SF_DATATYPE_MIN:
 		case SF_DATATYPE_MAX:
@@ -1017,6 +1016,7 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.blue = 0x0000
 
 	strswitch(dataType)
+		case SF_DATATYPE_TP:
 		case SF_DATATYPE_EPOCHS:
 		case SF_DATATYPE_MIN:
 		case SF_DATATYPE_MAX:
@@ -2143,39 +2143,33 @@ static Function/WAVE SF_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)
 End
 
 // tp(string type[, array selectData[, array ignoreTPs]])
-// returns 3D wave in the layout: result x sweeps x channels
 static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, sweepCnt, activeChannelCnt, i, j, channelNr, channelType, dacChannelNr
-	variable sweep, index, numTPEpochs
-	variable tpBaseLinePoints, emptyOutput, headstage, outType
-	string epShortName, tmpStr, unit, unitKey
-	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
-	string baselineUnit = ""
-	STRUCT TPAnalysisInput tpInput
+	variable numArgs, outType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs >= 1 || numArgs <= 3, "tp requires 1 to 3 arguments")
 
 	if(numArgs == 3)
-		WAVE ignoreTPs = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-		SF_ASSERT(DimSize(ignoreTPs, COLS) < 2, "ignoreTPs must be one-dimensional.")
+		WAVE ignoreTPs = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TP, 2, checkExist=1)
+		SF_ASSERT(WaveDims(ignoreTPs) == 1, "ignoreTPs must be one-dimensional.")
 		SF_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
 	else
 		WAVE/Z ignoreTPs
 	endif
 
 	if(numArgs >= 2)
-		WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TP, 1)
 	else
-		WAVE selectData = SF_ExecuteFormula("select()", graph)
+		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
 	endif
-	SF_ASSERT(!SF_IsDefaultEmptyWave(selectData), "No valid sweep/channels combination found.")
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
+	if(WaveExists(selectData))
+		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
+	endif
 
-	WAVE wType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(wType, ROWS) == 1, "Too many input values for parameter name")
+	WAVE wType = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TP, 0, checkExist=1)
+	SF_ASSERT(DimSize(wType, ROWS) == 1, "Too many input values for argument tpType")
 	if(IsTextWave(wType))
 		WAVE/T wTypeT = wType
 		strswitch(wTypeT[0])
@@ -2195,161 +2189,163 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 		outType = wType[0]
 	endif
 
-	WAVE/Z activeChannels
-	WAVE/Z sweeps
-	[sweeps, activeChannels] = SF_ReCreateOldSweepsChannelLayout(selectData)
+	WAVE/WAVE output = SF_OperationTPImpl(graph, outType, selectData, ignoreTPs, SF_OP_TP)
 
-	sweepCnt = DimSize(sweeps, ROWS)
-	activeChannelCnt = DimSize(activeChannels, ROWS)
-	SF_ASSERT(sweepCnt > 0, "Could not find sweeps from given specification.")
-	SF_ASSERT(activeChannelCnt > 0, "Could not find any active channel in given sweeps.")
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TP)
 
-	Make/FREE/D/N=(1, sweepCnt, activeChannelCnt) out = NaN
-	emptyOutput = 1
+	return SF_GetOutputForExecutor(output, graph, SF_OP_TP)
+End
 
-	Duplicate/FREE selectData, singleSelect
-	Redimension/N=(1, -1) singleSelect
+static Function/WAVE SF_OperationTPImpl(string graph, variable outType, WAVE/Z selectData, WAVE/Z ignoreTPs, string opShort)
 
-	WAVE/Z settings
-	for(i = 0; i < sweepCnt; i += 1)
-		sweep = sweeps[i]
+	variable i, numSelected, sweepNo, chanNr, chanType, dacChannelNr, settingsIndex, headstage, tpBaseLinePoints, index
+	string unitKey, epShortName, baselineUnit, yAxisLabel
+	STRUCT TPAnalysisInput tpInput
+	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
 
-		if(!IsValidSweepNumber(sweep))
-			continue
-		endif
-
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
-		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
-		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
-			continue
-		endif
-		WAVE/Z keyValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, sweepNumber=sweep)
-
-		singleSelect[0][%SWEEP] = sweep
-
-		for(j = 0; j < activeChannelCnt; j += 1)
-
-			singleSelect[0][%CHANNELTYPE] = activeChannels[j][%channelType]
-			singleSelect[0][%CHANNELNUMBER] = activeChannels[j][%channelNumber]
-			WAVE/Z sweepData = SF_GetSweepsForFormula(graph, {-Inf, Inf}, singleSelect, SF_OP_TP)
-			if(!WaveExists(sweepData))
-				continue
-			endif
-			SetDimLabel COLS, i, $GetDimLabel(sweepData, COLS, 0), out
-			SetDimLabel LAYERS, j, $GetDimLabel(sweepData, LAYERS, 0), out
-			Redimension/N=(-1) sweepData
-
-			channelNr = activeChannels[j][%channelNumber]
-			channelType = activeChannels[j][%channelType]
-
-			unitKey = ""
-			unit = ""
-			if(channelType == XOP_CHANNEL_TYPE_DAC)
-				unitKey = "DA unit"
-			elseif(channelType == XOP_CHANNEL_TYPE_ADC)
-				unitKey = "AD unit"
-			endif
-			if(!IsEmpty(unitKey))
-				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, unitKey, channelNr, channelType, DATA_ACQUISITION_MODE)
-				SF_ASSERT(WaveExists(settings), "Failed to retrieve channel unit from LBN")
-				WAVE/T settingsT = settings
-				unit = settingsT[index]
-			endif
-
-			headstage = GetHeadstageForChannel(numericalValues, sweep, channelType, channelNr, DATA_ACQUISITION_MODE)
-			SF_ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
-			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, "DAC", channelNr, channelType, DATA_ACQUISITION_MODE)
-			SF_ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
-			dacChannelNr = settings[headstage]
-			SF_ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
-
-			WAVE/Z epochMatchesAll = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epochTPRegExp)
-
-			// drop TPs which should be ignored
-			// relies on ascending sorting of start times in epochMatches
-			WAVE/T/Z epochMatches = SF_FilterEpochs(epochMatchesAll, ignoreTPs)
-
-			if(!WaveExists(epochMatches))
-				continue
-			endif
-
-			// Use first TP as reference for pulse length and baseline
-			epShortName = EP_GetShortName(epochMatches[0][EPOCH_COL_TAGS])
-			WAVE/Z/T epochTPPulse = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_P")
-			SF_ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
-			WAVE/Z/T epochTPBaseline = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_B0")
-			SF_ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
-			tpBaseLinePoints = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
-
-			// Assemble TP data
-			WAVE tpInput.data = SF_AverageTPFromSweep(epochMatches, sweepData)
-			tpInput.tpLengthPoints = DimSize(tpInput.data, ROWS)
-			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
-			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLinePoints)
-
-			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
-			tpInput.clampMode = settings[index]
-
-			tpInput.clampAmp = NumberByKey("Amplitude", epochTPPulse[0][EPOCH_COL_TAGS], "=")
-			SF_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
-
-			// values not required for calculation result
-			tpInput.device = graph
-
-			DFREF dfrTPAnalysis = TP_PrepareAnalysisDF(graph, tpInput)
-			DFREF dfrTPAnalysisInput = dfrTPAnalysis:input
-			DFREF dfr = TP_TSAnalysis(dfrTPAnalysisInput)
-			WAVE tpOutData = dfr:outData
-
-			switch(outType)
-				case SF_OP_TP_TYPE_STATIC_NUM:
-					out[0][i][j] = tpOutData[%STEADYSTATERES]
-					break
-				case SF_OP_TP_TYPE_INSTANT_NUM:
-					out[0][i][j] = tpOutData[%INSTANTRES]
-					break
-				case SF_OP_TP_TYPE_BASELINE_NUM:
-					out[0][i][j] = tpOutData[%BASELINE]
-
-					if(IsEmpty(baselineUnit))
-						baselineUnit = unit
-					elseif(CmpStr(baselineUnit, unit))
-						baselineUnit = MIXED_UNITS
-					endif
-					break
-				default:
-					SF_ASSERT(0, "tp: Unknown type.")
-					break
-			endswitch
-
-			emptyOutput = 0
-		endfor
-	endfor
+	if(!WaveExists(selectData))
+		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+		return output
+	endif
 
 	switch(outType)
 		case SF_OP_TP_TYPE_STATIC_NUM:
-			SetScale d, 0, 0, "MΩ", out
+			yAxisLabel = "steady state resistance"
 			break
 		case SF_OP_TP_TYPE_INSTANT_NUM:
-			SetScale d, 0, 0, "MΩ", out
+			yAxisLabel = "instantaneous resistance"
 			break
 		case SF_OP_TP_TYPE_BASELINE_NUM:
-			if(!CmpStr(baselineUnit, MIXED_UNITS))
-				baselineUnit = ""
-			endif
-			SetScale d, 0, 0, baselineUnit, out
+			yAxisLabel = "baseline level"
 			break
 		default:
 			SF_ASSERT(0, "tp: Unknown type.")
 			break
 	endswitch
 
-	if(emptyOutput)
-		WAVE out = SF_GetDefaultEmptyWave()
-	endif
+	numSelected = DimSize(selectData, ROWS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, numSelected)
 
-	return out
+	WAVE singleSelect = SF_NewSelectDataWave(1, 1)
+
+	WAVE/Z settings
+	for(i = 0; i < numSelected; i += 1)
+
+		sweepNo = selectData[i][%SWEEP]
+		chanNr = selectData[i][%CHANNELNUMBER]
+		chanType = selectData[i][%CHANNELTYPE]
+
+		if(!IsValidSweepNumber(sweepNo))
+			continue
+		endif
+
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
+			continue
+		endif
+
+		singleSelect[0][%SWEEP] = sweepNo
+		singleSelect[0][%CHANNELTYPE] = chanType
+		singleSelect[0][%CHANNELNUMBER] = chanNr
+
+		WAVE/WAVE sweepDataRef = SF_GetSweepsForFormula(graph, {-Inf, Inf}, singleSelect, SF_OP_TP)
+		SF_ASSERT(DimSize(sweepDataRef, ROWS) == 1, "Could not retrieve sweep data for " + num2istr(sweepNo))
+		WAVE/Z sweepData = sweepDataRef[0]
+		SF_ASSERT(WaveExists(sweepData), "No sweep data for " + num2istr(sweepNo) + " found.")
+
+		unitKey = ""
+		baselineUnit = ""
+		if(chanType == XOP_CHANNEL_TYPE_DAC)
+			unitKey = "DA unit"
+		elseif(chanType == XOP_CHANNEL_TYPE_ADC)
+			unitKey = "AD unit"
+		endif
+		if(!IsEmpty(unitKey))
+			[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, unitKey, chanNr, chanType, DATA_ACQUISITION_MODE)
+			SF_ASSERT(WaveExists(settings), "Failed to retrieve channel unit from LBN")
+			WAVE/T settingsT = settings
+			baselineUnit = settingsT[settingsIndex]
+		endif
+
+		headstage = GetHeadstageForChannel(numericalValues, sweepNo, chanType, chanNr, DATA_ACQUISITION_MODE)
+		SF_ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
+		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", chanNr, chanType, DATA_ACQUISITION_MODE)
+		SF_ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
+		dacChannelNr = settings[headstage]
+		SF_ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
+
+		WAVE/Z epochMatchesAll = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epochTPRegExp)
+
+		// drop TPs which should be ignored
+		// relies on ascending sorting of start times in epochMatches
+		WAVE/T/Z epochMatches = SF_FilterEpochs(epochMatchesAll, ignoreTPs)
+
+		if(!WaveExists(epochMatches))
+			continue
+		endif
+
+		// Use first TP as reference for pulse length and baseline
+		epShortName = EP_GetShortName(epochMatches[0][EPOCH_COL_TAGS])
+		WAVE/Z/T epochTPPulse = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_P")
+		SF_ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
+		WAVE/Z/T epochTPBaseline = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_B0")
+		SF_ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
+		tpBaseLinePoints = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
+
+		// Assemble TP data
+		WAVE tpInput.data = SF_AverageTPFromSweep(epochMatches, sweepData)
+		tpInput.tpLengthPoints = DimSize(tpInput.data, ROWS)
+		tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
+		tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLinePoints)
+
+		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+		SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
+		tpInput.clampMode = settings[settingsIndex]
+
+		tpInput.clampAmp = NumberByKey("Amplitude", epochTPPulse[0][EPOCH_COL_TAGS], "=")
+		SF_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
+
+		// values not required for calculation result
+		tpInput.device = graph
+
+		DFREF dfrTPAnalysis = TP_PrepareAnalysisDF(graph, tpInput)
+		DFREF dfrTPAnalysisInput = dfrTPAnalysis:input
+		DFREF dfr = TP_TSAnalysis(dfrTPAnalysisInput)
+		WAVE tpOutData = dfr:outData
+
+		switch(outType)
+			case SF_OP_TP_TYPE_STATIC_NUM:
+				Make/FREE/D out = {tpOutData[%STEADYSTATERES]}
+				SetScale d, 0, 0, "MΩ", out
+				break
+			case SF_OP_TP_TYPE_INSTANT_NUM:
+				Make/FREE/D out = {tpOutData[%INSTANTRES]}
+				SetScale d, 0, 0, "MΩ", out
+				break
+			case SF_OP_TP_TYPE_BASELINE_NUM:
+				Make/FREE/D out = {tpOutData[%BASELINE]}
+				SetScale d, 0, 0, baselineUnit, out
+				break
+			default:
+				SF_ASSERT(0, "tp: Unknown type.")
+				break
+		endswitch
+
+		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+
+		output[index] = out
+		index += 1
+	endfor
+	Redimension/N=(index) output
+
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
+
+	return output
 End
 
 // epochs(string shortName[, array selectData, [string type]])
