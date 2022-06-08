@@ -1837,27 +1837,18 @@ End
 /// @brief Test Epoch operation of SweepFormula
 static Function TestOperationEpochs()
 
-	variable i, j, sweepNumber, channelNumber
-	string str, trace, key, name
+	variable i, j, sweepNumber, channelNumber, numResultsRef
+	string str, trace, key, name, win, device
 
 	variable numSweeps = 10
 	variable numChannels = 5
 	variable activeChannelsDA = 4
 	variable mode = DATA_ACQUISITION_MODE
 	string channelType = StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)
-	string win = DATABROWSER_WINDOW_TITLE
-	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
 	string channelTypeC = channelType + "C"
 
-	if(windowExists(win))
-		DoWindow/K $win
-	endif
-
-	Display/N=$win as device
-	BSP_SetDataBrowser(win)
-	BSP_SetDevice(win, device)
-
+	[win, device] = CreateFakeDataBrowserWindow()
 	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
@@ -1915,69 +1906,91 @@ static Function TestOperationEpochs()
 	endfor
 
 	str = "epochs(\"E0_PT_P48\")"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
-	refData[0][] = 500
-	refData[1][] = 510
-	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	Make/FREE/D refData = {500, 510}
+	numResultsRef = numSweeps * activeChannelsDA
+	REQUIRE_EQUAL_VAR(numResultsRef, DimSize(dataWref, ROWS))
+	for(i = 0; i < numResultsRef; i += 1)
+		WAVE epochData = dataWref[i]
+		REQUIRE_EQUAL_WAVES(refData, epochData, mode = WAVE_DATA)
+	endfor
+	Make/FREE/D/N=(numResultsRef) sweeps, chanNr, chanType
+	FastOp chanType = (XOP_CHANNEL_TYPE_DAC)
+	sweeps[] = trunc(p / activeChannelsDA)
+	chanNr[] = mod(p, activeChannelsDA) * 2
+	CheckSweepsMetaData(dataWref, chanType, chanNr, sweeps, SF_DATATYPE_EPOCHS)
 
 	str = "epochs(\"E0_PT_P48\", select(channels(DA0), 0))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {500, 510}
+	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {503, 510}
+	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0), range)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE data = GetSingleResult(str, win)
 	Make/FREE/D refData = {503, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4),0), treelevel)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE data = GetSingleResult(str, win)
 	Make/FREE/D refData = {3}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 9), name)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE/T dataT = GetSingleResult(str, win)
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
-	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
-	// works with wrong casing
+	// works case-insensitive
 	str = "epochs(\"e0_pt_p48_B\", select(channels(DA4), 9), name)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE/T dataT = GetSingleResult(str, win)
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
-	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
-	refData = p ? 510 : 503
-	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
+	Make/FREE/D refData = {503, 510}
+	for(data : dataWref)
+		REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+	endfor
+	// check Meta data
+	Make/FREE/D/N=(numSweeps * activeChannelsDA) channelTypes, channelNumbers, sweepNumbers
+	channelTypes = XOP_CHANNEL_TYPE_DAC
+	channelNumbers = mod(p, activeChannelsDA) * 2
+	sweepNumbers = trunc(p / activeChannelsDA)
+	CheckSweepsMetaData(dataWref, channelTypes, channelNumbers, sweepNumbers, SF_DATATYPE_EPOCHS)
 
-	WAVE wRefEmpty = MIES_SF#SF_GetDefaultEmptyWave()
 	// channel(s) with no epochs
 	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), 0..." + num2istr(numSweeps) + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	CHECK_EQUAL_WAVES(wRefEmpty, data, mode = WAVE_DATA)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
-	// name that does not match any
+	// channels with epochs, but name that does not match any epoch
 	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData = NaN
-	CHECK_EQUAL_WAVES(refData, data)
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
+	for(data : dataWref)
+		CHECK(!WaveExists(data))
+	endfor
 
 	// invalid sweep
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(\"E0_PT_P48_B\", select(channels(DA), -1))"), graph = win)
-	CHECK_EQUAL_WAVES(wRefEmpty, data, mode = WAVE_DATA)
+	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), " + num2istr(numSweeps) + "))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid type
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "), invalid_type)"
 	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
 		FAIL()
 	catch
 		PASS()
