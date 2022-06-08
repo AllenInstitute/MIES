@@ -5326,6 +5326,40 @@ Function TPCachingWorks_REENTRY([string str])
 	CHECK_CLOSE_VAR(samplingInterval / samplingIntervalMultiplier, dimDeltasUnique[0], tol = 1e-3)
 End
 
+static Function RepeatedAcquisitionWithOneSweepStimsets_IGNORE(string device)
+
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Total number of steps", var = 1)
+End
+
+static Function RepeatedAcquisitionWithOneSweep_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RepeatedAcquisitionWithOneSweepMD([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = RepeatedAcquisitionWithOneSweepStimsets_IGNORE, preAcquireFunc = RepeatedAcquisitionWithOneSweep_IGNORE)
+End
+
+Function RepeatedAcquisitionWithOneSweepMD_REENTRY([string str])
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
+Function RepeatedAcquisitionWithOneSweepSD([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = RepeatedAcquisitionWithOneSweepStimsets_IGNORE, preAcquireFunc = RepeatedAcquisitionWithOneSweep_IGNORE)
+End
+
+Function RepeatedAcquisitionWithOneSweepSD_REENTRY([string str])
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+End
+
 static Function/WAVE ExtractValidValues(WAVE TPStorage, variable headstage, string entry)
 	variable idx
 
