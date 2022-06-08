@@ -5539,3 +5539,29 @@ Function EnableIndexingInPostDAQ_REENTRY([string str])
 	expected = "StimulusSetA_DA_0"
 	CHECK_EQUAL_STR(stimset, expected)
 End
+
+static Function ScaleZeroWithCycling_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_ScalingZero", val = CHECKBOX_SELECTED)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function ScaleZeroWithCycling([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_2")
+	AcquireData(s, str, preAcquireFunc = ScaleZeroWithCycling_IGNORE)
+End
+
+static Function ScaleZeroWithCycling_REENTRY([string str])
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	sweepNo = 0
+
+	WAVE/Z stimScale_HS0 = GetLastSettingEachRAC(numericalValues, sweepNo, "Stim Scale Factor", 0, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 1, 1, 0, 0, 0}, mode = WAVE_DATA)
+	WAVE/Z stimScale_HS1 = GetLastSettingEachRAC(numericalValues, sweepNo, "Stim Scale Factor", 1, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
+End
