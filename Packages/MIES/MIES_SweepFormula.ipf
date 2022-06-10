@@ -1158,6 +1158,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				continue
 			endif
 
+			SF_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
+
 			[color] = SF_GetTraceColor(graph, plotMetaData.dataType, wvResultY)
 
 			if(!WaveExists(wvResultX))
@@ -1165,6 +1167,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 
 			if(WaveExists(wvResultX))
+
+				SF_ASSERT(!(IsTextWave(wvResultX) && WaveDims(wvResultX) > 1), "Plotter got 2d+ text wave as x data.")
 
 				xPoints = DimSize(wvResultX, ROWS)
 				dim1X = max(1, DimSize(wvResultX, COLS))
