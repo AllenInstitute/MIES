@@ -6424,7 +6424,7 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			endif
 
 			if(DAG_GetHeadstageMode(device, s.headstage) != V_CLAMP_MODE)
-				printf "(%s) Clamp mode must be current clamp.\r", device
+				printf "(%s) Clamp mode must be voltage clamp.\r", device
 				ControlWindowToFront()
 				return 1
 			endif
