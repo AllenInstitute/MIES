@@ -844,6 +844,10 @@ End
 threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 	variable errCode
 
+	if(errCode < FIRST_XOP_ERROR)
+		return GetErrMessage(errCode)
+	endif
+
 	switch(errCode)
 		case OLD_IGOR:
 			return "itcXOP2 requires at least Igor Pro 6.30 (32bit) or Igor Pro 7.0 (64bit)."
