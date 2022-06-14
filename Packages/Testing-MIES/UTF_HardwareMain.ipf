@@ -101,7 +101,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	// analysis functions
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqChirp.ipf", list)
+	list = AddListItem("UTF_PatchSeqChirp.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
@@ -113,7 +113,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
-	list = AddListItem("UTF_AutoTestpulse.ipf", list)
+	list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
 
 	// tests which BUG out must come after the test-all tests in UTF_VeryLastTestSuite.ipf
