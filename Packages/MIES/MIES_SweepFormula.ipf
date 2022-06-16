@@ -4096,7 +4096,15 @@ End
 ///                    Thus, it is strongly recommended to parse each argument separately.
 static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string graph, string opShort)
 
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	variable numArgs
+
+	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
+	if(numArgs > 0)
+		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	else
+		Make/FREE/N=0 wv
+	endif
+
 	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + "_argTop")
 
 	return input
