@@ -1865,3 +1865,5 @@ StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;
 CONSTANT PSQ_RESULTS_DONE = 0x1
 CONSTANT PSQ_RESULTS_CONT = 0x2
 /// @}
+
+Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro

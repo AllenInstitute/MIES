@@ -6500,7 +6500,12 @@ End
 threadsafe Function ConvertXOPErrorCode(xopError)
 	variable xopError
 
-	return xopError == 0 ? 0 : (mod(xopError, 10000) + 10000)
+	if(xopError < FIRST_XOP_ERROR)
+		// stock Igor Pro error
+		return xopError
+	endif
+
+	return xopError == 0 ? 0 : (mod(xopError, FIRST_XOP_ERROR) + FIRST_XOP_ERROR)
 End
 
 /// @brief Extended version of `FindValue`

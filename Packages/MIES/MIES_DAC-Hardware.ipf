@@ -844,6 +844,10 @@ End
 threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 	variable errCode
 
+	if(errCode < FIRST_XOP_ERROR)
+		return GetErrMessage(errCode)
+	endif
+
 	switch(errCode)
 		case OLD_IGOR:
 			return "itcXOP2 requires at least Igor Pro 6.30 (32bit) or Igor Pro 7.0 (64bit)."
@@ -1548,6 +1552,22 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	return (offset + fifoPosValue) < stopCollectionPoint
 End
 
+Function/WAVE HW_ITC_GetVersionInfo([variable flags])
+	variable ret
+
+	do
+		ITCGetVersions2/FREE/Z=(HW_ITC_GetZValue(flags)) versionInfo
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	ret = HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	if(ret)
+		return $""
+	endif
+
+	return versionInfo
+End
+
 #else
 
 Function/S HW_ITC_ListOfOpenDevices()
@@ -1745,6 +1765,10 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	variable &fifoPos
 	variable flags
 
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/WAVE HW_ITC_GetVersionInfo([variable flags])
 	DEBUGPRINT("Unimplemented")
 End
 
