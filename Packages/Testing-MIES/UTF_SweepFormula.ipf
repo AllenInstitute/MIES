@@ -948,18 +948,25 @@ static Function arrayExpansion()
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End
 
-static Function TestFindLevel()
+static Function TestOperationFindLevel()
+
+	string str, strRef, dataType
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	// requires at least two arguments
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel()")); AbortOnRTE
+		str = "findlevel()"
+		WAVE output = GetSingleresult(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([1])")); AbortOnRTE
+		str = "findlevel([1])"
+		WAVE output = GetSingleresult(str, win)
 		FAIL()
 	catch
 		PASS()
@@ -967,41 +974,64 @@ static Function TestFindLevel()
 
 	// but no more than three
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([1], 2, 3, 4)")); AbortOnRTE
+		str = "findlevel([1], 2, 3, 4)"
+		WAVE output = GetSingleresult(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	// works
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([10, 20, 30, 20], 25)"))
+	str = "findlevel([10, 20, 30, 20], 25)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {1.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// supports rising edge only
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([10, 20, 30, 20], 25, 1)"))
+	str = "findlevel([10, 20, 30, 20], 25, 1)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {1.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// supports falling edge only
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([10, 20, 30, 20], 25, 2)"))
+	str = "findlevel([10, 20, 30, 20], 25, 2)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {2.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
+	// errors out on invalid edge
+	try
+		str = "findlevel([10, 20, 30, 20], 25, 3)"
+		WAVE output = GetSingleresult(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 	// works with 2D data
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([[10, 10], [20, 20], [30, 30]], 15)"))
+	str = "findlevel([[10, 10], [20, 20], [30, 30]], 15)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {0.5, 0.5}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns x coordinates and not indizes
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel(setscale([[10, 10], [20, 20], [30, 30]], x, 4, 0.5), 15)"))
+	str = "findlevel(setscale([[10, 10], [20, 20], [30, 30]], x, 4, 0.5), 15)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {4.25, 4.25}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns NaN if nothing found
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("findlevel([10, 20, 30, 20], 100)"))
+	str = "findlevel([10, 20, 30, 20], 100)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE output_ref = {NaN}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// check meta data
+	str = "findlevel([10, 20, 30, 20], 25)"
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_FINDLEVEL
+	CHECK_EQUAL_STR(strRef, dataType)
 End
 
 static Function TestAPFrequency()
