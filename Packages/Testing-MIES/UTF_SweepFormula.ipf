@@ -1712,22 +1712,20 @@ static Function TestOperationData()
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
 	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
 
-	return NaN
-	// TODO TestOperationCursors
 	// Using the setup from data we also test cursors operation
 	Cursor/W=$win/A=1/P A, $trace, 0
 	Cursor/W=$win/A=1/P B, $trace, trunc(dataSize / 2)
 	Make/FREE dataRef = {0, trunc(dataSize / 2)}
 	str = "cursors(A,B)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE data = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 	str = "cursors()"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	WAVE data = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
 
 	try
 		str = "cursors(X,Y)"
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		WAVE data = GetSingleResult(str, win)
 		FAIL()
 	catch
 		PASS()
