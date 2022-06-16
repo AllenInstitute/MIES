@@ -947,18 +947,6 @@ If a selected sweep does not contain any test pulse then for that data wave a nu
    // Get base line level from all displayed sweeps and channels ignoring test pulse 0 and 1
    tp(base, select(), [0, 1])
 
-merge
-"""""
-
-TODO: needs discussion
-
-`merge` reduces a 2-dimensional array to a 1-dimensional array similar to
-removing all inner square brackets:
-
-.. code-block:: bash
-
-   merge([1, [2, 3], 4]) == [1, 2, 3, 4]
-
 log
 """
 

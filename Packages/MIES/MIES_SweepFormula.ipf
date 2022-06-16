@@ -70,7 +70,6 @@ static StrConstant SF_OP_DERIVATIVE = "derivative"
 static StrConstant SF_OP_INTEGRATE = "integrate"
 static StrConstant SF_OP_TIME = "time"
 static StrConstant SF_OP_XVALUES = "xvalues"
-static StrConstant SF_OP_MERGE = "merge"
 static StrConstant SF_OP_TEXT = "text"
 static StrConstant SF_OP_LOG = "log"
 static StrConstant SF_OP_LOG10 = "log10"
@@ -120,7 +119,7 @@ static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
-					  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_MERGE, SF_OP_TEXT, SF_OP_LOG, \
+					  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_TEXT, SF_OP_LOG, \
 					  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 					  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP, \
 					  SF_OP_STORE, SF_OP_SELECT}
@@ -871,9 +870,6 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 			break
 		case SF_OP_WAVE:
 			WAVE out = SF_OperationWave(jsonId, jsonPath, graph)
-			break
-		case SF_OP_MERGE:
-			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)
 			break
 		case SF_OP_CHANNELS:
 			WAVE out = SF_OperationChannels(jsonId, jsonPath, graph)
@@ -3235,31 +3231,6 @@ static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string g
 	WAVE/Z output = $(wavelocation[0])
 
 	return SF_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE)
-End
-
-static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
-
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MERGE)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_MERGE, DimSize(input, ROWS))
-
-	output[] = SF_OperationMergeImpl(input[p])
-
-	return SF_GetOutputForExecutor(output, graph, SF_OP_MERGE, clear=input)
-End
-
-static Function/WAVE SF_OperationMergeImpl(WAVE/Z input)
-
-	if(!WaveExists(input))
-		return $""
-	endif
-
-	SF_ASSERT(IsNumericWave(input), "Operand for " + SF_OP_MERGE + " must be numeric.")
-	SF_ASSERT(DimSize(input, LAYERS) <= 1, "input for merge must be 2d")
-	SF_ASSERT(DimSize(input, CHUNKS) <= 1, "input for merge must be 2d")
-	MatrixOP/FREE transposed = input^T
-	Extract/FREE transposed, out, !IsNaN(transposed[p][q])
-
-	return out
 End
 
 /// `channels([str name]+)` converts a named channel from string to numbers.

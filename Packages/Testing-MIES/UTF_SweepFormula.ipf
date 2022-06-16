@@ -629,33 +629,6 @@ static Function TestOperationMinMax()
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 End
 
-// test static Functions with aribitrary length array returns
-static Function merge()
-	Variable jsonID0, jsonID1
-
-	jsonID0 = JSON_Parse("{\"merge\":[1,[2,3],4]}")
-	jsonID1 = DirectToFormulaParser("merge(1,[2,3],4)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[2], 3)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[3], 4)
-	WAVE output = SF_FormulaExecutor(jsonID1)
-	Make/FREE/N=4/U/I numeric = p + 1
-	REQUIRE_EQUAL_WAVES(numeric, output, mode = WAVE_DATA)
-
-	jsonID0 = DirectToFormulaParser("[1,2,3,4]")
-	jsonID1 = DirectToFormulaParser("merge(1,[2,3],4)")
-	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
-
-	jsonID1 = DirectToFormulaParser("merge([1,2],[3,4])")
-	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
-
-	jsonID1 = DirectToFormulaParser("merge(1,2,[3,4])")
-	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
-
-	jsonID1 = DirectToFormulaParser("merge(4/4,4/2,9/3,4*1)")
-	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
-End
-
 static Function TestOperationText()
 
 	string str, strRef, wavePath
