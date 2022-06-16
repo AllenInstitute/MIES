@@ -658,13 +658,34 @@ End
 
 static Function TestOperationText()
 
-	Make/FREE/T refData = {"nan"}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text()"))
+	string str, strRef, wavePath
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "text()"
+	try
+		WAVE output = GetSingleResult(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "text([[5.1234567, 1], [2, 3]])"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE/T refData = {{"5.1234567", "2.0000000"},{"1.0000000", "3.0000000"}}
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
 
-	Make/FREE/T refData = {{"5.1234567", "2.0000000"},{"1.0000000", "3.0000000"}}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("text([[5.1234567, 1], [2, 3]])"))
-	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+	KillWaves/Z testData
+	// check copy of wave note on text
+	Make/O/D/N=1 testData
+	strRef = "WaveNoteCopyTest"
+	Note/K testData, strRef
+	wavePath = GetWavesDataFolder(testData, 2)
+	str = "text(wave(" + wavePath + "))"
+	WAVE output = GetSingleresult(str, win)
+	str = note(output)
+	CHECK_EQUAL_STR(strRef, str)
 End
 
 static Function TestOperationLog()
