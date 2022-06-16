@@ -922,30 +922,49 @@ static Function TestOperationSetscale()
 	REQUIRE_EQUAL_STR(refUnit, unit)
 End
 
-static Function arrayExpansion()
-	Variable jsonID0, jsonID1
+static Function TestOperationRange()
+
+	variable jsonID0, jsonID1
+
+	string str, strRef, dataType
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	jsonID0 = DirectToFormulaParser("1…10")
 	jsonID1 = JSON_Parse("{\"…\":[1,10]}")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	WAVE output = SF_FormulaExecutor(jsonID0)
+
+	str = "1…10"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=9/U/I/FREE testwave = 1 + p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("range(1,10)"))
+	str = "range(1,10)"
+	WAVE output = GetSingleresult(str, win)
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("range(10)"))
+	str = "range(10)"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=10/U/I/FREE testwave = p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("range(1,10,2)"))
+	str = "range(1,10,2)"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=5/U/I/FREE testwave = 1 + p * 2
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("1.5…10.5"))
+	str = "1.5…10.5"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
+
+	// check meta data
+	str = "range(1,10)"
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_RANGE
+	CHECK_EQUAL_STR(strRef, dataType)
 End
 
 static Function TestOperationFindLevel()
