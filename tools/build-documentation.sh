@@ -66,7 +66,7 @@ if hash dot 2>/dev/null; then
 
 else
   echo "Errors building the documentation" 1>&2
-  echo "dot/graphviz could not be found"   1>&2
+  echo "dot/graphviz could not be found, see https://graphviz.org/download/#windows for Windows installer packages."   1>&2
   Failed
 fi
 
