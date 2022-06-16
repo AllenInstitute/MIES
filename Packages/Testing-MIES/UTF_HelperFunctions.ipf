@@ -529,3 +529,24 @@ Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable m
 		PGC_SetAndActivateControl(device, ctrl, str = unit)
 	endfor
 End
+
+Function/WAVE ExtractSweepsFromSFPairs(WAVE/T/Z wv)
+	variable numEntries, i
+
+	if(!WaveExists(wv))
+		return $""
+	endif
+
+	ASSERT(IsTextWave(wv), "Expected text wave")
+
+	// Pairs are "A;B;C,X;Y;Z,"
+	// where A and X are the sweep numbers which we want
+	numEntries = DimSize(wv, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/T data = ListToTextWave(wv[i], ",")
+		data[] = StringFromList(0, data)
+		wv[i] = TextWaveToList(data, ";")
+	endfor
+
+	return wv
+End

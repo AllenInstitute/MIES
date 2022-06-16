@@ -1715,8 +1715,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			try
 				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
 
-				WAVE/T/Z keys, values
-				[keys, values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
+				[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
@@ -1763,20 +1762,20 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
 	numCursors = ItemsInList(CURSOR_NAMES)
-	numBasicEntries = 5
+	numBasicEntries = 4
 	numEntries = numBasicEntries + numCursors + hasStoreEntry
 
 	Make/T/FREE/N=(1, numEntries) keys
 	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
 
 	keys[0][0]                                                 = "Sweep Formula code"
-	keys[0][1]                                                 = "Sweep Formula displayed sweeps"
-	keys[0][2]                                                 = "Sweep Formula active channels"
-	keys[0][3]                                                 = "Sweep Formula experiment"
-	keys[0][4]                                                 = "Sweep Formula device"
+	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
+	keys[0][2]                                                 = "Sweep Formula experiment"
+	keys[0][3]                                                 = "Sweep Formula device"
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
+		SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
 		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
 	endif
 
@@ -1788,11 +1787,7 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	WAVE selectData = SF_ExecuteFormula("select()", databrowser = graph)
 	if(!SF_IsDefaultEmptyWave(selectData))
-		WAVE/Z sweeps
-		WAVE/Z channels
-		[sweeps, channels] = SF_ReCreateOldSweepsChannelLayout(selectData)
-		values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
-		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(channels, ";")
+		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
 
 	shPanel = LBV_GetSettingsHistoryPanel(graph)
@@ -2925,14 +2920,12 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 	WAVE/T name = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	SF_ASSERT(IsTextWave(name), "name parameter must be textual")
 	SF_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
-	SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
 
 	WAVE out = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	WAVE/T/Z keys, values
-	[keys, values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+	[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 

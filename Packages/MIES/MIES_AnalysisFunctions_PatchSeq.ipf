@@ -5012,12 +5012,14 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 End
 
 static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
-	string valueStr, sweepStr
+	string valueStr, sweepChannelStr
+	variable refSweep
 
 	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
-	sweepStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", SWEEP_FORMULA_RESULT)
+	sweepChannelStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", SWEEP_FORMULA_RESULT)
+	refSweep = str2num(StringFromList(0, sweepChannelStr))
 
-	if(IsEmpty(valueStr) || cmpstr(sweepStr, num2str(sweepNo) + ";"))
+	if(IsEmpty(valueStr) || refSweep != sweepNo)
 		// no value for the current sweep
 		return NaN
 	endif
