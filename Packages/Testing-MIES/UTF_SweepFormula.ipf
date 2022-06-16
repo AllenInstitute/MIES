@@ -789,21 +789,29 @@ static Function TestOperationChannels()
 	endtry
 End
 
-static Function testDifferentiales()
-	Variable jsonID, array
-	String str
+static Function TestOperationDifferentiateIntegrate()
 
-	// differntiate/integrate 1D waves along rows
-	jsonID = DirectToFormulaParser("derivative([0,1,4,9,16,25,36,49,64,81])")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	variable array
+	string str, strRef, dataType, wavePath
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// differentiate/integrate 1D waves along rows
+	str = "derivative([0,1,4,9,16,25,36,49,64,81])"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=10/U/I/FREE sourcewave = p^2
 	Differentiate/EP=0 sourcewave/D=testwave
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_DERIVATIVE
+	CHECK_EQUAL_STR(strRef, dataType)
 
 	Make/N=10/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
-	jsonID = DirectToFormulaParser("derivative([" + RemoveEnding(str, ",") + "])")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "derivative([" + RemoveEnding(str, ",") + "])"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=10/FREE testwave = 2 * p
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
@@ -811,25 +819,29 @@ static Function testDifferentiales()
 
 	Make/N=10/U/I/FREE input = 2 * p
 	wfprintf str, "%d,", input
-	jsonID = DirectToFormulaParser("integrate([" + RemoveEnding(str, ",") + "])")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "integrate([" + RemoveEnding(str, ",") + "])"
+	WAVE output = GetSingleresult(str, win)
 	Make/N=10/FREE testwave = p^2
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_INTEGRATE
+	CHECK_EQUAL_STR(strRef, dataType)
 
 	Make/N=(128)/U/I/FREE input = p
 	wfprintf str, "%d,", input
-	jsonID = DirectToFormulaParser("derivative(integrate([" + RemoveEnding(str, ",") + "]))")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "derivative(integrate([" + RemoveEnding(str, ",") + "]))"
+	WAVE output = GetSingleresult(str, win)
 	Deletepoints 127, 1, input, output
 	Deletepoints   0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 
 	Make/N=(128)/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
-	jsonID = DirectToFormulaParser("integrate(derivative([" + RemoveEnding(str, ",") + "]))")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "integrate(derivative([" + RemoveEnding(str, ",") + "]))"
+	WAVE output = GetSingleresult(str, win)
 	output -= 0.5 // expected end point error from first point estimation
 	Deletepoints 127, 1, input, output
 	Deletepoints   0, 1, input, output
@@ -839,12 +851,33 @@ static Function testDifferentiales()
 	Make/N=(128,16)/U/I/FREE input = p + q
 	array = JSON_New()
 	JSON_AddWave(array, "", input)
-	jsonID = DirectToFormulaParser("derivative(integrate(" + JSON_Dump(array) + "))")
+	str = "derivative(integrate(" + JSON_Dump(array) + "))"
 	JSON_Release(array)
-	WAVE output = SF_FormulaExecutor(jsonID)
+	WAVE output = GetSingleresult(str, win)
 	Deletepoints/M=(ROWS) 127, 1, input, output
 	Deletepoints/M=(ROWS)   0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
+
+	KillWaves/Z testData
+	// check copy of wave note on integrate
+	Make/O/D/N=1 testData
+	strRef = "WaveNoteCopyTest"
+	Note/K testData, strRef
+	wavePath = GetWavesDataFolder(testData, 2)
+	str = "integrate(wave(" + wavePath + "))"
+	WAVE output = GetSingleresult(str, win)
+	str = note(output)
+	CHECK_EQUAL_STR(strRef, str)
+
+	// check copy of wave note on derivative
+	Make/O/D/N=2 testData
+	strRef = "WaveNoteCopyTest"
+	Note/K testData, strRef
+	wavePath = GetWavesDataFolder(testData, 2)
+	str = "derivative(wave(" + wavePath + "))"
+	WAVE output = GetSingleresult(str, win)
+	str = note(output)
+	CHECK_EQUAL_STR(strRef, str)
 End
 
 static Function TestOperationArea()
