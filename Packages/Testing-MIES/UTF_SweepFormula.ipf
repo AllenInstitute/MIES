@@ -847,25 +847,30 @@ static Function testDifferentiales()
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 End
 
-static Function testArea()
-	Variable jsonID, array
+static Function TestOperationArea()
+
+	variable array
+	string str, strref, dataType
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	// rectangular triangle has area 1/2 * a * b
 	// non-zeroed
-	jsonID = DirectToFormulaParser("area([0,1,2,3,4], 0)")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "area([0,1,2,3,4], 0)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE testwave = {8}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// zeroed
-	jsonID = DirectToFormulaParser("area([0,1,2,3,4], 1)")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "area([0,1,2,3,4], 1)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE testwave = {4}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// x scaling is taken into account
-	jsonID = DirectToFormulaParser("area(setscale([0,1,2,3,4], x, 0, 2, unit), 0)")
-	WAVE output = SF_FormulaExecutor(jsonID)
+	str = "area(setscale([0,1,2,3,4], x, 0, 2, unit), 0)"
+	WAVE output = GetSingleresult(str, win)
 	Make/FREE testwave = {16}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
@@ -875,13 +880,21 @@ static Function testArea()
 	input[][1] = p + 1
 	array = JSON_New()
 	JSON_AddWave(array, "", input)
-	jsonID = DirectToFormulaParser("area(" + JSON_Dump(array) + ", 0)")
+	str = "area(" + JSON_Dump(array) + ", 0)"
 	JSON_Release(array)
-	WAVE output = SF_FormulaExecutor(jsonID)
+
+	WAVE output = GetSingleresult(str, win)
 	// 0th column: see above
 	// 1st column: imagine 0...5 and remove 0..1 which gives 12.5 - 0.5
 	Make/FREE testwave = {8, 12}
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	// check meta data
+	str = "area([0,1,2,3,4], 0)"
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_AREA
+	CHECK_EQUAL_STR(strRef, dataType)
 End
 
 static Function TestOperationSetscale()
