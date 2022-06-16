@@ -696,41 +696,51 @@ End
 
 static Function TestOperationButterworth()
 
+	string str, strref, dataType
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth()"))
+		WAVE output = GetSingleResult("butterworth()", win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1)"))
+		WAVE output = GetSingleResult("butterworth(1)", win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1)"))
+		WAVE output = GetSingleResult("butterworth(1, 1)", win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1)"))
+		WAVE output = GetSingleResult("butterworth(1, 1, 1)", win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth(1, 1, 1, 1, 1)"))
+		WAVE output = GetSingleResult("butterworth(1, 1, 1, 1, 1)", win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	Make/FREE/D refData = {0,0.863870777482797,0.235196115045368,0.692708791122301,0.359757805059761,0.602060073208013,0.425726643942363,0.554051807855231}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2)"))
+	str = "butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2)"
+	WAVE output = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA, tol=1E-9)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_BUTTERWORTH
+	CHECK_EQUAL_STR(strRef, dataType)
 End
 
 static Function TestOperationChannels()
