@@ -669,29 +669,50 @@ End
 
 static Function TestOperationLog()
 
-	string histo, histoAfter, strRef
+	string histo, histoAfter, str, strRef
+	string win, device
 
-	Make/FREE/D refData = {NaN}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log()"))
-	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "log()"
+	WAVE/WAVE outputRef = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(outputRef, ROWS), 0)
 
 	histo = GetHistoryNotebookText()
-	Make/FREE/D refData = {1, 10, 100}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(1, 10, 100)"))
+	str = "log(1, 10, 100)"
+	WAVE output = GetSingleResult(str, win)
 	histoAfter = GetHistoryNotebookText()
+	Make/FREE/D refData = {1, 10, 100}
 	histo = ReplaceString(histo, histoAfter, "")
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
 	strRef = "  1\r"
 	REQUIRE_EQUAL_STR(strRef, histo)
 
 	histo = GetHistoryNotebookText()
-	Make/FREE/T refDataT = {"a", "bb", "ccc"}
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("log(a, bb, ccc)"))
+	str = "log(a, bb, ccc)"
+	WAVE output = GetSingleResult(str, win)
 	histoAfter = GetHistoryNotebookText()
+	Make/FREE/T refDataT = {"a", "bb", "ccc"}
 	histo = ReplaceString(histo, histoAfter, "")
 	REQUIRE_EQUAL_WAVES(refDataT, output, mode = WAVE_DATA)
 	strRef = "  a\r"
 	REQUIRE_EQUAL_STR(strRef, histo)
+
+	str = "log(1)"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE wRef = {1}
+	CHECK_EQUAL_WAVES(wRef, output, mode=WAVE_DATA | DIMENSION_SIZES)
+
+	str = "log(1, 2)"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE wRef = {1, 2}
+	CHECK_EQUAL_WAVES(wRef, output, mode=WAVE_DATA | DIMENSION_SIZES)
+
+	Make/O testData = {1, 2}
+	str = "log(wave(" + GetWavesDataFolder(testData, 2)  + "))"
+	WAVE output = GetSingleResult(str, win)
+	Duplicate/FREE testData, refData
+	CHECK_EQUAL_WAVES(refData, output, mode=WAVE_DATA | DIMENSION_SIZES)
 End
 
 static Function TestOperationButterworth()
