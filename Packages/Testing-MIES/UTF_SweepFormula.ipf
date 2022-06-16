@@ -886,26 +886,32 @@ End
 
 static Function TestOperationSetscale()
 
-	string wavePath, str
+	string wavePath
 	variable ref
 	string refUnit, unit
+	string str, strRef, dataScale
+	string win, device
 
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
+	WAVE wv = GetSingleresult(str, win)
 	Make/N=(10) waveX = p
 	SetScale x 0, 2, "unit", waveX
-	WAVE wv = SF_FormulaExecutor(DirectToFormulaParser("setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"))
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
+	str = "setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"
+	WAVE wv = GetSingleresult(str, win)
 	Make/N=(10, 10) waveXY = p + q
 	SetScale/P x 0, 2, "unitX", waveXY
 	SetScale/P y 0, 4, "unitX", waveXY
-	WAVE wv = SF_FormulaExecutor(DirectToFormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
 
 	Make/O/D/N=(2, 2, 2, 2) input = p + 2 * q + 4 * r + 8 * s
 	wavePath = GetWavesDataFolder(input, 2)
 	refUnit = "unit"
 	str = "setscale(wave(" + wavePath + "), z, 0, 2, " + refUnit + ")"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str))
+	WAVE data = GetSingleresult(str, win)
 	ref = DimDelta(data, LAYERS)
 	REQUIRE_EQUAL_VAR(ref, 2)
 	unit = WaveUnits(data, LAYERS)
@@ -915,11 +921,22 @@ static Function TestOperationSetscale()
 	wavePath = GetWavesDataFolder(input, 2)
 	refUnit = "unit"
 	str = "setscale(wave(" + wavePath + "), t, 0, 2, " + refUnit + ")"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str))
+	WAVE data = GetSingleresult(str, win)
 	ref = DimDelta(data, CHUNKS)
 	REQUIRE_EQUAL_VAR(ref, 2)
 	unit = WaveUnits(data, CHUNKS)
 	REQUIRE_EQUAL_STR(refUnit, unit)
+
+	Make/O/D/N=0 input
+	wavePath = GetWavesDataFolder(input, 2)
+	refUnit = "unit"
+	str = "setscale(wave(" + wavePath + "), d, 2, 0, " + refUnit + ")"
+	WAVE data = GetSingleresult(str, win)
+	unit = WaveUnits(data, -1)
+	REQUIRE_EQUAL_STR(refUnit, unit)
+	strRef = "1,2,0"
+	dataScale = StringByKey("FULLSCALE", WaveInfo(data, 0))
+	REQUIRE_EQUAL_STR(strRef, dataScale)
 End
 
 static Function TestOperationRange()
