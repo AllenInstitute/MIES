@@ -128,6 +128,24 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
+static Function/WAVE GetMultipleResults(string formula, string win)
+
+	WAVE wTextRef = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=win)
+	CHECK(IsTextWave(wTextRef))
+	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
+	return MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+End
+
+static Function/WAVE GetSingleResult(string formula, string win)
+
+	WAVE/WAVE wRefResult = GetMultipleResults(formula, win)
+	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
+
+	return wRefResult[0]
+End
+
 static Function	TestSweepFormulaButtons(string device)
 
 	string graph, dbPanel, sfPanel, jsonStr, win
@@ -159,140 +177,179 @@ End
 static Function	TestSweepFormulaTP(string device)
 
 	string graph, dbPanel
-	string formula
+	string formula, dataType, strRef
+	variable i, sweep, chanNr, chanType
 
 	graph = DB_OpenDataBrowser()
 	dbPanel = BSP_GetPanel(graph)
 	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_OVS", val = 1)
 	PGC_SetAndActivateControl(dbPanel, "popup_overlaySweeps_select", str = "All")
 
+	// invalid number of args
 	formula = "tp()"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
+	// invalid mode
 	formula = "tp(unknown_mode, select(channels(AD), sweeps()))"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	formula = "tp(ss, select(channels(AD), 3))"
-	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
+	// unknown channel name
 	formula = "tp(ss, select(channels(unknown), sweeps()))"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
+	// invalid argument for ignored TPs
 	formula = "tp(ss, select(channels(AD), sweeps()), INVALID)"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
+	// invalid argument for ignored TPs
 	formula = "tp(ss, select(channels(AD), sweeps()), [inf])"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
+	// invalid argument for ignored TPs
 	formula = "tp(ss, select(channels(AD), sweeps()), 1)"
 	try
-		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
+	// sweep does not exist -> zero results
+	formula = "tp(ss, select(channels(AD), 3))"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
+
+	// we setup only one TP per sweep, but we ignore TP 0 here, so we have zero results
 	formula = "tp(ss, select(channels(AD), sweeps()), 0)"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, {NaN}, mode=WAVE_DATA)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
 
-	Make/FREE/D/N=(1, 3, 2) wRef
+	// expect for 3 sweeps displayed with 2 AD channels each, 6 results
 	formula = "tp(ss, select(channels(AD), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
+	// same with shortened select()
 	formula = "tp(ss, select())"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
+	// same with omitted select()
 	formula = "tp(ss)"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_SIZES)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
-	Make/FREE/D/N=(1, 3, 2) wRef = 1000
-	SetDimLabel COLS, 0, sweep0, wRef
-	SetDimLabel COLS, 1, sweep1, wRef
-	SetDimLabel COLS, 2, sweep2, wRef
-	SetDimLabel LAYERS, 0, DA0, wRef
-	SetDimLabel LAYERS, 1, DA1, wRef
+	Make/FREE/D wRef = {1000}
 	SetScale d, 0, 0, "MΩ", wRef
 	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_DAC", val=1)
+	// Use DA channel for test calculation as it is well defined
+
+	// Test static state resistance and instantaneous resistance that should be the same here (1000)
+	// as string and numeric parameter
 	formula = "tp(ss, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	for(data : tpResult)
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+	endfor
 
 	formula = "tp(inst, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	for(data : tpResult)
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+	endfor
 
 	formula = "tp(1, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	for(data : tpResult)
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+	endfor
 
 	formula = "tp(2, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef, tol = 1e-12)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	for(data : tpResult)
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+	endfor
 
-	formula = "tp(base, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	// Test base line
 	wRef = 0
-	SetScale d, 0, 0, "", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	Make/FREE/T units = {"pA", "mV", "pA", "mV", "pA", "mV"}
+	formula = "tp(base, select(channels(DA), sweeps()))"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	i = 0
+	for(data : tpResult)
+		SetScale d, 0, 0, units[i], wRef
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+		i += 1
+	endfor
 
 	formula = "tp(0, select(channels(DA), sweeps()))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	CHECK_EQUAL_WAVES(tpResult, wRef)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	i = 0
+	for(data : tpResult)
+		SetScale d, 0, 0, units[i], wRef
+		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
+		i += 1
+	endfor
 
-	Make/FREE/D/N=(1, 1, 1) wRef
-	formula = "tp(base, select(channels(DA0), 0))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	SetScale d, 0, 0, "pA", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_UNITS)
-
-	formula = "tp(base, select(channels(DA1), 0))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	// Check also units for AD channel
 	SetScale d, 0, 0, "mV", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_UNITS)
-
 	formula = "tp(base, select(channels(AD1), 0))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
-	SetScale d, 0, 0, "mV", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_UNITS)
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 1)
+	WAVE data0 = tpResult[0]
+	CHECK_EQUAL_WAVES(wRef, data0, mode= ~(WAVE_NOTE | WAVE_DATA))
 
-	formula = "tp(base, select(channels(AD2), 0))"
-	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
 	SetScale d, 0, 0, "pA", wRef
-	CHECK_EQUAL_WAVES(tpResult, wRef, mode=DIMENSION_UNITS)
+	formula = "tp(base, select(channels(AD2), 0))"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 1)
+	WAVE data0 = tpResult[0]
+	CHECK_EQUAL_WAVES(wRef, data0, mode= ~(WAVE_NOTE | WAVE_DATA))
+
+	// Check Meta Data
+	formula = "tp(ss)"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	dataType = GetStringFromJSONWaveNote(tpResult, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_TP
+	CHECK_EQUAL_STR(strRef, dataType)
+	Make/FREE sweepNums = {0, 0, 0 ,0 ,1, 1, 1, 1, 2, 2, 2, 2}
+	Make/FREE channelTypes = {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1}
+	Make/FREE channelNums = {1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1}
+	i = 0
+	for(data : tpResult)
+		sweep = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+		chanNr = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
+		chanType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+		CHECK_EQUAL_VAR(sweepNums[i], sweep)
+		CHECK_EQUAL_VAR(channelNums[i], chanNr)
+		CHECK_EQUAL_VAR(channelTypes[i], chanType)
+		i += 1
+	endfor
 End
 
 static Function DirectToFormulaParser(string code)
