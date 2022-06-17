@@ -2145,15 +2145,12 @@ End
 // UTF_TD_GENERATOR SweepFormulaFunctionsWithSweepsArgument
 static Function AvoidAssertingOutWithNoSweeps([string str])
 
-	string win = DATABROWSER_WINDOW_TITLE
-	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	string win, device
 
-	Display/N=$win as device
-	BSP_SetDataBrowser(win)
-	BSP_SetDevice(win, device)
+	[win, device] = CreateFakeDataBrowserWindow()
 
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 End
 
 static Function ExecuteSweepFormulaInDB(string code, string win)
