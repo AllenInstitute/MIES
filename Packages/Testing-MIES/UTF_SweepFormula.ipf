@@ -1249,10 +1249,16 @@ static Function TestPlotting()
 	String strCombined = "[1, 2] vs [3, 4]\rand\r[5, 6] vs [7, 8]\rand\r[9, 10]\rand\r"
 	String strCombinedPartial = "[1, 2] vs [1, 2]\rand\r[1?=*, 2] vs [1, 2]"
 
-	WAVE array2D = SF_FormulaExecutor(DirectToFormulaParser(strArray2D))
-	WAVE array1D = SF_FormulaExecutor(DirectToFormulaParser(strArray1D))
-	WAVE scale1D = SF_FormulaExecutor(DirectToFormulaParser(strScale1D))
-	WAVE array0D = SF_FormulaExecutor(DirectToFormulaParser(strArray0D))
+	// Reference data waves must be moved out of the working DF for the further tests as
+	// calling the FormulaPlotter later kills the working DF
+	WAVE globalarray2D = GetSingleresult(strArray2D, sweepBrowser)
+	Duplicate/FREE globalarray2D, array2D
+	WAVE globalarray1D = GetSingleresult(strArray1D, sweepBrowser)
+	Duplicate/FREE globalarray1D, array1D
+	WAVE globalarray0D = GetSingleresult(strArray0D, sweepBrowser)
+	Duplicate/FREE globalarray0D, array0D
+	WAVE globalscale1D = GetSingleresult(strScale1D, sweepBrowser)
+	Duplicate/FREE globalscale1D, scale1D
 
 	win = winBase + "_#" + winBase + "_0"
 	dfr = GetDataFolderDFR()
