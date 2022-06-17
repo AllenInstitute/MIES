@@ -1094,71 +1094,94 @@ static Function TestOperationFindLevel()
 	CHECK_EQUAL_STR(strRef, dataType)
 End
 
-static Function TestAPFrequency()
+static Function TestOperationAPFrequency()
+
+	string str, strRef, dataType
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	// requires at least one arguments
+	str = "apfrequency()"
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency()")); AbortOnRTE
+		WAVE output = GetSingleResult(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	// but no more than three
+	str = "apfrequency([1], 0, 3, 4)"
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency([1], 0, 3, 4)")); AbortOnRTE
+		WAVE output = GetSingleResult(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	// requires valid method
+	str = "apfrequency([1], 3)"
 	try
-		WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency([1], 3)")); AbortOnRTE
+		WAVE output = GetSingleResult(str, win)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	// works with full
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 0, 15)"))
+	str = "apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 0, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {100}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with apcount
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 2, 15)"))
+	str = "apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 2, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {3}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with 2D data and instantaneous
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 0, 15)"))
+	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 0, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {100, 100}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with instantaneous
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 1, 15)"))
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 1, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {57.14285714285714}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// works with 2D data and instantaneous
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
+	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {100, 94.59459459459457}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// x offset does not play any role
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
+	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {100, 94.59459459459457}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns 0 if nothing found for Full
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency([10, 20, 30, 20], 0, 100)"))
+	str = "apfrequency([10, 20, 30, 20], 0, 100)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {0}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns 0 if nothing found for Instantaneous
-	WAVE output = SF_FormulaExecutor(DirectToFormulaParser("apfrequency([10, 20, 30, 20], 1, 100)"))
+	str = "apfrequency([10, 20, 30, 20], 1, 100)"
+	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {0}
-
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// check meta data
+	str = "apfrequency([10, 20, 30, 20], 1, 100)"
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_APFREQUENCY
+	CHECK_EQUAL_STR(strRef, dataType)
 End
 
 static Function TestOperationWave()
