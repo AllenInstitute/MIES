@@ -1119,6 +1119,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		traceCnt = 0
 		WAVE/Z wvX
 
+		WAVE/WAVE/Z formulaResults
+		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
+
 		win = winNameTemplate + num2istr(j)
 		if(winDisplayMode == SF_DM_NORMAL)
 			if(!WindowExists(win))
@@ -1141,8 +1144,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
 
-		WAVE/WAVE/Z formulaResults
-		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
 		numData = DimSize(formulaResults, ROWS)
 		for(k = 0; k < numData; k += 1)
 
