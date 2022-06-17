@@ -1202,13 +1202,17 @@ End
 static Function TestVariousFunctions([str])
 	string str
 
-	string func, command, oneDResult, twoDResult
+	string func, oneDResult, twoDResult
 	variable jsonIDOneD, jsonIDTwoD
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	func = StringFromList(0, str, ":")
 	oneDResult = StringFromList(1, str, ":")
 	twoDResult = StringFromList(2, str, ":")
 
+	KillWaves/Z oneD, twoD
 	Make/D/N=5 oneD = p
 	Make/D/N=(5, 2) twoD = p + q
 
@@ -1218,14 +1222,16 @@ static Function TestVariousFunctions([str])
 	JSON_AddWave(jsonIDTwoD, "", twoD)
 
 	// 1D
-	WAVE output1D = SF_FormulaExecutor(DirectToFormulaParser(func + "(" + JSON_Dump(jsonIDOneD) + ")" ))
+	str = func + "(" + JSON_Dump(jsonIDOneD) + ")"
+	WAVE output1D = GetSingleResult(str, win)
 	Execute "Make/O output1D_mo = {" + oneDResult + "}"
 	WAVE output1D_mo
 
 	CHECK_EQUAL_WAVES(output1D, output1D_mo, mode = WAVE_DATA, tol = 1e-8)
 
 	// 2D
-	WAVE output2D = SF_FormulaExecutor(DirectToFormulaParser(func + "(" + JSON_Dump(jsonIDTwoD) + ")" ))
+	str = func + "(" + JSON_Dump(jsonIDTwoD) + ")"
+	WAVE output2D = GetSingleResult(str, win)
 	Execute "Make/O output2D_mo = {" + twoDResult + "}"
 	WAVE output2D_mo
 
