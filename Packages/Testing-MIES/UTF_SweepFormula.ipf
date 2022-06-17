@@ -1834,19 +1834,12 @@ static Function TestOperationLabNotebook()
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 	string textKey = "TEXTKEY"
 	string textValue = "TestText"
-	String win = DATABROWSER_WINDOW_TITLE
-	String device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
 	String channelTypeC = channelType + "C"
 
-	if(windowExists(win))
-		DoWindow/K $win
-	endif
+	string win, device
 
-	Display/N=$win as device
-	BSP_SetDataBrowser(win)
-	BSP_SetDevice(win, device)
-
+	[win, device] = CreateFakeDataBrowserWindow()
 	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
@@ -1858,7 +1851,6 @@ static Function TestOperationLabNotebook()
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = textValue
-	Make/T/FREE/N=(numSweeps, numChannels) textRef = textValue
 	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
 	Make/FREE/T/N=(1, 1) textKeys = textKey
 
@@ -1900,26 +1892,39 @@ static Function TestOperationLabNotebook()
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
+	Make/FREE/N=(numSweeps * numChannels) channelsRef
+	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
 	str = "labnotebook(" + channelTypeC + ")"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
-
+	TestOperationLabnotebookHelper(win, str, channelsRef)
 	str = "labnotebook(" + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
-
+	TestOperationLabnotebookHelper(win, str, channelsRef)
 	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+	TestOperationLabnotebookHelper(win, str, channelsRef)
 
 	str = "labnotebook(" + channelTypeC + ",select(channels(AD12),-1))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	WAVE wRef = MIES_SF#SF_GetDefaultEmptyWave()
-	REQUIRE_EQUAL_WAVES(data, wRef, mode = WAVE_DATA)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
 	str = "labnotebook(" + textKey + ")"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(data, textRef, mode = WAVE_DATA)
+	WAVE/WAVE dataRef = GetMultipleResults(str, win)
+	Make/FREE/T textRefData = {textValue}
+	for(WAVE/T dataT : dataRef)
+		CHECK_EQUAL_WAVES(dataT, textRefData, mode = WAVE_DATA)
+	endfor
+End
+
+static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)
+
+	variable i
+
+	WAVE/WAVE dataRef = GetMultipleResults(formula, win)
+	CHECK_GT_VAR(DimSize(dataRef, ROWS), 0)
+	i = 0
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+		CHECK_EQUAL_VAR(data[0], wRef[i])
+		i += 1
+	endfor
 End
 
 /// @brief Test Epoch operation of SweepFormula
