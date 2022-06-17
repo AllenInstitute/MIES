@@ -173,62 +173,96 @@ static Function StringHandlingPending()
 	endtry
 End
 
-static Function arrayOperations(array2d, numeric)
-	String array2d
-	Variable numeric
+static Function arrayOperations(string win, string array2d, variable numeric)
 
-	Variable jsonID
+	string str
 
 	WAVE input = JSON_GetWave(JSON_Parse(array2d), "")
-	REQUIRE_EQUAL_WAVES(input, SF_FormulaExecutor(DirectToFormulaParser(array2d)), mode = WAVE_DATA)
+	// simulate simplified array expansion
+	input[][] = IsNaN(input[p][q]) ? input[p][0] : input[p][q]
+
+	str = array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input0
 	input0[][][][] = input[p][q][r][s] - input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input0, SF_FormulaExecutor(DirectToFormulaParser(array2d + "-" + array2d)), mode = WAVE_DATA)
+	str = array2d + "-" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input0, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input1
 	input1[][][][] = input[p][q][r][s] + input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input1, SF_FormulaExecutor(DirectToFormulaParser(array2d + "+" + array2d)), mode = WAVE_DATA)
+	str = array2d + "+" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input1, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input2
 	input2[][][][] = input[p][q][r][s] / input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input2, SF_FormulaExecutor(DirectToFormulaParser(array2d + "/" + array2d)), mode = WAVE_DATA)
+	str = array2d + "/" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input2, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input3
 	input3[][][][] = input[p][q][r][s] * input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input3, SF_FormulaExecutor(DirectToFormulaParser(array2d + "*" + array2d)), mode = WAVE_DATA)
+	str = array2d + "*" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input3, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input10
 	input10 -= numeric
-	REQUIRE_EQUAL_WAVES(input10, SF_FormulaExecutor(DirectToFormulaParser(array2d + "-" + num2str(numeric))), mode = WAVE_DATA)
+	str = array2d + "-" + num2str(numeric)
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input10, output, mode = WAVE_DATA)
 	input10[][][][] = numeric - input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input10, SF_FormulaExecutor(DirectToFormulaParser(num2str(numeric) + "-" + array2d)), mode = WAVE_DATA)
+	str = num2str(numeric) + "-" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input10, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input11
 	input11 += numeric
-	REQUIRE_EQUAL_WAVES(input11, SF_FormulaExecutor(DirectToFormulaParser(num2str(numeric) + "+" + array2d)), mode = WAVE_DATA)
-	REQUIRE_EQUAL_WAVES(input11, SF_FormulaExecutor(DirectToFormulaParser(array2d + "+" + num2str(numeric))), mode = WAVE_DATA)
+	str = array2d + "+" + num2str(numeric)
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input11, output, mode = WAVE_DATA)
+	input11[][][][] = numeric + input[p][q][r][s]
+	str = num2str(numeric) + "+" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input11, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input12
 	input12 /= numeric
-	REQUIRE_EQUAL_WAVES(input12, SF_FormulaExecutor(DirectToFormulaParser(array2d + "/" + num2str(numeric))), mode = WAVE_DATA)
-	input12[][][][] = 1 / input12[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input12, SF_FormulaExecutor(DirectToFormulaParser(num2str(numeric) + "/" + array2d)), mode = WAVE_DATA)
+	str = array2d + "/" + num2str(numeric)
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input12, output, mode = WAVE_DATA)
+	input12[][][][] = numeric / input[p][q][r][s]
+	str = num2str(numeric) + "/" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input12, output, mode = WAVE_DATA)
 
 	Duplicate/FREE input input13
 	input13 *= numeric
-	REQUIRE_EQUAL_WAVES(input13, SF_FormulaExecutor(DirectToFormulaParser(num2str(numeric) + "*" + array2d)), mode = WAVE_DATA)
-	REQUIRE_EQUAL_WAVES(input13, SF_FormulaExecutor(DirectToFormulaParser(array2d + "*" + num2str(numeric))), mode = WAVE_DATA)
+	str = array2d + "*" + num2str(numeric)
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input13, output, mode = WAVE_DATA)
+	input13[][][][] = numeric * input[p][q][r][s]
+	str = num2str(numeric) + "*" + array2d
+	WAVE output = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(input13, output, mode = WAVE_DATA)
 End
 
 static Function primitiveOperations2D()
-	arrayOperations("[1,2]", 1)
-	arrayOperations("[[1,2],[3,4],[5,6]]", 1)
-	arrayOperations("[[1,2],[3,4],[5,6]]", 42)
-	arrayOperations("[[1],[3,4],[5,6]]", 1)
-	arrayOperations("[[1,2],[3],[5,6]]", 1)
-	arrayOperations("[[1,2],[3,4],[5]]", 1)
-	arrayOperations("[[1,2],[3,4],[5,6]]", 1.5)
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	arrayOperations(win, "[1,2]", 1)
+	arrayOperations(win, "[[1,2],[3,4],[5,6]]", 1)
+	arrayOperations(win, "[[1,2],[3,4],[5,6]]", 42)
+	arrayOperations(win, "[[1],[3,4],[5,6]]", 1)
+	arrayOperations(win, "[[1,2],[3],[5,6]]", 1)
+	arrayOperations(win, "[[1,2],[3,4],[5]]", 1)
+	arrayOperations(win, "[[1,2],[3,4],[5,6]]", 1.5)
 End
 
 static Function concatenationOfOperations()
