@@ -1161,13 +1161,26 @@ static Function TestAPFrequency()
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 End
 
-static Function waveGetterFunction()
+static Function TestOperationWave()
+
+	string str
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	KillWaves/Z wave0
 	Make/O/N=(10) wave0 = p
 
-	WAVE wave1 = SF_FormulaExecutor(DirectToFormulaParser("wave(wave0)"))
-	WAVE wave2 = SF_FormulaExecutor(DirectToFormulaParser("range(0,10)"))
+	str = "wave(wave0)"
+	WAVE wave1 = GetSingleResult(str, win)
+	str = "range(0,10)"
+	WAVE wave2 = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(wave0, wave2, mode = WAVE_DATA)
 	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
+
+	str = "wave(does_not_exist)"
+	WAVE/Z wave1 = GetSingleResult(str, win)
+	CHECK(!WaveExists(wave1))
 End
 
 static Function/WAVE FuncCommandGetter()
