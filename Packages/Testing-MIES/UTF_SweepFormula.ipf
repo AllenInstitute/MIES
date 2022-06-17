@@ -83,46 +83,23 @@ static Function DirectToFormulaParser(string code)
 End
 
 static Function primitiveOperations()
-	Variable jsonID0, jsonID1
+
+	variable jsonID0, jsonID1
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	jsonID0 = JSON_Parse("null")
 	jsonID1 = DirectToFormulaParser("")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID0 = JSON_Parse("1")
-	jsonID1 = DirectToFormulaParser("1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
-
-	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("1+2")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
-
-	jsonID0 = JSON_Parse("{\"*\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("1*2")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2)
-
-	jsonID0 = JSON_Parse("{\"-\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("1-2")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2)
-
-	jsonID0 = JSON_Parse("{\"/\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("1/2")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2)
-
-	jsonID0 = JSON_Parse("{\"-\":[1]}")
-	jsonID1 = DirectToFormulaParser("-1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -1)
-
-	jsonID0 = JSON_Parse("{\"+\":[1]}")
-	jsonID1 = DirectToFormulaParser("+1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], +1)
+	TestOperationMinMaxHelper(win, "1", "1", 1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,2]}", "1+2", 1 + 2)
+	TestOperationMinMaxHelper(win, "{\"*\":[1,2]}", "1*2", 1 * 2)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,2]}", "1-2", 1 - 2)
+	TestOperationMinMaxHelper(win, "{\"/\":[1,2]}", "1/2", 1 / 2)
+	TestOperationMinMaxHelper(win, "{\"-\":[1]}", "-1", -1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1]}", "+1", +1)
 End
 
 static Function stringHandling()
