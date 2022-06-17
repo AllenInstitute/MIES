@@ -3814,25 +3814,6 @@ static Function/WAVE SF_NewSelectDataWave(variable numSweeps, variable numChanne
 	return selectData
 End
 
-static Function/WAVE SF_GetDefaultEmptyWave()
-
-	Make/FREE/D/N=1 out = NaN
-
-	return out
-End
-
-/// @brief Returns a wave that is the default for SweepFormula for "no return value"
-///        The wave is numeric, consists of one element that is {NaN}.
-///        This effectively represent a JSON_NULL: {null}
-static Function SF_IsDefaultEmptyWave(WAVE w)
-
-	if(IsNumericWave(w) && DimSize(w, ROWS) == 1 && !DimSize(w, COLS))
-		return IsNaN(w[0])
-	endif
-
-	return 0
-End
-
 static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
 
 	variable numTPEpochs, tpDataSizeMin, tpDataSizeMax, sweepDelta
