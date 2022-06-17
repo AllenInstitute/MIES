@@ -49,7 +49,7 @@ End
 
 static Function/WAVE GetMultipleResults(string formula, string win)
 
-	WAVE wTextRef = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=win)
+	WAVE wTextRef = SF_FormulaExecutor(win, DirectToFormulaParser(formula))
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
