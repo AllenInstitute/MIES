@@ -614,10 +614,10 @@ End
 ///
 /// Recursively executes the formula parsed into jsonID.
 ///
+/// @param graph    graph to read from, mainly used by the `data` operation
 /// @param jsonID   JSON object ID from the JSON XOP
 /// @param jsonPath JSON pointer compliant path
-/// @param graph    graph to read from, mainly used by the `data` operation
-Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph])
+Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
 
 	string opName
 	variable JSONType, numArrObjElems, arrayElemJSONType, effectiveArrayDimCount, dim
@@ -626,9 +626,7 @@ Function/WAVE SF_FormulaExecutor(variable jsonID, [string jsonPath, string graph
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
 	endif
-	if(ParamIsDefault(graph))
-		graph = ""
-	endif
+	SF_ASSERT(!IsEmpty(graph), "Name of graph window must not be empty.")
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
@@ -3944,7 +3942,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 	formula = SF_PreprocessInput(formula)
 	formula = SF_FormulaPreParser(formula)
 	jsonId = SF_FormulaParser(formula)
-	WAVE/Z result = SF_FormulaExecutor(jsonId, graph = databrowser)
+	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
 	WAVE/WAVE out = SF_ParseArgument(databrowser, result, "FormulaExecution")
@@ -4071,7 +4069,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 
 	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
 	if(numArgs > 0)
-		WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+		WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
 	else
 		Make/FREE/N=0 wv
 	endif
@@ -4087,7 +4085,7 @@ static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string gra
 	string opSpec, argStr
 
 	argStr = num2istr(argNum)
-	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + argStr, graph = graph)
+	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + argStr)
 	opSpec = "_arg" + argStr
 	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + opSpec)
 
