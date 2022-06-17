@@ -257,89 +257,41 @@ End
 
 // + > - > * > /
 static Function orderOfCalculation()
-	Variable jsonID0, jsonID1
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
 
 	// + and -
-	jsonID0 = JSON_Parse("{\"+\":[2,{\"-\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2+3-4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3-4)
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"-\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2-3+4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3+4)
+	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"-\":[3,4]}]}", "2+3-4", 2 + 3 - 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"-\":[2,3]},4]}", "2-3+4", 2 - 3 + 4)
 
 	// + and *
-	jsonID0 = JSON_Parse("{\"+\":[2,{\"*\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2+3*4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3*4)
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2*3+4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3+4)
+	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[3,4]}]}", "2+3*4", 2 + 3 * 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"*\":[2,3]},4]}", "2*3+4", 2 * 3 + 4)
 
 	// + and /
-	jsonID0 = JSON_Parse("{\"+\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2+3/4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3/4)
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"/\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2/3+4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3+4)
+	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"/\":[3,4]}]}", "2+3/4", 2 + 3 / 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"/\":[2,3]},4]}", "2/3+4", 2 / 3 + 4)
 
 	// - and *
-	jsonID0 = JSON_Parse("{\"-\":[2,{\"*\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2-3*4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3*4)
-
-	jsonID0 = JSON_Parse("{\"-\":[{\"*\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2*3-4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3-4)
+	TestOperationMinMaxHelper(win, "{\"-\":[2,{\"*\":[3,4]}]}", "2-3*4", 2 - 3 * 4)
+	TestOperationMinMaxHelper(win, "{\"-\":[{\"*\":[2,3]},4]}", "2*3-4", 2 * 3 - 4)
 
 	// - and /
-	jsonID0 = JSON_Parse("{\"-\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2-3/4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3/4)
-
-	jsonID0 = JSON_Parse("{\"-\":[{\"/\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2/3-4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3-4)
+	TestOperationMinMaxHelper(win, "{\"-\":[2,{\"/\":[3,4]}]}", "2-3/4", 2 - 3 / 4)
+	TestOperationMinMaxHelper(win, "{\"-\":[{\"/\":[2,3]},4]}", "2/3-4", 2 / 3 - 4)
 
 	// * and /
-	jsonID0 = JSON_Parse("{\"*\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("2*3/4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3/4)
-
-	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,3]},4]}")
-	jsonID1 = DirectToFormulaParser("2/3*4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3*4)
-
-	jsonID1 = DirectToFormulaParser("5*1+2*3+4+5*20")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*20)
+	TestOperationMinMaxHelper(win, "{\"*\":[2,{\"/\":[3,4]}]}", "2*3/4", 2 * 3 / 4)
+	TestOperationMinMaxHelper(win, "{\"*\":[{\"/\":[2,3]},4]}", "2/3*4", 2 / 3 * 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]}]},4,{\"*\":[5,20]}]}", "5*1+2*3+4+5*20", 5 * 1 + 2 * 3 + 4 + 5 * 20)
 
 	// using - as sign
-	jsonID1 = DirectToFormulaParser("1+-1")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 0)
-
-	jsonID1 = DirectToFormulaParser("-1+2")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
-
-	jsonID1 = DirectToFormulaParser("-1*2")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -2)
-
-	jsonID1 = DirectToFormulaParser("2+-1*3")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"-\":[1]}]}", "1+-1", 0)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"-\":[1]},2]}", "-1+2", 1)
+	TestOperationMinMaxHelper(win, "{\"-\":[{\"*\":[1,2]}]}", "-1*2", -2)
+	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[{\"-\":[1]},3]}]}", "2+-1*3", -1)
 End
 
 // UTF_EXPECTED_FAILURE
