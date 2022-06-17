@@ -517,116 +517,69 @@ static Function whiteSpace()
 	CHECK_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
 End
 
+static Function TestOperationMinMaxHelper(string win, string jsonRefText, string formula, variable refResult)
+
+	variable jsonID0, jsonID1
+
+	jsonID0 = JSON_Parse(jsonRefText)
+	jsonID1 = DirectToFormulaParser(formula)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	WAVE data = GetSingleResult(formula, win)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(data[0], refResult)
+End
+
 // test static Functions with 1..N arguments
 static Function TestOperationMinMax()
 
-	variable jsonID0, jsonID1
 	string str, wavePath
-	string win = DATABROWSER_WINDOW_TITLE
-	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	string win, device
 
-	jsonID0 = JSON_Parse("{\"min\":[1]}")
-	jsonID1 = DirectToFormulaParser("min(1)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
+	[win, device] = CreateFakeDataBrowserWindow()
 
-	jsonID0 = JSON_Parse("{\"min\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("min(1,2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2))
+	TestOperationMinMaxHelper(win, "{\"min\":[1]}", "min(1)", 1)
+	TestOperationMinMaxHelper(win, "{\"min\":[1,2]}", "min(1,2)", min(1, 2))
+	TestOperationMinMaxHelper(win, "{\"min\":[1,{\"-\":[1]}]}", "min(1,-1)", min(1, -1))
+	TestOperationMinMaxHelper(win, "{\"max\":[1,2]}", "max(1,2)", max(1, 2))
+	TestOperationMinMaxHelper(win, "{\"min\":[1,2,3]}", "min(1,2,3)", min(1, 2, 3))
+	TestOperationMinMaxHelper(win, "{\"max\":[1,{\"+\":[2,3]}]}", "max(1,(2+3))", max(1, (2 + 3)))
+	TestOperationMinMaxHelper(win, "{\"min\":[{\"-\":[1,2]},3]}", "min((1-2),3)", min((1 - 2), 3))
+	TestOperationMinMaxHelper(win, "{\"min\":[{\"max\":[1,2]},3]}", "min(max(1,2),3)", min(max(1, 2), 3))
+	TestOperationMinMaxHelper(win, "{\"max\":[1,{\"+\":[2,3]},2]}", "max(1,2+3,2)", max(1, 2 + 3, 2))
+	TestOperationMinMaxHelper(win, "{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}", "max(1+2,3+4,5+6/7)", max(1 + 2, 3 + 4, 5 + 6 / 7))
+	TestOperationMinMaxHelper(win, "{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}", "max(1+2,3+4,5+(6/7))", max(1 + 2, 3 + 4, 5 + (6 / 7)))
+	TestOperationMinMaxHelper(win, "{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}", "max(max(1,(2+3)/7,4),min(3,4))", max(max(1, (2 + 3) / 7, 4), min(3, 4)))
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"max\":[1,2]},1]}", "max(1,2)+1", max(1, 2) + 1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]}]}", "1+max(1,2)", 1 + max(1, 2))
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]},{\"+\":[1]}]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
+	TestOperationMinMaxHelper(win, "{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}", "max(1,2)-max(1,2)", max(1, 2) - max(1, 2))
 
-	jsonID0 = JSON_Parse("{\"min\":[1,{\"-\":[1]}]}")
-	jsonID1 = DirectToFormulaParser("min(1,-1)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,-1))
-
-	jsonID0 = JSON_Parse("{\"max\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("max(1,2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2))
-
-	jsonID0 = JSON_Parse("{\"min\":[1,2,3]}")
-	jsonID1 = DirectToFormulaParser("min(1,2,3)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2,3))
-
-	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]}]}")
-	jsonID1 = DirectToFormulaParser("max(1,(2+3))")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,(2+3)))
-
-	jsonID0 = JSON_Parse("{\"min\":[{\"-\":[1,2]},3]}")
-	jsonID1 = DirectToFormulaParser("min((1-2),3)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min((1-2),3))
-
-	jsonID0 = JSON_Parse("{\"min\":[{\"max\":[1,2]},3]}")
-	jsonID1 = DirectToFormulaParser("min(max(1,2),3)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(max(1,2),3))
-
-	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]},2]}")
-	jsonID1 = DirectToFormulaParser("max(1,2+3,2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2+3,2))
-
-	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
-	jsonID1 = DirectToFormulaParser("max(1+2,3+4,5+6/7)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+6/7))
-
-	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
-	jsonID1 = DirectToFormulaParser("max(1+2,3+4,5+(6/7))")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+(6/7)))
-
-	jsonID0 = JSON_Parse("{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("max(max(1,(2+3)/7,4),min(3,4))")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(max(1,(2+3)/7,4),min(3,4)))
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"max\":[1,2]},1]}")
-	jsonID1 = DirectToFormulaParser("max(1,2)+1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)+1)
-
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]}]}")
-	jsonID1 = DirectToFormulaParser("1+max(1,2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2))
-
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},{\"+\":[1]}]}")
-	jsonID1 = DirectToFormulaParser("1+max(1,2)+1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)
-
-	jsonID0 = JSON_Parse("{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}")
-	jsonID1 = DirectToFormulaParser("max(1,2)-max(1,2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
-
-	Display/N=$win as device
-	BSP_SetDataBrowser(win)
-	BSP_SetDevice(win, device)
+	// check limit to 2d waves for min, max, avg
 	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
 	wavePath = GetWavesDataFolder(input, 2)
-
-	Make/FREE/D dataRef = {{0, 2}, {4, 6}}
 	str = "min(wave(" + wavePath + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	try
+		WAVE data = GetSingleResult(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
 
-	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
-	Make/FREE/D dataRef = {{1, 3}, {5, 7}}
 	str = "max(wave(" + wavePath + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	try
+		WAVE data = GetSingleResult(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
 
-	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
-	Make/FREE/D dataRef = {{0.5, 2.5}, {4.5, 6.5}}
 	str = "avg(wave(" + wavePath + "))"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	try
+		WAVE data = GetSingleResult(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function TestOperationText()
