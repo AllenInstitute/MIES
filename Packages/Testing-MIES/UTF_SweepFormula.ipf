@@ -345,66 +345,33 @@ End
 // UTF_EXPECTED_FAILURE
 static Function openParserBugs()
 
-	variable jsonID1
-	jsonID1 = DirectToFormulaParser("-1-1")
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -2)
+	string str
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "-1-1"
+	WAVE data = GetSingleResult(str, win)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(data[0], -2)
 End
 
 static Function brackets()
-	Variable jsonID0, jsonID1
 
-	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("(1+2)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
+	string win, device
 
-	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = DirectToFormulaParser("((1+2))")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
+	[win, device] = CreateFakeDataBrowserWindow()
 
-	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}")
-	jsonID1 = DirectToFormulaParser("(1+2)+(3+4)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)+(3+4))
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}")
-	jsonID1 = DirectToFormulaParser("(4+3)+(2+1)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (4+3)+(2+1))
-
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"+\":[2,3]},{\"+\": [4]}]}")
-	jsonID1 = DirectToFormulaParser("1+(2+3)+4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2+3)+4)
-
-	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[3,2]},1]}")
-	jsonID1 = DirectToFormulaParser("(3*2)+1")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (3*2)+1)
-
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"*\":[2,3]}]}")
-	jsonID1 = DirectToFormulaParser("1+(2*3)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2*3))
-
-	jsonID0 = JSON_Parse("{\"*\":[{\"+\":[1,2]},3]}")
-	jsonID1 = DirectToFormulaParser("(1+2)*3")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)*3)
-
-	jsonID0 = JSON_Parse("{\"*\":[3,{\"+\":[2,1]}]}")
-	jsonID1 = DirectToFormulaParser("3*(2+1)")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 3*(2+1))
-
-	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,{\"+\":[3,4]}]},5]}")
-	jsonID1 = DirectToFormulaParser("2/(3+4)*5")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
-
-	jsonID1 = DirectToFormulaParser("5*(1+2)*3/(4+5*20)")
-	REQUIRE_CLOSE_VAR(SF_FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*20))
+	TestOperationMinMaxHelper(win, "{\"+\":[1,2]}", "(1+2)", 1 + 2)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}", "(1+2)+(3+4)", (1 + 2) + (3 + 4))
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}", "(4+3)+(2+1)", (4 + 3) + (2 + 1))
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,3]},{\"+\": [4]}]}", "1+(2+3)+4", 1 + (2 + 3) + 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"*\":[3,2]},1]}", "(3*2)+1", (3 * 2) + 1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"*\":[2,3]}]}", "1+(2*3)", 1 + (2 * 3))
+	TestOperationMinMaxHelper(win, "{\"*\":[{\"+\":[1,2]},3]}", "(1+2)*3", (1 + 2) * 3)
+	TestOperationMinMaxHelper(win, "{\"*\":[3,{\"+\":[2,1]}]}", "3*(2+1)", 3 * (2 + 1))
+	TestOperationMinMaxHelper(win, "{\"*\":[{\"/\":[2,{\"+\":[3,4]}]},5]}", "2/(3+4)*5", 2 / (3 + 4) * 5)
+	TestOperationMinMaxHelper(win, "{\"*\":[5,{\"+\": [1,2]},{\"/\":[{\"*\":[3]},{\"+\":[4,{\"*\":[5,20]}]}]}]}", "5*(1+2)*3/(4+5*20)", 5 * (1 + 2) * 3 / (4 + 5 * 20))
 End
 
 static Function array()
