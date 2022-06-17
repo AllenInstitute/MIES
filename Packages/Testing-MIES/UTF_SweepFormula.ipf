@@ -232,27 +232,15 @@ static Function primitiveOperations2D()
 End
 
 static Function concatenationOfOperations()
-	Variable jsonID0, jsonID1
 
-	jsonID0 = JSON_Parse("{\"+\":[1,2,3,4]}")
-	jsonID1 = DirectToFormulaParser("1+2+3+4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2+3+4)
+	string win, device
 
-	jsonID0 = JSON_Parse("{\"-\":[1,2,3,4]}")
-	jsonID1 = DirectToFormulaParser("1-2-3-4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2-3-4)
+	[win, device] = CreateFakeDataBrowserWindow()
 
-	jsonID0 = JSON_Parse("{\"/\":[1,2,3,4]}")
-	jsonID1 = DirectToFormulaParser("1/2/3/4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2/3/4)
-
-	jsonID0 = JSON_Parse("{\"*\":[1,2,3,4]}")
-	jsonID1 = DirectToFormulaParser("1*2*3*4")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2*3*4)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,2,3,4]}", "1+2+3+4", 1 + 2 + 3 + 4)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,2,3,4]}", "1-2-3-4", 1 - 2 - 3 - 4)
+	TestOperationMinMaxHelper(win, "{\"/\":[1,2,3,4]}", "1/2/3/4", 1 / 2 / 3 / 4)
+	TestOperationMinMaxHelper(win, "{\"*\":[1,2,3,4]}", "1*2*3*4", 1 * 2 * 3 * 4)
 End
 
 // + > - > * > /
