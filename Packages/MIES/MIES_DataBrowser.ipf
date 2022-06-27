@@ -631,9 +631,12 @@ Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 End
 
-static Function DB_SplitSweepsIfReq(win, sweepNo)
-	string win
-	variable sweepNo
+/// @brief Split sweeps to single sweep waves if required
+///
+/// @param win Databrowser window name
+/// @param sweepNo Number of sweep to split
+/// @returns 1 on error, 0 on success
+Function DB_SplitSweepsIfReq(string win, variable sweepNo)
 
 	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
@@ -648,7 +651,11 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	DFREF deviceDFR = GetDeviceDataPath(device)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-	WAVE sweepWave  = GetSweepWave(device, sweepNo)
+	WAVE/Z sweepWave  = GetSweepWave(device, sweepNo)
+	if(!WaveExists(sweepWave))
+		return 1
+	endif
+
 	WAVE configWave = GetConfigWave(sweepWave)
 
 	sweepModTime = max(ModDate(sweepWave), ModDate(configWave))
@@ -670,7 +677,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	endfor
 
 	if(!requireNewSplit && (numBackupWaves * 2 == numWaves))
-		return NaN
+		return 0
 	endif
 
 	KillOrMoveToTrash(dfr = singleSweepDFR)
@@ -679,6 +686,8 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 
 	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
+
+	return 0
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
