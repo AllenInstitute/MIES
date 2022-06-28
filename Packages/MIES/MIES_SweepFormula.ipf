@@ -1482,48 +1482,6 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 	return output
 End
 
-/// @brief Returns the Unique numeric entries as free 1d wave from a column of a 2d wave, where the column is identified by its dimension label
-static Function/WAVE SF_GetReducedColumn(WAVE w, string dimLabel)
-
-	variable dimPos
-
-	dimPos = FindDimLabel(w, COLS, dimLabel)
-	SF_ASSERT(dimPos >= 0, "Columns with dimLabel " + dimlabel + " not found.")
-	Duplicate/FREE/RMD=[][dimPos] w, wTmp
-	Redimension/N=(-1) wTmp
-
-	WAVE wReduced = GetUniqueEntries(wTmp, dontDuplicate=1)
-
-	return wReduced
-End
-
-/// @brief Converts from a 1d wave of selected sweeps/channel type/channel number to a 2d wave that
-///        holds the old channel layout where all selected channel type + channel number combinations appear exactly once
-///        independent of the sweep number.
-///        Converts also from a 1d wave of selected sweeps/channel type/channel to a 1d wave that
-///        holds the old sweeps layout, where all selected sweep numbers appear exactly once.
-///        Note: The association between sweep and channel type + channel number in the original selectData is lost by this back conversion.
-static Function [WAVE sweeps, WAVE/D channels] SF_ReCreateOldSweepsChannelLayout(WAVE selectData)
-
-	variable numSelected, numCombined
-	variable shift = ceil(log(NUM_AD_CHANNELS) / log(2))
-
-	WAVE sweepsReduced = SF_GetReducedColumn(selectData, "SWEEP")
-
-	numSelected = DimSize(selectData, ROWS)
-	Make/FREE/D/N=(numSelected) combined = selectData[p][%CHANNELTYPE] << shift + selectData[p][%CHANNELNUMBER]
-	WAVE combReduced = GetUniqueEntries(combined, dontDuplicate=1)
-
-	numCombined = DimSize(combReduced, ROWS)
-	WAVE channels = SF_NewChannelsWave(numCombined)
-	if(numCombined)
-		channels[][%channelType] = combReduced[p] >> shift
-		channels[][%channelNumber] = combReduced[p] - channels[p][%channelType] << shift
-	endif
-
-	return [sweepsReduced, channels]
-End
-
 /// @brief transfer the wave scaling from one wave to another
 ///
 /// Note: wave scale transfer requires wave units for the first wave or second wave
