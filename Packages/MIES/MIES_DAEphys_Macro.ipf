@@ -2960,7 +2960,7 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
-	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value=0,live=0,side=2,vert=0,ticks=0,thumbColor=(43520,43520,43520)
+	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value=0,live=0,side=2,vert=0,ticks=0
 	SetVariable setvar_DataAcq_AutoBiasV,pos={278.00,216.00},size={96.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_AutoBiasV,title="\\[0Vm \\Z10(mV)\\]0"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabnum)="1"
