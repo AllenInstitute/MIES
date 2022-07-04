@@ -13,7 +13,7 @@
 
 static StrConstant CHI_NIDAQ_XOP_64_HASH = "92427feeec9d330d410452b15ff1b6da90fe8e2dd0b8362cd711358c8726706a"
 static StrConstant CHI_NIDAQ_XOP_HASH    = "ed7f5bc51553608bcf7850b06d472dc739952a32939c1b196b80d131a87f2527"
-static StrConstant CHI_JSON_XOP_VERSION  = "version-753-g902d43f"
+static StrConstant CHI_JSON_XOP_VERSION  = "version-770-g9d1bd48"
 static StrConstant CHI_ITC_XOP_VERSION   = "5fe4ed6"
 
 /// @brief Collection of counters used for installation checking

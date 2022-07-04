@@ -15,6 +15,7 @@
 #include "UTF_Configuration"
 #include "UTF_EpochswoHardware"
 #include "UTF_HelperFunctions"
+#include "UTF_JSONWaveNotes"
 #include "UTF_Labnotebook"
 #include "UTF_Macros"
 #include "UTF_PGCSetAndActivateControl"
