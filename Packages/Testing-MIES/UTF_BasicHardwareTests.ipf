@@ -5456,9 +5456,15 @@ static Function CheckTPStorage(string device)
 End
 
 static Function EnsureUnityGain(string device, variable headstage)
-	variable gain, mode
+	variable gain, mode, ret
 
 	mode = DAG_GetHeadstageMode(device, headstage)
+
+	ret = AI_SendToAmp(device, headstage, mode, MCC_SETPRIMARYSIGNALGAIN_FUNC, 1)
+	CHECK(!ret)
+
+	ret = AI_SendToAmp(device, headstage, mode, MCC_SETSECONDARYSIGNALGAIN_FUNC, 1)
+	CHECK(!ret)
 
 	gain = AI_SendToAmp(device, headstage, mode, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
 	REQUIRE_EQUAL_VAR(gain, 1)
