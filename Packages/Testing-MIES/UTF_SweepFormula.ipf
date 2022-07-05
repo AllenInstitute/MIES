@@ -624,7 +624,7 @@ static Function TestOperationButterworth()
 	WAVE output = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA, tol=1E-9)
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_BUTTERWORTH
 	CHECK_EQUAL_STR(strRef, dataType)
 End
@@ -700,7 +700,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Differentiate/EP=0 sourcewave/D=testwave
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_DERIVATIVE
 	CHECK_EQUAL_STR(strRef, dataType)
 
@@ -722,7 +722,7 @@ static Function TestOperationDifferentiateIntegrate()
 	Deletepoints 0, 1, testwave, output
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_INTEGRATE
 	CHECK_EQUAL_STR(strRef, dataType)
 
@@ -821,7 +821,7 @@ static Function TestOperationArea()
 	// check meta data
 	str = "area([0,1,2,3,4], 0)"
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_AREA
 	CHECK_EQUAL_STR(strRef, dataType)
 End
@@ -921,7 +921,7 @@ static Function TestOperationRange()
 	// check meta data
 	str = "range(1,10)"
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_RANGE
 	CHECK_EQUAL_STR(strRef, dataType)
 End
@@ -1007,7 +1007,7 @@ static Function TestOperationFindLevel()
 	// check meta data
 	str = "findlevel([10, 20, 30, 20], 25)"
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_FINDLEVEL
 	CHECK_EQUAL_STR(strRef, dataType)
 End
@@ -1097,7 +1097,7 @@ static Function TestOperationAPFrequency()
 	// check meta data
 	str = "apfrequency([10, 20, 30, 20], 1, 100)"
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
-	dataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_APFREQUENCY
 	CHECK_EQUAL_STR(strRef, dataType)
 End
@@ -1608,14 +1608,14 @@ static Function CheckSweepsMetaData(WAVE/WAVE dataWref, WAVE channelTypes, WAVE 
 	string dataType
 	variable channelNumber, channelType, sweepNo
 
-	dataType = GetStringFromJSONWaveNote(dataWref, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(dataWref, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(dataTypeRef, dataType)
 	numResults = DimSize(dataWref, ROWS)
 	for(i = 0; i < numResults; i += 1)
 		WAVE sweepData = dataWref[i]
-		sweepNo = GetNumberFromJSONWaveNote(sweepData, SF_META_SWEEPNO)
-		channelNumber = GetNumberFromJSONWaveNote(sweepData, SF_META_CHANNELNUMBER)
-		channelType = GetNumberFromJSONWaveNote(sweepData, SF_META_CHANNELTYPE)
+		sweepNo = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPNO)
+		channelNumber = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
+		channelType = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELTYPE)
 		CHECK_EQUAL_VAR(sweepNumbers[i], sweepNo)
 		CHECK_EQUAL_VAR(channelTypes[i], channelType)
 		CHECK_EQUAL_VAR(channelNumbers[i], channelNumber)

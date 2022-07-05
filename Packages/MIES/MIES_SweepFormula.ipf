@@ -932,9 +932,9 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 		SF_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
 	endif
 	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
-	plotMetaData.dataType = GetStringFromJSONWaveNote(wvYRef, SF_META_DATATYPE)
-	plotMetaData.xAxisLabel = GetStringFromJSONWaveNote(wvYRef, SF_META_XAXISLABEL)
-	plotMetaData.yAxisLabel = GetStringFromJSONWaveNote(wvYRef, SF_META_YAXISLABEL)
+	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData.xAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL)
+	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL)
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
 			formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
@@ -955,9 +955,9 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 
 	strswitch(dataType)
 		case SF_DATATYPE_SWEEP:
-			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
@@ -977,9 +977,9 @@ static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, strin
 		case SF_DATATYPE_FINDLEVEL:
 		case SF_DATATYPE_BUTTERWORTH:
 			prefix = dataType
-			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			if(!IsNaN(channelNumber) && !IsNaN(channelType) && !IsNaN(sweepNo))
 				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 				sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
@@ -1026,9 +1026,9 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 		case SF_DATATYPE_APFREQUENCY:
 		case SF_DATATYPE_FINDLEVEL:
 		case SF_DATATYPE_SWEEP:
-			channelNumber = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
+			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			if(!IsValidSweepNumber(sweepNo))
 				break
 			endif
@@ -1158,7 +1158,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			[color] = SF_GetTraceColor(graph, plotMetaData.dataType, wvResultY)
 
 			if(!WaveExists(wvResultX))
-				WAVE/Z wvResultX = GetWaveFromJSONWaveNote(wvResultY, SF_META_XVALUES)
+				WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
 			endif
 
 			if(WaveExists(wvResultX))
@@ -1409,7 +1409,7 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 	endif
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
-		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 		return output
 	endif
 	SF_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
@@ -1468,16 +1468,16 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 		SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 		Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
-		SetNumberInJSONWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
-		SetNumberInJSONWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
-		SetNumberInJSONWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
+		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
+		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
 
 		output[index] = rangedSweepData
 		index += 1
 	endfor
 	Redimension/N=(index) output
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 
 	return output
 End
@@ -2366,7 +2366,7 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
-		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
 		return output
 	endif
 
@@ -2432,19 +2432,19 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 			WAVE out = wv
 		endif
 
-		SetNumberInJSONWaveNote(out, SF_META_SWEEPNO, sweepNo)
-		SetNumberInJSONWaveNote(out, SF_META_CHANNELTYPE, chanType)
-		SetNumberInJSONWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-		SetWaveInJSONWaveNote(out, SF_META_XVALUES, {sweepNo})
+		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
 		output[index] = out
 		index +=1
 	endfor
 	Redimension/N=(index) output
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
-	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
-	SetStringInJSONWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
 
 	return output
 End
@@ -2590,7 +2590,7 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 
 	output[] = SF_OperationRangeImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RANGE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RANGE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_RANGE, clear=input)
 End
@@ -2638,8 +2638,8 @@ static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationMinImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MIN)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MIN)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2681,8 +2681,8 @@ static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationMaxImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MAX)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MAX)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2723,8 +2723,8 @@ static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationAvgImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AVG)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AVG)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2766,8 +2766,8 @@ static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationRMSImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RMS)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RMS)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2806,8 +2806,8 @@ static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, stri
 
 	output[] = SF_OperationVarianceImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_VARIANCE)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_VARIANCE)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2846,8 +2846,8 @@ static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string 
 
 	output[] = SF_OperationStdevImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_STDEV)
-	inDataType = GetStringFromJSONWaveNote(input, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_STDEV)
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -2884,7 +2884,7 @@ static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, st
 
 	output[] = SF_OperationDerivativeImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_DERIVATIVE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_DERIVATIVE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_DERIVATIVE, clear=input)
 End
@@ -2919,7 +2919,7 @@ static Function/WAVE SF_OperationIntegrate(variable jsonId, string jsonPath, str
 
 	output[] = SF_OperationIntegrateImpl(input[p])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_INTEGRATE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_INTEGRATE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_INTEGRATE, clear=input)
 End
@@ -2963,8 +2963,8 @@ static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string g
 
 	output[] = SF_OperationAreaImpl(dataRef[p], zero)
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AREA)
-	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AREA)
+	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(dataRef, output, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -3017,7 +3017,7 @@ static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, s
 
 	output[] = SF_OperationButterworthImpl(dataRef[p], lowPassCutoff[0], highPassCutoff[0], order[0])
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_BUTTERWORTH)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_BUTTERWORTH)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_BUTTERWORTH, clear=dataRef)
 End
@@ -3385,7 +3385,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WA
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
-		SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 		return output
 	endif
 
@@ -3421,19 +3421,19 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WA
 			WAVE out = outT
 		endif
 
-		SetNumberInJSONWaveNote(out, SF_META_SWEEPNO, sweepNo)
-		SetNumberInJSONWaveNote(out, SF_META_CHANNELTYPE, chanType)
-		SetNumberInJSONWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-		SetWaveInJSONWaveNote(out, SF_META_XVALUES, {sweepNo})
+		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
 		output[index] = out
 		index += 1
 	endfor
 	Redimension/N=(index) output
 
-	SetStringInJSONWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
-	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
-	SetStringInJSONWaveNote(output, SF_META_YAXISLABEL, lbnKey)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, lbnKey)
 	return output
 End
 
@@ -3566,8 +3566,8 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_FINDLEVEL, DimSize(dataRef, ROWS))
 	results = FindLevelWrapper(dataRef[p], level[0], edge[0], FINDLEVEL_MODE_SINGLE)
 
-	SetStringInJSONWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_FINDLEVEL)
-	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_FINDLEVEL)
+	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -3606,8 +3606,8 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(dataRef, ROWS))
 	results = SF_OperationApFrequencyImpl(dataRef[p], level[0], method[0])
 
-	SetStringInJSONWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_APFREQUENCY)
-	inDataType = GetStringFromJSONWaveNote(dataRef, SF_META_DATATYPE)
+	JWN_SetStringInWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_APFREQUENCY)
+	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
 		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
 	endif
@@ -4053,7 +4053,7 @@ static Function SF_TransferFormulaDataWaveNote(WAVE/WAVE input, WAVE/WAVE output
 
 	numResults = DimSize(input, ROWS)
 	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
-	SetStringInJSONWaveNote(output, SF_META_XAXISLABEL, xLabel)
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 	for(i = 0; i < numResults; i += 1)
 		WAVE/Z inData = input[i]
 		WAVE/Z outData = output[i]
@@ -4062,10 +4062,10 @@ static Function SF_TransferFormulaDataWaveNote(WAVE/WAVE input, WAVE/WAVE output
 		endif
 
 		Note/K outData, note(inData)
-		xAxisValue = GetNumberFromJSONWaveNote(outData, keyForXAxis)
+		xAxisValue = JWN_GetNumberFromWaveNote(outData, keyForXAxis)
 		if(IsNaN(xAxisValue))
 			continue
 		endif
-		SetWaveInJSONWaveNote(outData, SF_META_XVALUES, {xAxisValue})
+		JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {xAxisValue})
 	endfor
 End

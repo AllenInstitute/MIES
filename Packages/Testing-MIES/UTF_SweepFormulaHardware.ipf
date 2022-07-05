@@ -334,7 +334,7 @@ static Function	TestSweepFormulaTP(string device)
 	// Check Meta Data
 	formula = "tp(ss)"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
-	dataType = GetStringFromJSONWaveNote(tpResult, SF_META_DATATYPE)
+	dataType = JWN_GetStringFromWaveNote(tpResult, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_TP
 	CHECK_EQUAL_STR(strRef, dataType)
 	Make/FREE sweepNums = {0, 0, 0 ,0 ,1, 1, 1, 1, 2, 2, 2, 2}
@@ -342,9 +342,9 @@ static Function	TestSweepFormulaTP(string device)
 	Make/FREE channelNums = {1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1}
 	i = 0
 	for(data : tpResult)
-		sweep = GetNumberFromJSONWaveNote(data, SF_META_SWEEPNO)
-		chanNr = GetNumberFromJSONWaveNote(data, SF_META_CHANNELNUMBER)
-		chanType = GetNumberFromJSONWaveNote(data, SF_META_CHANNELTYPE)
+		sweep = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		chanNr = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+		chanType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 		CHECK_EQUAL_VAR(sweepNums[i], sweep)
 		CHECK_EQUAL_VAR(channelNums[i], chanNr)
 		CHECK_EQUAL_VAR(channelTypes[i], chanType)
