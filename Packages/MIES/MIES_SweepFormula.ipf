@@ -1076,6 +1076,36 @@ static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
 	return panelName
 End
 
+static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
+
+	variable i, numData, index
+	string separator = " / "
+	string result = ""
+
+	numData = DimSize(formulaResults, ROWS)
+	Make/FREE/T/N=(numData) yUnits
+	for(i = 0; i < numData; i += 1)
+		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
+		if(!WaveExists(wvResultY))
+			continue
+		endif
+		yUnits[index] = WaveUnits(wvResultY, COLS)
+		index += 1
+	endfor
+	Redimension/N=(index) yUnits
+
+	WAVE/T unique = GetUniqueEntries(yUnits, dontDuplicate=1)
+	for(yUnit : unique)
+		// @todo Remove if part when "null string for empty string wave elment" bug in IP9 is fixed
+		if(IsNull(yUnit))
+			yUnit = ""
+		endif
+		result += yUnit + separator
+	endfor
+
+	return RemoveEndingRegExp(result, separator)
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1088,7 +1118,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints
-	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation
+	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation, yAxisLabel
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
 
@@ -1121,6 +1151,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		WAVE/WAVE/Z formulaResults
 		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
+		yAxisLabel = SF_CombineYUnits(formulaResults)
 
 		win = winNameTemplate + num2istr(j)
 		if(winDisplayMode == SF_DM_NORMAL)
@@ -1296,11 +1327,18 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		endif
 		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
 			Label/W=$win bottom plotMetaData.xAxisLabel
+			ModifyGraph/W=$win tickUnit(bottom)=1
 		endif
 		if(!IsEmpty(plotMetaData.yAxisLabel) && traceCnt > 0)
 			Label/W=$win left plotMetaData.yAxisLabel
+			ModifyGraph/W=$win tickUnit(left)=1
+		elseif(!IsEmpty(yAxisLabel) && traceCnt > 0)
+			Label/W=$win left yAxisLabel
+			ModifyGraph/W=$win tickUnit(left)=1
 		endif
-		ModifyGraph/W=$win zapTZ(bottom)=1
+		if(traceCnt > 0)
+			ModifyGraph/W=$win zapTZ(bottom)=1
+		endif
 
 		RestoreCursors(win, cursorInfos)
 		SetAxesRanges(win, axesRanges)
