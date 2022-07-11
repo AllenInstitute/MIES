@@ -698,7 +698,8 @@ End
 /// @param sweepNo         Number of sweep
 /// @param channelType     type of channel @sa XopChannelConstants
 /// @param channelNumber   number of channel
-/// @param shortname       short name filter, can be a regular expression which is matched caseless
+/// @param shortname       short name filter, can be a regular expression which is matched caseless. For older tag formats
+///                        it can be a simple tag entry (or regexp).
 /// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
 /// @param epochsWave      [optional: defaults to $""] when passed, gathers epoch information from this wave directly.
 ///                        This is required for callers who want to read epochs during MID_SWEEP_EVENT in analysis functions.
@@ -742,7 +743,18 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	WAVE/Z indizesName = FindIndizes(shortnames, col = 0, str = regexp, prop = PROP_GREP)
 
 	if(!WaveExists(indizesName))
-		return $""
+		if(HasOneValidEntry(shortnames))
+			// we got short names but no hit
+			return $""
+		endif
+
+		// fallback to previous tag name formats without shortname
+		regexp = "(?i)(^|;)" + shortname + "($|;)"
+		WAVE/Z indizesName = FindIndizes(epochInfo, col = EPOCH_COL_TAGS, str = regexp, prop = PROP_GREP)
+
+		if(!WaveExists(indizesName))
+			return $""
+		endif
 	endif
 
 	if(IsNaN(treelevel))

@@ -153,3 +153,43 @@ static Function EP_GetEpochsWorks()
 
 	CHECK_EQUAL_TEXTWAVES(result, resultFromWave)
 End
+
+static Function EP_GetEpochsDoesNotFallbackWithShortNames()
+
+	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
+
+	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "someDesc")
+	CHECK_WAVE(resultEmpty, NULL_WAVE)
+
+	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "otherDesc")
+	CHECK_WAVE(resultEmpty, NULL_WAVE)
+End
+
+static Function/WAVE OldEpochsFormats()
+
+	Make/WAVE/N=2/FREE oldFormats = {root:EpochsWave:EpochsWave_4e534e298, root:EpochsWave:EpochsWave_d150d896e}
+
+	SetDimensionLabels(oldFormats, "EpochsWave_4e534e298;EpochsWave_d150d896e", ROWS)
+
+	return oldFormats
+End
+
+// UTF_TD_GENERATOR OldEpochsFormats
+static Function EP_GetEpochsWorksWithoutShortNames([WAVE wv])
+
+	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP", epochsWave = wv)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
+
+	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Test Pulse", epochsWave = wv)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
+
+	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP;Test Pulse", epochsWave = wv)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
+
+	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "STIM.*", epochsWave = wv)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+End
