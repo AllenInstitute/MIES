@@ -768,7 +768,7 @@ static Function [WAVE/T traces, string niceName] LBV_GenerateTraceNames(string n
 End
 
 static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
-	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow, logbookType
+	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow, logbookType, lastSweep
 	string tagString, tmp, text, unit, lbl, name, lastTag
 	STRUCT RGBColor s
 
@@ -803,6 +803,7 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 		firstRow = V_value
 	endif
 
+	lastSweep = NaN
 	for(i = firstRow; i < numRows; i += 1)
 		if(!IsFinite(xPos[i]))
 			continue
@@ -829,7 +830,14 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 		name = traces[0] + "_" + num2str(i)
 		tagString = RemoveEnding(tagString, "\r")
 
+		if(lastSweep == valuesSweep[i] && !cmpstr(tagString, lastTag))
+			// don't add the same tag again
+			continue
+		endif
+
 		Tag/C/N=$name/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $traces[0], i, tagString
+		lastSweep = valuesSweep[i]
+		lastTag = tagString
 	endfor
 End
 
