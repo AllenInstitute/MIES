@@ -229,13 +229,23 @@ End
 /// This is useful if you want to plot values against e.g time and let
 /// Igor do the formatting of the date/time values.
 /// Always returns a numerical wave.
+///
+/// The slice is returned as-is if it exists already. Callers which modify the
+/// logbook are responsible to resize the slice as well.
 static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, variable colOrLayer, string suffix)
 	string name, entryName
-	variable nextRowIndex, col, layer
+	variable col, layer
 
 	// we can't use the GetDevSpecLabNBTempFolder getter as we are
 	// called from the analysisbrowser as well.
 	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(logbook, 1) + "Temp")
+
+	name = NameOfWave(logbook) + CleanupName(suffix, 0)
+	WAVE/Z/SDFR=dfr slice = $name
+
+	if(WaveExists(slice))
+		return slice
+	endif
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
@@ -253,37 +263,24 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 			ASSERT(0, "Invalid logbook type")
 	endswitch
 
-	ASSERT(!isEmpty(entryName), "entryName must not be empty")
-	name = NameOfWave(logbook) + CleanupName(suffix, 0)
-	WAVE/Z/SDFR=dfr slice = $name
+	Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/Wave=slice
 
-	nextRowIndex = GetNumberFromWaveNote(logbook, NOTE_INDEX)
+	// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
+	Redimension/N=-1 slice
 
-	if(!WaveExists(slice)                                           \
-	   || DimSize(slice, ROWS) != DimSize(logbook, ROWS)            \
-	   || DimSize(slice, ROWS) < nextRowIndex                       \
-	   || (nextRowIndex > 0 && !IsFinite(slice[nextRowIndex - 1])))
+	Note/K slice
 
-		KillOrMoveToTrash(wv=slice)
-		Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/Wave=slice
-
-		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
-		Redimension/N=-1 slice
-
-		if(!cmpstr(entryName, "TimeStamp") || !cmpstr(entryName, "TimeStampSinceIgorEpochUTC"))
-			SetScale d, 0, 0, "dat" slice
-		endif
-
-		SetDimLabel ROWS, -1, $entryName, slice
+	if(!cmpstr(entryName, "TimeStamp") || !cmpstr(entryName, "TimeStampSinceIgorEpochUTC"))
+		SetScale d, 0, 0, "dat" slice
 	endif
 
-	SetNumberInWaveNote(slice, NOTE_INDEX, nextRowIndex)
+	ASSERT(!isEmpty(entryName), "entryName must not be empty")
+	SetDimLabel ROWS, -1, $entryName, slice
 
 	if(IsTextWave(slice))
 		WAVE/T sliceFree = MakeWaveFree(slice)
 		Make/O/D/N=(DimSize(sliceFree, ROWS), DimSize(sliceFree, COLS), DimSize(sliceFree, LAYERS), DimSize(sliceFree, CHUNKS)) dfr:$name/Wave=sliceFromText
 		CopyScales sliceFree, sliceFromText
-		Note/K sliceFromText, note(sliceFree)
 		sliceFromText = str2num(sliceFree)
 		return sliceFromText
 	endif
