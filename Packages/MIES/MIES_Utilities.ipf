@@ -297,7 +297,7 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 	variable fullPath, recursive, typeFlag, exprType
 
 	variable i, numFolders
-	string name, folders, basePath, subList
+	string name, folders, basePath, subList, freeDFName
 	string list = ""
 
 	ASSERT_TS(DataFolderExistsDFR(dfr),"Non-existing datafolder")
@@ -325,11 +325,14 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 		ASSERT_TS(exprType == MATCH_REGEXP || exprType == MATCH_WILDCARD, "Invalid exprType")
 	endif
 
-	basePath = GetDataFolder(1, dfr)
-
 	list = ListMatchesExpr(GetAllObjects(dfr, typeFlag), matchExpr, exprType)
 
 	if(fullPath)
+		basePath = GetDataFolder(1, dfr)
+		if(IsFreeDataFolder(dfr))
+			freeDFName = StringFromList(0, basePath, ":") + ":"
+			basePath = ReplaceString(freeDFName, basePath, "", 0, 1)
+		endif
 		list = AddPrefixToEachListItem(basePath, list)
 	endif
 
@@ -337,8 +340,7 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 		folders = GetAllObjects(dfr, COUNTOBJECTS_DATAFOLDER)
 		numFolders = ItemsInList(folders)
 		for(i = 0; i < numFolders; i+=1)
-			name = basePath + StringFromList(i, folders)
-			DFREF subFolder = $name
+			DFREF subFolder = dfr:$StringFromList(i, folders)
 			subList = GetListOfObjects(subFolder, matchExpr, typeFlag = typeFlag, fullPath=fullPath, recursive=recursive, exprType=exprType)
 			if(!IsEmpty(subList))
 				list = AddListItem(RemoveEnding(subList, ";"), list)

@@ -2408,6 +2408,35 @@ Function GetListOfObjectsWorksWithFolder()
 	CHECK_EQUAL_STR(result, expected)
 End
 
+static Function GetListOfObjectsWorksWithFreeDF()
+
+	string result, expected
+
+	DFREF dfr = NewFreeDataFolder()
+
+	NewDataFolder dfr:SubFolder1
+	DFREF dfr1 = dfr:SubFolder1
+	Make dfr1:wave1
+
+	NewDataFolder dfr1:SubFolder2
+	DFREF dfr2 = dfr1:SubFolder2
+	Make dfr2:wave2
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0, typeFlag = COUNTOBJECTS_WAVES)
+
+	expected = "wave1;wave2;"
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1, typeFlag = COUNTOBJECTS_WAVES)
+
+	expected = "SubFolder1:wave1;SubFolder1:SubFolder2:wave2;"
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+End
+
 // Not checked: typeFlag
 /// @}
 
