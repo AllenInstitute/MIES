@@ -3847,11 +3847,13 @@ static Function PSQ_CR_GetXPosFromCycles(variable cycle, WAVE cycleXValues, vari
 	// we have all crossings in cycleXValues
 	// 0: start
 	// 1: half cycle
-	// 2: full cycle
+	// 2: end first cycle, start second cycle
+	// 3: half second cycle
+	// 4: end second cycle, start third cycle
 	//
 	// so the first cycle ranges from cycleXValues[0] to cycleXValues[2] and so on
 
-	index = cycle * 2
+	index = (cycle + 1) * 2
 
 	ASSERT(index < DimSize(cycleXValues, ROWS), "Not enough cycles present in the stimulus set.")
 
