@@ -1867,3 +1867,10 @@ CONSTANT PSQ_RESULTS_CONT = 0x2
 /// @}
 
 Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro
+
+/// @name Returned bits of DataFolderRefStatus
+/// @anchor DataFolderRefStatusConstants
+/// @{
+Constant DFREF_VALID = 0x1
+Constant DFREF_FREE = 0x2
+/// @}

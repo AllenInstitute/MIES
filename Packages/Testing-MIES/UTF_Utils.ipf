@@ -4755,6 +4755,40 @@ End
 
 /// @}
 
+/// IsFreeDataFolder
+/// @{
+
+static Function IFDF_Test1()
+
+	DFREF dfr = NewFreeDataFolder()
+	CHECK(IsFreeDatafolder(dfr))
+
+	DFREF dfr = root:
+	CHECK(!IsFreeDatafolder(dfr))
+
+	DFREF dfr = $""
+	CHECK(!IsFreeDatafolder(dfr))
+End
+
+/// @}
+
+/// IsGlobalDataFolder
+/// @{
+
+static Function IGDF_Test1()
+
+	DFREF dfr = NewFreeDataFolder()
+	CHECK(!IsGlobalDatafolder(dfr))
+
+	DFREF dfr = root:
+	CHECK(IsGlobalDatafolder(dfr))
+
+	DFREF dfr = $""
+	CHECK(!IsGlobalDatafolder(dfr))
+End
+
+/// @}
+
 /// ExtractSweepNumber
 /// @{
 

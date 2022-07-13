@@ -659,7 +659,13 @@ End
 /// @brief Check if the passed datafolder reference is a global/permanent datafolder
 threadsafe Function IsGlobalDataFolder(DFREF dfr)
 
-	return DataFolderExistsDFR(dfr) && DataFolderRefStatus(dfr) != 3
+	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == DFREF_VALID
+End
+
+/// @brief Returns 1 if dfr is a valid free datafolder, 0 otherwise
+threadsafe Function IsFreeDatafolder(DFREF dfr)
+
+	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == (DFREF_VALID | DFREF_FREE)
 End
 
 /// @brief Create a datafolder and all its parents,
@@ -1526,7 +1532,7 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 
 	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
-	ASSERT_TS(DataFolderRefStatus(dfr) != 3, "dfr can not be a free DF")
+	ASSERT_TS(!IsFreeDatafolder(dfr), "dfr can not be a free DF")
 
 	numRuns = 10000
 	// shorten basename so that we can attach some numbers

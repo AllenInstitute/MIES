@@ -1510,7 +1510,7 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 
 	if(AB_LoadType == AB_LOAD_SWEEP)
 		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_OpenSweepBrowser() prior")
-		ASSERT(DataFolderRefStatus(sweepBrowserDFR) == 1, "sweepBrowser DataFolder does not exist")
+		ASSERT(IsGlobalDataFolder(sweepBrowserDFR), "sweepBrowser DataFolder does not exist")
 	endif
 
 	WAVE indizes = AB_GetExpandedIndices()
