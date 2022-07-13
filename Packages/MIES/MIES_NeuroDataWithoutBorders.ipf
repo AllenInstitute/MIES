@@ -645,7 +645,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 			WAVE s.DAQConfigWave = configWave
 
 			NWB_AppendSweepLowLevel(s)
-			stimsetList += NWB_GetStimsetFromPanel(device, sweep)
+			stimsetList += AB_GetStimsetFromPanel(device, sweep)
 
 			NVAR fileIDExport = $GetNWBFileIDExport()
 			fileIDExport = s.locationID
@@ -967,86 +967,6 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	NWB_ASYNC_SerializeStruct(s, threadDFR)
 
 	ASYNC_Execute(threadDFR)
-End
-
-/// @brief Get stimsets by analysing currently loaded sweep
-///
-/// numericalValues and textualValues are generated from device
-///
-/// @returns list of stimsets
-static Function/S NWB_GetStimsetFromPanel(device, sweep)
-	string device
-	variable sweep
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
-
-	return NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
-End
-
-/// @brief Get stimsets by analysing dataFolder of loaded sweep
-///
-/// numericalValues and textualValues are generated from previously loaded data.
-/// used in the context of loading from a stored experiment file.
-/// on load a sweep is stored in a device/dataFolder hierarchy.
-///
-/// @returns list of stimsets
-Function/S NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
-	string dataFolder, device
-	variable sweep
-
-	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
-	WAVE/SDFR=dfr   numericalValues
-	WAVE/SDFR=dfr/T textualValues
-
-	return NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
-End
-
-/// @brief Get related Stimsets by corresponding sweep
-///
-/// input numerical and textual values storage waves for current sweep
-///
-/// @returns list of stimsets
-static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
-	variable sweep
-	WAVE numericalValues
-	WAVE/T textualValues
-
-	variable i, j, numEntries
-	string ttlList, name
-	string stimsetList = ""
-
-	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-	if(!WaveExists(stimsets))
-		return ""
-	endif
-
-	// handle AD/DA channels
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		name = stimsets[i]
-		if(isEmpty(name))
-			continue
-		endif
-		stimsetList = AddListItem(name, stimsetList)
-	endfor
-
-	WAVE/Z/T ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
-
-	// handle TTL channels
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!WaveExists(ttlStimsets))
-			break
-		endif
-
-		name = ttlStimSets[i]
-		if(isEmpty(name))
-			continue
-		endif
-		stimsetList = AddListItem(name, stimsetList)
-	endfor
-
-	return stimsetList
 End
 
 threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)

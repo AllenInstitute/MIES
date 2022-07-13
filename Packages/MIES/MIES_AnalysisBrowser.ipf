@@ -1683,7 +1683,7 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			stimsets = AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			loadedStimsets = AB_LoadStimsets(discLocation, stimsets, overwrite)
 			loadedStimsets = AB_LoadCustomWaves(discLocation, loadedStimsets, overwrite)
 			stimsets = GetListDifference(stimsets, loadedStimsets)
@@ -1693,7 +1693,7 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			stimsets = AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			h5_fileID  = H5_OpenFile(discLocation)
 			if(!StimsetPathExists(h5_fileID))
 				H5_CloseFile(h5_fileID)
@@ -3036,4 +3036,84 @@ Function/S AB_GetAllExperiments()
 	endfor
 
 	return list
+End
+
+/// @brief Get stimsets by analysing dataFolder of loaded sweep
+///
+/// numericalValues and textualValues are generated from previously loaded data.
+/// used in the context of loading from a stored experiment file.
+/// on load a sweep is stored in a device/dataFolder hierarchy.
+///
+/// @returns list of stimsets
+Function/S AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+	string dataFolder, device
+	variable sweep
+
+	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE/SDFR=dfr   numericalValues
+	WAVE/SDFR=dfr/T textualValues
+
+	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+End
+
+/// @brief Get related Stimsets by corresponding sweep
+///
+/// input numerical and textual values storage waves for current sweep
+///
+/// @returns list of stimsets
+static Function/S AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+	variable sweep
+	WAVE numericalValues
+	WAVE/T textualValues
+
+	variable i, j, numEntries
+	string ttlList, name
+	string stimsetList = ""
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	if(!WaveExists(stimsets))
+		return ""
+	endif
+
+	// handle AD/DA channels
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		name = stimsets[i]
+		if(isEmpty(name))
+			continue
+		endif
+		stimsetList = AddListItem(name, stimsetList)
+	endfor
+
+	WAVE/Z/T ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
+
+	// handle TTL channels
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!WaveExists(ttlStimsets))
+			break
+		endif
+
+		name = ttlStimSets[i]
+		if(isEmpty(name))
+			continue
+		endif
+		stimsetList = AddListItem(name, stimsetList)
+	endfor
+
+	return stimsetList
+End
+
+/// @brief Get stimsets by analysing currently loaded sweep
+///
+/// numericalValues and textualValues are generated from device
+///
+/// @returns list of stimsets
+Function/S AB_GetStimsetFromPanel(device, sweep)
+	string device
+	variable sweep
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues = GetLBTextualValues(device)
+
+	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
 End
