@@ -500,6 +500,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		expFileOrFolder = expFilePath
 	endif
 
+	DFREF savedDF = GetDataFolderDFR()
 	SetDataFolder tmpDFR
 
 	// work around LoadData not respecting AbortOnRTE properly
@@ -519,10 +520,12 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		endif
 	catch
 		ClearRTError()
+		SetDataFolder savedDF
 		ResetDebugOnError(debugOnError)
 		return 0
 	endtry
 
+	SetDataFolder savedDF
 	ResetDebugOnError(debugOnError)
 
 	RemoveAllEmptyDataFolders(tmpDFR)
