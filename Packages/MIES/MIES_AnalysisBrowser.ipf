@@ -367,7 +367,6 @@ static Function AB_AddExperimentNameIfReq(expName, list, fileType, index)
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%file][0] = expName
 	list[index][%type][0] = fileType
-	index += 1
 End
 
 /// @brief Creates list-view for AnalysisBrowser
