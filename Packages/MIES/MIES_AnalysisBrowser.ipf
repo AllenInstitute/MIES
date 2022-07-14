@@ -226,6 +226,69 @@ static Function AB_AddFile(baseFolder, discLocation)
 	return 0
 End
 
+/// @brief from a list of extended stimset names with WP_, WPT_ or SegWvType_ prefix
+///        return a boiled down list of unique stimset names without prefix
+///        @sa NWB_SuffixExtendedStimsetNamesToStimsetNames
+Function/S AB_PrefixExtendedStimsetNamesToStimsetNames(string stimsets)
+
+	string prefix1, prefix2, prefix3
+	string regexp, prefixRemovedList
+
+	sprintf prefix1, "%s_", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WP)
+	sprintf prefix2, "%s_", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WPT)
+	sprintf prefix3, "%s_", GetWaveBuilderParameterTypeName(STIMSET_PARAM_SEGWVTYPE)
+
+	regExp = prefix1 + "|" + prefix2 + "|" + prefix3
+	prefixRemovedList = RemovePrefixFromListItem(regExp, stimsets, regExp=1)
+
+	return GetUniqueTextEntriesFromList(prefixRemovedList, caseSensitive=0)
+End
+
+/// @brief Returns a list of stimset names from an igor experiment file
+static Function/S AB_GetStimsetListFromIgorFile(string fullPath)
+
+	string list, wList
+
+	DFREF tmpDFR = NewFreeDataFolder()
+	AB_LoadDataWrapper(tmpDFR, fullPath, GetWBSvdStimSetParamPathAS(), "")
+	wList = GetListOfObjects(tmpDFR, "*", recursive=1, typeFlag=COUNTOBJECTS_WAVES, exprType=MATCH_WILDCARD)
+	AB_LoadDataWrapper(tmpDFR, fullPath, GetWBSvdStimSetPathAsString(), "")
+	list = GetListOfObjects(tmpDFR, "*", recursive=1, typeFlag=COUNTOBJECTS_WAVES, exprType=MATCH_WILDCARD)
+
+	list = AddListItem(RemoveEnding(wList, ";"), list)
+
+	return AB_PrefixExtendedStimsetNamesToStimsetNames(list)
+End
+
+/// @brief returns 1 if the file has stimsets, 0 otherwise
+static Function AB_FileHasStimsets(WAVE/T map)
+
+	string stimSetList
+	variable h5_fileID
+
+	strswitch(map[%FileType])
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			DFREF tmpDFR = NewFreeDataFolder()
+			if(AB_LoadDataWrapper(tmpDFR, map[%DiscLocation], GetWBSvdStimSetParamPathAS(), ""))
+				return 1
+			endif
+
+			return !!AB_LoadDataWrapper(tmpDFR, map[%DiscLocation], GetWBSvdStimSetPathAsString(), "")
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+
+			h5_fileID = H5_OpenFile(map[%DiscLocation])
+			stimSetList = ReadStimsets(h5_fileID)
+			H5_CloseFile(h5_fileID)
+
+			return !IsEmpty(stimSetList)
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+
+	return 0
+End
+
 /// @brief function tries to load Data From discLocation.
 static Function AB_LoadFile(discLocation)
 	string discLocation
@@ -257,6 +320,10 @@ static Function AB_LoadFile(discLocation)
 	Wave/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
 
 	numDevices = GetNumberFromWaveNote(deviceWave, NOTE_INDEX)
+	if(!numDevices && AB_FileHasStimsets(map))
+		AB_FillListWave(map[%FileName], "",map[%DataFolder], map[%FileType], $"")
+		return NaN
+	endif
 	for(i = 0; i < numDevices; i += 1)
 		device = deviceWave[i]
 		strswitch(map[%FileType])
@@ -374,25 +441,26 @@ End
 /// Depends on LabNoteBook to be loaded prior to call.
 ///
 /// @param fileName   current Project's filename
-/// @param device     current device
+/// @param device     current device, if device is empty only the experiment name is added
 /// @param dataFolder current Project's Lab Notebook DataFolder reference
 /// @param fileType   current Project's file type, one of @ref AnalysisBrowserFileTypes
 /// @param sweepNums  Wave containing all sweeps actually present for device
-static Function AB_FillListWave(fileName, device, dataFolder, fileType, sweepNums)
-	string fileName, device, dataFolder, fileType
-	WAVE sweepNums
+static Function AB_FillListWave(string fileName, string device, string dataFolder, string fileType, WAVE/Z sweepNums)
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
 	string str
-
-	DFREF labNBdfr         = GetAnalysisLabNBFolder(dataFolder, device)
-	WAVE  numericalValues  = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE  textualValues    = GetAnalysLBTextualValues(dataFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
 	AB_AddExperimentNameIfReq(fileName, list, fileType, index)
+
+	if(IsEmpty(device))
+		SetNumberInWaveNote(list, NOTE_INDEX, index + 1)
+		return NaN
+	endif
+
+	ASSERT(WaveExists(sweepNums), "sweepNums wave is empty.")
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
@@ -401,6 +469,9 @@ static Function AB_FillListWave(fileName, device, dataFolder, fileType, sweepNum
 
 	list[index][%'#sweeps'][0] = num2istr(numWaves)
 	index += 1
+
+	WAVE  numericalValues  = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE  textualValues    = GetAnalysLBTextualValues(dataFolder, device)
 
 	for(i = 0; i < numWaves; i += 1)
 		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
@@ -1353,9 +1424,11 @@ static Function AB_ExpandListEntry(row, col)
 	sprintf str, "sourceRow=%d, targetRow=%d, last=%d", sourceRow, targetRow, last
 	DEBUGPRINT("expand listbox:", str=str)
 
-	InsertPoints/M=(ROWS) targetRow, length, expBrowserList, expBrowserSel
-	expBrowserList[targetRow, targetRow + length - 1][][] = expBrowserListBak[sourceRow - targetRow + p][q][r]
-	expBrowserSel[targetRow, targetRow + length - 1][]    = expBrowserSelBak[sourceRow - targetRow + p][q]
+	if(length > 0)
+		InsertPoints/M=(ROWS) targetRow, length, expBrowserList, expBrowserSel
+		expBrowserList[targetRow, targetRow + length - 1][][] = expBrowserListBak[sourceRow - targetRow + p][q][r]
+		expBrowserSel[targetRow, targetRow + length - 1][]    = expBrowserSelBak[sourceRow - targetRow + p][q]
+	endif
 End
 
 /// @returns 0 if the treeview could be expanded, zero otherwise
@@ -1412,6 +1485,13 @@ static Function/WAVE AB_GetExpandedIndices()
 	return wv
 End
 
+static Function AB_GUIRowIsStimsetsOnly(variable row)
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+
+	return !IsEmpty(expBrowserList[row][%file]) && IsEmpty(expBrowserList[row][%device])
+End
+
 /// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
 static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [overwrite, sweepBrowserDFR])
 	variable row, subSectionColumn, AB_LoadType, overwrite
@@ -1437,20 +1517,28 @@ static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [ov
 	endRow = AB_GetRowWithNextTreeView(expBrowserSel, row, subSectionColumn)
 
 	for(j = row; j < endRow; j += 1)
-		if(expBrowserSel[j][0] & LISTBOX_TREEVIEW || expBrowserSel[j][2] & LISTBOX_TREEVIEW)
-			// ignore rows with tree view icons, we have them already in our list
-			continue
+
+		if(AB_GUIRowIsStimsetsOnly(row))
+			if(AB_LoadType != AB_LOAD_STIMSET)
+				return 1
+			endif
+			device = ""
+		else
+			if(expBrowserSel[j][EXPERIMENT_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW || expBrowserSel[j][DEVICE_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW)
+				// ignore rows with tree view icons, we have them already in our list
+				continue
+			endif
+
+			sweep = str2num(expBrowserList[j][%sweep])
+
+			// sweeps with multiple DA channels occupy multiple rows,
+			// ignore them as they all stem from the same sweep
+			if(!IsFinite(sweep))
+				continue
+			endif
+
+			device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		endif
-
-		sweep = str2num(expBrowserList[j][%sweep])
-
-		// sweeps with multiple DA channels occupy multiple rows,
-		// ignore them as they all stem from the same sweep
-		if(!IsFinite(sweep))
-			continue
-		endif
-
-		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		mapIndex    = str2num(expBrowserList[j][%file][1])
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
@@ -1609,8 +1697,9 @@ static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device
 	ASSERT(!isEmpty(discLocation), "Empty file or Folder name on disc")
 	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
 	ASSERT(cmpstr(fileType, "unknown"), "unknown file format")
-	ASSERT(!isEmpty(device), "Empty device")
-	ASSERT(isFinite(sweep), "Non-finite sweep")
+	if(!IsEmpty(device))
+		ASSERT(isFinite(sweep), "Non-finite sweep")
+	endif
 	ASSERT(overwrite == 0 || overwrite == 1, "overwrite can either be one or zero")
 End
 
@@ -1625,6 +1714,8 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
 	endif
+
+	ASSERT(!IsEmpty(device), "Empty device.")
 	AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
 
 	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
@@ -1672,8 +1763,9 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 	string discLocation, dataFolder, fileType, device
 	variable sweep, overwrite
 
-	string stimsets, loadedStimsets, msg
+	string loadedStimsets, msg
 	variable h5_fileID, h5_groupID
+	string stimsets = ""
 
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
@@ -1682,7 +1774,7 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			stimsets = AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			stimsets = AB_GetStimsetList(fileType, discLocation, dataFolder, device, sweep)
 			loadedStimsets = AB_LoadStimsets(discLocation, stimsets, overwrite)
 			loadedStimsets = AB_LoadCustomWaves(discLocation, loadedStimsets, overwrite)
 			stimsets = GetListDifference(stimsets, loadedStimsets)
@@ -1692,7 +1784,7 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-			stimsets = AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			stimsets = AB_GetStimsetList(fileType, discLocation, dataFolder, device, sweep)
 			h5_fileID  = H5_OpenFile(discLocation)
 			if(!StimsetPathExists(h5_fileID))
 				H5_CloseFile(h5_fileID)
@@ -3037,16 +3129,26 @@ Function/S AB_GetAllExperiments()
 	return list
 End
 
-/// @brief Get stimsets by analysing dataFolder of loaded sweep
+/// @brief Get stimset list either by analysing dataFolder of loaded sweep or if device is empty, get all stimsets
 ///
 /// numericalValues and textualValues are generated from previously loaded data.
 /// used in the context of loading from a stored experiment file.
 /// on load a sweep is stored in a device/dataFolder hierarchy.
 ///
 /// @returns list of stimsets
-Function/S AB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
-	string dataFolder, device
-	variable sweep
+Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFolder, string device, variable sweep)
+
+	if(IsEmpty(device))
+		strswitch(fileType)
+			case ANALYSISBROWSER_FILE_TYPE_IGOR:
+				return AB_GetStimsetListFromIgorFile(discLocation)
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+				return NWB_ReadStimSetList(discLocation)
+			default:
+				ASSERT(0, "fileType not handled")
+		endswitch
+	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
 	WAVE/SDFR=dfr   numericalValues
