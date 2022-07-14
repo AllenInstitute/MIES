@@ -1515,6 +1515,41 @@ Function NWB_LoadCustomWave(locationID, fullPath, overwrite)
 	return 0
 End
 
+/// @brief from a list of extended stimset names with _WP, _WPT or _SegWvType suffix
+///        return a boiled down list of unique stimset names without suffix
+static Function/S NWB_SuffixExtendedStimsetNamesToStimsetNames(string stimsets)
+
+	string suffix
+
+	// merge stimset Parameter Waves to one unique entry in stimsets list
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WP)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WPT)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_SEGWVTYPE)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	return GetUniqueTextEntriesFromList(stimsets, caseSensitive=0)
+End
+
+Function/S NWB_ReadStimSetList(string fullPath)
+
+	variable fileId
+	string stimsets
+
+	fileID = H5_OpenFile(fullPath)
+
+	if(!StimsetPathExists(fileID))
+		printf "no stimsets present in %s\r", fullPath
+		H5_CloseFile(fileID)
+		return ""
+	endif
+
+	stimsets = ReadStimsets(fileID)
+	H5_CloseFile(fileID)
+
+	return NWB_SuffixExtendedStimsetNamesToStimsetNames(stimsets)
+End
+
 /// @brief Load all stimsets from specified HDF5 file.
 ///
 /// @param fileName         [optional, shows a dialog on default] provide full file name/path for loading stimset
@@ -1556,29 +1591,12 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	fileID = H5_OpenFile(fullPath)
-
-	if(!StimsetPathExists(fileID))
-		printf "no stimsets present in %s\r", fullPath
-		H5_CloseFile(fileID)
-		return 1
-	endif
-
-	stimsets = ReadStimsets(fileID)
-	if(ItemsInList(stimsets) == 0)
-		H5_CloseFile(fileID)
+	stimsets = NWB_ReadStimSetList(fullPath)
+	if(IsEmpty(stimsets))
 		return 0
 	endif
 
-	// merge stimset Parameter Waves to one unique entry in stimsets list
-	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WP)
-	stimsets = ReplaceString(suffix, stimsets, ";")
-	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WPT)
-	stimsets = ReplaceString(suffix, stimsets, ";")
-	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_SEGWVTYPE)
-	stimsets = ReplaceString(suffix, stimsets, ";")
-	stimsets = GetUniqueTextEntriesFromList(stimsets, caseSensitive=0)
-
+	fileID = H5_OpenFile(fullPath)
 	groupID = OpenStimset(fileID)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
