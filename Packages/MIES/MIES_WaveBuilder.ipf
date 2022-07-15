@@ -762,7 +762,7 @@ static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, lde
 End
 
 static Structure SegmentParameters
-	variable duration
+	variable duration // ms
 	variable deltaDur
 	variable amplitude
 	variable deltaAmp
