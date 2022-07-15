@@ -15,6 +15,9 @@ static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 static Constant WB_PULSE_TRAIN_TYPE_SQUARE   = 0
 static Constant WB_PULSE_TRAIN_TYPE_TRIANGLE = 1
 
+static Constant WB_TRIG_TYPE_SIN     = 0
+static Constant WB_TRIG_TYPE_COS     = 1
+
 /// @name Constants for WB_GetControlWithDeltaIdx
 /// @anchor ControlDeltaIndizes
 /// The numeric values are row indizes in the waves returned by
@@ -781,7 +784,7 @@ static Structure SegmentParameters
 	variable logChirp // 0: no chirp, 1: log chirp
 	variable randomSeed
 	// popupmenues
-	variable trigFuncType // 0: sin, 1: cos
+	variable trigFuncType // 0: WB_TRIG_TYPE_SIN, 1: WB_TRIG_TYPE_COS
 	variable noiseType // 0: white, 1: pink, 2:brown
 	variable noiseGenMode // 2: NOISE_GEN_MERSENNE_TWISTER, 3: NOISE_GEN_XOSHIRO
 	variable noiseGenModePTMixedFreq // 1: NOISE_GEN_LINEAR_CONGRUENTIAL, 3: NOISE_GEN_XOSHIRO
@@ -910,7 +913,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"    , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=ToTrueFalse(params.logChirp))
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=SelectString(params.trigFuncType, "Sin", "Cos"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=StringFromList(params.trigFuncType, WAVEBUILDER_TRIGGER_TYPES))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
 				WB_SawToothSegment(params)
@@ -1327,7 +1330,7 @@ static Function WB_TrigSegment(pa)
 
 	variable k0, k1, k2, k3
 
-	if(pa.trigFuncType != 0 && pa.trigFuncType != 1)
+	if(pa.trigFuncType != WB_TRIG_TYPE_SIN && pa.trigFuncType != WB_TRIG_TYPE_COS)
 		printf "Ignoring unknown trigonometric function"
 		Wave SegmentWave = GetSegmentWave(duration=0)
 		return NaN
@@ -1340,13 +1343,13 @@ static Function WB_TrigSegment(pa)
 		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration) // NOLINT
 		k2 = 2 * pi * e^k0 / k1
 		k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
-		if(pa.trigFuncType == 0)
+		if(pa.trigFuncType == WB_TRIG_TYPE_SIN)
 			MultiThread SegmentWave = pa.amplitude * sin(k2 * e^(k1 * x) - k3)
 		else
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
 	else
-		if(pa.trigFuncType == 0)
+		if(pa.trigFuncType == WB_TRIG_TYPE_SIN)
 			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 		else
 			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
