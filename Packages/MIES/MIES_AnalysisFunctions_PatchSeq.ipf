@@ -5183,7 +5183,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SEAL_EVALUATION, name)
 		case "SealThreshold":
-			return "Minimum required seal threshold"
+			return "Minimum required seal threshold [GΩ]"
 		case "TestPulseGroupSelector":
 			return "Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
 		default:
@@ -6424,7 +6424,7 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			endif
 
 			if(DAG_GetHeadstageMode(device, s.headstage) != V_CLAMP_MODE)
-				printf "(%s) Clamp mode must be current clamp.\r", device
+				printf "(%s) Clamp mode must be voltage clamp.\r", device
 				ControlWindowToFront()
 				return 1
 			endif
