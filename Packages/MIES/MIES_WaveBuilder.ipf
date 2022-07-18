@@ -1349,10 +1349,15 @@ static Function WB_TrigSegment(pa)
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
 	else
+		k0 = 2 * Pi * (pa.frequency / 1000) // NOLINT
+		k1 = NaN
+		k2 = NaN
+		k3 = NaN
+
 		if(pa.trigFuncType == WB_TRIG_TYPE_SIN)
-			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency / 1000) * p * WAVEBUILDER_MIN_SAMPINT) // NOLINT
+			MultiThread SegmentWave = pa.amplitude * sin(k0 * x)
 		else
-			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency / 1000) * p * WAVEBUILDER_MIN_SAMPINT) // NOLINT
+			MultiThread SegmentWave = pa.amplitude * cos(k0 * x)
 		endif
 	endif
 End
