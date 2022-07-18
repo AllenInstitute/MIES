@@ -467,6 +467,14 @@ static Function TestNaming(WAVE/T epochChannel)
 			CHECK_GT_VAR(strsearch(entry, "=", 0), 0)
 		endfor
 	endfor
+
+	// check that shortnames are unique
+	Make/FREE/T/N=(numRows) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
+	CHECK(HasOneValidEntry(shortnames))
+
+	Sort shortnames, shortnames
+	WAVE/Z uniqueShortNames = GetUniqueEntries(shortnames)
+	CHECK_EQUAL_WAVES(shortnames, uniqueShortNames)
 End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
