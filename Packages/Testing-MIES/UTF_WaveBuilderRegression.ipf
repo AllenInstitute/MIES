@@ -104,6 +104,39 @@ Function WB_RegressionTest([string stimset])
 		for(j = 0; j < epochCount; j += 1)
 			duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = i, epoch= j)
 			CHECK_GT_VAR(duration, 0)
+
+			// check inflection point info
+			strswitch(stimset)
+				case "Ref3_f_DA_0":
+					WAVE/Z inflectionPoints = ListToNumericWave(WB_GetWaveNoteEntry(text, EPOCH_ENTRY, key = "Inflection Points", sweep = i, epoch = j), ",")
+					CHECK_WAVE(inflectionPoints, NUMERIC_WAVE)
+
+					switch(j)
+						case 0:
+							Make/D/FREE refInflectionPoints = {197.458726593435,435.675394434122,588.633714511935,701.526877331138,791.045847308983,865.22891295094,928.57002432697,983.837930372523}
+							break
+						case 1:
+							Make/D/FREE refInflectionPoints= {152.790159219023,284.335069591481,356.976185802109,407.420806489504,446.105169062074,477.48904673523}
+							break
+						case 2:
+							Make/D/FREE refInflectionPoints = {0,250,500,750,1000}
+							break
+						case 3:
+							Make/D/FREE refInflectionPoints = {250}
+							break
+						case 4:
+							Make/D/FREE/N=0 refInflectionPoints
+							break
+						default:
+							FAIL()
+					endswitch
+
+					CHECK_EQUAL_WAVES(refInflectionPoints, inflectionPoints)
+					break
+				default:
+					// do nothing
+					break
+			endswitch
 		endfor
 	endfor
 

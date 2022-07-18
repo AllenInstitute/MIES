@@ -906,7 +906,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"       , var=params.randomSeed)
 				break
 			case EPOCH_TYPE_SIN_COS:
-				WB_TrigSegment(params)
+				Make/D/FREE inflectionPoints
+				WB_TrigSegment(params, inflectionPoints)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"     , var=params.Duration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"    , var=params.Amplitude)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
@@ -914,6 +915,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=ToTrueFalse(params.logChirp))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=StringFromList(params.trigFuncType, WAVEBUILDER_TRIGGER_TYPES))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Inflection Points", str=NumericWaveToList(inflectionPoints, ",", format="%.15g"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
 				WB_SawToothSegment(params)
@@ -1325,9 +1327,106 @@ static Function WB_NoiseSegment(pa)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
-static Function WB_TrigSegment(pa)
-	struct SegmentParameters &pa
+/// @brief Calculate the x values where the trigonometric epoch has inflection points
+///
+/// For zero offset, the inflection points coincide with the zero crossings/roots.
+/// In case nothing can be calculated the inflectionPoints wave has one NaN entry.
+///
+/// \rst
+///
+/// The formula without chirp can be solved for :math:`f(x) == 0` as:
+///
+/// .. math::
+///
+///    f(x)        &= a \cdot \sin(k_0 \cdot x) \\
+///    k_0 \cdot x &= c \cdot \pi               \\
+///    x           &= \frac{c \cdot \pi}{k_0}
+///
+/// And for cosine:
+///
+/// .. math::
+///
+///    x = \frac{(c + \frac{1}{2}) \cdot \pi}{k_0}
+///
+/// With chirp and sine:
+///
+/// .. math::
+///
+///    f(x)                            &= a \cdot \sin(k_2 \cdot e^{k_1 \cdot x}- k_3)                      \\
+///    k_2 \cdot e^{k_1 \cdot x} - k_3 &= c \cdot \pi                                                       \\
+///    e^{k_1 \cdot x}                 &= \frac{c \cdot \pi + k_3}{k_2}                                     \\
+///    k_1 \cdot x                     &= \ln\left(\frac{c \cdot \pi + k_3}{k_2}\right)                     \\
+///    x                               &= \frac{1}{k_1} \cdot \ln\left(\frac{c \cdot \pi + k_3}{k_2}\right)
+///
+/// And analogous for cosine:
+///
+/// .. math::
+///
+///    x = \frac{1}{k_1} \cdot \ln\left(\frac{(c + \frac{1}{2}) \cdot \pi + k_3}{k_2}\right)
+///
+/// \endrst
+static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3, WAVE inflectionPoints)
+	variable i, idx, xzero, offset
 
+	ASSERT(WaveType(inflectionPoints) == IGOR_TYPE_64BIT_FLOAT, "Expected double wave")
+
+	if(pa.amplitude == 0)
+		print "Can't calculate inflection points with amplitude zero"
+		ControlWindowToFront()
+		inflectionPoints = {NaN}
+		return NaN
+	elseif(pa.frequency <= 0)
+		print "Can't calculate inflection points with frequency zero"
+		ControlWindowToFront()
+		inflectionPoints = {NaN}
+		return NaN
+	elseif(pa.endfrequency <= 0 && pa.logChirp)
+		print "Can't calculate inflection points with end frequency zero"
+		ControlWindowToFront()
+		inflectionPoints = {NaN}
+		return NaN
+	endif
+
+	switch(pa.trigFuncType)
+		case WB_TRIG_TYPE_SIN:
+			offset = 0
+			break
+		case WB_TRIG_TYPE_COS:
+			offset = 1 / 2
+			break
+		default:
+			ASSERT(0, "Unknown trigFuncType")
+	endswitch
+
+	for(i = 0;;i += 1)
+		if(pa.logChirp)
+			xzero = 1 / k1 * ln(((i + offset) * pi + k3) / k2)
+		else
+			xzero = (i + offset) * pi / k0
+		endif
+
+		if(!IsFinite(xzero))
+			BUG("xzero must be finite")
+			continue
+		elseif(xzero < 0)
+			continue
+		elseif(xzero > pa.duration)
+			break
+		endif
+
+		if(i > 10e5)
+			BUG("Encountered too many inflection points, please open an issue and attach your stimset.")
+			break
+		endif
+
+		EnsureLargeEnoughWave(inflectionPoints, minimumSize = idx, dimension = ROWS, initialValue = NaN)
+		inflectionPoints[idx++] = xzero
+	endfor
+
+	Redimension/N=(idx) inflectionPoints
+End
+
+static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoints)
 	variable k0, k1, k2, k3
 
 	if(pa.trigFuncType != WB_TRIG_TYPE_SIN && pa.trigFuncType != WB_TRIG_TYPE_COS)
@@ -1348,6 +1447,8 @@ static Function WB_TrigSegment(pa)
 		else
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
+
+		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
 	else
 		k0 = 2 * Pi * (pa.frequency / 1000) // NOLINT
 		k1 = NaN
@@ -1359,6 +1460,8 @@ static Function WB_TrigSegment(pa)
 		else
 			MultiThread SegmentWave = pa.amplitude * cos(k0 * x)
 		endif
+
+		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
 	endif
 End
 
@@ -1464,6 +1567,7 @@ End
 /// - `Pulse Train Pulses` are absolute pulse starting times in `epoch build ms`
 /// - `Pulse To Pulse Length` is in `stimset build ms`
 /// - `Function params (encoded)` contains the analysis function parameters. The values have the format described at GetWaveBuilderWaveTextParam().
+/// - `Inflection Points` are in `epoch build ms`. For offset zero these coincide with the roots.
 ///
 /// Example:
 ///
@@ -1595,6 +1699,28 @@ Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLe
 	ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
 
 	return startTimes
+End
+
+/// @brief Return the inflection points for trigonometric epochs
+Function/WAVE WB_GetInflectionPoints(WAVE stimset, variable sweep, variable epoch)
+	string inflectionPointList, stimNote, functionTypeString
+	variable numEntries
+
+	stimNote = note(stimset)
+
+	inflectionPointList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = "Inflection Points")
+	WAVE/Z/D inflectionPoints = ListToNumericWave(inflectionPointList, ",")
+
+	if(!WaveExists(inflectionPoints))
+		return $""
+	endif
+
+	if(numEntries == 1 && IsNaN(inflectionPoints[0]))
+		// calculation error
+		return $""
+	endif
+
+	return inflectionPoints
 End
 
 static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
