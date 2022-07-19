@@ -435,6 +435,8 @@ static Function TestEpochsGeneric(device)
 		TestUnacquiredEpoch(sweep, epochChannel)
 
 		TestNaming(epochChannel)
+
+		TestTrigonometricEpochs(sweep, epochChannel, DAChannel)
 	endfor
 End
 
@@ -475,6 +477,78 @@ static Function TestNaming(WAVE/T epochChannel)
 	Sort shortnames, shortnames
 	WAVE/Z uniqueShortNames = GetUniqueEntries(shortnames)
 	CHECK_EQUAL_WAVES(shortnames, uniqueShortNames)
+End
+
+static Function TestTrigonometricEpochs(WAVE sweep, WAVE/T epochChannel, WAVE DAchannel)
+	variable numRows, i, num, epochBegin, epochEnd
+	string shortname, epochType, levelTwoType, levelTwoNumber, levelThreeType, levelThreeNumber, refEpochType
+
+	numRows = DimSize(epochChannel, ROWS)
+
+	Make/FREE/T/N=(numRows) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
+
+	refEpochType = "TG"
+
+	for(i = 0; i < numRows; i += 1)
+		shortname = shortnames[i]
+
+		SplitString/E="(?i)E[[:digit:]]+_([a-z]+)(_I|_C)([[:digit:]]+)(_H)?([[:digit:]]+)?" shortname, epochType, levelTwoType, levelTwoNumber, levelThreeType, levelThreeNumber
+
+		if(V_Flag < 2)
+			CHECK_NEQ_STR(epochType, refEpochType)
+			continue
+		endif
+
+		CHECK_EQUAL_STR(epochType, refEpochType)
+
+		if(!cmpstr(levelTwoType, "_C") && !cmpstr(levelThreeType, "_H"))
+			num = str2num(levelThreeNumber)
+			CHECK(IsInteger(num))
+			CHECK_GE_VAR(num, 0)
+			CHECK_LE_VAR(num, 1)
+		elseif(!cmpstr(levelTwoType, "_C"))
+			num = str2num(levelTwoNumber)
+			CHECK(IsInteger(num))
+			CHECK_GE_VAR(num, 0)
+
+			FindValue/TEXT=(shortname + "_H0") shortnames
+			CHECK_GE_VAR(V_Value, 0)
+
+			FindValue/TEXT=(shortname + "_H1") shortnames
+			CHECK_GE_VAR(V_Value, 0)
+		elseif(!cmpstr(levelTwoType, "_I"))
+			num = str2num(levelTwoNumber)
+			CHECK_GE_VAR(num, 0)
+			CHECK_LE_VAR(num, 1)
+			continue
+		else
+			FAIL()
+		endif
+
+		// check amplitude at begin/end
+		epochBegin = str2num(epochChannel[i][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		epochEnd = str2num(epochChannel[i][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+
+		Duplicate/FREE/R=(epochBegin - OTHER_EPOCHS_PRECISION / 2, epochBegin + OTHER_EPOCHS_PRECISION / 2) DAchannel, slice
+		if(GetRowIndex(slice, val = 0) == 0)
+			// one of the points was zero
+			PASS()
+		else
+			// if not we need at least a zero crossing
+			FindLevel/Q slice, 0
+			CHECK_EQUAL_VAR(V_flag, 0)
+		endif
+
+		Duplicate/FREE/R=(epochEnd - OTHER_EPOCHS_PRECISION / 2, epochEnd + OTHER_EPOCHS_PRECISION / 2) DAchannel, slice
+		if(GetRowIndex(slice, val = 0) == 0)
+			// one of the points was zero
+			PASS()
+		else
+			// if not we need at least a zero crossing
+			FindLevel/Q slice, 0
+			CHECK_EQUAL_VAR(V_flag, 0)
+		endif
+	endfor
 End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
@@ -734,4 +808,19 @@ Function EP_TestUserEpochs_REENTRY([str])
 			endfor
 		endfor
 	endfor
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest14([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "EpochTest_Trig_DA_0", "EpochTest_TrigFl_DA_0")
+End
+
+Function EP_EpochTest14_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
 End
