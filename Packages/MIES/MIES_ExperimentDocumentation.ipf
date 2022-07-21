@@ -96,6 +96,10 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	EnsureLargeEnoughWave(valuesSweep, minimumSize=rowIndex, dimension=ROWS)
 	valuesSweep[rowIndex] = str2num(values[rowIndex][0])
 
+	WAVE valuesNull = ExtractLogbookSliceEmpty(values)
+	EnsureLargeEnoughWave(valuesNull, minimumSize=rowIndex, dimension=ROWS)
+	// nothing to do
+
 	numCols = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
