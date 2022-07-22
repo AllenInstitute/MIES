@@ -5284,15 +5284,13 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 	Setvariable setvar_Settings_IC_ADgain win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
-	if(cmpstr(DAP_GetNiceAmplifierChannelList(), NONE))
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
-		if(isFinite(ampSerial) && isFinite(ampChannelID))
-			entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-			Popupmenu popup_Settings_Amplifier win = $device, popmatch=entry
-		else
-			Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
-		endif
+	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
+	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+	if(isFinite(ampSerial) && isFinite(ampChannelID))
+		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+		Popupmenu popup_Settings_Amplifier win = $device, popmatch=entry
+	else
+		Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
 	endif
 End
 
