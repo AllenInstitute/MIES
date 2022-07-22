@@ -158,7 +158,7 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 		err = ClearRTError()
 	endtry
 
-	if(DataFolderRefStatus(dfrOut) == 3)
+	if(IsFreeDatafolder(dfrOut))
 		MoveDataFolder dfrOut, dfrAsync
 	elseif(DataFolderExistsDFR(dfrOut))
 		MoveDataFolder dfrOut, dfrAsync

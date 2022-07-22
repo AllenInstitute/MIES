@@ -297,7 +297,7 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 	variable fullPath, recursive, typeFlag, exprType
 
 	variable i, numFolders
-	string name, folders, basePath, subList
+	string name, folders, basePath, subList, freeDFName
 	string list = ""
 
 	ASSERT_TS(DataFolderExistsDFR(dfr),"Non-existing datafolder")
@@ -325,11 +325,14 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 		ASSERT_TS(exprType == MATCH_REGEXP || exprType == MATCH_WILDCARD, "Invalid exprType")
 	endif
 
-	basePath = GetDataFolder(1, dfr)
-
 	list = ListMatchesExpr(GetAllObjects(dfr, typeFlag), matchExpr, exprType)
 
 	if(fullPath)
+		basePath = GetDataFolder(1, dfr)
+		if(IsFreeDataFolder(dfr))
+			freeDFName = StringFromList(0, basePath, ":") + ":"
+			basePath = ReplaceString(freeDFName, basePath, "", 0, 1)
+		endif
 		list = AddPrefixToEachListItem(basePath, list)
 	endif
 
@@ -337,8 +340,7 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 		folders = GetAllObjects(dfr, COUNTOBJECTS_DATAFOLDER)
 		numFolders = ItemsInList(folders)
 		for(i = 0; i < numFolders; i+=1)
-			name = basePath + StringFromList(i, folders)
-			DFREF subFolder = $name
+			DFREF subFolder = dfr:$StringFromList(i, folders)
 			subList = GetListOfObjects(subFolder, matchExpr, typeFlag = typeFlag, fullPath=fullPath, recursive=recursive, exprType=exprType)
 			if(!IsEmpty(subList))
 				list = AddListItem(RemoveEnding(subList, ";"), list)
@@ -659,7 +661,13 @@ End
 /// @brief Check if the passed datafolder reference is a global/permanent datafolder
 threadsafe Function IsGlobalDataFolder(DFREF dfr)
 
-	return DataFolderExistsDFR(dfr) && DataFolderRefStatus(dfr) != 3
+	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == DFREF_VALID
+End
+
+/// @brief Returns 1 if dfr is a valid free datafolder, 0 otherwise
+threadsafe Function IsFreeDatafolder(DFREF dfr)
+
+	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == (DFREF_VALID | DFREF_FREE)
 End
 
 /// @brief Create a datafolder and all its parents,
@@ -1526,7 +1534,7 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 
 	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
-	ASSERT_TS(DataFolderRefStatus(dfr) != 3, "dfr can not be a free DF")
+	ASSERT_TS(!IsFreeDatafolder(dfr), "dfr can not be a free DF")
 
 	numRuns = 10000
 	// shorten basename so that we can attach some numbers
