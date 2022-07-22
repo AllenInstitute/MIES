@@ -7650,12 +7650,13 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	return configWave
 End
 
+/// @brief Return the sampling interval [ms] rounded to microseconds
 static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo)
 	variable samplingInterval
 
 	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 
-	// convert to integer as that is stored in the config wave
+	// round to full microseconds as that is stored in GetDAQConfigWave()
 	return round(samplingInterval * 1000) / 1000 // NOLINT
 End
 
