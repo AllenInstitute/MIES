@@ -1904,8 +1904,6 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
 	if(!DimSize(telegraphServers, ROWS))
-		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		ControlWindowToFront()
 		return AddListItem("\\M1(MC not available", NONE, ";", inf)
 	endif
 

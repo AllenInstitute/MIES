@@ -1669,6 +1669,12 @@ Function AI_FindConnectedAmps()
 	SetDataFolder saveDFR
 
 	list = DAP_FormatTelegraphServerList(telegraphServers)
+
+	if(IsEmpty(list))
+		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		ControlWindowToFront()
+	endif
+
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 End
 
