@@ -550,11 +550,11 @@ threadsafe Function BUG_TS(string msg)
 
 #ifdef AUTOMATED_TESTING
 
-	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
 	bugCount += 1
 	TSDS_Write(TSDS_BUGCOUNT, var = bugCount)
-	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	ASSERT_TS(IsNaN(bugCount), "BUG_TS: Should never be called during automated testing.")
 #endif
