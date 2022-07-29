@@ -641,6 +641,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetControlUserData(device, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(device, "Check_Settings_BackgrndDataAcq", "oldState", "")
 	SetControlUserData(device, "check_Settings_TP_SaveTP", "oldState", "")
+	SetControlUserData(device, "check_Settings_SaveAmpSettings", "oldState", "")
 
 	CheckBox Check_Settings_BkgTP WIN = $device,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $device, value= 1
@@ -5562,6 +5563,25 @@ Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
 			else
 				DisableControl(pa.win, "Popup_Settings_FixedFreq")
 			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_CheckProc_RequireAmplifier(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable checked
+	string device
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			checked = cba.checked
+			device  = cba.win
+			DAG_Update(device, cba.ctrlName, val = checked)
+
+			AdaptDependentControls(device, "check_Settings_SaveAmpSettings", CHECKBOX_SELECTED, checked, DEP_CTRLS_SAME)
 			break
 	endswitch
 

@@ -3854,7 +3854,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_AmpIEQZstep,value=0
-	CheckBox check_Settings_RequireAmpConn,pos={324.00,693.00},size={108.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox check_Settings_RequireAmpConn,pos={324.00,693.00},size={108.00,15.00},disable=1,proc=DAP_CheckProc_RequireAmplifier
 	CheckBox check_Settings_RequireAmpConn,title="Require Amplifier"
 	CheckBox check_Settings_RequireAmpConn,help={"Require that every active headstage is connected to an amplifier for TP/DAQ."}
 	CheckBox check_Settings_RequireAmpConn,userdata(tabnum)="5"
