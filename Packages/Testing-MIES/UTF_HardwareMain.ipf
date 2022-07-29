@@ -303,10 +303,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	TSDS_Write(TSDS_BUGCOUNT, var = 0)
-	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
-
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
 #endif

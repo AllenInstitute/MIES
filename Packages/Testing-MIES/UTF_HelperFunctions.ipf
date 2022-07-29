@@ -63,6 +63,10 @@ Function AdditionalExperimentCleanup()
 
 	NVAR bugCount = $GetBugCount()
 	KillVariables bugCount
+
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
+	TSDS_Write(TSDS_BUGCOUNT, var = 0)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 End
 
 static Function WaitForPubSubHeartbeat()
