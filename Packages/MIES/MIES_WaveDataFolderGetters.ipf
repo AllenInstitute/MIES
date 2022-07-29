@@ -688,16 +688,6 @@ threadsafe Function/S GetSweepFormulaPathAsString()
 	return GetMiesPathAsString() + ":SweepFormula"
 End
 
-/// @brief Retuns data folder path to the manipulator folder, e.g. root:mies:manipulators
-Function/S GetManipulatorPathAsString()
-	return GetMiesPathAsString() + ":Manipulators"
-End
-
-/// @brief Return a data folder reference for the Manipulator folder
-Function/DF GetManipulatorPath()
-	return createDFWithAllParents(GetManipulatorPathAsString())
-End
-
 /// @brief Return a datafolder reference to a subfolder below `dfr` for splitted sweep specific data, e.g. dfr:X_5
 Function/DF GetSingleSweepFolder(dfr, sweepNo)
 	DFREF dfr
