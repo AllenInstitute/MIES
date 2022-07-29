@@ -51,16 +51,14 @@ static Function SetAnalysisFunctions_IGNORE()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead])
+static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, useAmplifier])
 	STRUCT DAQSettings& s
 	string devices
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-	variable setAnalysisFuncs, startTPInstead
+	variable setAnalysisFuncs, startTPInstead, useAmplifier
 
 	string unlockedDevice, device
 	variable i, numEntries
-
-	EnsureMCCIsOpen()
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
@@ -82,8 +80,18 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		setAnalysisFuncs = !!setAnalysisFuncs
 	endif
 
+	if(ParamIsDefault(useAmplifier))
+		useAmplifier = 1
+	else
+		useAmplifier = !!useAmplifier
+	endif
+
 	if(setAnalysisFuncs)
 		SetAnalysisFunctions_IGNORE()
+	endif
+
+	if(useAmplifier)
+		EnsureMCCIsOpen()
 	endif
 
 	numEntries = ItemsInList(devices)
@@ -105,19 +113,24 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC_DA_0")
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetD_DA_0")
 
-		// HS 0 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
+		if(useAmplifier)
+			// HS 0 with Amp
+			PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-		// HS 1 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
+			// HS 1 with Amp
+			PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
 
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
-		DoUpdate/W=$device
+			PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
+			PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
 
-		PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+			DoUpdate/W=$device
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+		else
+			PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = CHECKBOX_UNSELECTED)
+		endif
 
 		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
