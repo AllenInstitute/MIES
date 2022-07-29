@@ -575,3 +575,11 @@ Function CheckForBugMessages()
 		CHECK_EQUAL_VAR(bugCount_ts, NaN)
 	endif
 End
+
+Function DisableBugChecks()
+
+	NVAR bugCount = $GetBugCount()
+	bugCount = NaN
+
+	TSDS_Write(TSDS_BUGCOUNT, var = NaN)
+End

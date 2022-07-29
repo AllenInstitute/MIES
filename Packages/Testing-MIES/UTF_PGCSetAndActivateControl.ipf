@@ -20,6 +20,8 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	if(SVAR_Exists(panel))
 		KillWindow/Z $panel
 	endif
+
+	CheckForBugMessages()
 End
 
 Function CreatePGCTestPanel_IGNORE()

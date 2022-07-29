@@ -33,6 +33,8 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	string testCase
 
 	KillWindow/Z MainPanel
+
+	CheckForBugMessages()
 End
 
 Window MainPanel() : Panel
