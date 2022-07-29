@@ -1868,6 +1868,13 @@ CONSTANT PSQ_RESULTS_DONE = 0x1
 CONSTANT PSQ_RESULTS_CONT = 0x2
 /// @}
 
+/// @name Possible mode parameters for AdaptDependentControls
+/// @anchor DependentControlModes
+/// @{
+Constant DEP_CTRLS_SAME   = 0x1
+Constant DEP_CTRLS_INVERT = 0x2
+/// @}
+
 Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro
 
 /// @name Returned bits of DataFolderRefStatus

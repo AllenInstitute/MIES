@@ -4062,7 +4062,7 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 			device = cba.win
 			checked = cba.checked
 			DAG_Update(device, cba.ctrlName, val = checked)
-			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", checked)
+			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
 			break
 	endswitch
 
@@ -4172,9 +4172,9 @@ Function DAP_AdaptAutoTPColorAndDependent(string device)
 	disabledSaveTP = IsControlDisabled(device, "check_Settings_TP_SaveTP")
 
 	if(hasAutoTPActive && !disabledSaveTP)
-		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_SELECTED)
+		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED, CHECKBOX_SELECTED, DEP_CTRLS_SAME)
 	elseif(!hasAutoTPActive && disabledSaveTP)
-		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED)
+		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED, CHECKBOX_UNSELECTED, DEP_CTRLS_SAME)
 	endif
 
 	if(hasAutoTPActive && runMode != TEST_PULSE_NOT_RUNNING && !(runMode & TEST_PULSE_DURING_RA_MOD))

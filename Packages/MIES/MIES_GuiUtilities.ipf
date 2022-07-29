@@ -2152,49 +2152,68 @@ static Function [string match, variable found] GetControlSettingImpl(string win,
 	return [str, !!V_flag]
 End
 
-/// @brief Check and disable dependent controls
+/// @brief Set the checked/unchecked and enabled/disabled state of the given list of controls
 ///
-/// Enables a list of checkbox controls and stores their
-/// current values as user data before disabling them. On switching back their
-/// previous values are restored and they are also enabled again.
-Function AdaptDependentControls(string device, string controls, variable newState)
+/// Allows to set a number of related checkbox controls depending on the state of the main control.
+///
+/// \rst
+///
+/// ============== ========== ======== ======================
+///  Main default   Main new   Mode     Action on controls
+/// ============== ========== ======== ======================
+///      ON           OFF      same     unchecked & disabled
+///      ON           OFF      invert   checked & disabled
+///      ON           ON        ?       enabled & restored
+/// -------------- ---------- -------- ----------------------
+///      OFF          ON       same     checked & disabled
+///      OFF          ON       invert   unchecked & disabled
+///      OFF          OFF       ?       enabled & restored
+/// ============== ========== ======== ======================
+///
+/// \endrst
+Function AdaptDependentControls(string win, string controls, variable defaultMainState, variable newMainState, variable mode)
 
-	variable numControls, oldState, i
+	variable numControls, oldState, i, newState
 	string ctrl
 
-	newState = !!newState
+	defaultMainState = !!defaultMainState
+	newMainState = !!newMainState
 	numControls = ItemsInList(controls)
 
-	if(newState)
-		for(i = 0; i < numControls; i += 1)
-			ctrl = StringFromList(i, controls)
-			// store current state
-			oldState = DAG_GetNumericalValue(device, ctrl)
-			SetControlUserData(device, ctrl, "oldState", num2str(oldState))
-
-			// and check
-			PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
-		endfor
-
-		// and disable
-		DisableControls(device, controls)
-	else
-		// enable
-		EnableControls(device, controls)
+	if(defaultMainState == newMainState)
+		// enabled controls and restore the previous state
+		EnableControls(win, controls)
 
 		for(i = 0; i < numControls; i += 1)
 			ctrl = StringFromList(i, controls)
 
 			// and read old state
-			oldState = str2num(GetUserData(device, ctrl, "oldState"))
+			oldState = str2num(GetUserData(win, ctrl, "oldState"))
 
 			// invalidate old state
-			SetControlUserData(device, ctrl, "oldState", "")
+			SetControlUserData(win, ctrl, "oldState", "")
 
 			// set old state
-			PGC_SetAndActivateControl(device, ctrl, val = oldState)
+			PGC_SetAndActivateControl(win, ctrl, val = oldState)
 		endfor
+
+		return NaN
 	endif
+
+	newState = (mode == DEP_CTRLS_SAME) ? newMainState : !newMainState
+
+	for(i = 0; i < numControls; i += 1)
+		ctrl = StringFromList(i, controls)
+		// store current state
+		oldState = DAG_GetNumericalValue(win, ctrl)
+		SetControlUserData(win, ctrl, "oldState", num2str(oldState))
+
+		// and apply new state
+		PGC_SetAndActivateControl(win, ctrl, val = newState)
+	endfor
+
+	// and disable
+	DisableControls(win, controls)
 End
 
 /// @brief Adjust the "Normal" ruler in the notebook so that all text is visible.
