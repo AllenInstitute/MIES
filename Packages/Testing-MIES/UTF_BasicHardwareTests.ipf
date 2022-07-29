@@ -5534,3 +5534,61 @@ static Function ScaleZeroWithCycling_REENTRY([string str])
 	WAVE/Z stimScale_HS1 = GetLastSettingEachRAC(numericalValues, sweepNo, "Stim Scale Factor", 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
+
+static Function AcquireWithoutAmplifier_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 11)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = 21e-5)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = 31)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = 41e-5)
+
+	// toggle headstage to use the newly changed gains
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
+
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 10)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = 20e-5)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = 30)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = 40e-5)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AcquireWithoutAmplifier([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	AcquireData(s, str, useAmplifier = 0, preAcquireFunc = AcquireWithoutAmplifier_IGNORE)
+End
+
+static Function AcquireWithoutAmplifier_REENTRY([string str])
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	sweepNo = 0
+
+	WAVE/Z DAGain = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAGain, {11, 30, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z ADGain = GetLastSetting(numericalValues, sweepNo, "AD Gain", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADGain, {21e-5, 40e-5, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z operationMode = GetLastSetting(numericalValues, sweepNo, "Operating Mode", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(operationMode, NULL_WAVE)
+
+	WAVE/Z requireAmplifier = GetLastSetting(numericalValues, sweepNo, "Require amplifier", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(requireAmplifier, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
+
+	WAVE/Z saveAmpSettings = GetLastSetting(numericalValues, sweepNo, "Save amplifier settings", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(saveAmpSettings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
+End
