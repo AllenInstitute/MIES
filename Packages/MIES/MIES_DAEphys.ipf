@@ -2847,7 +2847,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(DAGain, gain, tol=1e-4))
+	if(!CheckIfClose(DAGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", device, DACchannel, DAGain, gain
 		ControlWindowToFront()
 		return 1
@@ -2868,7 +2868,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && cmpstr(ADUnit, unit))
+	if(cmpstr(ADUnit, unit))
 		printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, ADCchannel, ADUnit, unit
 		ControlWindowToFront()
 		return 1
@@ -2881,7 +2881,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(ADGain, gain, tol=1e-4))
+	if(!CheckIfClose(ADGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, ADCchannel, ADGain, gain
 		ControlWindowToFront()
 		return 1
