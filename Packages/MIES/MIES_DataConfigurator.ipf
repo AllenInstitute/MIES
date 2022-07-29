@@ -1021,6 +1021,9 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "JSON config file [stimset nwb file path]", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(device, "", EXPCONFIG_UDATA_STIMSET_NWB_PATH))
 	DC_DocumentChannelProperty(device, "TP after DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_TPAfterDAQ"))
 	DC_DocumentChannelProperty(device, "Get/Set Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "Check_DataAcq_Get_Set_ITI"))
+	DC_DocumentChannelProperty(device, "Double precision data", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "Check_Settings_UseDoublePrec"))
+	DC_DocumentChannelProperty(device, "Save amplifier settings", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
+	DC_DocumentChannelProperty(device, "Require amplifier", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
