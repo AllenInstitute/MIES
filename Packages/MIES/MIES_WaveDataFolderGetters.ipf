@@ -688,6 +688,16 @@ threadsafe Function/S GetSweepFormulaPathAsString()
 	return GetMiesPathAsString() + ":SweepFormula"
 End
 
+/// @brief Returns a data folder reference to the call once folder
+threadsafe Function/DF GetCalledOncePath()
+	return createDFWithAllParents(GetCalledOncePathAsString())
+End
+
+/// @brief Returns a name of the data folder for the call once folder, e.g. root:MIES:CalledOnce
+threadsafe Function/S GetCalledOncePathAsString()
+	return GetMiesPathAsString() + ":CalledOnce"
+End
+
 /// @brief Return a datafolder reference to a subfolder below `dfr` for splitted sweep specific data, e.g. dfr:X_5
 Function/DF GetSingleSweepFolder(dfr, sweepNo)
 	DFREF dfr

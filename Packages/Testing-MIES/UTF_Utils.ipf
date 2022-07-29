@@ -6189,3 +6189,19 @@ Function IVR_Works()
 	CHECK(!IsValidRegexp("*"))
 	CHECK(!IsValidRegexp(""))
 End
+
+Function CO_Works()
+
+	try
+		AlreadyCalledOnce(""); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	CHECK_EQUAL_VAR(AlreadyCalledOnce("abcd"), 0)
+	CHECK_EQUAL_VAR(AlreadyCalledOnce("abcd"), 1)
+
+	CHECK_EQUAL_VAR(AlreadyCalledOnce("efgh"), 0)
+	CHECK_EQUAL_VAR(AlreadyCalledOnce("efgh"), 1)
+End

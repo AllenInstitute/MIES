@@ -637,3 +637,8 @@ Function/S GetTestpulseCycleID(device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "tpCycleID", initialValue=NaN)
 End
+
+/// @brief Returns the path to the "called once" variable of the given name
+Function/S GetCalledOnceVariable(string name)
+	return GetNVARAsString(GetCalledOncePath(), name, initialValue=0)
+End
