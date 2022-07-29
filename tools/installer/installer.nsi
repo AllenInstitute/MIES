@@ -35,7 +35,7 @@
 !define IGORUTILXOPSOURCETEMPL "MIESUtils-64.xop"
 !define IGORJSONXOPSOURCETEMPL "JSON-64.xop"
 !define IGORZEROMQXOPSOURCETEMPL "ZeroMQ-64.xop"
-!define IGORTUFXOPSOURCETEMPL "TUFXOP-64.xop"
+!define IGORTUFXOPSOURCETEMPL "TUF-64.xop"
 
 # Default paths for Igor Installation where the installer looks automatically
 !define IGOR9DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 9 Folder"

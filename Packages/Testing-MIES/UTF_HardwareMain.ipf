@@ -303,9 +303,9 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
 	TSDS_Write(TSDS_BUGCOUNT, var = 0)
-	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
@@ -398,9 +398,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 		CHECK_EQUAL_VAR(bugCount, NaN)
 	endif
 
-	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
 	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
-	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	if(IsFinite(bugCount_ts))
 		CHECK_EQUAL_VAR(bugCount_ts, 0)
