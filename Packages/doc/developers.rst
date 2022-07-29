@@ -558,3 +558,19 @@ The following information is taken from annotated excerpts from the above:
    :align: center
 
 - Note on time aka xvalue concatenation logics
+
+Adding support for new NI hardware
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Newly added NI hardware must fulfill the following properties:
+
+  - Allow 500kHz sampling rate for one AI/AO channel
+  - At least one port of each type: AI/AO/DIO
+  - Supported by the NIDAQmx XOP and our use of it
+
+To add new hardware:
+
+  - Visit the `NI <https://ni.com>`__ website and check if the device fullfills our minimum requirements
+  - Ask the user to send you the output of :cpp:func:`HW_NI_PrintPropertiesOfDevices()`
+  - Add that info to :cpp:var:`NI_DAC_PATTERNS`
+  - Update Readme.md
