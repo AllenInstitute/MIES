@@ -58,10 +58,10 @@ threadsafe static Function/S GetNVARAsString(dfr, globalVarName, [initialValue])
 	string globalVarName
 	variable initialValue
 
-	ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
-
 	NVAR/Z/SDFR=dfr var = $globalVarName
 	if(!NVAR_Exists(var))
+		ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
+
 		variable/G dfr:$globalVarName
 
 		NVAR/SDFR=dfr var = $globalVarName
@@ -85,10 +85,10 @@ threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 	string globalStrName
 	string initialValue
 
-	ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
-
 	SVAR/Z/SDFR=dfr str = $globalStrName
 	if(!SVAR_Exists(str))
+		ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
+
 		String/G dfr:$globalStrName
 
 		SVAR/SDFR=dfr str = $globalStrName
