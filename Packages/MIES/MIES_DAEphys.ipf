@@ -24,8 +24,8 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
-// PCIe-6343 | PXI-6259 | PCIe-6341
-static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
+//                                   PCIe-6343                                    | PXI-6259                                   | PCIe-6341                                 | USB-6346
+static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8|AI:8;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
