@@ -734,7 +734,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
-	variable avgCheckPass, stopReason
+	variable avgCheckPass, stopReason, stimsetQC
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -800,6 +800,17 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_CHIRP:
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
+				stimsetQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				// not available in ed5d20c7 (Merge pull request #1434 from
+				// AllenInstitute/bugfix/1434-install-tuf-xop-with-release-package,
+				// 2022-07-20) and earlier
+				if(IsFinite(stimsetQC) && !stimsetQC)
+					sprintf text, "Sweep %d failed: stimset is unsuitable", sweepNo
+					break
+				endif
+
 				msg = AD_GetBaselineFailMsg(PSQ_CHIRP, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
