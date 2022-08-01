@@ -63,6 +63,10 @@ Function AdditionalExperimentCleanup()
 
 	NVAR bugCount = $GetBugCount()
 	KillVariables bugCount
+
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
+	TSDS_Write(TSDS_BUGCOUNT, var = 0)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 End
 
 static Function WaitForPubSubHeartbeat()
@@ -549,4 +553,33 @@ Function/WAVE ExtractSweepsFromSFPairs(WAVE/T/Z wv)
 	endfor
 
 	return wv
+End
+
+Function CheckForBugMessages()
+	variable bugCount_ts
+
+	NVAR bugCount = $GetBugCount()
+	if(IsFinite(bugCount))
+		CHECK_EQUAL_VAR(bugCount, 0)
+	else
+		CHECK_EQUAL_VAR(bugCount, NaN)
+	endif
+
+	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
+	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
+	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
+
+	if(IsFinite(bugCount_ts))
+		CHECK_EQUAL_VAR(bugCount_ts, 0)
+	else
+		CHECK_EQUAL_VAR(bugCount_ts, NaN)
+	endif
+End
+
+Function DisableBugChecks()
+
+	NVAR bugCount = $GetBugCount()
+	bugCount = NaN
+
+	TSDS_Write(TSDS_BUGCOUNT, var = NaN)
 End

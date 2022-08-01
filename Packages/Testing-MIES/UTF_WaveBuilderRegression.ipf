@@ -17,7 +17,7 @@ End
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	// do nothing
+	CheckForBugMessages()
 End
 
 // Copy stimset parameter waves into our own permanent location

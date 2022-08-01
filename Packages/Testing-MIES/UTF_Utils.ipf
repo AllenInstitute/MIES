@@ -5766,6 +5766,8 @@ Function BUGWorks()
 
 	bugCount = ROVar(GetBugCount())
 	CHECK_EQUAL_VAR(bugCount, 1)
+
+	DisableBugChecks()
 End
 
 Function BUG_TSWorks1()
@@ -5785,6 +5787,8 @@ Function BUG_TSWorks1()
 
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, 1)
+
+	DisableBugChecks()
 End
 
 threadsafe static Function BugHelper(variable idx)
@@ -5815,6 +5819,8 @@ Function BUG_TSWorks2()
 
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, numThreads)
+
+	DisableBugChecks()
 End
 
 Function/WAVE InvalidUnits()

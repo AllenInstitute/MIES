@@ -26,6 +26,8 @@ static Function TEST_CASE_END_OVERRIDE(name)
 	KillDataFolder/Z root:A1
 	KillDataFolder/Z root:B1
 	KillDataFolder/Z root:C1
+
+	CheckForBugMessages()
 End
 
 Function AssertsOnEmptyString1()

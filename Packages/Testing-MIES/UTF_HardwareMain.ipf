@@ -303,10 +303,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	TSDS_Write(TSDS_BUGCOUNT, var = 0)
-	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
-
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
 #endif
@@ -329,7 +325,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
 	string dev, experimentNWBFile, baseFolder, nwbFile
-	variable numEntries, i, fileID, nwbVersion, expensiveChecks, bugCount_ts
+	variable numEntries, i, fileID, nwbVersion, expensiveChecks
 
 	expensiveChecks = DoExpensiveChecks()
 
@@ -391,22 +387,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	StopAllBackgroundTasks()
 
-	NVAR bugCount = $GetBugCount()
-	if(IsFinite(bugCount))
-		CHECK_EQUAL_VAR(bugCount, 0)
-	else
-		CHECK_EQUAL_VAR(bugCount, NaN)
-	endif
-
-	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
-	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
-
-	if(IsFinite(bugCount_ts))
-		CHECK_EQUAL_VAR(bugCount_ts, 0)
-	else
-		CHECK_EQUAL_VAR(bugCount_ts, NaN)
-	endif
+	CheckForBugMessages()
 
 	if(expensiveChecks)
 		// store experiment NWB file for later validation

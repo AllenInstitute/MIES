@@ -30,6 +30,8 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	dummy = ThreadGroupRelease(-2)
 	DFREF dfr = MIES_ASYNC#getAsyncHomeDF()
 	KillDataFolder/Z dfr
+
+	CheckForBugMessages()
 End
 
 /// @brief Test to start Framework with zero threads

@@ -125,3 +125,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	AdditionalExperimentCleanup()
 End
+
+Function TEST_CASE_END_OVERRIDE(string testcase)
+	CheckForBugMessages()
+End

@@ -72,3 +72,7 @@ End
 Function TEST_BEGIN_OVERRIDE(string name)
 	RetrieveAllWindowsInCI()
 End
+
+Function TEST_CASE_END_OVERRIDE(string testcase)
+	CheckForBugMessages()
+End
