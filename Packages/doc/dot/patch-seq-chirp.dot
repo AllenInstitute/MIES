@@ -53,6 +53,7 @@ digraph G {
 	n95	[label="Store amplifier setting\n LPF primary output in labnotebook"];
 	"Prepare DAQ/Pre Set Event" -> n95;
 	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=No];
+	"Calculate number of cycles\n in chirp, store in labnotebook"	[label="Add stimset QC entry\nwhich denotes if the stimset is suitable"];
 	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"	[label=No];
 	n64	[label="Store Spike check in labnotebook"];
 	n63 -> n64;
@@ -60,13 +61,20 @@ digraph G {
 	n63 -> n65;
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	[label=No];
 	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	[label=Yes];
+	n98	[label="Set amplifier setting\n LPF primary output\n from labnotebook entry"];
+	n97 -> n98	[label=True];
 	n73	[label="\"Spike Check\" labnotebook entry is true?"];
 	n92 -> n73;
 	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
 	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
+	n96	[label="Use \"AmpBesselFilter\" analysis parameter\n (defaulting to 10e3 if not present)\n as LPF primary output"];
+	n95 -> n96;
 	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	[label="Have one"];
 	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?"	[label="None left"];
-	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
+	n99	[label="Early sweep stop\nand jump to end of set"];
+	"Calculate number of cycles\n in chirp, store in labnotebook" -> n99	[label=Failed];
+	n100	[labell="Add user epoch for chirp evaluation cycles"];
+	"Calculate number of cycles\n in chirp, store in labnotebook" -> n100	[label=Passed];
 	n66	[label="Has acquired data in chirp region?"];
 	n65 -> n66	[label=No];
 	n87	[label="Read analysis parameter \"UseTrueRestingMembranePotentialVoltage\",\n defaulting to true."];
@@ -74,11 +82,6 @@ digraph G {
 	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=No];
 	n74	[label="Spike QC passed?"];
 	n73 -> n74	[label=Yes];
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	[label=No];
-	n76	[label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	[label=Yes];
-	n74 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=Yes];
-	n74 -> "Mark sweep as failed\n in labnotebook"	[label=No];
 	"Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
 	"Check if no TTL channels are active" -> "Stimset is large enough";
 	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=Yes];
@@ -91,6 +94,11 @@ digraph G {
 	n87 -> n80	[label=False];
 	n88	[label="Find passing set with PSQ_TrueRestingMembranePotential\n analysis function"];
 	n87 -> n88	[label=True];
+	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	[label=No];
+	n76	[label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
+	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	[label=Yes];
+	n74 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	[label=Yes];
+	n74 -> "Mark sweep as failed\n in labnotebook"	[label=No];
 	"Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
 	n85	[label="Check if the acquired data\n has that sampling interval"];
 	n76 -> n85;
@@ -165,8 +173,5 @@ digraph G {
 	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
 	n83 -> "All checks passed";
 	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
-	n96	[label="Use \"AmpBesselFilter\" analysis parameter\n (defaulting to 10e3 if not present)\n as LPF primary output"];
-	n95 -> n96;
-	n98	[label="Set amplifier setting\n LPF primary output\n from labnotebook entry"];
-	n97 -> n98	[label=True];
+	n100 -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
 }
