@@ -4144,8 +4144,8 @@ Function PSQ_Chirp(device, s)
 
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
-	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale, initLPF, ampBesselFilter
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
+	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, scalingFactorDAScale, initLPF, ampBesselFilter
+	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass
 	string setName, key, msg, stimset, str, daScaleOperator
@@ -4440,8 +4440,6 @@ Function PSQ_Chirp(device, s)
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 	fifoTime = s.lastKnownRowIndex * DimDelta(s.rawDACWAVE, ROWS)
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
@@ -4484,10 +4482,10 @@ Function PSQ_Chirp(device, s)
 		chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
 		chirpEnd   = chirpStart + durations[s.headstage]
 
-		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoInStimsetTime %g", chirpStart, chirpEnd, fifoInStimsetTime
+		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoTime %g", chirpStart, chirpEnd, fifoTime
 		DEBUGPRINT(msg)
 
-		if(fifoInStimsetTime > chirpStart)
+		if(fifoTime > chirpStart)
 			level = AFH_GetAnalysisParamNumerical("FailedLevel", s.params)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_CHIRP, s.rawDACWave, s.headstage, chirpStart, level, searchEnd = chirpEnd, \
@@ -4497,7 +4495,7 @@ Function PSQ_Chirp(device, s)
 			if(numberOfSpikesFound > 0)
 				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 0
-			elseif(fifoInStimsetTime > chirpEnd)
+			elseif(fifoTime > chirpEnd)
 				// beyond chirp and we found nothing, so we passed
 				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 1
