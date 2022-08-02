@@ -117,6 +117,7 @@
 /// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_P    PB, SE, AR                  Pulse of testpulse                                          -1
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B1   PB, SE, AR                  Post pulse baseline of testpulse                            -1
 /// Type=Chirp Cycle Evaluation                                U_CR_CE    CR                          Evaluation chunk for bounds state                           -1
+/// Type=Chirp Spike Evaluation                                U_CR_SE    CR                          Evaluation chunk for spike check                            -1
 /// ========================================================== ========== =========================== ========================================================== =======
 ///
 /// The tag entry ``Index=x`` is a zero-based index, which tracks how often the specific type of user epoch appears. So for different
@@ -4316,8 +4317,6 @@ Function PSQ_Chirp(device, s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
-
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			// if we don't have a PSQ_FMT_LBN_BL_QC_PASS entry this means it did not pass
@@ -4438,8 +4437,6 @@ Function PSQ_Chirp(device, s)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
-
 	fifoTime = s.lastKnownRowIndex * DimDelta(s.rawDACWAVE, ROWS)
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
@@ -4477,10 +4474,7 @@ Function PSQ_Chirp(device, s)
 	endif
 
 	if(spikeCheck && IsNaN(spikeCheckPassed))
-		WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
-
-		chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
-		chirpEnd   = chirpStart + durations[s.headstage]
+		[chirpStart, chirpEnd] = PSQ_CR_GetSpikeEvaluationRange(device, s.sweepNo, s.headstage)
 
 		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoTime %g", chirpStart, chirpEnd, fifoTime
 		DEBUGPRINT(msg)
@@ -4580,6 +4574,48 @@ static Function PSQ_CR_FindDependentAnalysisParameter(string device, string name
 	endif
 
 	return 1
+End
+
+/// @brief Return the begin/start [ms] of the spike bounds evaluation range
+///
+/// Zero is the DA/AD wave zero.
+static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRange(string device, variable sweepNo, variable headstage)
+	variable DAC, totalOnsetDelay, chirpStart, chirpEnd
+	string tags, shortname
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	WAVE epochsWave = GetEpochsWave(device)
+
+	WAVE/T/Z evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        "^U_CR_SE$", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+
+	if(WaveExists(evaluationEpoch))
+		ASSERT(DimSize(evaluationEpoch, ROWS) == 1, "Invalid spike evaluation wave size")
+		epBegin = str2num(evaluationEpoch[0][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		epEnd   = str2num(evaluationEpoch[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+		return [epBegin, epEnd]
+	endif
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
+
+	chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
+	chirpEnd   = chirpStart + durations[headstage]
+
+	epBegin = chirpStart * MILLI_TO_ONE
+	epEnd   = chirpEnd * MILLI_TO_ONE
+
+	sprintf tags, "Type=Chirp spike evaluation"
+	sprintf shortName, "CR_SE"
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
 End
 
 /// @brief Return the begin/start [ms] of the chirp bounds evaluation range
