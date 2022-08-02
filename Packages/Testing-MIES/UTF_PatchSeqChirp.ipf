@@ -184,7 +184,7 @@ static Function CheckMCCLPF(string device, variable expectedValue)
 	CHECK_EQUAL_VAR(val, expectedValue)
 end
 
-static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE chirpChunk [variable incomplete, variable sweep])
+static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE chirpChunk, WAVE spikeChunk, [variable incomplete, variable sweep])
 
 	if(ParamIsDefault(incomplete))
 		incomplete = 0
@@ -197,6 +197,7 @@ static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE ch
 	endif
 
 	CheckUserEpochs(device, chirpChunk, EPOCH_SHORTNAME_USER_PREFIX + "CR_CE", sweep = sweep, ignoreIncomplete = incomplete)
+	CheckUserEpochs(device, spikeChunk, EPOCH_SHORTNAME_USER_PREFIX + "CR_SE", sweep = sweep, ignoreIncomplete = incomplete)
 	CheckPSQChunkTimes(device, baselineChunks, sweep = sweep)
 End
 
@@ -276,7 +277,7 @@ static Function PS_CR1_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
 End
 
 static Function PS_CR2_IGNORE(string device)
@@ -358,7 +359,8 @@ static Function PS_CR2_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {522, 854.6995})
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {522, 854.6995}, empty)
 End
 
 static Function PS_CR2a_IGNORE(string device)
@@ -437,7 +439,7 @@ static Function PS_CR2a_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
+	// CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
 End
 
 static Function PS_CR2b_IGNORE(string device)
@@ -516,7 +518,8 @@ static Function PS_CR2b_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
 End
 
 static Function PS_CR3_IGNORE(string device)
@@ -597,7 +600,7 @@ static Function PS_CR3_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, incomplete = 1)
+	// CheckChirpUserEpochs(str, {20, 520}, empty, incomplete = 1)
 End
 
 // No a, b as we don't do boundsState evaluation
@@ -706,12 +709,14 @@ static Function PS_CR4_REENTRY([str])
 	CheckMCCLPF(str, 14)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR4a_IGNORE(string device)
@@ -817,12 +822,13 @@ static Function PS_CR4a_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR4b_IGNORE(string device)
@@ -928,12 +934,13 @@ static Function PS_CR4b_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR5_IGNORE(string device)
@@ -1038,12 +1045,13 @@ static Function PS_CR5_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 // No a, b as this is the same as PS_CR4 for non-symmetric
@@ -1151,12 +1159,13 @@ static Function PS_CR6_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 // No a, b as this is the same as PS_CR4 for non-symmetric
@@ -1260,11 +1269,12 @@ static Function PS_CR7_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
 End
 
 // No a, b as we can't have RERUN for non-symmetric
@@ -1367,11 +1377,12 @@ static Function PS_CR8_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
 End
 
 // No a, b as we can't have RERUN for non-symmetric
@@ -1481,12 +1492,13 @@ static Function PS_CR9_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR9a_IGNORE(string device)
@@ -1594,12 +1606,13 @@ static Function PS_CR9a_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR9b_IGNORE(string device)
@@ -1707,12 +1720,13 @@ static Function PS_CR9b_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 5)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
 static Function PS_CR10_IGNORE(string device)
@@ -1816,11 +1830,12 @@ static Function PS_CR10_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 0)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, sweep = 3)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 4)
 End
 
 // No a, b as this is the same as PS_CR9 for non-symmetric
@@ -1907,7 +1922,7 @@ static Function PS_CR11_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -1992,7 +2007,7 @@ static Function PS_CR12_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, {520, 1519.992})
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -2091,11 +2106,114 @@ static Function PS_CR13_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, sweep = 0, incomplete = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520}, empty, sweep = 3, incomplete = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, sweep = 4)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, sweep = 0, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, {520, 1519.992}, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, {520, 1519.992}, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, sweep = 3, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, {520, 1519.992}, sweep = 4)
+End
+
+static Function PS_CR13a_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=2)
+	// AmpBesselFilter/AmpBesselFilterRestore defaults
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// Early abort as not enough sweeps with the same DASCale value pass
+// and user onset delay
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR13a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, preAcquireFunc = PS_CR13a_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	wv = 0
+
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	wv[][][0] = 1
+	wv[][][1] = 35
+	wv[][][2] = -25
+
+	// layer 3: Spikes check during chirp
+	wv[][0][3] = 0
+	wv[][1][3] = 1
+	wv[][2][3] = 1
+	wv[][3][3] = 0
+	wv[][4][3] = 1
+
+	// async QC passes
+	wv[][0][4] = 1
+	wv[][1][4] = 1
+	wv[][2][4] = 1
+	wv[][3][4] = 1
+	wv[][4][4] = 0
+End
+
+static Function PS_CR13a_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 4
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1, 1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimsetPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, PSQ_CR_PASS}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70, 70, 70, 70}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2, 2, 2, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
+	CheckMCCLPF(str, LPF_BYPASS)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 0, incomplete = 1)
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {520 + 2, 1038.854 + 2}, {520 + 2, 1519.992 + 2}, sweep = 1)
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {520 + 2, 1038.854 + 2}, {520 + 2, 1519.992 + 2}, sweep = 2)
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 3, incomplete = 1)
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {520 + 2, 1038.854 + 2}, {520 + 2, 1519.992 + 2}, sweep = 4)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -2177,7 +2295,7 @@ static Function PS_CR14_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -2262,7 +2380,8 @@ static Function PS_CR15_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -2348,7 +2467,8 @@ static Function PS_CR16_REENTRY([str])
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
 End
 
 static Function PS_CR17_IGNORE(string device)
@@ -2432,10 +2552,10 @@ static Function PS_CR17_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, {20, 520}, empty, sweep = 0, incomplete = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, sweep = 1)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, sweep = 2)
-	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, sweep = 3)
+	CheckChirpUserEpochs(str, {20, 520}, empty, empty, sweep = 0, incomplete = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty, sweep = 1)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty, sweep = 2)
+	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty, sweep = 3)
 End
 
 static Function PS_CR18_IGNORE(string device)
@@ -2516,5 +2636,5 @@ static Function PS_CR18_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
-	CheckChirpUserEpochs(str, empty, empty, incomplete = 1)
+	CheckChirpUserEpochs(str, empty, empty, empty, incomplete = 1)
 End
