@@ -1885,7 +1885,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 
 	variable numArgs, sweepCnt, activeChannelCnt, i, j, channelNr, channelType, dacChannelNr
 	variable sweep, index, numTPEpochs
-	variable tpBaseLineT, emptyOutput, headstage, outType
+	variable tpBaseLinePoints, emptyOutput, headstage, outType
 	string epShortName, tmpStr, unit, unitKey
 	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
 	string baselineUnit = ""
@@ -2016,13 +2016,13 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			SF_ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
 			WAVE/Z/T epochTPBaseline = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_B0")
 			SF_ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
-			tpBaseLineT = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
+			tpBaseLinePoints = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
 
 			// Assemble TP data
 			WAVE tpInput.data = SF_AverageTPFromSweep(epochMatches, sweepData)
 			tpInput.tpLengthPoints = DimSize(tpInput.data, ROWS)
-			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
-			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLineT)
+			tpInput.duration = (str2num(epochTPPulse[0][EPOCH_COL_ENDTIME]) - str2num(epochTPPulse[0][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI / DimDelta(sweepData, ROWS)
+			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLinePoints)
 
 			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
