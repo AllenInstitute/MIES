@@ -89,6 +89,11 @@ static StrConstant SF_OP_TP = "tp"
 static StrConstant SF_OP_STORE = "store"
 static StrConstant SF_OP_SELECT = "select"
 
+static StrConstant SF_OPSHORT_MINUS = "minus"
+static StrConstant SF_OPSHORT_PLUS = "plus"
+static StrConstant SF_OPSHORT_MULT = "mult"
+static StrConstant SF_OPSHORT_DIV = "div"
+
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
 static StrConstant SF_OP_EPOCHS_TYPE_TREELEVEL = "treelevel"
@@ -932,6 +937,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	endif
 	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
 	plotMetaData.xAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL)
 	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL)
 	for(i = 0; i < numResultsY; i += 1)
@@ -946,13 +952,15 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	return [formulaResults, plotMetaData]
 End
 
-static Function/S SF_GetTraceAnnotationText(string dataType, WAVE data)
+static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
 	variable channelNumber, channelType, sweepNo
 	string channelId, prefix
 	string traceAnnotation
 
-	strswitch(dataType)
+	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
+
+	strswitch(plotMetaData.dataType)
 		case SF_DATATYPE_SWEEP:
 			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
@@ -960,44 +968,31 @@ static Function/S SF_GetTraceAnnotationText(string dataType, WAVE data)
 			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
 			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
-		case SF_DATATYPE_TP:
-		case SF_DATATYPE_EPOCHS:
-		case SF_DATATYPE_MIN:
-		case SF_DATATYPE_MAX:
-		case SF_DATATYPE_AVG:
-		case SF_DATATYPE_RMS:
-		case SF_DATATYPE_VARIANCE:
-		case SF_DATATYPE_STDEV:
-		case SF_DATATYPE_DERIVATIVE:
-		case SF_DATATYPE_INTEGRATE:
-		case SF_DATATYPE_AREA:
-		case SF_DATATYPE_LABNOTEBOOK:
-		case SF_DATATYPE_APFREQUENCY:
-		case SF_DATATYPE_FINDLEVEL:
-		case SF_DATATYPE_BUTTERWORTH:
-			prefix = dataType
-			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			if(IsNaN(channelNumber) || IsNaN(channelType) || IsNaN(sweepNo))
-				return ""
-			endif
-			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-			sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
-			break
 		default:
-			return ""
+			if(WhichListItem(SF_OP_DATA, plotMetaData.opStack) == -1)
+				sprintf traceAnnotation, "%s", prefix
+			else
+				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+				channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+				sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+				if(IsNaN(channelNumber) || IsNaN(channelType) || IsNaN(sweepNo))
+					return ""
+				endif
+				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
+				sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+			endif
+			break
 	endswitch
 
 	return traceAnnotation
 End
 
-static Function/S SF_GetMetaDataAnnotationText(string dataType, WAVE data, string traceName)
+static Function/S SF_GetMetaDataAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data, string traceName)
 
-	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(dataType, data) + "\r"
+	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(plotMetaData, data) + "\r"
 End
 
-static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataType, WAVE data)
+static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
 	variable channelNumber, channelType, sweepNo, headstage
 
@@ -1005,49 +1000,40 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string dataTy
 	s.green = 0x0000
 	s.blue = 0x0000
 
-	strswitch(dataType)
-		case SF_DATATYPE_TP:
-		case SF_DATATYPE_EPOCHS:
-		case SF_DATATYPE_MIN:
-		case SF_DATATYPE_MAX:
-		case SF_DATATYPE_AVG:
-		case SF_DATATYPE_RMS:
-		case SF_DATATYPE_VARIANCE:
-		case SF_DATATYPE_STDEV:
-		case SF_DATATYPE_DERIVATIVE:
-		case SF_DATATYPE_INTEGRATE:
-		case SF_DATATYPE_AREA:
-		case SF_DATATYPE_BUTTERWORTH:
-		case SF_DATATYPE_LABNOTEBOOK:
-		case SF_DATATYPE_APFREQUENCY:
-		case SF_DATATYPE_FINDLEVEL:
-		case SF_DATATYPE_SWEEP:
-			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			if(!IsValidSweepNumber(sweepNo))
-				break
-			endif
+	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
 
-			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-			if(WaveExists(numericalValues))
-				headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-				[s] = GetHeadstageColor(headstage)
-			endif
+	WAVE/T opStackW = ListToTextWave(opStack, ";")
+	FindValue/TEXT=SF_OP_DATA/TXOP=4 opStackW
+	if(V_Value < 0)
+		return [s]
+	endif
+	Redimension/N=(V_Value) opStackW
+	WAVE/Z/T common = GetSetIntersection(opStackW, stopInheritance)
+	if(WaveExists(common))
+		return [s]
+	endif
 
-			break
-		default:
-			break
-	endswitch
+	channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+	channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+	sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	if(!IsValidSweepNumber(sweepNo))
+		return [s]
+	endif
+
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	if(WaveExists(numericalValues))
+		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+		[s] = GetHeadstageColor(headstage)
+	endif
 
 	return [s]
 End
 
-static Function [string traceName, variable traceCnt] SF_CreateTraceName(variable dataNum, string dataType, WAVE data)
+static Function [string traceName, variable traceCnt] SF_CreateTraceName(variable dataNum, STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
 	string traceAnnotation
 
-	traceAnnotation = SF_GetTraceAnnotationText(dataType, data)
+	traceAnnotation = SF_GetTraceAnnotationText(plotMetaData, data)
 	traceAnnotation = ReplaceString(" ", traceAnnotation, "_")
 	traceAnnotation = CleanupName(traceAnnotation, 0)
 	traceName = GetTraceNamePrefix(traceCnt) + "d" + num2istr(dataNum) + "_" + traceAnnotation
@@ -1187,7 +1173,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 			SF_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
-			[color] = SF_GetTraceColor(graph, plotMetaData.dataType, wvResultY)
+			[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
 
 			if(!WaveExists(wvResultX))
 				WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
@@ -1242,24 +1228,24 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!WaveExists(wvX))
 				numTraces = yMxN
 				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 				endfor
 			elseif((xMxN == 1) && (yMxN == 1)) // 1D
 				if(yPoints == 1) // 0D vs 1D
 					numTraces = xPoints
 					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 					endfor
 				elseif(xPoints == 1) // 1D vs 0D
 					numTraces = yPoints
 					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 					endfor
 				else // 1D vs 1D
 					splitTraces = min(yPoints, xPoints)
@@ -1268,19 +1254,19 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						DebugPrint("Unmatched Data Alignment in ROWS.")
 					endif
 					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 						splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 						splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 					endfor
 				endif
 			elseif(yMxN == 1) // 1D vs 2D
 				numTraces = xMxN
 				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 				endfor
 			elseif(xMxN == 1) // 2D vs 1D or 0D
 				if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -1290,9 +1276,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				endif
 				numTraces = yMxN
 				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 				endfor
 			else // 2D vs 2D
 				numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
@@ -1303,13 +1289,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					DebugPrint("Size mismatch in entity columns for plotting waves.")
 				endif
 				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData.dataType, wvResultY)
+					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					if(WaveExists(wvX))
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
 					else
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
 					endif
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData.dataType, wvResultY, trace)
+					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
 				endfor
 			endif
 
@@ -2491,15 +2477,14 @@ End
 
 static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
 
-	string opShort = "minus"
-
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
-	Note/K output, note(input)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_MINUS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OPSHORT_MINUS, DimSize(input, ROWS))
 
 	output[] = SF_OperationMinusImpl(input[p])
 
-	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_MINUS, "")
+
+	return SF_GetOutputForExecutor(output, graph, SF_OPSHORT_MINUS, clear=input)
 End
 
 static Function/WAVE SF_OperationMinusImpl(WAVE/Z wv)
@@ -2518,22 +2503,20 @@ static Function/WAVE SF_OperationMinusImpl(WAVE/Z wv)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
-	Note/K out, note(wv)
 
 	return out
 End
 
 static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string graph)
 
-	string opShort = "plus"
-
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
-	Note/K output, note(input)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_PLUS)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OPSHORT_PLUS, DimSize(input, ROWS))
 
 	output[] = SF_OperationPlusImpl(input[p])
 
-	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_PLUS, "")
+
+	return SF_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS, clear=input)
 End
 
 static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
@@ -2548,22 +2531,20 @@ static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
-	Note/K out, note(wv)
 
 	return out
 End
 
 static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
 
-	string opShort = "div"
-
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
-	Note/K output, note(input)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_DIV)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OPSHORT_DIV, DimSize(input, ROWS))
 
 	output[] = SF_OperationDivImpl(input[p])
 
-	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_DIV, "")
+
+	return SF_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV, clear=input)
 End
 
 static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
@@ -2579,22 +2560,20 @@ static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
-	Note/K out, note(wv)
 
 	return out
 End
 
 static Function/WAVE SF_OperationMult(variable jsonId, string jsonPath, string graph)
 
-	string opShort = "mult"
-
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, opShort)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
-	Note/K output, note(input)
+	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_MULT)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OPSHORT_MULT, DimSize(input, ROWS))
 
 	output[] = SF_OperationMultImpl(input[p])
 
-	return SF_GetOutputForExecutor(output, graph, opShort, clear=input)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_MULT, "")
+
+	return SF_GetOutputForExecutor(output, graph, SF_OPSHORT_MULT, clear=input)
 End
 
 static Function/WAVE SF_OperationMultImpl(WAVE/Z wv)
@@ -2609,7 +2588,6 @@ static Function/WAVE SF_OperationMultImpl(WAVE/Z wv)
 	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
-	Note/K out, note(wv)
 
 	return out
 End
