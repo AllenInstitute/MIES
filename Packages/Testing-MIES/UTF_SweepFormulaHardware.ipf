@@ -412,3 +412,112 @@ static Function TestSweepFormulaCodeResults_REENTRY([string str])
 	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor J", UNKNOWN_MODE)
 	CHECK_PROPER_STR(content)
 End
+
+Function SF_InsertedTPVersusTP_IGNORE(string device)
+
+	ST_SetStimsetParameter("PSQ_QC_Stimsets_DA_0", "Analysis function (generic)", str = "AddUserEpochsForTPLike")
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PSQ_QC_Stimsets_DA_0")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PSQ_QC_Stimsets_DA_0")
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 10)
+
+	// HS0: IC
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=CHECKBOX_SELECTED)
+
+	// HS1: VC
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=CHECKBOX_SELECTED)
+
+	// make IC less noisy
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val=-150)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StartAcq_IGNORE
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function SF_InsertedTPVersusTP([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	BasicHardwareTests#AcquireData(s, str, preAcquireFunc = SF_InsertedTPVersusTP_IGNORE, startTPinstead = 1)
+End
+
+static Function SF_InsertedTPVersusTP_REENTRY([str])
+	string str
+
+	string graph, formula
+	variable index
+
+	graph = DB_OpenDataBrowser()
+
+	// check that the inserted TP is roughly the same as the other TPs in the stimset
+
+	// HS0
+	formula = "tp(ss, select(channels(AD0), sweeps()), [1, 2, 3])"
+	WAVE/Z steadyStateInsertedHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(steadyStateInsertedHS0, NUMERIC_WAVE)
+
+	formula = "tp(inst, select(channels(AD0), sweeps()), [1, 2, 3])"
+	WAVE/Z instInsertedHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(instInsertedHS0, NUMERIC_WAVE)
+
+	formula = "tp(ss, select(channels(AD0), sweeps()), [0])"
+	WAVE/Z steadyStateOthersHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(steadyStateOthersHS0, NUMERIC_WAVE)
+
+	formula = "tp(inst, select(channels(AD0), sweeps()), [0])"
+	WAVE/Z instOthersHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(instOthersHS0, NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(steadyStateInsertedHS0, steadyStateOthersHS0, mode = WAVE_DATA, tol = 50^2)
+	CHECK_EQUAL_WAVES(instInsertedHS0, instOthersHS0, mode = WAVE_DATA,tol = 50^2)
+
+	// HS1
+	formula = "tp(ss, select(channels(AD1), sweeps()), [1, 2, 3])"
+	WAVE/Z steadyStateInsertedHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(steadyStateInsertedHS1, NUMERIC_WAVE)
+
+	formula = "tp(inst, select(channels(AD1), sweeps()), [1, 2, 3])"
+	WAVE/Z instInsertedHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(instInsertedHS1, NUMERIC_WAVE)
+
+	formula = "tp(ss, select(channels(AD1), sweeps()), [0])"
+	WAVE/Z steadyStateOthersHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(steadyStateOthersHS1, NUMERIC_WAVE)
+
+	formula = "tp(inst, select(channels(AD1), sweeps()), [0])"
+	WAVE/Z instOthersHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_WAVE(instOthersHS1, NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(steadyStateInsertedHS1, steadyStateOthersHS1, mode = WAVE_DATA, tol = 0.1)
+	CHECK_EQUAL_WAVES(instInsertedHS1, instOthersHS1, mode = WAVE_DATA, tol = 0.1)
+
+	// `tp` gives the same results as TP from TPStorage
+
+	WAVE TPStorage = GetTPstorage(str)
+	index = GetNumberFromWaveNote(TPstorage, NOTE_INDEX)
+	CHECK_GT_VAR(index, 0)
+
+	Duplicate/FREE/RMD=[0, index - 1][0][FindDimlabel(TPStorage, LAYERS, "PeakResistance")] TPStorage, instTPStorageLayer_HS0
+	Duplicate/FREE/RMD=[0, index - 1][0][FindDimlabel(TPStorage, LAYERS, "SteadyStateResistance")] TPStorage, steadyStateTPStorageLayer_HS0
+
+	Duplicate/FREE/RMD=[0, index - 1][1][FindDimlabel(TPStorage, LAYERS, "PeakResistance")] TPStorage, instTPStorageLayer_HS1
+	Duplicate/FREE/RMD=[0, index - 1][1][FindDimlabel(TPStorage, LAYERS, "SteadyStateResistance")] TPStorage, steadyStateTPStorageLayer_HS1
+
+	Redimension/N=(-1) instTPStorageLayer_HS0, steadyStateTPStorageLayer_HS0, steadyStateInsertedHS0, instInsertedHS0
+
+	matrixOP/FREE instTPStorage_HS0 = mean(instTPStorageLayer_HS0)
+	matrixOP/FREE steadyStateTPStorage_HS0 = mean(steadyStateTPStorageLayer_HS0)
+
+	CHECK_EQUAL_WAVES(steadyStateInsertedHS0, SteadyStateTPStorage_HS0, mode = WAVE_DATA, tol = 0.1)
+	CHECK_EQUAL_WAVES(instInsertedHS0, InstTPStorage_HS0, mode = WAVE_DATA, tol = 0.1)
+
+	Redimension/N=(-1) instTPStorageLayer_HS1, steadyStateTPStorageLayer_HS1, steadyStateInsertedHS1, instInsertedHS1
+
+	matrixOP/FREE instTPStorage_HS1 = mean(instTPStorageLayer_HS1)
+	matrixOP/FREE steadyStateTPStorage_HS1 = mean(steadyStateTPStorageLayer_HS1)
+
+	CHECK_EQUAL_WAVES(steadyStateInsertedHS1, steadyStateTPStorage_HS1, mode = WAVE_DATA, tol = 0.1)
+	CHECK_EQUAL_WAVES(instInsertedHS1, instTPStorage_HS1, mode = WAVE_DATA, tol = 0.1)
+End
