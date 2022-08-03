@@ -96,6 +96,9 @@ elif [ "$sourceLoc" = "installer" ]
 then
   base_folder=$top_level
 
+  # remove old installations
+  rm -rf "$USERPROFILE/Documents/MIES/"
+
   # requires an installer which does not trigger UAC
   # installer always installs for all available and supported IP versions
   if [ "$skipHardwareXOPs" = "1" ]
