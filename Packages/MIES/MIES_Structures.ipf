@@ -295,7 +295,7 @@ Structure TPAnalysisInput
 	WAVE data
 	variable clampAmp
 	variable clampMode
-	variable duration
+	variable duration // [points]
 	variable baselineFrac
 	variable tpLengthPoints
 	variable readTimeStamp

@@ -1050,3 +1050,15 @@ Function EnableIndexing(string device, STRUCT AnalysisFunction_V3& s)
 			// do nothing
 	endswitch
 End
+
+Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3& s)
+	variable ret
+
+	switch(s.eventType)
+		case PRE_SWEEP_CONFIG_EVENT:
+			ret = MIES_PSQ#PSQ_CreateTestpulseEpochs(device, s.headstage, 3)
+			if(ret)
+				return 1
+			endif
+	endswitch
+End
