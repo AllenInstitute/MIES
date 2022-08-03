@@ -2188,6 +2188,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	WAVE/WAVE output = SF_OperationTPImpl(graph, outType, selectData, ignoreTPs, SF_OP_TP)
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TP)
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_TP, ""))
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_TP)
 End
@@ -2617,7 +2618,6 @@ End
 static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	if(numArgs > 1)
@@ -2629,7 +2629,7 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 
 	output[] = SF_OperationRangeImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RANGE)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_RANGE, SF_DATATYPE_RANGE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_RANGE, clear=input)
 End
@@ -2664,7 +2664,6 @@ End
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "min requires at least one argument")
@@ -2677,11 +2676,7 @@ static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationMinImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MIN)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_MIN, SF_DATATYPE_MIN)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_MIN, clear=input)
 End
@@ -2707,7 +2702,6 @@ End
 static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "max requires at least one argument")
@@ -2720,11 +2714,7 @@ static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationMaxImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_MAX)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_MAX, SF_DATATYPE_MAX)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_MAX, clear=input)
 End
@@ -2749,7 +2739,6 @@ End
 static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "avg requires at least one argument")
@@ -2762,11 +2751,7 @@ static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationAvgImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AVG)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_AVG, SF_DATATYPE_AVG)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_AVG, clear=input)
 End
@@ -2792,7 +2777,6 @@ End
 static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "rms requires at least one argument")
@@ -2805,11 +2789,7 @@ static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string gr
 
 	output[] = SF_OperationRMSImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_RMS)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_RMS, SF_DATATYPE_RMS)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_RMS, clear=input)
 End
@@ -2832,7 +2812,6 @@ End
 static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "variance requires at least one argument")
@@ -2845,11 +2824,7 @@ static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, stri
 
 	output[] = SF_OperationVarianceImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_VARIANCE)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_VARIANCE, SF_DATATYPE_VARIANCE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_VARIANCE, clear=input)
 End
@@ -2872,7 +2847,6 @@ End
 static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs > 0, "stdev requires at least one argument")
@@ -2885,11 +2859,7 @@ static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string 
 
 	output[] = SF_OperationStdevImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_STDEV)
-	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(input, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_STDEV, SF_DATATYPE_STDEV)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_STDEV, clear=input)
 End
@@ -2923,7 +2893,7 @@ static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, st
 
 	output[] = SF_OperationDerivativeImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_DERIVATIVE)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_DERIVATIVE, SF_DATATYPE_DERIVATIVE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_DERIVATIVE, clear=input)
 End
@@ -2958,7 +2928,7 @@ static Function/WAVE SF_OperationIntegrate(variable jsonId, string jsonPath, str
 
 	output[] = SF_OperationIntegrateImpl(input[p])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_INTEGRATE)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_INTEGRATE, SF_DATATYPE_INTEGRATE)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_INTEGRATE, clear=input)
 End
@@ -2982,13 +2952,12 @@ End
 static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string graph)
 
 	variable zero, numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs >= 1, "area requires at least one argument.")
 	SF_ASSERT(numArgs <= 2, "area requires at most two arguments.")
 
-	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_AREA, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_AREA, 0)
 
 	zero = 1
 	if(numArgs == 2)
@@ -2998,17 +2967,13 @@ static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string g
 		zero = !!zeroWave[0]
 	endif
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_AREA, DimSize(dataRef, ROWS))
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_AREA, DimSize(input, ROWS))
 
-	output[] = SF_OperationAreaImpl(dataRef[p], zero)
+	output[] = SF_OperationAreaImpl(input[p], zero)
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_AREA)
-	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(dataRef, output, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_AREA, SF_DATATYPE_AREA)
 
-	return SF_GetOutputForExecutor(output, graph, SF_OP_AREA, clear=dataRef)
+	return SF_GetOutputForExecutor(output, graph, SF_OP_AREA, clear=input)
 End
 
 static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
@@ -3041,7 +3006,7 @@ static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, s
 	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
 	SF_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
 
-	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 0)
 	WAVE lowPassCutoff = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist=1)
 	SF_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
 	SF_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
@@ -3052,13 +3017,13 @@ static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, s
 	SF_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
 	SF_ASSERT(IsNumericWave(order), "order parameter must be numeric")
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(dataRef, ROWS))
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_BUTTERWORTH, DimSize(input, ROWS))
 
-	output[] = SF_OperationButterworthImpl(dataRef[p], lowPassCutoff[0], highPassCutoff[0], order[0])
+	output[] = SF_OperationButterworthImpl(input[p], lowPassCutoff[0], highPassCutoff[0], order[0])
 
-	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_BUTTERWORTH)
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_BUTTERWORTH, SF_DATATYPE_BUTTERWORTH)
 
-	return SF_GetOutputForExecutor(output, graph, SF_OP_BUTTERWORTH, clear=dataRef)
+	return SF_GetOutputForExecutor(output, graph, SF_OP_BUTTERWORTH, clear=input)
 End
 
 static Function/WAVE SF_OperationButterworthImpl(WAVE/Z input, variable lowPassCutoff, variable highPassCutoff, variable order)
@@ -3123,6 +3088,8 @@ static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string g
 
 	output[] = SF_OperationTextImpl(input[p])
 
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_TEXT, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
+
 	return SF_GetOutputForExecutor(output, graph, SF_OP_TEXT, clear=input)
 End
 
@@ -3136,7 +3103,6 @@ static Function/WAVE SF_OperationTextImpl(WAVE/Z input)
 	Make/FREE/T/N=(DimSize(input, ROWS), DimSize(input, COLS), DimSize(input, LAYERS), DimSize(input, CHUNKS)) output
 	Multithread output = num2strHighPrec(input[p][q][r][s], precision=7)
 	CopyScales input, output
-	Note/K output, note(input)
 
 	return output
 End
@@ -3226,7 +3192,7 @@ static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string g
 
 	WAVE/Z output = $(wavelocation[0])
 
-	return SF_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE)
+	return SF_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, opStack="")
 End
 
 /// `channels([str name]+)` converts a named channel from string to numbers.
@@ -3265,7 +3231,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		endif
 	endfor
 
-	return SF_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS)
+	return SF_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, opStack="")
 End
 
 /// `sweeps()`
@@ -3280,7 +3246,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 
-	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS)
+	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, opStack="")
 End
 
 /// `select([array channels, array sweeps, [string mode]])`
@@ -3318,7 +3284,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"))
 
-	return SF_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT)
+	return SF_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, opStack="")
 End
 
 /// `data(array range[, array selectData])`
@@ -3357,6 +3323,8 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	if(!DimSize(output, ROWS))
 		DebugPrint("Call to SF_GetSweepsForFormula returned no results")
 	endif
+
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_DATA, ""))
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_DATA)
 End
@@ -3413,6 +3381,8 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	lbnKey = wLbnKey[0]
 
 	WAVE/WAVE output = SF_OperationLabnotebookImpl(graph, lbnKey, selectData, mode, SF_OP_LABNOTEBOOK)
+
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_LABNOTEBOOK, ""))
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
 End
@@ -3486,12 +3456,14 @@ static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string gr
 	elseif(numArgs == 1)
 		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_LOG, 0)
 	else
-		Make/FREE/N=0 data
-		return SF_GetOutputForExecutorSingle(data, graph, SF_OP_LOG)
+		WAVE/WAVE input = SF_CreateSFRefWave(graph, SF_OP_LOG, 0)
 	endif
+
 	for(w : input)
 		SF_OperationLogImpl(w)
 	endfor
+
+	SF_TransferFormulaDataWaveNoteAndMeta(input, input, SF_OP_LOG, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
 
 	return SF_GetOutputForExecutor(input, graph, SF_OP_LOG)
 End
@@ -3525,9 +3497,10 @@ static Function/WAVE SF_OperationLog10(variable jsonId, string jsonPath, string 
 		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, SF_OP_LOG10, 0)
 	endif
 	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_LOG10, DimSize(input, ROWS))
-	Note/K output, note(input)
 
 	output[] = SF_OperationLog10Impl(input[p])
+
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_LOG10, JWN_GetStringFromWaveNote(input, SF_META_DATATYPE))
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_LOG10, clear=input)
 End
@@ -3539,7 +3512,6 @@ static Function/WAVE SF_OperationLog10Impl(WAVE/Z input)
 	endif
 	SF_ASSERT(IsNumericWave(input), "log10 requires numeric input data.")
 	MatrixOP/FREE output = log(input)
-	Note/K output, note(input)
 	SF_FormulaWaveScaleTransfer(input, output, SF_TRANSFER_ALL_DIMS, NaN)
 
 	return output
@@ -3577,19 +3549,18 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 		endif
 	endfor
 
-	return SF_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS)
+	return SF_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, opStack="")
 End
 
 // findlevel(data, level, [edge])
 static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
 	SF_ASSERT(numArgs <=3, "Findlevel has 3 arguments at most.")
 	SF_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
-	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 0)
 	WAVE level = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist=1)
 	SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 	SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
@@ -3602,29 +3573,24 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 		Make/FREE edge = {FINDLEVEL_EDGE_BOTH}
 	endif
 
-	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_FINDLEVEL, DimSize(dataRef, ROWS))
-	results = FindLevelWrapper(dataRef[p], level[0], edge[0], FINDLEVEL_MODE_SINGLE)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_FINDLEVEL, DimSize(input, ROWS))
+	output = FindLevelWrapper(input[p], level[0], edge[0], FINDLEVEL_MODE_SINGLE)
 
-	JWN_SetStringInWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_FINDLEVEL)
-	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_FINDLEVEL, SF_DATATYPE_FINDLEVEL)
 
-	return SF_GetOutputForExecutor(results, graph, SF_OP_FINDLEVEL)
+	return SF_GetOutputForExecutor(output, graph, SF_OP_FINDLEVEL)
 End
 
 // apfrequency(data, [frequency calculation method], [spike detection crossing level])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, i
-	string inDataType
 
 	numArgs = SF_GetNumberOfArguments(jsonID, jsonPath)
 	SF_ASSERT(numArgs <=3, "ApFrequency has 3 arguments at most.")
 	SF_ASSERT(numArgs >= 1, "ApFrequency needs at least one argument.")
 
-	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
 	if(numArgs == 3)
 		WAVE level = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 2, checkExist=1)
 		SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
@@ -3642,16 +3608,12 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		Make/FREE method = {SF_APFREQUENCY_FULL}
 	endif
 
-	WAVE/WAVE results = SF_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(dataRef, ROWS))
-	results = SF_OperationApFrequencyImpl(dataRef[p], level[0], method[0])
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(input, ROWS))
+	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0])
 
-	JWN_SetStringInWaveNote(results, SF_META_DATATYPE, SF_DATATYPE_APFREQUENCY)
-	inDataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
-	if(!CmpStr(inDataType, SF_DATATYPE_SWEEP))
-		SF_TransferFormulaDataWaveNote(dataRef, results, "Sweeps", SF_META_SWEEPNO)
-	endif
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY)
 
-	return SF_GetOutputForExecutor(results, graph, SF_OP_APFREQUENCY)
+	return SF_GetOutputForExecutor(output, graph, SF_OP_APFREQUENCY)
 End
 
 static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method)
@@ -4010,7 +3972,7 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 	endfor
 End
 
-static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, WAVE clear])
+static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
 
 	if(!ParamIsDefault(clear))
 		SF_CleanUpInput(clear)
@@ -4019,6 +3981,10 @@ static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, st
 	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 1)
 	if(WaveExists(data))
 		output[0] = data
+	endif
+
+	if(!ParamIsDefault(opStack))
+		SF_AddOpToOpStack(output, opStack, opShort)
 	endif
 
 	return SF_GetOutputForExecutor(output, graph, opShort)
@@ -4085,14 +4051,36 @@ static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, stri
 	return data
 End
 
+static Function SF_AddOpToOpStack(WAVE w, string oldStack, string opShort)
+
+	JWN_SetStringInWaveNote(w, SF_META_OPSTACK, AddListItem(opShort, oldStack))
+End
+
 /// @brief Transfer wavenote from input data sets to output data sets, set a label for a x-axis and use the value from keyForXAxis for x-Value
-static Function SF_TransferFormulaDataWaveNote(WAVE/WAVE input, WAVE/WAVE output, string xLabel, string keyForXAxis)
+static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
 
 	variable xAxisValue, numResults, i
+	string opStack, keyForXAxis, inDataType
 
 	numResults = DimSize(input, ROWS)
 	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
-	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
+
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
+
+	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
+	SF_AddOpToOpStack(output, opStack, opShort)
+
+	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
+	strswitch(inDataType)
+		case SF_DATATYPE_SWEEP:
+			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+			keyForXAxis = SF_META_SWEEPNO
+			break
+		default:
+			keyForXAxis = ""
+			break
+	endswitch
+
 	for(i = 0; i < numResults; i += 1)
 		WAVE/Z inData = input[i]
 		WAVE/Z outData = output[i]
@@ -4101,6 +4089,10 @@ static Function SF_TransferFormulaDataWaveNote(WAVE/WAVE input, WAVE/WAVE output
 		endif
 
 		Note/K outData, note(inData)
+
+		if(IsEmpty(keyForXAxis))
+			continue
+		endif
 		xAxisValue = JWN_GetNumberFromWaveNote(outData, keyForXAxis)
 		if(IsNaN(xAxisValue))
 			continue
