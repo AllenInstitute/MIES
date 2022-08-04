@@ -3905,27 +3905,17 @@ static Function/WAVE SF_ParseArgument(string win, WAVE input, string opShort)
 
 	string wName, tmpStr
 
-	if(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0)
-		WAVE/T wvt = input
-		if(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0)
-			tmpStr = wvt[0]
-			wName =tmpStr[strlen(SF_WREF_MARKER), Inf]
-			WAVE/Z out = $wName
-			ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
-			return out
-		endif
-	endif
+	ASSERT(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0, "Unknown SF argument input format")
 
-	WAVE/WAVE wRef = SF_CreateSFRefWave(win, opShort + "_refFromUserInput", 1)
-#ifdef SWEEPFORMULA_DEBUG
-	DFREF dfrWork = SF_GetWorkingDF(win)
-	wName = UniqueWaveName(dfrWork, opShort + "_dataInput_")
-	Duplicate input, dfrWork:$wName
-	WAVE input = dfrWork:$wName
-#endif
-	wRef[0] = input
+	WAVE/T wvt = input
+	ASSERT(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0, "Marker not found in SF argument")
 
-	return wRef
+	tmpStr = wvt[0]
+	wName = tmpStr[strlen(SF_WREF_MARKER), Inf]
+	WAVE/Z out = $wName
+	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
+
+	return out
 End
 
 static Function SF_CleanUpInput(WAVE input)
@@ -3994,7 +3984,8 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 	if(numArgs > 0)
 		WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
 	else
-		Make/FREE/N=0 wv
+		Make/FREE/N=0 data
+		WAVE wv = SF_GetOutputForExecutorSingle(data, graph, opShort + "_zeroSizedInput")
 	endif
 
 	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + "_argTop")
