@@ -2292,3 +2292,20 @@ static Function TPWithModelCell()
 	ref = "17.158406068163004;"
 	CHECK_EQUAL_STR(ref, results)
 End
+
+static Function NonExistingOperation()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	try
+		// this is currently caught by an additional check specifically for automated testing
+		// but it would also cause an Abort in the main code
+		WAVE output = GetSingleResult("bogusOp(1,2,3)", win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
