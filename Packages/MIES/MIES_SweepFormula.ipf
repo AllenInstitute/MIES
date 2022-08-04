@@ -2492,6 +2492,7 @@ static Function/WAVE SF_OperationMinusImpl(WAVE/Z wv)
 	if(!WaveExists(wv))
 		return $""
 	endif
+	SF_ASSERT(DimSize(wv, ROWS), "Operand for - is empty.")
 	SF_ASSERT(IsNumericWave(wv), "Operand for - must be numeric.")
 	if(DimSize(wv, ROWS) == 1)
 		MatrixOP/FREE out = sumCols((-1) * wv)^t
@@ -2524,6 +2525,7 @@ static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
 	if(!WaveExists(wv))
 		return $""
 	endif
+	SF_ASSERT(DimSize(wv, ROWS), "Operand for + is empty.")
 	SF_ASSERT(IsNumericWave(wv), "Operand for + must be numeric.")
 	MatrixOP/FREE out = sumCols(wv)^t
 	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
@@ -2581,6 +2583,7 @@ static Function/WAVE SF_OperationMultImpl(WAVE/Z wv)
 	if(!WaveExists(wv))
 		return $""
 	endif
+	SF_ASSERT(DimSize(wv, ROWS), "Operand for * is empty.")
 	SF_ASSERT(IsNumericWave(wv), "Operand for * must be numeric.")
 	MatrixOP/FREE out = productCols(wv)^t
 	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
