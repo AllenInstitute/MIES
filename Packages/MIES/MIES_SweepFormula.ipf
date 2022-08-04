@@ -3879,7 +3879,14 @@ End
 // returns number of operation arguments
 static Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
 
-	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : JSON_GetArraySize(jsonID, jsonPath)
+	variable size
+
+	size = JSON_GetArraySize(jsonID, jsonPath)
+	if(!size)
+		return size
+	endif
+
+	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : size
 End
 
 static Function/DF SF_GetWorkingDF(string win)
