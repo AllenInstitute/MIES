@@ -242,6 +242,22 @@ static Function primitiveOperations2D()
 	arrayOperations(win, "[[1,2],[3,4],[5,6]]", 1.5)
 End
 
+static Function TestArrayExpansionText()
+
+	string win, device, str
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "[[\"1\"],[\"3\",\"4\"],[\"5\",\"6\"]]"
+	WAVE/T output = GetSingleResult(str, win)
+
+	WAVE/T input = JSON_GetTextWave(JSON_Parse(str), "")
+	// simulate simplified array expansion
+	input[][] = SelectString(IsEmpty(input[p][q]), input[p][q], input[p][0])
+
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
+End
+
 static Function concatenationOfOperations()
 
 	string win, device
