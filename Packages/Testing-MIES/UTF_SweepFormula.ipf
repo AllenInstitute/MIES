@@ -2309,3 +2309,19 @@ static Function NonExistingOperation()
 	endtry
 End
 
+static Function ZeroSizedSubArrayTest()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	WAVE wTextRef = SF_FormulaExecutor(win, JSON_Parse("[]"))
+	CHECK(IsTextWave(wTextRef))
+	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
+	WAVE/WAVE wRefResult = MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
+	WAVE wv = wRefResult[0]
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
