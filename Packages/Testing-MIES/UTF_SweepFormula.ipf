@@ -100,6 +100,14 @@ static Function primitiveOperations()
 	TestOperationMinMaxHelper(win, "{\"/\":[1,2]}", "1/2", 1 / 2)
 	TestOperationMinMaxHelper(win, "{\"-\":[1]}", "-1", -1)
 	TestOperationMinMaxHelper(win, "{\"+\":[1]}", "+1", +1)
+
+	try
+		// creates a top argument with zero size
+		WAVE output = GetSingleResult("-", win)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function stringHandling()
