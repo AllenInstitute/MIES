@@ -365,7 +365,7 @@ End
 
 static Function/S AD_FormatListKey(variable stimsetCycleID, variable headstage)
 
-	return num2str(stimsetCycleID) + "_HS" + num2str(headstage)
+	return num2strHighPrec(stimsetCycleID, shorten = 1) + "_HS" + num2str(headstage)
 End
 
 static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
