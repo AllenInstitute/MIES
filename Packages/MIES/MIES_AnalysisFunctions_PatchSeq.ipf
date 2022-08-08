@@ -69,6 +69,7 @@
 ///  PSQ_FMT_LBN_CR_SPIKE_CHECK               Spike check was enabled/disabled                            (none)   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_INIT_UOD                  Initial user onset delay                                    ms       Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_INIT_LPF                  Initial MCC low pass filter                                 Hz       Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_STIMSET_QC                Stimset valid/invalid QC state                              On/Off   Numerical    CR                                   No           No
 ///  FMT_LBN_ANA_FUNC_VERSION                 Integer version of the analysis function                    (none)   Numerical    All                                  No           Yes
 ///  PSQ_FMT_LBN_PB_RESISTANCE                Pipette Resistance                                          Ohm      Numerical    PB                                   No           No
 ///  PSQ_FMT_LBN_PB_RESISTANCE_PASS           Pipette Resistance QC                                       On/Off   Numerical    PB                                   No           No
@@ -115,6 +116,8 @@
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B0   PB, SE, AR                  Pre pulse baseline of testpulse                             -1
 /// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_P    PB, SE, AR                  Pulse of testpulse                                          -1
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B1   PB, SE, AR                  Post pulse baseline of testpulse                            -1
+/// Type=Chirp Cycle Evaluation                                U_CR_CE    CR                          Evaluation chunk for bounds state                           -1
+/// Type=Chirp Spike Evaluation                                U_CR_SE    CR                          Evaluation chunk for spike check                            -1
 /// ========================================================== ========== =========================== ========================================================== =======
 ///
 /// The tag entry ``Index=x`` is a zero-based index, which tracks how often the specific type of user epoch appears. So for different
@@ -3840,84 +3843,6 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	return [boundsAction, scalingFactor]
 End
 
-/// @brief Return the x position of the end of the given cycle relative to the stimset start
-static Function PSQ_CR_GetXPosFromCycles(variable cycle, WAVE cycleXValues, variable totalOnsetDelay)
-	variable index
-
-	// we have all crossings in cycleXValues
-	// 0: start
-	// 1: half cycle
-	// 2: full cycle
-	//
-	// so the first cycle ranges from cycleXValues[0] to cycleXValues[2] and so on
-
-	index = cycle * 2
-
-	ASSERT(index < DimSize(cycleXValues, ROWS), "Not enough cycles present in the stimulus set.")
-
-	return cycleXValues[index] - totalOnsetDelay
-End
-
-static Function/WAVE PSQ_CR_GetCycles(string device, variable sweepNo, WAVE rawDACWave, variable xstart)
-	string key
-
-	WAVE textualValues = GetLBTextualValues(device)
-
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_CYCLES, query = 1)
-	WAVE/Z cycles = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
-
-	if(!WaveExists(cycles))
-		WAVE cycles = PSQ_CR_DetermineCycles(device, rawDACWave, xstart)
-
-		key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_CYCLES)
-		ED_AddEntryToLabnotebook(device, key, cycles, overrideSweepNo = sweepNo)
-	endif
-
-	return cycles
-end
-
-/// @brief Find all x values where DA channels have the same value as rawDACWave[xstart]
-///
-/// We search starting from xstart, where `matches` have a minimum of 1ms between them.
-///
-/// @param device device
-/// @param rawDACWave unscaled DAQDataWave (aka GetHardwareDataWave(device))
-/// @param xstart     position of reference value and starting point for the search
-///
-/// @return Labnotebook entry wave
-static Function/WAVE PSQ_CR_DetermineCycles(string device, WAVE rawDACWave, variable xstart)
-
-	variable yval, minimumWidthX, i
-
-	minimumWidthX = 1
-
-	WAVE config = GetDAQConfigWave(device)
-
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	WAVE/T cycles = LBN_GetTextWave()
-
-	WAVE gains = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-		if(!statusHS[i])
-			continue
-		endif
-
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, rawDACWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
-
-		// first active DA channel
-		yval = singleDA[xstart] / gains[0]
-
-		Make/FREE/R matches
-		FindLevels/DEST=matches/R=(xstart - minimumWidthX / 2, inf)/M=(minimumWidthX)/Q singleDA, yval
-
-		cycles[i] = NumericWaveToList(matches, ";")
-	endfor
-
-	return cycles
-End
-
 static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
 	switch(val)
 		case PSQ_CR_BEM_SYMMETRIC:
@@ -4220,10 +4145,10 @@ Function PSQ_Chirp(device, s)
 
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
-	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale, initLPF, ampBesselFilter
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
+	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, scalingFactorDAScale, initLPF, ampBesselFilter
+	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
-	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass
 	string setName, key, msg, stimset, str, daScaleOperator
 
 	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
@@ -4392,8 +4317,6 @@ Function PSQ_Chirp(device, s)
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
-			totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
-
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			// if we don't have a PSQ_FMT_LBN_BL_QC_PASS entry this means it did not pass
@@ -4406,6 +4329,10 @@ Function PSQ_Chirp(device, s)
 			spikeCheck = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			ASSERT(IsFinite(spikeCheck), "Invalid spikeCheck value")
 
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
+			stimsetPass = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(IsFinite(stimsetPass), "Invalid stimsetPass value")
+
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SPIKE_PASS, query = 1)
 			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
@@ -4415,7 +4342,7 @@ Function PSQ_Chirp(device, s)
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_CHIRP, s.sweepNo, asyncChannels)
 
-			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && asyncAlarmPassed == 1)
+			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && asyncAlarmPassed == 1 && stimsetPass == 1)
 
 			if(spikeCheck)
 				sweepPassed = (sweepPassed == 1 && spikeCheckPassed == 1)
@@ -4510,10 +4437,7 @@ Function PSQ_Chirp(device, s)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
-
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+	fifoTime = s.lastKnownRowIndex * DimDelta(s.rawDACWAVE, ROWS)
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
 
@@ -4536,16 +4460,26 @@ Function PSQ_Chirp(device, s)
 		return NaN
 	endif
 
+	[chirpStart, cycleEnd] = PSQ_CR_GetChirpEvaluationRange(device, s.sweepNo, s.headstage, numberOfChirpCycles)
+
+	sprintf msg, "chirpStart %g, fifoTime %g, cycleEnd %g", chirpStart, fifoTime, cycleEnd
+	DEBUGPRINT(msg)
+
+	if(IsNaN(chirpStart) || IsNaN(chirpEnd))
+		// error calculating chirp evaluation user epoch
+		PSQ_ForceSetEvent(device, s.headstage)
+		RA_SkipSweeps(device, inf)
+
+		return ANALYSIS_FUNC_RET_EARLY_STOP
+	endif
+
 	if(spikeCheck && IsNaN(spikeCheckPassed))
-		WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
+		[chirpStart, chirpEnd] = PSQ_CR_GetSpikeEvaluationRange(device, s.sweepNo, s.headstage)
 
-		chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
-		chirpEnd   = chirpStart + durations[s.headstage]
-
-		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoInStimsetTime %g", chirpStart, chirpEnd, fifoInStimsetTime
+		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoTime %g", chirpStart, chirpEnd, fifoTime
 		DEBUGPRINT(msg)
 
-		if(fifoInStimsetTime > chirpStart)
+		if(fifoTime > chirpStart)
 			level = AFH_GetAnalysisParamNumerical("FailedLevel", s.params)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_CHIRP, s.rawDACWave, s.headstage, chirpStart, level, searchEnd = chirpEnd, \
@@ -4555,7 +4489,7 @@ Function PSQ_Chirp(device, s)
 			if(numberOfSpikesFound > 0)
 				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 0
-			elseif(fifoInStimsetTime > chirpEnd)
+			elseif(fifoTime > chirpEnd)
 				// beyond chirp and we found nothing, so we passed
 				WAVE spikePass = LBN_GetNumericWave()
 				spikePass[s.headstage] = 1
@@ -4591,22 +4525,12 @@ Function PSQ_Chirp(device, s)
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
 
-	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(device, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_BL_EVAL_RANGE)
-	WAVE cycleXValues = ListToNumericWave(cycleXValuesLBN[s.headstage], ";")
-
-	chirpStart = PSQ_BL_EVAL_RANGE
-	cycleEnd = PSQ_CR_GetXPosFromCycles(numberOfChirpCycles, cycleXValues, totalOnsetDelay)
-
-	sprintf msg, "chirpStart (relative to stimset start) %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd
-	DEBUGPRINT(msg)
-
-	if((IsNaN(baselineQCPassed) || baselineQCPassed) && IsNaN(insideBounds) && fifoInStimsetTime >= cycleEnd)
+	if((IsNaN(baselineQCPassed) || baselineQCPassed) && IsNaN(insideBounds) && fifoTime >= cycleEnd)
 		// inside bounds search was inconclusive up to now
 		// and we have acquired enough cycles
 		// and baselineQC is not failing
 
 		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(device, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, innerRelativeBound, outerRelativeBound, boundsEvaluationMode)
-
 		insideBounds = (boundsAction == PSQ_CR_PASS)
 		WAVE result = LBN_GetNumericWave()
 		result[INDEP_HEADSTAGE] = insideBounds
@@ -4650,6 +4574,109 @@ static Function PSQ_CR_FindDependentAnalysisParameter(string device, string name
 	endif
 
 	return 1
+End
+
+/// @brief Return the begin/start [ms] of the spike bounds evaluation range
+///
+/// Zero is the DA/AD wave zero.
+static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRange(string device, variable sweepNo, variable headstage)
+	variable DAC, totalOnsetDelay, chirpStart, chirpEnd
+	string tags, shortname
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	WAVE epochsWave = GetEpochsWave(device)
+
+	WAVE/T/Z evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        "^U_CR_SE$", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+
+	if(WaveExists(evaluationEpoch))
+		ASSERT(DimSize(evaluationEpoch, ROWS) == 1, "Invalid spike evaluation wave size")
+		epBegin = str2num(evaluationEpoch[0][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		epEnd   = str2num(evaluationEpoch[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+		return [epBegin, epEnd]
+	endif
+
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+
+	WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
+
+	chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
+	chirpEnd   = chirpStart + durations[headstage]
+
+	epBegin = chirpStart * MILLI_TO_ONE
+	epEnd   = chirpEnd * MILLI_TO_ONE
+
+	sprintf tags, "Type=Chirp spike evaluation"
+	sprintf shortName, "CR_SE"
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+End
+
+/// @brief Return the begin/start [ms] of the chirp bounds evaluation range
+///
+/// Zero is the DA/AD wave zero.
+static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRange(string device, variable sweepNo, variable headstage, variable requestedCycles)
+
+	variable DAC, stimsetQC
+	string name, tags, regexp, shortname, key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	WAVE epochsWave = GetEpochsWave(device)
+
+	WAVE/T/Z evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        "^U_CR_CE$", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+
+	if(WaveExists(evaluationEpoch))
+		ASSERT(DimSize(evaluationEpoch, ROWS) == 1, "Invalid chirp evaluation wave size")
+		epBegin = str2num(evaluationEpoch[0][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		epEnd   = str2num(evaluationEpoch[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+		return [epBegin, epEnd]
+	endif
+
+	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0,  requestedCycles - 1
+	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        regexp, treelevel = 2, epochsWave = epochsWave)
+
+	if(!WaveExists(fullCycleEpochs))
+		printf "Could not find chirp cycles in epoch 1.\r"
+		ControlWindowToFront()
+		stimsetQC = 0
+	elseif(requestedCycles > 1 && DimSize(fullCycleEpochs, ROWS) == 1)
+		printf "Could not find enough chirp cycles in epoch 1 as %d number of cycles were requested.\r", requestedCycles
+		ControlWindowToFront()
+		stimsetQC = 0
+	else
+		stimsetQC = 1
+	endif
+
+	WAVE result = LBN_GetNumericWave()
+	result[INDEP_HEADSTAGE] = stimsetQC
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC)
+	ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	if(!stimsetQC)
+		return [NaN, NaN]
+	endif
+
+	epBegin = str2num(fullCycleEpochs[0][EPOCH_COL_STARTTIME])
+	epEnd   = str2num(fullCycleEpochs[DimSize(fullCycleEpochs, ROWS) - 1][EPOCH_COL_ENDTIME])
+
+	sprintf tags, "Type=Chirp cycles evaluation"
+	sprintf shortName, "CR_CE"
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
 End
 
 /// @brief Manually force the pre/post set events

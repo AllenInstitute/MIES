@@ -1564,7 +1564,8 @@ End
 ///
 /// @param dev              device
 /// @param times            epoch starting/end times [ms]
-/// @param shortNameFormat  short name pattern must contain `%d` (and only that %-pattern)
+/// @param shortNameFormat  short name pattern must contain `%d` (and only that `%`-pattern) for multiple epochs.
+///                         Must not be present for single epochs.
 /// @param sweep            [optional] Allows to limit checking only a specific sweep,
 ///                         by default all sweeps in the stimset cycle are checked
 /// @param ignoreIncomplete [optional, defaults to false] ignore epochs from incomplete sweeps
@@ -1616,6 +1617,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 				continue
 			endif
 
+			// also works with full names without %d being present
 			regexp = "^" + ReplaceString("%d", shortNameFormat, "[0-9]+") + "$"
 			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, regexp, treelevel = EPOCH_USER_LEVEL)
 			if(!WaveExists(userChunkEpochs))
@@ -1628,7 +1630,12 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 
 			Make/FREE/T/N=(numChunks) epochShortNames = EP_GetShortName(userChunkEpochs[p][EPOCH_COL_TAGS])
 			for(k = 0; k < numChunks; k += 1)
-				sprintf str, shortNameFormat, k
+				if(numChunks == 1 && strsearch(shortNameFormat, "%d", 0) == -1)
+					str = shortNameFormat
+				else
+					sprintf str, shortNameFormat, k
+				endif
+
 				FindValue/TEXT=str/TXOP=4 epochShortNames
 				index = V_Value
 				CHECK_NEQ_VAR(index, -1)

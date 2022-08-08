@@ -9,11 +9,14 @@
 /// @file MIES_Epochs.ipf
 /// @brief __EP__ Handle code relating to epoch information
 
-static StrConstant EPOCH_SHORTNAME_KEY = "ShortName"
-static StrConstant EPOCH_TYPE_KEY      = "Type"
-static StrConstant EPOCH_SUBTYPE_KEY   = "SubType"
-static StrConstant EPOCH_AMPLITUDE_KEY = "Amplitude"
-static StrConstant EPOCH_PULSE_KEY     = "Pulse"
+static StrConstant EPOCH_SHORTNAME_KEY  = "ShortName"
+static StrConstant EPOCH_TYPE_KEY       = "Type"
+static StrConstant EPOCH_SUBTYPE_KEY    = "SubType"
+static StrConstant EPOCH_AMPLITUDE_KEY  = "Amplitude"
+static StrConstant EPOCH_PULSE_KEY      = "Pulse"
+static StrConstant EPOCH_CYCLE_KEY      = "Cycle"
+static StrConstant EPOCH_INCOMPLETE_CYCLE_KEY = "Incomplete Cycle"
+static StrConstant EPOCH_HALF_CYCLE_KEY = "Half Cycle"
 
 static StrConstant EPOCHNAME_SEP = ";"
 static StrConstant STIMSETKEYNAME_SEP = "="
@@ -38,6 +41,10 @@ static StrConstant EPOCH_SN_PULSETRAIN_PULSEAMP = "P"
 static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASE = "B"
 static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASETRAIL = "BT"
 static StrConstant EPOCH_SN_PULSETRAINBASETRAIL = "BT"
+static StrConstant EPOCH_SN_TRIG = "TG"
+static StrConstant EPOCH_SN_TRIG_CYCLE = "C"
+static StrConstant EPOCH_SN_TRIG_CYCLE_INCOMPLETE = "I"
+static StrConstant EPOCH_SN_TRIG_HALF_CYCLE = "H"
 static StrConstant EPOCH_SN_UNACQUIRED = "UA"
 
 /// @brief Clear the list of epochs
@@ -223,15 +230,16 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 	WAVE stimset
 	variable stimsetBegin, setLength, sweep, scale
 
-	variable stimsetEnd, stimsetEndLogical
+	variable stimsetEnd, stimsetEndLogical, functionType
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSweepTags, epSubTags, epSubSubTags, tags, epSpecifier
-	variable epochCount, totalDuration, poissonDistribution
-	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
-	variable pulseDuration
-	variable subsubEpochBegin, subsubEpochEnd
+	variable epochCount, totalDuration, poissonDistribution, cycleNr
+	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude, i, j
+	variable pulseDuration, halfCycleNr, hasFullCycle, hasIncompleteCycleAtStart, hasIncompleteCycleAtEnd
+	variable subsubEpochBegin, subsubEpochEnd, numInflectionPoints, incompleteCycleNr
 	string type, startTimesList
 	string shortNameEp, shortNameEpTypePT, shortNameEpTypePTPulse, shortNameEpTypePTPulseP, shortNameEpTypePTPulseB, shortNameEpTypePTPulseBT
+	string shortNameEpTRIGCycle, shortNameEpTRIGIncomplete, shortNameEpTRIGHalfCycle, shortNameEpTypeTRIG_C, shortNameEpTypeTRIG_I
 	string shortNameEpTypePTBaseline
 	string stimNote = note(stimset)
 
@@ -406,6 +414,97 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 				tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 				EP_AddEpoch(device, channel, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
+		elseif(epochType == EPOCH_TYPE_SIN_COS)
+			WAVE inflectionPoints = WB_GetInflectionPoints(stimset, sweep, epochNr)
+
+			if(!WaveExists(inflectionPoints))
+				continue
+			endif
+
+			numInflectionPoints = DimSize(inflectionPoints, ROWS)
+
+			cycleNr           = 0
+			incompleteCycleNr = 0
+
+			shortNameEpTypeTRIG_C  = shortNameEp + "_" + EPOCH_SN_TRIG + "_" + EPOCH_SN_TRIG_CYCLE
+			shortNameEpTypeTRIG_I  = shortNameEp + "_" + EPOCH_SN_TRIG + "_" + EPOCH_SN_TRIG_CYCLE_INCOMPLETE
+
+			if(!numInflectionPoints)
+					// no inflection points at all, mark everything as incomplete cycle
+					subEpochBegin = epochBegin
+					subEpochEnd   = epochEnd
+					shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
+					epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+					EP_AddEpoch(device, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+					incompleteCycleNr++
+				continue
+			endif
+
+			inflectionPoints *= MILLI_TO_MICRO
+
+			if(flipping)
+				inflectionPoints[] = (epochEnd - epochBegin) - inflectionPoints[p]
+				WaveTransform/O flip, inflectionPoints
+			endif
+
+			for(i = 0; i < numInflectionPoints; i += 2)
+
+				// Cycle 0: 0, 1, 2
+				// Half Cycle 0: 0, 1
+				// Half Cycle 1: 1, 2
+				//
+				// Cycle 1: 2, 3, 4
+				// Half Cycle 0: 2, 3
+				// Half Cycle 1: 3, 4
+				// ...
+
+				hasFullCycle              = (i + 2 < numInflectionPoints)
+				hasIncompleteCycleAtStart = (i == 0 && inflectionPoints[i] != 0)
+				hasIncompleteCycleAtEnd   = !hasFullCycle || (i + 1 >= numInflectionPoints)
+
+				if(!hasFullCycle || hasIncompleteCycleAtStart)
+					if(hasIncompleteCycleAtStart)
+						subEpochBegin = epochBegin
+					else
+						subEpochBegin = epochBegin + inflectionPoints[i]
+					endif
+
+					if(hasIncompleteCycleAtEnd)
+						subEpochEnd = epochEnd
+					else
+						subEpochEnd = epochBegin + inflectionPoints[i]
+					endif
+
+					// add incomplete cycle epoch if it is not-empty
+					if(subEpochBegin != subEpochEnd)
+						shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
+						epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+						EP_AddEpoch(device, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+						incompleteCycleNr++
+					endif
+				endif
+
+				if(hasFullCycle)
+					cycleNr = i / 2
+					subEpochBegin = epochBegin + inflectionPoints[i]
+					subEpochEnd   = epochBegin + inflectionPoints[i + 2]
+					shortNameEpTRIGCycle = shortNameEpTypeTRIG_C + num2istr(cycleNr)
+					epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+					EP_AddEpoch(device, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+
+					// add half cycles, only for full cycles
+					for(j = 0; j < 2; j += 1)
+						subsubEpochBegin = epochBegin + inflectionPoints[i + j]
+						subsubEpochEnd   = epochBegin + inflectionPoints[i + j + 1]
+
+						halfCycleNr = IsEven(j) ? 0 : 1
+						shortNameEpTRIGHalfCycle = shortNameEpTRIGCycle + "_" + EPOCH_SN_TRIG_HALF_CYCLE + num2istr(halfCycleNr)
+						epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+						epSubSubTags = ReplaceNumberByKey(EPOCH_HALF_CYCLE_KEY, epSubSubTags, halfCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+						EP_AddEpoch(device, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTRIGHalfCycle, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+					endfor
+				endif
+			endfor
 		else
 			// Epoch details on other types not implemented yet
 		endif
