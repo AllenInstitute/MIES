@@ -410,7 +410,10 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	ASSERT(IsFinite(stepSize), "Missing DAScale stepsize LBN entry")
+	if(!IsFinite(stepSize))
+		BUG("Missing DAScale stepsize LBN entry")
+		return "Failure"
+	endif
 
 	if(stepSize != PSQ_SP_INIT_AMP_p10)
 		sprintf msg, "Failure as we did not reach the desired DAScale step size of %.0W0PA but only %.0W0PA", PSQ_SP_INIT_AMP_p10, stepSize
