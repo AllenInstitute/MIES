@@ -212,6 +212,19 @@ static Function AD_FillWaves(win, list, info)
 		WAVE textualValues   = textualValuesWave[i]
 		WAVE numericalValues = numericalValuesWave[i]
 
+		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+
+		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+		if(!WaveExists(headstages))
+			continue
+		endif
+
+		WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
+			continue
+		endif
+
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
@@ -227,27 +240,14 @@ static Function AD_FillWaves(win, list, info)
 			WAVE/T anaFuncs = LBN_GetTextWave(defValue = NOT_AVAILABLE)
 		endif
 
-		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
-
-		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
-		if(!WaveExists(headstages))
-			continue
-		endif
+		WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(stimsets), "No stimsets found")
 
 		for(j = 0; j < NUM_HEADSTAGES; j += 1)
 
 			headstage = j
 
 			if(headstages[headstage] != 1)
-				continue
-			endif
-
-			anaFuncType = anaFuncTypes[headstage]
-			anaFunc = anaFuncs[headstage]
-
-			WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
-
-			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
 				continue
 			endif
 
@@ -265,9 +265,8 @@ static Function AD_FillWaves(win, list, info)
 				endif
 			endif
 
-			WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(stimsets), "No stimsets found")
-
+			anaFuncType = anaFuncTypes[headstage]
+			anaFunc = anaFuncs[headstage]
 			stimset = stimsets[headstage]
 
 			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
