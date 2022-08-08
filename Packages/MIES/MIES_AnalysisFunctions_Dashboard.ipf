@@ -225,6 +225,8 @@ static Function AD_FillWaves(win, list, info)
 			continue
 		endif
 
+		WAVE/Z lastSweepStimsetCycleIDs = GetLastSetting(numericalValues, WaveMax(totalSweepsPresent), STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
@@ -271,7 +273,9 @@ static Function AD_FillWaves(win, list, info)
 
 			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
 				passed = NaN
-				ongoingDAQ = 0
+				// current sweep is from the same SCI than the last acquired sweep and DAQ is not inactive
+				ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
+				ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
 			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)

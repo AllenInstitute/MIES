@@ -87,6 +87,8 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 
 	switch(newAcqState)
 		case AS_INACTIVE:
+			AD_UpdateAllDatabrowser()
+			break
 		case AS_EARLY_CHECK:
 			// do nothing
 			break
