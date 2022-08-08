@@ -492,7 +492,7 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 		document = !!document
 	endif
 
-	sprintf msg, "skipCount (as passed) %d, limitToSetBorder %d, count %d, activeSetCount %d", skipCount, limitToSetBorder, count, activeSetCount
+	sprintf msg, "skipCount (as passed) %g, limitToSetBorder %d, count %d, activeSetCount %d", skipCount, limitToSetBorder, count, activeSetCount
 	DEBUGPRINT(msg)
 
 	if(limitToSetBorder)
