@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(190,6)	labnotebook_numerical_description
+WAVES/T/N=(191,6)	labnotebook_numerical_description
 BEGIN
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -191,6 +191,7 @@ BEGIN
 	"Double precision data"	"On/Off"	"-"	"Stored data is stored with double (ON) or single precision (OFF)."	"INDEP"	"IC;VC;I=0"
 	"Save amplifier settings"	"On/Off"	"-"	"ON if amplifier settings should be stored, OFF if not."	"INDEP"	"IC;VC;I=0"
 	"Require amplifier"	"On/Off"	"-"	"ON if data acquisition was done with an amplifier, OFF if not."	"INDEP"	"IC;VC;I=0"
+	"Skip Ahead"	""	"1"	"Determines how many sweeps are skipped from the stimset whan starting data acquisition."	"INDEP"	"IC;VC;I=0"
 END
 X SetScale/P x 0,1,"", labnotebook_numerical_description; SetScale/P y 0,1,"", labnotebook_numerical_description; SetScale d 0,0,"", labnotebook_numerical_description
 X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:1;"
