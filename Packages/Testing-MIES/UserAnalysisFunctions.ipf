@@ -1062,3 +1062,38 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3& s)
 			endif
 	endswitch
 End
+
+Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3& s)
+	string win, key, ref, str
+	variable index
+
+	win = DB_GetBoundDataBrowser(device)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
+	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
+
+	switch(s.eventType)
+		case POST_SWEEP_EVENT:
+			// five sweeps in total, but we are only called for the three of setA
+
+			index = GetNumberFromWaveNote(listWave, NOTE_INDEX)
+			CHECK_EQUAL_VAR(index, 1)
+
+			ref = "1"
+			str = infoWave[0][%$"Ongoing DAQ"]
+			CHECK_EQUAL_STR(ref, str)
+			break
+		case POST_SET_EVENT:
+			key = CreateAnaFuncLBNKey(TEST_ANALYSIS_FUNCTION, PSQ_FMT_LBN_SET_PASS)
+			WAVE setPassed = LBN_GetNumericWave()
+			setPassed[INDEP_HEADSTAGE] = 1
+			ED_AddEntryToLabnotebook(device, key, setPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			break
+		default:
+			// do nothing
+	endswitch
+End
+
+Function JustFail(string device, STRUCT AnalysisFunction_V3& s)
+	FAIL()
+End

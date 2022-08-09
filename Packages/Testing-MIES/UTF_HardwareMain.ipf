@@ -16,6 +16,7 @@
 #include "UTF_AutoTestpulse"
 #include "UTF_BasicHardwareTests"
 #include "UTF_DAEphys"
+#include "UTF_Dashboard"
 #include "UTF_Epochs"
 #include "UTF_HardwareTestsWithBUG"
 #include "UTF_HelperFunctions"
@@ -98,6 +99,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
+	list = AddListItem("UTF_Dashboard.ipf", list, ";", inf)
 	// analysis functions
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)
@@ -1102,8 +1104,8 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
-	// map invalid analysis function value to NaN
-	anaFuncTypes[] = (anaFuncTypes[p] == INVALID_ANALYSIS_FUNCTION) ? NaN : anaFuncTypes[p]
+	// map invalid/test analysis function value to NaN
+	anaFuncTypes[] = (anaFuncTypes[p] == INVALID_ANALYSIS_FUNCTION || anaFuncTypes[p] == TEST_ANALYSIS_FUNCTION) ? NaN : anaFuncTypes[p]
 
 	WAVE/Z anaFuncTypesWoNaN = ZapNaNs(anaFuncTypes)
 	REQUIRE_WAVE(anaFuncTypesWoNaN, NUMERIC_WAVE)

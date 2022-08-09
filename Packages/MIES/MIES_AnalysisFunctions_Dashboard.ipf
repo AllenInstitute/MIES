@@ -171,6 +171,9 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case SC_SPIKE_CONTROL:
 			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case INVALID_ANALYSIS_FUNCTION:
+#ifdef AUTOMATED_TESTING
+		case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+#endif
 			return NOT_AVAILABLE
 		default:
 			ASSERT(0, "Unsupported analysis function")
@@ -346,6 +349,9 @@ static Function AD_FillWaves(win, list, info)
 					endif
 					break
 				case INVALID_ANALYSIS_FUNCTION:
+#ifdef AUTOMATED_TESTING
+				case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+#endif
 					// all sweeps are both passing and failing
 					Duplicate/FREE sweeps, failingSweeps
 					Duplicate/FREE sweeps, passingSweeps
