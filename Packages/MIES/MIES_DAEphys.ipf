@@ -2197,6 +2197,9 @@ Function DAP_CheckSettings(device, mode)
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE)
+		// update dependent entries, the stimset might have changed behind our back
+		DAP_UpdateDAQControls(device, REASON_STIMSET_CHANGE)
+
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 		numEntries = DimSize(statusHS, ROWS)
 		for(i = 0; i < numEntries; i += 1)
@@ -2218,9 +2221,6 @@ Function DAP_CheckSettings(device, mode)
 			endif
 		endfor
 	endif
-
-	// update the analysis functions gathered from the stimsets
-	AFM_UpdateAnalysisFunctionWave(device)
 
 	if(mode == DATA_ACQUISITION_MODE && AS_HandlePossibleTransition(device, AS_PRE_DAQ))
 		printf "%s: Pre DAQ analysis function requested an abort\r", device
