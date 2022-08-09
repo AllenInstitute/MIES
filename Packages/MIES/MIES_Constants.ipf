@@ -1881,3 +1881,14 @@ Constant DFREF_FREE = 0x2
 /// @{
 StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
 /// @}
+
+/// @name Constants for SweepFormula Meta data in JSON format
+/// @anchor SFMetaDataConstants
+/// @{
+StrConstant SF_META_DATATYPE = "/DataType"
+StrConstant SF_META_SWEEPNO = "/SweepNumber"
+StrConstant SF_META_CHANNELTYPE = "/ChannelType"
+StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber"
+
+StrConstant SF_DATATYPE_SWEEP = "SweepData"
+/// @}

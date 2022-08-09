@@ -115,13 +115,6 @@ static Constant SF_TRANSFER_ALL_DIMS = -1
 static StrConstant SF_WORKING_DF = "FormulaData"
 static StrConstant SF_WREF_MARKER = "\"WREF@\":"
 
-static StrConstant SF_META_DATATYPE = "/DataType"
-static StrConstant SF_META_SWEEPNO = "/SweepNumber"
-static StrConstant SF_META_CHANNELTYPE = "/ChannelType"
-static StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber"
-
-static StrConstant SF_DATATYPE_SWEEP = "SweepData"
-
 static StrConstant SF_PLOTTER_TRACENAME = "formula"
 static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
