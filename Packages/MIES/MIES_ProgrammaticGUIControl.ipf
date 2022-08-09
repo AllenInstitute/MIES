@@ -111,6 +111,12 @@ Function PGC_SliderControlProcedure(sla) : SliderControl
 
 	ASSERT(0, "Prototype function which must not be called")
 End
+
+Function PGC_ListBoxControlProcedure(lba) : ListBoxControl
+	struct WMListBoxAction& lba
+
+	ASSERT(0, "Prototype function which must not be called")
+End
 /// @}
 
 /// @brief Wrapper for PGC_SetAndActivateControl()
@@ -153,6 +159,10 @@ End
 ///
 /// SetVariable:
 /// - Both `str` and `val` are accepted and converted to the target type
+///
+/// ListBox:
+/// - Setting the column is not supported
+/// - Simulated event code is 3 (double click)
 ///
 /// @return 1 if the numeric value was modified by control limits, 0 if not (only relevant for SetVariable controls)
 ///
@@ -372,6 +382,39 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			FUNCREF PGC_SliderControlProcedure SliderProc = $procedure
 			SliderProc(sla)
+			break
+		case CONTROL_TYPE_LISTBOX:
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
+
+			WAVE/T/Z listWave = $GetValueFromRecMacro("listWave", S_recreation)
+			ASSERT(WaveExists(listWave), "Can't call ListBox without list wave")
+
+			// all optional
+			WAVE/Z selWave     = $GetValueFromRecMacro("selWave", S_recreation)
+			WAVE/Z colorWave   = $GetValueFromRecMacro("colorWave", S_recreation)
+			WAVE/T/Z titleWave = $GetValueFromRecMacro("titleWave", S_recreation)
+
+			ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
+
+			ListBox $control win=$win, row = val, selRow = val
+
+			if(IsEmpty(procedure))
+				break
+			endif
+
+			struct WMListBoxAction lba
+			lba.ctrlName           = control
+			lba.win                = win
+			lba.eventCode          = 3 // double click
+			WAVE/Z lba.colorWave   = colorWave
+			WAVE/T/Z lba.listWave  = listWave
+			WAVE/Z lba.selWave     = selWave
+			WAVE/T/Z lba.titleWave = titleWave
+			lba.row                = val
+			lba.col                = -1
+
+			FUNCREF PGC_ListBoxControlProcedure ListProc = $procedure
+			ListProc(lba)
 			break
 		default:
 			ASSERT(0, "Unsupported control type")

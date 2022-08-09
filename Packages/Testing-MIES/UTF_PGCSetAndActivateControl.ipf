@@ -26,7 +26,7 @@ End
 
 Function CreatePGCTestPanel_IGNORE()
 
-	NewPanel/K=1
+	NewPanel /K=1 /W=(265,784,820,987)
 	String/G root:panel = S_name
 
 	PopupMenu popup_ctrl proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
@@ -56,6 +56,14 @@ Function CreatePGCTestPanel_IGNORE()
 
 	KillVariables/Z popNum, checked
 	KillStrings/Z popStr, called, curval, dval, sval, tab
+
+	Make/T/O listWave = {"elem A", "elem B"}
+	Make/N=2/O selWave
+	Make/N=(3,2)/O colorWave
+	Make/T/O titleWave = {"title"}
+
+	ListBox listbox_ctrl,pos={290.00,11.00},size={252.00,168.00},listWave=listWave, colorWave=colorWave
+	ListBox listbox_ctrl,selWave=selWave,titleWave=titleWave,mode=1,proc=PGCT_ListBoxProc
 End
 
 Function PGCT_PopMenuProc(pa) : PopupMenuControl
@@ -141,9 +149,29 @@ Function PGCT_TabProc(tca) : TabControl
 	return 0
 End
 
+Function PGCT_ListBoxProc(lba) : ListBoxControl
+	STRUCT WMListboxAction &lba
+
+	switch(lba.eventCode)
+		case 3: // double click
+			variable/G called = 1
+
+			variable/G row = lba.row
+			CHECK_EQUAL_VAR(lba.col, -1)
+
+			CHECK_WAVE(lba.listWave, TEXT_WAVE)
+			CHECK_WAVE(lba.selWave, NUMERIC_WAVE)
+			CHECK_WAVE(lba.colorWave, NUMERIC_WAVE)
+			CHECK_WAVE(lba.titleWave, TEXT_WAVE)
+			break
+	endswitch
+
+	return 0
+End
+
 static Function/WAVE ControlTypesWhichOnlyAcceptVar()
 
-	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "button_ctrl"}
+	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "button_ctrl", "listbox_ctrl"}
 
 	return wv
 End
@@ -151,7 +179,7 @@ End
 static Function/WAVE ControlTypesWhichRequireOneParameter()
 
 	// all except button
-	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl"}
+	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl", "listbox_ctrl"}
 
 	return wv
 End
@@ -707,4 +735,25 @@ static Function PGCT_SetVariableStrWorks()
 
 	CHECK_EQUAL_VAR(0, setVarNum)
 	CHECK_EQUAL_STR(refString, setVarStr)
+End
+
+static Function PGCT_ListboxWorks()
+
+	SVAR/SDFR=root: panel
+
+	PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 0)
+
+	NVAR/Z row
+	CHECK(NVAR_Exists(row))
+	CHECK_EQUAL_VAR(row, 0)
+
+	PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 1)
+	CHECK_EQUAL_VAR(row, 1)
+
+	try
+		PGC_SetAndActivateControl(panel, "listbox_ctrl", val = 2); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
