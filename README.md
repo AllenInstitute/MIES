@@ -36,6 +36,9 @@ acquisition, and analysis.
   * [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
   * [USB-6346](https://www.ni.com/de-de/support/model.usb-6346.html)
 
+  Other NI hardware models can be added on request. Please open an issue from within MIES,
+  `MIES Panels->Report an issue`, for that.
+
 - Instrutech/HEKA ITC:
   * [16](http://www.heka.com/downloads/hardware/manual/itc16.pdf)
   * [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf)
