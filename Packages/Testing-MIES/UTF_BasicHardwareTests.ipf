@@ -44,25 +44,10 @@ static StrConstant REF_TMP1_CONFIG_FILE = "UserConfigTemplate_Temp1.txt"
 
 static Function SetAnalysisFunctions_IGNORE()
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
+	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
+	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
 End
 
 /// @brief Acquire data with the given DAQSettings
@@ -1442,25 +1427,10 @@ End
 Function ActiveSetCountStimsets_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackActiveSetCount")
+	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackActiveSetCount")
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackActiveSetCount")
+	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "TrackActiveSetCount")
 End
 
 static Function ActiveSetCount_IGNORE(device)
@@ -1670,25 +1640,10 @@ End
 Function SkipSweepsStimsetsP_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweeps")
+	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweeps")
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "SkipSweeps")
+	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "SkipSweeps")
 End
 
 static Function SkipSweepsStimsets_IGNORE(device)
@@ -1736,25 +1691,10 @@ End
 Function SkipSweepsStimsetsAdvancedP_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
+	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
+	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
 End
 
 static Function SkipSweepsStimsetsAdvanced_IGNORE(device)
@@ -1871,25 +1811,10 @@ End
 Function SkipSweepsBackDuringITIAnaFuncs_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCountsAndEvents"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCountsAndEvents"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCountsAndEvents"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCountsAndEvents"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
+	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
+	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
 End
 
 static Function SkipSweepsBackDuringITIStimsets_IGNORE(device)
@@ -2154,10 +2079,7 @@ End
 Function StartDAQDuringTP_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "WriteIntoLBNOnPreDAQ")
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -4202,10 +4124,7 @@ End
 Function TestSweepRollbackPostInit_IGNORE(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "SweepRollbackChecker"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SweepRollbackChecker")
 End
 
 Function TestSweepRollbackPreAcquire_IGNORE(device)
@@ -4476,10 +4395,7 @@ static Function CheckAcquisitionStates_IGNORE(device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC*")
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "AcquisitionStateTrackingFunc"
+	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "AcquisitionStateTrackingFunc")
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=AddLabnotebookEntries_IGNORE
 
