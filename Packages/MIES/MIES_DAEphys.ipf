@@ -5435,7 +5435,7 @@ Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
 
 	switch( ba.eventCode )
 		case 2:
-			RA_SkipSweeps(ba.win, 1, limitToSetBorder = 1, document = 1)
+			RA_SkipSweeps(ba.win, 1, SWEEP_SKIP_USER, limitToSetBorder = 1)
 			break
 	endswitch
 
@@ -5447,7 +5447,7 @@ Function DAP_ButtonProc_skipBack(ba) : ButtonControl
 
 	switch( ba.eventCode )
 		case 2:
-			RA_SkipSweeps(ba.win, -1, limitToSetBorder = 1, document = 1)
+			RA_SkipSweeps(ba.win, -1, SWEEP_SKIP_USER, limitToSetBorder = 1)
 			break
 	endswitch
 

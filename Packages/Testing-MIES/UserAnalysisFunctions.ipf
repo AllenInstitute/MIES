@@ -707,10 +707,10 @@ Function SkipSweeps(device, s)
 		skipCountExisting = GetLastSettingIndep(numericalValues, s.sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE)
 
 		if(IsNaN(skipCountExisting))
-			RA_SkipSweeps(device, 1, limitToSetBorder = 1, document = 1)
+			RA_SkipSweeps(device, 1, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 		endif
 	elseif(s.eventType == POST_SWEEP_EVENT)
-		RA_SkipSweeps(device, inf, limitToSetBorder = 1, document = 1)
+		RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 	endif
 End
 
@@ -737,13 +737,13 @@ Function SkipSweepsAdvanced(device, s)
 	// we acquire: 0, 0, 2, 2
 	if(s.sweepNo == 0)
 		// repeat first sweep
-		RA_SkipSweeps(device, -10)
+		RA_SkipSweeps(device, -10, SWEEP_SKIP_AUTO)
 	elseif(s.sweepNo == 1)
 		// skip one forward
-		RA_SkipSweeps(device, 1, limitToSetBorder = 1)
+		RA_SkipSweeps(device, 1, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 	elseif(s.sweepNo == 2)
 		// and repeat the last one
-		RA_SkipSweeps(device, -1)
+		RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO)
 	endif
 End
 

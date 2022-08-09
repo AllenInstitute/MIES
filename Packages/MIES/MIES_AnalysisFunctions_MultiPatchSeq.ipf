@@ -884,7 +884,7 @@ Function MSQ_FastRheoEst(device, s)
 
 			if(sweepPassed || allHeadstagesExceeded)
 				MSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 			endif
 
 			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)

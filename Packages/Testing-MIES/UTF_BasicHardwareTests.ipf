@@ -1699,6 +1699,9 @@ Function SweepSkipping_REENTRY([str])
 	WAVE/Z skippingSweeps = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE)
 	REQUIRE_WAVE(skippingSweeps, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(skippingSweeps, {2, 0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z skipSweepsSource = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_SOURCE_KEY, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO}, mode = WAVE_DATA)
 End
 
 Function SkipSweepsStimsetsAdvancedP_IGNORE(device)
@@ -1761,6 +1764,9 @@ Function SweepSkippingAdvanced_REENTRY([str])
 
 	WaveTransform/O zapNans, anaFuncActiveSetCount
 	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {3, 3, 1, 1})
+
+	WAVE/Z skipSweepsSource = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_SOURCE_KEY, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, NaN}, mode = WAVE_DATA)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0

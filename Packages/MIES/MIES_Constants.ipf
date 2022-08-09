@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 6
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 65
+Constant LABNOTEBOOK_VERSION = 66
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -997,6 +997,7 @@ StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
 StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
 StrConstant SWEEP_ROLLBACK_KEY       = "Sweep Rollback"
 StrConstant SKIP_SWEEPS_KEY          = "Skip Sweeps"
+StrConstant SKIP_SWEEPS_SOURCE_KEY   = "Skip Sweeps source"
 
 /// @name Update flags for DAP_UpdateDAQControls()
 ///
@@ -1920,4 +1921,11 @@ StrConstant SF_DATATYPE_MIN = "Min"
 StrConstant SF_DATATYPE_RANGE = "Range"
 StrConstant SF_DATATYPE_EPOCHS = "Epochs"
 StrConstant SF_DATATYPE_TP = "TestPulse"
+/// @}
+
+/// @name Available source options for RA_SkipSweeps()
+/// @anchor SkipSweepOptions
+/// @{
+Constant SWEEP_SKIP_USER = 0x1
+Constant SWEEP_SKIP_AUTO = 0x2
 /// @}

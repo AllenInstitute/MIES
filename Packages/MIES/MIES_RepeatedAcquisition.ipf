@@ -459,14 +459,13 @@ End
 /// @param device       device
 /// @param skipCount        The number of sweeps to skip (forward or backwards)
 ///                         during repeated acquisition
+/// @param source           One of @ref SkipSweepOptions
 /// @param limitToSetBorder [optional, defaults to false] Limits skipCount so
 ///                         that we don't skip further than after the last sweep of the
 ///                         stimset with the most number of sweeps.
-/// @param document         [optional, defaults to false] Add labnotebook
-///                         entries to document the sweep skipping.
-Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
+Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
 	string device
-	variable skipCount, limitToSetBorder, document
+	variable source, skipCount, limitToSetBorder
 
 	variable numFollower, i, sweepsInSet, recalculatedCount
 	string followerDevice, msg
@@ -484,12 +483,6 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 		limitToSetBorder = 0
 	else
 		limitToSetBorder = !!limitToSetBorder
-	endif
-
-	if(ParamIsDefault(document))
-		document = 0
-	else
-		document = !!document
 	endif
 
 	sprintf msg, "skipCount (as passed) %g, limitToSetBorder %d, count %d, activeSetCount %d", skipCount, limitToSetBorder, count, activeSetCount
@@ -513,10 +506,7 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 	sprintf msg, "skipCount (possibly clipped) %g, activeSetCount (adjusted) %d, count (adjusted) %d\r", skipCount, activeSetCount, count
 	DEBUGPRINT(msg)
 
-	if(document)
-		RA_DocumentSweepSkipping(device, skipCount)
-	endif
-
+	RA_DocumentSweepSkipping(device, skipCount, source)
 	RA_StepSweepsRemaining(device)
 
 	if(DeviceHasFollower(device))
@@ -527,17 +517,14 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 			NVAR followerCount = $GetCount(followerDevice)
 			followerCount = RA_SkipSweepCalc(followerDevice, skipCount)
 
-			if(document)
-				RA_DocumentSweepSkipping(device, skipCount)
-			endif
-
+			RA_DocumentSweepSkipping(device, skipCount, source)
 			RA_StepSweepsRemaining(followerDevice)
 		endfor
 	endif
 End
 
 /// @brief Document the number of skipped sweeps
-static Function RA_DocumentSweepSkipping(string device, variable skipCount)
+static Function RA_DocumentSweepSkipping(string device, variable skipCount, variable source)
 
 	variable sweepNo, skipCountExisting
 
@@ -550,6 +537,16 @@ static Function RA_DocumentSweepSkipping(string device, variable skipCount)
 	vals[0][0][INDEP_HEADSTAGE] = skipCountExisting + skipCount
 	Make/T/FREE/N=(3, 1) keys
 	keys[0] = SKIP_SWEEPS_KEY
+	keys[1] = ""
+	keys[2] = "0.1"
+
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
+
+	vals = NaN
+	vals[0][0][INDEP_HEADSTAGE] = source
+
+	keys = ""
+	keys[0] = SKIP_SWEEPS_SOURCE_KEY
 	keys[1] = ""
 	keys[2] = "0.1"
 
