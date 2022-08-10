@@ -55,7 +55,7 @@ End
 // - RunWithOpts(testsuite = "UTF_Epochs.ipf")
 // - RunWithOpts(testcase = "EP_EpochTest7")
 // - RunWithOpts(testcase = "EP_EpochTest7", instru = 1, traceWinList = "MIES_Epochs.ipf")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug])
 
 	variable debugMode
 	string traceOptions = ""
@@ -86,9 +86,17 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		traceWinList = "MIES_.*\.ipf"
 	endif
 
+	if(ParamIsDefault(ITCXOP2Debug))
+		ITCXOP2Debug = 0
+	else
+		ITCXOP2Debug = !!ITCXOP2Debug
+	endif
+
 	if(!instru)
 		traceWinList = ""
 	endif
+
+	HW_ITC_DebugMode(ITCXOP2Debug)
 
 	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
