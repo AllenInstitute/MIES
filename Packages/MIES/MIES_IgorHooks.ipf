@@ -310,6 +310,8 @@ static Function AfterCompiledHook()
 		ExperimentModified 0
 	endif
 
+	ShowTraceInfoTags()
+
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
