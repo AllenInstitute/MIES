@@ -532,9 +532,9 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		endif
 
 		// check description wave if available
-		if(!WaveExists(desc))
+//		if(!WaveExists(desc))
 			continue
-		endif
+//		endif
 
 		descIndex = FindDimLabel(desc, COLS, searchStr)
 
@@ -642,10 +642,10 @@ Function ED_MarkSweepStart(device)
 	sweepSettingsTxtWave[0][%$HIGH_PREC_SWEEP_START_KEY][INDEP_HEADSTAGE] = GetISO8601TimeStamp(numFracSecondsDigits = 3)
 End
 
-/// @brief Add the analysis function call count labnotebook entry
+/// @brief Add the analysis function call counts to the labnotebook
 ///
-/// Name: Analysis function call count
-/// Format: `$analysisFunctionName:$eventName=$callCount;...`
+/// Name: Generic function [XXX]
+/// Entry: Number of times (>= 0) it was called for a particular event
 Function ED_WriteAnalysisFunctionCallCount(string device)
 	variable i, j, callCount, sweepNo
 	string str, entry, func
@@ -664,14 +664,6 @@ Function ED_WriteAnalysisFunctionCallCount(string device)
 		return NaN
 	endif
 
-	if(!HasOneValidEntry(analysisFunctionCallCount))
-		// nothing to do
-		return NaN
-	endif
-
-	Make/T/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
-	Make/T/FREE/N=(1, 1) keys = "Analysis function call count"
-
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		func = funcs[i]
 
@@ -679,28 +671,32 @@ Function ED_WriteAnalysisFunctionCallCount(string device)
 			continue
 		endif
 
-		str = ""
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			if(j == GENERIC_EVENT)
 				// generic events are never send to analysis functions
 				continue
 			endif
 
+			Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+
 			callCount = analysisFunctionCallCount[i][j]
-
-			if(IsNaN(callCount))
-				callCount = 0
-			endif
-
 			ASSERT(IsInteger(callCount), "Expected integer value")
-			sprintf entry, "%s:%s=%d;", func, StringFromList(j, EVENT_NAME_LIST), callCount
-			str += entry
+
+			values[0][0][i] = callCount
+
+			Make/T/FREE/N=(1, 1) keys = ED_GetCallCountEntry(j)
+
+			ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 		endfor
-
-		values[0][0][i] = str
 	endfor
+End
 
-	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+Function/S ED_GetCallCountEntry(variable event)
+	string str
+
+	sprintf str, "Generic function [%s]", StringFromList(event, EVENT_NAME_LIST)
+
+	return str
 End
 
 /// @brief Add sweep specific information to the labnotebook

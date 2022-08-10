@@ -225,15 +225,12 @@ End
 
 Function AFM_ClearCallCount(string device)
 	WAVE callCount = GetAnalysisFunctionCallCount(device)
-	callCount[][] = NaN
+
+	callCount[][] = 0
 End
 
 static Function AFM_IncreaseCallCount(string device, variable headstage, variable event)
 	WAVE callCount = GetAnalysisFunctionCallCount(device)
 
-	if(IsNaN(callCount[headstage][event]))
-		callCount[headstage][event] = 1
-	else
-		callCount[headstage][event] +=1
-	endif
+	callCount[headstage][event] +=1
 End

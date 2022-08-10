@@ -188,26 +188,25 @@ Function/WAVE GetAnalysisFunctionCallCountsFromLBN(string device, [variable swee
 		sweepTotals = !!sweepTotals
 	endif
 
+	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues = GetLBTextualValues(device)
 
-	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "Analysis Function call count")
+	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "Generic Function")
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numSweeps = DimSize(sweeps, ROWS)
 	Make/FREE/D/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS, numSweeps) results = NaN
 
 	for(i = 0; i < numSweeps; i += 1)
-		WAVE/T/Z entries = GetLastSetting(textualValues, sweeps[i], "Analysis Function call count", DATA_ACQUISITION_MODE)
-		CHECK_WAVE(entries, TEXT_WAVE)
-		WAVE/T/Z funcs = GetLastSetting(textualValues, sweeps[i], "Generic function", DATA_ACQUISITION_MODE)
-		CHECK_WAVE(funcs, TEXT_WAVE)
-
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			if(j == GENERIC_EVENT)
 				continue
 			endif
 
-			results[][j][i] = NumberByKey(funcs[p] + ":" + StringFromList(j, EVENT_NAME_LIST), entries[p], "=", ";")
+			WAVE/Z entries = GetLastSetting(numericalValues, sweeps[i], ED_GetCallCountEntry(j), DATA_ACQUISITION_MODE)
+			CHECK_WAVE(entries, NUMERIC_WAVE)
+
+			results[][j][i] = entries[p]
 		endfor
 	endfor
 

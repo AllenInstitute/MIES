@@ -6496,7 +6496,8 @@ End
 /// - Head stage number
 ///
 /// Columns:
-/// - 0-#TOTAL_NUM_EVENTS - 1: Counts how often the analysis function was called during a complete sweep
+/// - 0-#TOTAL_NUM_EVENTS - 1: Counts how often the analysis function was
+///   called during a complete sweep for the given event.
 Function/WAVE GetAnalysisFunctionCallCount(string device)
 	variable versionOfWave = 1
 	DFREF dfr = GetDevicePath(device)
@@ -6511,7 +6512,7 @@ Function/WAVE GetAnalysisFunctionCallCount(string device)
 		Make/D/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) dfr:analysisFunctionCallCount/WAVE=wv
 	endif
 
-	wv = NaN
+	wv = 0
 
 	SetWaveVersion(wv, versionOfWave)
 
