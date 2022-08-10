@@ -21,7 +21,9 @@ Thirty six hints for writing analysis functions
    labnotebook entries, for each possible outcome exactly why the run failed, all
    labnotebook keys were thought of.
 
-#. Create a list of used user epochs.
+#. Create a list of used user epochs. User epochs are there to define
+   interesting stimset x-ranges for the analysis function. This should be used
+   preferrably over other similiar approaches.
 
 #. Create a list of analysis function parameters including required/optional
    state and for the latter also the default values.
