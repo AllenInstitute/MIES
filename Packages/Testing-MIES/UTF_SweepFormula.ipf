@@ -2105,3 +2105,33 @@ static Function TestHelpNotebook([string str])
 	DB_OpenDataBrowser()
 	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine("operation - " + str), 0)
 End
+
+// data acquired with model cell, 45% baseline
+// the data is the inserted TP plus 10ms flat stimset
+static Function TPWithModelCell()
+	string win, device, bsPanel, results, ref
+
+	device = HW_ITC_BuildDeviceString("ITC18USB", "0")
+
+	DFREF dfr = GetDevicePath(device)
+	DuplicateDataFolder root:SF_TP:Data, dfr
+
+	DFREF dfr = GetMIESPath()
+	DuplicateDataFolder root:SF_TP:LabNoteBook, dfr
+
+	GetDAQDeviceID(device)
+
+	win = DB_GetBoundDataBrowser(device)
+
+	CHECK(ExecuteSweepFormulaInDB("store(\"inst\",tp(inst))\n and \nstore(\"ss\",tp(ss))", win))
+
+	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+
+	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ss]", SWEEP_FORMULA_RESULT)
+	ref = "183.03771820448884;"
+	CHECK_EQUAL_STR(ref, results)
+
+	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
+	ref = "17.158406068163004;"
+	CHECK_EQUAL_STR(ref, results)
+End
