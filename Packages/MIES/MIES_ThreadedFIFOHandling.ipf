@@ -99,10 +99,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 
 	variable flags, moreData, fifoPos
 
-	variable enableDebug = 0 // = 1 for debugging
-
 	flags = HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP
-	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
 
 	do
 		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)
