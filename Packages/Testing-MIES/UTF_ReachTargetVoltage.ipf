@@ -18,10 +18,7 @@ End
 static Function RTV_Works_Setter(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "ReachTargetVoltage"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
 
 	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
 
@@ -64,10 +61,7 @@ End
 static Function RTV_WorksWithIndexing_Setter(device)
 	string device
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set] = "ReachTargetVoltage"
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
 
 	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
 

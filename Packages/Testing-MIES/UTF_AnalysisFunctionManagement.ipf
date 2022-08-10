@@ -5,171 +5,99 @@
 
 static Function ChangeAnalysisFunctions_IGNORE()
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncAbortPre_DA_0")
+	ST_SetStimsetParameter("AnaFuncAbortPre_DA_0", "Analysis pre DAQ function", str = "AbortPreDAQ")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "AbortPreDAQ"
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis pre DAQ function", str = "preDAQ")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis pre set function", str = "preSet")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis pre sweep function", str = "preSweepConfig")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis mid sweep function", str = "midSweep")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis post sweep function", str = "postSweep")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis post set function", str = "postSet")
+	ST_SetStimsetParameter("AnaFuncDiff_DA_0", "Analysis post DAQ function", str = "postDAQ")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncDiff_DA_0")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis pre DAQ function", str = "InvalidSignatureAndReturnType")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis pre set function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis pre sweep function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis mid sweep function", str = "InvalidReturnTypeAndValidSig_V1")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis post sweep function", str = "InvalidSignatureAndReturnType")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis post set function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid1_DA_0", "Analysis post DAQ function", str = "InvalidSignatureAndReturnType")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
-	wv[%$"Analysis pre set function"][%Set]    = "preSet"
-	wv[%$"Analysis pre sweep function"][%Set]  = "preSweepConfig"
-	wv[%$"Analysis mid sweep function"][%Set]  = "midSweep"
-	wv[%$"Analysis post sweep function"][%Set] = "postSweep"
-	wv[%$"Analysis post set function"][%Set]   = "postSet"
-	wv[%$"Analysis post DAQ function"][%Set]   = "postDAQ"
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis pre DAQ function", str = "InvalidSignatureAndReturnType")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis pre set function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis pre sweep function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis mid sweep function", str = "InvalidReturnTypeAndValidSig_V2")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis post sweep function", str = "InvalidSignatureAndReturnType")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis post set function", str = "InvalidSignature")
+	ST_SetStimsetParameter("AnaFuncInvalid2_DA_0", "Analysis post DAQ function", str = "InvalidSignatureAndReturnType")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncInvalid1_DA_0")
+	ST_SetStimsetParameter("AnaFuncStopMid_DA_0", "Analysis mid sweep function", str = "StopMidSweep")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
-	wv[%$"Analysis pre set function"][%Set]    = "InvalidSignature"
-	wv[%$"Analysis pre sweep function"][%Set]  = "InvalidSignature"
-	wv[%$"Analysis mid sweep function"][%Set]  = "InvalidReturnTypeAndValidSig_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "InvalidSignatureAndReturnType"
-	wv[%$"Analysis post set function"][%Set]   = "InvalidSignature"
-	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis pre DAQ function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis pre set function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis pre sweep function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis mid sweep function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis post sweep function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis post set function", str = "ValidMultHS_V1")
+	ST_SetStimsetParameter("AnaFuncValidMult_DA_0", "Analysis post DAQ function", str = "ValidMultHS_V1")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncInvalid2_DA_0")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis pre DAQ function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis pre set function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis pre sweep function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis mid sweep function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis post sweep function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis post set function", str = "ValidFunc_V1")
+	ST_SetStimsetParameter("AnaFuncValid1_DA_0", "Analysis post DAQ function", str = "ValidFunc_V1")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
-	wv[%$"Analysis pre set function"][%Set]    = "InvalidSignature"
-	wv[%$"Analysis pre sweep function"][%Set]  = "InvalidSignature"
-	wv[%$"Analysis mid sweep function"][%Set]  = "InvalidReturnTypeAndValidSig_V2"
-	wv[%$"Analysis post sweep function"][%Set] = "InvalidSignatureAndReturnType"
-	wv[%$"Analysis post set function"][%Set]   = "InvalidSignature"
-	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis pre DAQ function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis pre set function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis pre sweep function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis mid sweep function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis post sweep function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis post set function", str = "ValidFunc_V2")
+	ST_SetStimsetParameter("AnaFuncValid2_DA_0", "Analysis post DAQ function", str = "ValidFunc_V2")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncStopMid_DA_0")
+	ST_SetStimsetParameter("AnaFuncValid3_DA_0", "Analysis function (generic)", str = "ValidFunc_V3")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis mid sweep function"][%Set]  = "StopMidSweep"
+	ST_SetStimsetParameter("AnaFuncParams1_DA_0", "Analysis function (generic)", str = "Params1_V3")
+	ST_SetStimsetParameter("AnaFuncParams2_DA_0", "Analysis function (generic)", str = "Params2_V3")
+	ST_SetStimsetParameter("AnaFuncParams3_DA_0", "Analysis function (generic)", str = "Params3_V3")
+	ST_SetStimsetParameter("AnaFuncParams4_DA_0", "Analysis function (generic)", str = "Params4_V3")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncValidMult_DA_0")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre DAQ function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre set function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis pre sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis mid sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post set function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis post DAQ function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncGeneric_DA_0", "Analysis function (generic)", str = "ValidFunc_V3")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidMultHS_V1"
-	wv[%$"Analysis pre set function"][%Set]    = "ValidMultHS_V1"
-	wv[%$"Analysis pre sweep function"][%Set]  = "ValidMultHS_V1"
-	wv[%$"Analysis mid sweep function"][%Set]  = "ValidMultHS_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "ValidMultHS_V1"
-	wv[%$"Analysis post set function"][%Set]   = "ValidMultHS_V1"
-	wv[%$"Analysis post DAQ function"][%Set]   = "ValidMultHS_V1"
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis pre DAQ function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis pre set function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis pre sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis mid sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis post sweep function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis post set function", str = "NotCalled_V1")
+	ST_SetStimsetParameter("AnaFuncTTLNot_TTL_0", "Analysis post DAQ function", str = "NotCalled_V1")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncValid1_DA_0")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis pre DAQ function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis pre set function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis pre sweep function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis mid sweep function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis post sweep function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis post set function", str = "IDontExist")
+	ST_SetStimsetParameter("AnaFuncMissing_DA_0", "Analysis post DAQ function", str = "IDontExist")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V1"
-	wv[%$"Analysis pre set function"][%Set]    = "ValidFunc_V1"
-	wv[%$"Analysis pre sweep function"][%Set]  = "ValidFunc_V1"
-	wv[%$"Analysis mid sweep function"][%Set]  = "ValidFunc_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "ValidFunc_V1"
-	wv[%$"Analysis post set function"][%Set]   = "ValidFunc_V1"
-	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V1"
+	ST_SetStimsetParameter("AnaFuncVeryShort_DA_0", "Analysis function (generic)", str = "ValidFunc_V3")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncValid2_DA_0")
+	ST_SetStimsetParameter("AnaFuncPreDAQHar_DA_0", "Analysis pre DAQ function", str = "preDAQHardAbort")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V2"
-	wv[%$"Analysis pre set function"][%Set]    = "ValidFunc_V2"
-	wv[%$"Analysis pre sweep function"][%Set]  = "ValidFunc_V2"
-	wv[%$"Analysis mid sweep function"][%Set]  = "ValidFunc_V2"
-	wv[%$"Analysis post sweep function"][%Set] = "ValidFunc_V2"
-	wv[%$"Analysis post set function"][%Set]   = "ValidFunc_V2"
-	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V2"
+	ST_SetStimsetParameter("AnaFuncPreSetHar_DA_0", "Analysis function (generic)", str = "AbortPreSet")
 
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncValid3_DA_0")
+	ST_SetStimsetParameter("AnaFuncOrder_DA_0", "Analysis function (generic)", str = "TotalOrdering")
 
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncParams1_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "Params1_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncParams2_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "Params2_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncParams3_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "Params3_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncParams4_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "Params4_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncGeneric_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
-	wv[%$"Analysis pre set function"][%Set]    = "NotCalled_V1"
-	wv[%$"Analysis pre sweep function"][%Set]  = "NotCalled_V1"
-	wv[%$"Analysis mid sweep function"][%Set]  = "NotCalled_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "NotCalled_V1"
-	wv[%$"Analysis post set function"][%Set]   = "NotCalled_V1"
-	wv[%$"Analysis post DAQ function"][%Set]   = "NotCalled_V1"
-	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncTTLNot_TTL_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
-	wv[%$"Analysis pre set function"][%Set]    = "NotCalled_V1"
-	wv[%$"Analysis pre sweep function"][%Set]  = "NotCalled_V1"
-	wv[%$"Analysis mid sweep function"][%Set]  = "NotCalled_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "NotCalled_V1"
-	wv[%$"Analysis post set function"][%Set]   = "NotCalled_V1"
-	wv[%$"Analysis post DAQ function"][%Set]   = "NotCalled_V1"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncMissing_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "IDontExist"
-	wv[%$"Analysis pre set function"][%Set]    = "IDontExist"
-	wv[%$"Analysis pre sweep function"][%Set]  = "IDontExist"
-	wv[%$"Analysis mid sweep function"][%Set]  = "IDontExist"
-	wv[%$"Analysis post sweep function"][%Set] = "IDontExist"
-	wv[%$"Analysis post set function"][%Set]   = "IDontExist"
-	wv[%$"Analysis post DAQ function"][%Set]   = "IDontExist"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncVeryShort_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncPreDAQHar_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQHardAbort"
-	wv[%$"Analysis pre set function"][%Set]    = "preDAQHardAbort"
-	wv[%$"Analysis pre sweep function"][%Set]  = "preDAQHardAbort"
-	wv[%$"Analysis mid sweep function"][%Set]  = "preDAQHardAbort"
-	wv[%$"Analysis post sweep function"][%Set] = "preDAQHardAbort"
-	wv[%$"Analysis post set function"][%Set]   = "preDAQHardAbort"
-	wv[%$"Analysis post DAQ function"][%Set]   = "preDAQHardAbort"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncPreSetHar_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]    = "AbortPreSet"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncOrder_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]    = "TotalOrdering"
-
-	WAVE/T wv = WB_GetWaveTextParamForSet("AnaFuncPostDAQ_DA_0")
-
-	wv[][%Set] = ""
-	wv[%$"Analysis function (generic)"][%Set]    = "ChangeStimSet"
+	ST_SetStimsetParameter("AnaFuncPostDAQ_DA_0", "Analysis function (generic)", str = "ChangeStimSet")
 End
 
 Function RewriteAnalysisFunctions_IGNORE()
