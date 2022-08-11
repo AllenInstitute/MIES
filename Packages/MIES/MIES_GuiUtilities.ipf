@@ -2081,7 +2081,7 @@ Function/S GetPopupMenuList(string value, variable type)
 	endswitch
 End
 
-/// @brief Enable show trace info tags for the current top graph
+/// @brief Enable show trace info tags globally
 Function ShowTraceInfoTags()
 
 	DoIgorMenu/C "Graph", "Show Trace Info Tags"

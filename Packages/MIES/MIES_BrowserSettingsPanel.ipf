@@ -85,8 +85,6 @@ Function BSP_InitPanel(mainPanel)
 
 	graph = LBV_GetLabNoteBookGraph(mainPanel)
 	TUD_Init(graph)
-
-	ShowTraceInfoTags()
 End
 
 /// @brief UnHides BrowserSettings side Panel
