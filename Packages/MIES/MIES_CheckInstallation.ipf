@@ -14,6 +14,7 @@
 static StrConstant CHI_NIDAQ_XOP_64_HASH = "92427feeec9d330d410452b15ff1b6da90fe8e2dd0b8362cd711358c8726706a"
 static StrConstant CHI_NIDAQ_XOP_HASH    = "ed7f5bc51553608bcf7850b06d472dc739952a32939c1b196b80d131a87f2527"
 static StrConstant CHI_JSON_XOP_VERSION  = "version-770-g9d1bd48"
+static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
 static StrConstant CHI_ITC_XOP_VERSION   = "5fe4ed6"
 
 /// @brief Collection of counters used for installation checking
@@ -40,6 +41,19 @@ static Function CHI_CheckJSONXOPVersion(state)
 	version = JSON_GetString(id, "/XOP/version", ignoreErr = 1)
 
 	CHI_OutputVersionCheckResult(state, "JSON", CHI_JSON_XOP_VERSION, version)
+End
+
+static Function CHI_CheckTUFXOPVersion(state)
+	STRUCT CHI_InstallationState &state
+
+	variable id
+	string version
+
+	TUFXOP_Version
+	id = JSON_Parse(S_value)
+	version = JSON_GetString(id, "/version", ignoreErr = 1)
+
+	CHI_OutputVersionCheckResult(state, "TUF", CHI_TUF_XOP_VERSION, version)
 End
 
 static Function CHI_OutputVersionCheckResult(STRUCT CHI_InstallationState &state, string xopName, string expectedVersion, string foundVersion)
@@ -235,9 +249,11 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
+	CHI_CheckXOP(listOfXOPs, "TUF-64.xop", "TUF XOP", state)
 
 	CHI_CheckJSONXOPVersion(state)
 	CHI_CheckITCXOPVersion(state)
+	CHI_CheckTUFXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 
