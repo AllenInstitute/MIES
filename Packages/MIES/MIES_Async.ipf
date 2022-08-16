@@ -345,7 +345,7 @@ Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 	variable paramCnt
 	string paramName
 
-	ASSERT(isThreadDF(dfr), "Invalid data folder or not a thread data folder")
+	ASSERT(ASYNC_isThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	DFREF dfrInp = dfr:input
 
 	NVAR/Z paramCount = dfrInp:$ASYNC_PARAMCOUNT_STR
@@ -586,7 +586,7 @@ Function ASYNC_Execute(dfr)
 
 	variable orderIndex, size, index
 
-	ASSERT(isThreadDF(dfr), "Invalid data folder or not a thread data folder")
+	ASSERT(ASYNC_IsThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 
@@ -630,7 +630,7 @@ Function ASYNC_Execute(dfr)
 End
 
 /// @brief test if data folder is marked for thread usage
-static Function isThreadDF(dfr)
+static Function ASYNC_IsThreadDF(dfr)
 	DFREF dfr
 
 	NVAR/Z marker = dfr:$ASYNC_THREAD_MARKER_STR
