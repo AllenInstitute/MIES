@@ -28,7 +28,7 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	CtrlNamedBackground $"AsyncFramework", stop
 	variable dummy
 	dummy = ThreadGroupRelease(-2)
-	DFREF dfr = MIES_ASYNC#getAsyncHomeDF()
+	DFREF dfr = GetAsyncHomeDF()
 	KillDataFolder/Z dfr
 
 	CheckForBugMessages()
@@ -64,7 +64,7 @@ End
 static Function TASYNC_Start_Stop()
 
 	ASYNC_Start(ThreadProcessorCount)
-	DFREF dfr = MIES_ASYNC#getAsyncHomeDF()
+	DFREF dfr = GetAsyncHomeDF()
 	NVAR/Z tgID = dfr:threadGroupID
 	CHECK(NVAR_Exists(tgID))
 	NVAR/Z ThreadCnt = dfr:numThreads

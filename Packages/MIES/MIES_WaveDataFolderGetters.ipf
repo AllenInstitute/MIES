@@ -7390,3 +7390,77 @@ Function/Wave GetTPSettingsLabnotebook(string device)
 
 	return wv
 End
+
+/// @name Async Framework
+/// @{
+
+/// @brief Return wave reference to wave with data folder reference buffer for delayed readouts
+/// 1d wave for data folder references, starts with size 0
+/// when jobs should be read out in order, the waiting data folders are buffered in this wave
+/// e.g. if the next read out would be job 2, but a data folder from job 3 is returned
+/// the data folder is buffered until the one from job 2 appears from the output queue
+Function/WAVE GetDFREFbuffer(dfr)
+	DFREF dfr
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/DF/SDFR=dfr wv = DFREFbuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+	Make/DF/N=0 dfr:DFREFbuffer/Wave=wv
+
+	return wv
+End
+
+/// @brief Returns wave ref for workload tracking
+/// 2d wave
+/// row stores work load classes named through dimension label
+/// column 0 stores how many work loads were pushed to Async
+/// column 1 stores how many work loads were read out from Async
+Function/WAVE GetWorkloadTracking(dfr)
+	DFREF dfr
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr/L/U wv = WorkloadTracking
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/L/U/N=(0, 3) dfr:WorkloadTracking/Wave=wv
+	SetDimLabel COLS, 0, $"INPUTCOUNT", wv
+	SetDimLabel COLS, 1, $"OUTPUTCOUNT", wv
+	SetDimLabel COLS, 2, $"INORDER", wv
+	return wv
+End
+
+/// @brief Returns wave ref for buffering results when THREADING_DISABLED is defined
+/// 1D wave using NOTE_INDEX logic
+Function/WAVE GetSerialExecutionBuffer(dfr)
+	DFREF dfr
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr/DF wv = SerialExecutionBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/DF/N=(MINIMUM_WAVE_SIZE) dfr:SerialExecutionBuffer/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Returns string path to async framework home data folder
+Function/S GetAsyncHomeStr()
+	return "root:Packages:Async"
+End
+
+/// @brief Returns reference to async framework home data folder
+Function/DF GetAsyncHomeDF()
+	return createDFWithAllParents(getAsyncHomeStr())
+End
+
+/// @}
