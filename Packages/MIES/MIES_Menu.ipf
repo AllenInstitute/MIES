@@ -174,7 +174,7 @@ Function MEN_CreateIssueOnGithub()
 	body += "- Did user input immediately precede the unexpected behavior?\n\n"
 	body += "- What did you expect to happen?\n\n"
 	body += "\n"
-	body += "Igor Pro Experiment files can be attached as zip file if needed.\n"
+	body += "Igor Pro Experiment/NWB files can be attached as zip file if needed.\n"
 	body += "\n"
 	body += "The following contains installation information (keep unchanged):\n"
 
@@ -191,6 +191,18 @@ Function MEN_CreateIssueOnGithub()
 	str = CaptureHistory(ref, 1)
 
 	body += str
+	body += "```\n\n"
+
+	body += "```\nAvailable NI devices with their properties:\n"
+
+	ref = CaptureHistoryStart()
+	HW_NI_PrintPropertiesOfDevices()
+	str = CaptureHistory(ref, 1)
+
+	print "b"
+
+	body += str
+
 	body +=  "```\n\n"
 
 	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)

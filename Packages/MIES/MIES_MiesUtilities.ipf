@@ -7844,3 +7844,18 @@ Function HandleOutOfMemory(string device, string name)
 	DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
 	TP_StopTestPulse(device)
 End
+
+/// @brief Return 1 if the function was already called with that argument, and 0 otherwise
+Function AlreadyCalledOnce(string name)
+
+	NVAR var = $GetCalledOnceVariable(name)
+
+	if(var)
+		// already called
+		return 1
+	endif
+
+	var = 1
+	// not yet called
+	return 0
+End

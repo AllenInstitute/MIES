@@ -24,8 +24,8 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
-// PCIe-6343 | PXI-6259 | PCIe-6341
-static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
+//                                   PCIe-6343                                    | PXI-6259                                   | PCIe-6341                                 | USB-6346
+static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8|AI:8;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
@@ -141,7 +141,21 @@ Function/S DAP_GetDACDeviceList()
 		list = AddListItem(devices, list, ";", inf)
 	endif
 
+	if(!cmpstr(list, NONE))
+		DAP_SuggestIssueForAdditionalNIHardware()
+	endif
+
 	return list
+End
+
+static Function DAP_SuggestIssueForAdditionalNIHardware()
+
+	if(AlreadyCalledOnce(CO_EMPTY_DAC_LIST))
+		return NaN
+	endif
+
+	printf "There are no devices available for data acquisition. It might be the case that there is NI hardware connected\r"
+	printf "which is not recognized by MIES. In this case please file an issue via MIES->\"Report an issue\" which will include all necessary information.\r"
 End
 
 /// @brief Restores the base state of the DA_Ephys panel.

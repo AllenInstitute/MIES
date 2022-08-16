@@ -1875,3 +1875,9 @@ Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro
 Constant DFREF_VALID = 0x1
 Constant DFREF_FREE = 0x2
 /// @}
+
+/// @name Called once names
+/// @anchor CalledOnceNames
+/// @{
+StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
+/// @}
