@@ -141,6 +141,9 @@ End
 // ZeroMQ procedures
 #include "ZeroMQ_Interop"
 
+// WIP
+#include "DC_proc"
+
 // our includes
 #include "MIES_AcceleratedModifyGraph"
 #include "MIES_AcquisitionStateHandling"
