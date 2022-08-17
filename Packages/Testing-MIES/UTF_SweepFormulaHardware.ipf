@@ -512,19 +512,20 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 
 	// HS0
 	formula = "tp(ss, select(channels(AD0), sweeps()), [1, 2, 3])"
-	WAVE/Z steadyStateInsertedHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE steadyStateInsertedHS0 = GetSingleResult(formula, graph)
+
 	CHECK_WAVE(steadyStateInsertedHS0, NUMERIC_WAVE)
 
 	formula = "tp(inst, select(channels(AD0), sweeps()), [1, 2, 3])"
-	WAVE/Z instInsertedHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE instInsertedHS0 = GetSingleResult(formula, graph)
 	CHECK_WAVE(instInsertedHS0, NUMERIC_WAVE)
 
 	formula = "tp(ss, select(channels(AD0), sweeps()), [0])"
-	WAVE/Z steadyStateOthersHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE steadyStateOthersHS0 = GetSingleResult(formula, graph)
 	CHECK_WAVE(steadyStateOthersHS0, NUMERIC_WAVE)
 
 	formula = "tp(inst, select(channels(AD0), sweeps()), [0])"
-	WAVE/Z instOthersHS0 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE instOthersHS0 = GetSingleResult(formula, graph)
 	CHECK_WAVE(instOthersHS0, NUMERIC_WAVE)
 
 	CHECK_EQUAL_WAVES(steadyStateInsertedHS0, steadyStateOthersHS0, mode = WAVE_DATA, tol = 50^2)
@@ -532,19 +533,19 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 
 	// HS1
 	formula = "tp(ss, select(channels(AD1), sweeps()), [1, 2, 3])"
-	WAVE/Z steadyStateInsertedHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE steadyStateInsertedHS1 = GetSingleResult(formula, graph)
 	CHECK_WAVE(steadyStateInsertedHS1, NUMERIC_WAVE)
 
 	formula = "tp(inst, select(channels(AD1), sweeps()), [1, 2, 3])"
-	WAVE/Z instInsertedHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE instInsertedHS1 = GetSingleResult(formula, graph)
 	CHECK_WAVE(instInsertedHS1, NUMERIC_WAVE)
 
 	formula = "tp(ss, select(channels(AD1), sweeps()), [0])"
-	WAVE/Z steadyStateOthersHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE steadyStateOthersHS1 = GetSingleResult(formula, graph)
 	CHECK_WAVE(steadyStateOthersHS1, NUMERIC_WAVE)
 
 	formula = "tp(inst, select(channels(AD1), sweeps()), [0])"
-	WAVE/Z instOthersHS1 = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	WAVE instOthersHS1 = GetSingleResult(formula, graph)
 	CHECK_WAVE(instOthersHS1, NUMERIC_WAVE)
 
 	CHECK_EQUAL_WAVES(steadyStateInsertedHS1, steadyStateOthersHS1, mode = WAVE_DATA, tol = 0.1)
