@@ -642,3 +642,18 @@ End
 Function/S GetCalledOnceVariable(string name)
 	return GetNVARAsString(GetCalledOncePath(), name, initialValue=0)
 End
+
+/// @brief Returns string path to the thread group id
+Function/S GetThreadGroupID()
+	return GetNVARAsString(getAsyncHomeDF(), "threadGroupID", initialValue=NaN)
+End
+
+/// @brief Returns string path to the number of threads
+Function/S GetNumThreads()
+	return GetNVARAsString(getAsyncHomeDF(), "numThreads", initialValue=0)
+End
+
+/// @brief Returns string path to flag if background task was disabled
+Function/S GetTaskDisableStatus()
+	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue=0)
+End
