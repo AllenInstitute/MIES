@@ -1175,7 +1175,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 			[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
 
-			if(!WaveExists(wvResultX))
+			if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
 				WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
 			endif
 
@@ -4035,11 +4035,12 @@ static Function SF_AddOpToOpStack(WAVE w, string oldStack, string opShort)
 	JWN_SetStringInWaveNote(w, SF_META_OPSTACK, AddListItem(opShort, oldStack))
 End
 
-/// @brief Transfer wavenote from input data sets to output data sets, set a label for a x-axis and use the value from keyForXAxis for x-Value
+/// @brief Transfer wavenote from input data sets to output data sets
+///        set a label for a x-axis and x-value(s) for data waves
 static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
 
-	variable xAxisValue, numResults, i
-	string opStack, keyForXAxis, inDataType
+	variable xAxisValue, numResults, i, setXLabel
+	string opStack, inDataType, xLabel
 
 	numResults = DimSize(input, ROWS)
 	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
@@ -4050,16 +4051,8 @@ static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE
 	SF_AddOpToOpStack(output, opStack, opShort)
 
 	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
-	strswitch(inDataType)
-		case SF_DATATYPE_SWEEP:
-			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
-			keyForXAxis = SF_META_SWEEPNO
-			break
-		default:
-			keyForXAxis = ""
-			break
-	endswitch
 
+	setXLabel = 1
 	for(i = 0; i < numResults; i += 1)
 		WAVE/Z inData = input[i]
 		WAVE/Z outData = output[i]
@@ -4069,13 +4062,32 @@ static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE
 
 		Note/K outData, note(inData)
 
-		if(IsEmpty(keyForXAxis))
-			continue
-		endif
-		xAxisValue = JWN_GetNumberFromWaveNote(outData, keyForXAxis)
-		if(IsNaN(xAxisValue))
-			continue
-		endif
-		JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {xAxisValue})
+		strswitch(inDataType)
+			case SF_DATATYPE_SWEEP:
+				if(numpnts(outData) == 1 && IsEmpty(WaveUnits(outData, ROWS)))
+					xAxisValue = JWN_GetNumberFromWaveNote(outData, SF_META_SWEEPNO)
+					JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {xAxisValue})
+				else
+					setXLabel = 0
+				endif
+				break
+			default:
+				setXLabel = 0
+				break
+		endswitch
+
 	endfor
+
+	xLabel = ""
+	if(setXLabel)
+		strswitch(inDataType)
+			case SF_DATATYPE_SWEEP:
+				xLabel = "Sweeps"
+				break
+			default:
+				break
+		endswitch
+	endif
+
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 End
