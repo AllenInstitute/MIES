@@ -1001,20 +1001,28 @@ End
 
 static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
-	variable channelNumber, channelType, sweepNo, headstage
+	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal
 
 	s.red = 0xFFFF
 	s.green = 0x0000
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
-	FindValue/TEXT=SF_OP_DATA/TXOP=4 opStackW
-	if(V_Value < 0)
+	numDoInh = DimSize(doInheritance, ROWS)
+	Make/FREE/N=(numDoInh) findPos
+	for(i = 0; i < numDoInh; i += 1)
+		FindValue/TEXT=doInheritance[i]/TXOP=4 opStackW
+		findPos[i] = V_Value == -1 ? NaN : V_Value
+	endfor
+	minVal = WaveMin(findPos)
+	if(IsNaN(minVal))
 		return [s]
 	endif
-	Redimension/N=(V_Value) opStackW
+
+	Redimension/N=(minVal) opStackW
 	WAVE/Z/T common = GetSetIntersection(opStackW, stopInheritance)
 	if(WaveExists(common))
 		return [s]
