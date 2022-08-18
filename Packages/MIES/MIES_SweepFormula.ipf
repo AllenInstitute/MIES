@@ -961,6 +961,13 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
 
 	strswitch(plotMetaData.dataType)
+		case SF_DATATYPE_TP:
+			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
+			sprintf traceAnnotation, "TP Sweep %d %s", sweepNo, channelId
+			break
 		case SF_DATATYPE_SWEEP:
 			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
