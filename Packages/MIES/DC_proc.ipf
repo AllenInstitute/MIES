@@ -283,6 +283,8 @@ function plot_i_dc(AD)
 
 	wave peakx, peaky
 	display/l=l_i i_wave
+	AutoPositionWindow
+
 	appendtograph/l=l_dc dc_wave
 	SetAxis/A=2 l_i
 	SetAxis/A=2 l_dc
@@ -327,7 +329,7 @@ function ipsc_sweep(sweep, ad)
 	output_wave[dimIndex][0]=sweep
 	output_wave[dimIndex][1]=off
 
-	//make_psc_kernel(1,15,-5,deltax(filt))
+	make_psc_kernel(1,15,-5,deltax(filt))
 	wave psc_kernel = root:psc_folder:psc_kernel
 	//deconv_k(filt,psc_kernel)
 	deconv_v2(filt)
@@ -344,7 +346,7 @@ function ipsc_sweep(sweep, ad)
 	variable base=W_coef[2]
 	output_wave[dimIndex][2]=sd
 	Duplicate/o deconv_filter $dc_name
-	KillWaves deconv_filter
+//	KillWaves deconv_filter
 end
 
 // Do only parts of ipsc_sweep()
@@ -407,7 +409,7 @@ function find_crossings(thresh)
 	variable thresh
 
 	// TODO unused ad_2_filter wave
-	wave deconv_filter, ad_2_filter
+	wave deconv_filter //, ad_2_filter
 
 	// TODO fixed time range
 	FindLevels/B=10/Dest=crossings/EDGE=1/m=2/r=(100,10000)/q deconv_filter, 0.028
@@ -689,9 +691,14 @@ end
 /// @param AD ADC
 function plot_psc_a_wave(AD)
 	variable AD
+
+	setdatafolder root:psc_folder
+
 	string wave_name = "PSC_analysis_AD_"+num2str(AD)
 	wave psc_a_wave=$wave_name
 	display/l=lb psc_a_wave[][1] vs psc_a_wave[][0]
+	AutoPositionWindow
+
 	appendtograph/l=ls psc_a_wave[][2] vs psc_a_wave[][0]
 	appendtograph/l=lc psc_a_wave[][3] vs psc_a_wave[][0]
 	Label lb "holding (pA)";DelayUpdate
@@ -701,6 +708,9 @@ function plot_psc_a_wave(AD)
 	SetAxis lb *,0
 	SetAxis ls 0,*
 	SetAxis lc 0,*
+
+	// lines and markers
+	ModifyGraph mode=4
 end
 
 /// Creates a wave with a slice of trace around the i'th peak, see column 0 in the events wave
@@ -789,7 +799,8 @@ function plot_events_sweeps(start, stop, AD)
 	variable start, stop, AD
 	variable i
 
-	display
+	Display
+	AutoPositionWindow
 
 	for (i=start; i<=stop; i+=1)
 		string sweep_df_name="X_"+num2str(i)
@@ -834,15 +845,6 @@ function test_loop0(start, stop, AD)
 	for (i=start; i<=stop; i+=1)
 		ipsc_sweep_ts(i, AD)
 	endfor
-end
-
-function caller(sweep)
-	variable sweep
-	variable avg_isi, avg_amp
-	wave crossings, ad_2_filter, deconv_filter
-
-	[avg_isi, avg_amp]=analyze_crossings(crossings, ad_2_filter, deconv_filter,2, sweep)
-	print avg_isi, avg_amp
 end
 
 function process_sweeps(start, stop)
@@ -909,3 +911,32 @@ function test_loop_2(start, stop, AD, thresh)
 end
 
 /// @}
+
+Function RunAll()
+
+	variable sweepNo = 50
+	variable AD = 10
+
+	make_psc_analysis_wave(AD)
+
+	KillWindows(winList("Graph*", ";", "WIN:1"))
+
+	DFREF deviceDFR = GetDeviceDataPath("ITC1600_Dev_0")
+	DFREF dfr = deviceDFR:X_50
+	KillOrMoveToTrash(dfr = dfr)
+	DuplicateDataFolder deviceDFR:X_50_plaindata, deviceDFR:X_50
+	DFREF dfr = deviceDFR:X_50
+
+	test_loop(sweepNo, sweepNo, AD)
+	test_loop_2(sweepNo, sweepNo, AD,.01)
+	plot_events_sweeps(sweepNo, sweepNo, AD)
+	plot_psc_a_wave(10)
+
+	SetDataFolder dfr
+	plot_i_dc(10)
+
+	Edit/K=1 root:psc_folder:PSC_analysis_AD_10.ld
+	Edit/K=1 root:MIES:HardwareDevices:ITC1600:Device0:Data:X_50:AD_10_events.ld
+End
+
+// marker types: 43 is accepted and 8 is rejected
