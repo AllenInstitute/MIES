@@ -4,13 +4,13 @@ git config --local filter.compress.clean "gzip -3 --no-name --stdout"
 git config --local filter.compress.smudge "gzip --decompress --stdout"
 
 # remove Git index
-rm -f .git/index
+git read-tree --empty
 
 # rescan index
-git reset --quiet HEAD -- .
+git reset --quiet HEAD -- :/
 
 # do initial smudging
-git checkout .
+git checkout :/
 
 # fetch submodules
 git submodule init
