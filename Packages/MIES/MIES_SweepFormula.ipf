@@ -921,7 +921,9 @@ End
 
 static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
 
-	variable i, numResultsY, numResultsX, useXLabel
+	variable i, numResultsY, numResultsX
+	variable useXLabel, addDataUnitsInAnnotation
+	string dataUnits, dataUnitCheck
 
 	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 
@@ -939,6 +941,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	endif
 
 	useXLabel = 1
+	addDataUnitsInAnnotation = 1
 	Redimension/N=(numResultsY, -1) formulaResults
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
@@ -949,13 +952,25 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 			endif
 		endif
 
-		formulaResults[i][%FORMULAY] = wvYRef[i]
+		WAVE/Z wvYdata = wvYRef[i]
+		if(WaveExists(wvYdata))
+			dataUnits = WaveUnits(wvYdata, -1)
+			if(IsNull(dataUnitCheck))
+				dataUnitCheck = dataUnits
+			elseif(CmpStr(dataUnitCheck, dataUnits))
+				addDataUnitsInAnnotation = 0
+			endif
+		endif
+
+		formulaResults[i][%FORMULAY] = wvYdata
 	endfor
+
+	dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(\\U)")
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
 	plotMetaData.xAxisLabel = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
-	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL)
+	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
 
 	return [formulaResults, plotMetaData]
 End
