@@ -120,6 +120,8 @@ static StrConstant SF_WREF_MARKER = "\"WREF@\":"
 
 static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
+static StrConstant SF_XLABEL_USER = ""
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
@@ -919,7 +921,7 @@ End
 
 static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] SF_GatherFormulaResults(string xFormula, string yFormula, string graph)
 
-	variable i, index, numResultsY, numResultsX, numFormulaPairs, xRefIndex
+	variable i, numResultsY, numResultsX, useXLabel
 
 	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 
@@ -935,19 +937,25 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 		numResultsX = DimSize(wvXRef, ROWS)
 		SF_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
 	endif
-	EnsureLargeEnoughWave(formulaResults, minimumSize=index + numResultsY)
-	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
-	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
-	plotMetaData.xAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL)
-	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL)
+
+	useXLabel = 1
+	Redimension/N=(numResultsY, -1) formulaResults
 	for(i = 0; i < numResultsY; i += 1)
 		if(WaveExists(wvXRef))
-			formulaResults[index][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
+			formulaResults[i][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
+			WAVE/Z wvXdata = formulaResults[i][%FORMULAX]
+			if(WaveExists(wvXdata))
+				useXLabel = 0
+			endif
 		endif
-		formulaResults[index][%FORMULAY] = wvYRef[i]
-		index += 1
+
+		formulaResults[i][%FORMULAY] = wvYRef[i]
 	endfor
-	Redimension/N=(index, -1) formulaResults
+
+	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
+	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
+	plotMetaData.xAxisLabel = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
+	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL)
 
 	return [formulaResults, plotMetaData]
 End
