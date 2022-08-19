@@ -174,6 +174,146 @@ static Function	TestSweepFormulaButtons(string device)
 	CHECK_EQUAL_STR(refStr, win)
 End
 
+static Function	TestSweepFormulaAnnotations(string device)
+
+	string plotWin, dbPanel, formula,annoInfo
+	string str, strRef, typeRef, flagsRef, textRef
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "data(cursors(A,B),select(channels(AD),sweeps(),all))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	typeRef = "Legend"
+	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
+	textRef = "\\s(T000000d0_Sweep_0_AD1) Sweep 0 AD1\r\\s(T000001d1_Sweep_0_AD2) Sweep 0 AD2\r\\s(T000002d2_Sweep_1_AD1) Sweep 1 AD1\r\\s(T000003d3_Sweep_1_AD2) Sweep 1 AD2\r\\s(T000004d4_Sweep_2_AD1) Sweep 2 AD1\r\\s(T000005d5_Sweep_2_AD2) Sweep 2 AD2"
+	str = StringByKey("TYPE", annoInfo)
+	CHECK_EQUAL_STR(typeRef, str)
+	str = StringByKey("FLAGS", annoInfo)
+	CHECK_EQUAL_STR(flagsRef, str)
+	str = StringByKey("TEXT", annoInfo)
+	CHECK_EQUAL_STR(textRef, str)
+
+	formula = "avg(data(cursors(A,B),select(channels(AD),sweeps(),all)))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	typeRef = "Legend"
+	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
+	textRef = "\\s(T000000d0_avg_data_Sweep_0_AD1) avg data Sweep 0 AD1\r\\s(T000001d1_avg_data_Sweep_0_AD2) avg data Sweep 0 AD2\r\\s(T000002d2_avg_data_Sweep_1_AD1) avg data Sweep 1 AD1\r\\s(T000003d3_avg_data_Sweep_1_AD2) avg data Sweep 1 AD2\r\\s(T000004d4_avg_data_Sweep_2_AD1) avg data Sweep 2 AD1\r\\s(T000005d5_avg_data_Sweep_2_AD2) avg data Sweep 2 AD2"
+	str = StringByKey("TYPE", annoInfo)
+	CHECK_EQUAL_STR(typeRef, str)
+	str = StringByKey("FLAGS", annoInfo)
+	CHECK_EQUAL_STR(flagsRef, str)
+	str = StringByKey("TEXT", annoInfo)
+	CHECK_EQUAL_STR(textRef, str)
+
+	formula = "avg(avg(data(cursors(A,B),select(channels(AD),sweeps(),all))))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	annoInfo = AnnotationInfo(plotWin, "metadata", 1)
+	typeRef = "Legend"
+	flagsRef = "/N=metadata/J/I=0/V=1/D=1/LS=0/O=0/F=2/S=0/H=0/Q/Z=0/G=(0,0,0)/B=(65535,65535,65535)/T=36/A=RT/X=5.00/Y=5.00"
+	textRef = "\\s(T000000d0_avg_avg_data_Sweep_0_AD1) avg avg data Sweep 0 AD1\r\\s(T000001d1_avg_avg_data_Sweep_0_AD2) avg avg data Sweep 0 AD2\r\\s(T000002d2_avg_avg_data_Sweep_1_AD1) avg avg data Sweep 1 AD1\r\\s(T000003d3_avg_avg_data_Sweep_1_AD2) avg avg data Sweep 1 AD2\r\\s(T000004d4_avg_avg_data_Sweep_2_AD1) avg avg data Sweep 2 AD1\r\\s(T000005d5_avg_avg_data_Sweep_2_AD2) avg avg data Sweep 2 AD2"
+	str = StringByKey("TYPE", annoInfo)
+	CHECK_EQUAL_STR(typeRef, str)
+	str = StringByKey("FLAGS", annoInfo)
+	CHECK_EQUAL_STR(flagsRef, str)
+	str = StringByKey("TEXT", annoInfo)
+	CHECK_EQUAL_STR(textRef, str)
+End
+
+static Function [string dbPanel, string plotWin] GetNewDBforSF_IGNORE()
+
+	string graph, formula, formulaPanel, formulaSubwin
+
+	graph = DB_OpenDataBrowser()
+	dbPanel = BSP_GetPanel(graph)
+	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_SF", val = 1)
+	formulaPanel = MIES_SF#SF_GetFormulaWinNameTemplate(dbPanel)
+	formulaSubwin = MIES_SF#SF_GetFormulaWinNameTemplate(dbPanel) + num2istr(0)
+	return [dbPanel, formulaPanel + "#" + formulaSubwin]
+End
+
+static Function	TestSweepFormulaAxisLabels(string device)
+
+	string dbPanel, plotWin, formula, str, strRef
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "avg(data(cursors(A,B),select(channels(AD),sweeps(),all)))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+
+	// Test combine of different data unit in multiple data waves
+	str = AxisLabel(plotWin, "left")
+	strRef = "mV / pA"
+	CHECK_EQUAL_STR(strRef, str)
+
+	str = AxisLabel(plotWin, "bottom")
+	strRef = "Sweeps"
+	CHECK_EQUAL_STR(strRef, str)
+End
+
+static Function	TestSweepFormulaFittingXAxis(string device)
+
+	string dbPanel, plotWin, formula, tInfo, wPath
+	variable index
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "min(data(cursors(A,B),select(channels(AD),sweeps(),all)))\rvs\r1...7"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	Sort/A traces, traces
+	CHECK_EQUAL_VAR(6, DimSize(traces, ROWS))
+	index = 1
+	for(trace : traces)
+		WAVE wY = TraceNameToWaveRef(plotWin, trace)
+		CHECK_EQUAL_VAR(1, numpnts(wY))
+		tInfo = TraceInfo(plotWin, trace, 0)
+		wPath = StringByKey("XWAVEDF", tInfo) + StringByKey("XWAVE", tInfo)
+		WAVE wX = $wPath
+		CHECK_EQUAL_VAR(1, numpnts(wX))
+		CHECK_EQUAL_VAR(index, wx[0])
+		index += 1
+	endfor
+End
+
+static Function	TestSweepFormulaDefaultMetaDataInheritance(string device)
+
+	string dbPanel, plotWin, formula, tInfo, wPath, strRef, str
+	variable sweepNo
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "min(butterworth(integrate(derivative(data(cursors(A,B),select(channels(AD),sweeps(),all)))),4,100,4))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	Sort/A traces, traces
+	CHECK_EQUAL_VAR(6, DimSize(traces, ROWS))
+	sweepNo = 0
+	for(trace : traces)
+		WAVE wY = TraceNameToWaveRef(plotWin, trace)
+		CHECK_EQUAL_VAR(1, numpnts(wY))
+		tInfo = TraceInfo(plotWin, trace, 0)
+		wPath = StringByKey("XWAVEDF", tInfo) + StringByKey("XWAVE", tInfo)
+		WAVE wX = $wPath
+		CHECK_EQUAL_VAR(1, numpnts(wX))
+		CHECK_EQUAL_VAR(trunc(sweepNo), wx[0])
+		sweepNo += 0.5
+	endfor
+
+	str = AxisLabel(plotWin, "bottom")
+	strRef = "Sweeps"
+	CHECK_EQUAL_STR(strRef, str)
+End
+
 static Function	TestSweepFormulaTP(string device)
 
 	string graph, dbPanel
@@ -372,6 +512,10 @@ static Function SF_TPTest_REENTRY([str])
 	string str
 
 	TestSweepFormulaTP(str)
+	TestSweepFormulaAnnotations(str)
+	TestSweepFormulaAxisLabels(str)
+	TestSweepFormulaFittingXAxis(str)
+	TestSweepFormulaDefaultMetaDataInheritance(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
