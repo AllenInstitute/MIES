@@ -944,25 +944,43 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	addDataUnitsInAnnotation = 1
 	Redimension/N=(numResultsY, -1) formulaResults
 	for(i = 0; i < numResultsY; i += 1)
-		if(WaveExists(wvXRef))
-			formulaResults[i][%FORMULAX] = wvXRef[numResultsX == 1 ? 0 : i]
-			WAVE/Z wvXdata = formulaResults[i][%FORMULAX]
-			if(WaveExists(wvXdata))
-				useXLabel = 0
-			endif
-		endif
-
 		WAVE/Z wvYdata = wvYRef[i]
 		if(WaveExists(wvYdata))
+			if(WaveExists(wvXRef))
+				if(numResultsX == 1)
+					WAVE/Z wvXdata = wvXRef[0]
+					if(WaveExists(wvXdata) && DimSize(wvXdata, ROWS) == numResultsY && numpnts(wvYdata) == 1)
+						if(IsTextWave(wvXdata))
+							WAVE/T wT = wvXdata
+							Make/FREE/T wvXnewDataT = {wT[i]}
+							formulaResults[i][%FORMULAX] = wvXnewDataT
+						else
+							WAVE wv = wvXdata
+							Make/FREE/D wvXnewDataD = {wv[i]}
+							formulaResults[i][%FORMULAX] = wvXnewDataD
+						endif
+					else
+						formulaResults[i][%FORMULAX] = wvXRef[0]
+					endif
+				else
+					formulaResults[i][%FORMULAX] = wvXRef[i]
+				endif
+
+				WAVE/Z wvXdata = formulaResults[i][%FORMULAX]
+				if(WaveExists(wvXdata))
+					useXLabel = 0
+				endif
+			endif
+
 			dataUnits = WaveUnits(wvYdata, -1)
 			if(IsNull(dataUnitCheck))
 				dataUnitCheck = dataUnits
 			elseif(CmpStr(dataUnitCheck, dataUnits))
 				addDataUnitsInAnnotation = 0
 			endif
-		endif
 
-		formulaResults[i][%FORMULAY] = wvYdata
+			formulaResults[i][%FORMULAY] = wvYdata
+		endif
 	endfor
 
 	dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(\\U)")
