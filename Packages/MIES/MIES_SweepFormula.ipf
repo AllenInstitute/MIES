@@ -4095,7 +4095,7 @@ End
 ///        set a label for a x-axis and x-value(s) for data waves
 static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
 
-	variable xAxisValue, numResults, i, setXLabel
+	variable sweepNo, numResults, i, setXLabel
 	string opStack, inDataType, xLabel
 
 	numResults = DimSize(input, ROWS)
@@ -4121,14 +4121,19 @@ static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE
 		strswitch(inDataType)
 			case SF_DATATYPE_SWEEP:
 				if(numpnts(outData) == 1 && IsEmpty(WaveUnits(outData, ROWS)))
-					xAxisValue = JWN_GetNumberFromWaveNote(outData, SF_META_SWEEPNO)
-					JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {xAxisValue})
+					sweepNo = JWN_GetNumberFromWaveNote(outData, SF_META_SWEEPNO)
+					JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {sweepNo})
 				else
 					setXLabel = 0
 				endif
 				break
 			default:
-				setXLabel = 0
+				sweepNo = JWN_GetNumberFromWaveNote(outData, SF_META_SWEEPNO)
+				if(numpnts(outData) == 1 && IsEmpty(WaveUnits(outData, ROWS)) && !IsNaN(sweepNo))
+					JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, {sweepNo})
+				else
+					setXLabel = 0
+				endif
 				break
 		endswitch
 
@@ -4141,6 +4146,7 @@ static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE
 				xLabel = "Sweeps"
 				break
 			default:
+				xLabel = "Sweeps"
 				break
 		endswitch
 	endif
