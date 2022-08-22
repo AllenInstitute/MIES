@@ -111,9 +111,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos)
 		fifoPos = limit(fifoPos, 0, stopCollectionPoint)
 
-		if(fifoPos > 0)
-			TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
-		endif
+		TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
 
 		if(!moreData)
 			switch(mode)
