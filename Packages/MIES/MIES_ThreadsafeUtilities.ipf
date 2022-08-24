@@ -17,11 +17,11 @@ static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or 
 /// Return `NaN` if the thread is not running anymore.
 ///
 /// Throws away anything else in the datafolder from the thread queue.
-Function TS_GetNewestFromThreadQueue(tgID, varName)
-	variable tgID
+Function TS_GetNewestFromThreadQueue(tgID, varName, [timeout_default, timeout_tries])
+	variable tgID, timeout_default, timeout_tries
 	string varName
 
-	variable var, err
+	variable var, err, i
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
@@ -29,9 +29,19 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 		return NaN
 	endif
 
+	if(ParamIsDefault(timeout_default))
+		timeout_default = NaN
+	endif
+
+	if(ParamIsDefault(timeout_tries))
+		timeout_tries = inf
+	else
+		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
+	endif
+
 	var = NaN
 
-	for(;;)
+	for(i = 0; i < timeout_tries; i += 1)
 		AssertOnAndClearRTError()
 		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
 
@@ -58,7 +68,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 		var = var_thread
 	endfor
 
-	return var
+	return timeout_default
 End
 
 /// @brief Return the newest variables from the thread queue
@@ -67,11 +77,11 @@ End
 /// Return an invalid wave reference if the thread is not running anymore.
 ///
 /// Throws away anything else in the datafolder from the thread queue.
-Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
-	variable tgID
+Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames, [timeout_default, timeout_tries])
+	variable tgID, timeout_default, timeout_tries
 	Wave/T varNames
 
-	variable numEntries, i, oneValidEntry, err
+	variable numEntries, i, j, oneValidEntry, err
 	string varName
 
 	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
@@ -79,6 +89,16 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 
 	if(IsNaN(tgID))
 		return $""
+	endif
+
+	if(ParamIsDefault(timeout_default))
+		timeout_default = NaN
+	endif
+
+	if(ParamIsDefault(timeout_tries))
+		timeout_tries = inf
+	else
+		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
 	endif
 
 	numEntries = DimSize(varNames, ROWS)
@@ -90,7 +110,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 		SetDimLabel Rows, i, $varName, result
 	endfor
 
-	for(;;)
+	for(i = 0; i < timeout_tries; i += 1)
 		AssertOnAndClearRTError()
 		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
 
@@ -109,15 +129,17 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 			return result
 		endif
 
-		for(i = 0; i < numEntries; i += 1)
-			NVAR/Z/SDFR=dfr var = $GetDimLabel(result, ROWS, i)
+		for(j = 0; j < numEntries; j += 1)
+			NVAR/Z/SDFR=dfr var = $GetDimLabel(result, ROWS, j)
 
 			if(NVAR_Exists(var))
 				oneValidEntry = 1
-				result[i]     = var
+				result[j]     = var
 			endif
 		endfor
 	endfor
+
+	result[] = timeout_default
 
 	return result
 End
