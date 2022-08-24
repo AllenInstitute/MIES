@@ -1880,6 +1880,7 @@ Constant DFREF_FREE = 0x2
 /// @anchor CalledOnceNames
 /// @{
 StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
+StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
 /// @}
 
 /// @name Constants for SweepFormula Meta data in JSON format

@@ -126,6 +126,9 @@ static Constant SF_MSG_OK = 1
 static Constant SF_MSG_ERROR = 0
 static Constant SF_MSG_WARN = -1
 
+static Constant SF_NUMTRACES_ERROR_THRESHOLD = 10000
+static Constant SF_NUMTRACES_WARN_THRESHOLD = 1000
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
@@ -1153,6 +1156,27 @@ static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
 	return RemoveEndingRegExp(result, separator)
 End
 
+static Function SF_CheckNumTraces(string graph, variable numTraces)
+
+	string bsPanel, msg
+
+	bsPanel = BSP_GetPanel(GetMainWindow(graph))
+	if(numTraces > SF_NUMTRACES_ERROR_THRESHOLD)
+		if(!AlreadyCalledOnce(CO_SF_TOO_MANY_TRACES))
+			printf "If you really need the feature to plot more than %d traces in the SweepFormula plotter\r", SF_NUMTRACES_ERROR_THRESHOLD
+			printf "create an new issue on our development platform. Simply select \"Report an issue\" in the \"Mies Panels\" menu.\r"
+		endif
+
+		sprintf msg, "Attempt to plot too many traces (%d).", numTraces
+		SF_ASSERT(0, msg)
+	endif
+	if(numTraces > SF_NUMTRACES_WARN_THRESHOLD)
+		sprintf msg, "Plotting %d traces...", numTraces
+		SF_SetStatusDisplay(bsPanel, msg, SF_MSG_WARN)
+		DoUpdate/W=$bsPanel
+	endif
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1287,6 +1311,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 			if(!WaveExists(wvX))
 				numTraces = yMxN
+				SF_CheckNumTraces(graph, numTraces)
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
@@ -1295,6 +1320,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			elseif((xMxN == 1) && (yMxN == 1)) // 1D
 				if(yPoints == 1) // 0D vs 1D
 					numTraces = xPoints
+					SF_CheckNumTraces(graph, numTraces)
 					for(i = 0; i < numTraces; i += 1)
 						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
@@ -1302,6 +1328,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					endfor
 				elseif(xPoints == 1) // 1D vs 0D
 					numTraces = yPoints
+					SF_CheckNumTraces(graph, numTraces)
 					for(i = 0; i < numTraces; i += 1)
 						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
@@ -1310,6 +1337,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				else // 1D vs 1D
 					splitTraces = min(yPoints, xPoints)
 					numTraces = floor(max(yPoints, xPoints) / splitTraces)
+					SF_CheckNumTraces(graph, numTraces)
 					if(mod(max(yPoints, xPoints), splitTraces) == 0)
 						DebugPrint("Unmatched Data Alignment in ROWS.")
 					endif
@@ -1323,6 +1351,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				endif
 			elseif(yMxN == 1) // 1D vs 2D
 				numTraces = xMxN
+				SF_CheckNumTraces(graph, numTraces)
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
@@ -1335,6 +1364,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					wvX = wvX[0]
 				endif
 				numTraces = yMxN
+				SF_CheckNumTraces(graph, numTraces)
 				for(i = 0; i < numTraces; i += 1)
 					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
 					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
@@ -1342,6 +1372,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				endfor
 			else // 2D vs 2D
 				numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
+				SF_CheckNumTraces(graph, numTraces)
 				if(yPoints != xPoints)
 					DebugPrint("Size mismatch in data rows for plotting waves.")
 				endif
