@@ -5757,12 +5757,7 @@ Function BUGWorks()
 	bugCount = ROVar(GetBugCount())
 	CHECK_EQUAL_VAR(bugCount, 0)
 
-	try
-		BUG("abcd")
-		FAIL()
-	catch
-		PASS()
-	endtry
+	BUG("abcd")
 
 	bugCount = ROVar(GetBugCount())
 	CHECK_EQUAL_VAR(bugCount, 1)
@@ -5778,12 +5773,7 @@ Function BUG_TSWorks1()
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, NaN)
 
-	try
-		BUG_TS("abcd")
-		FAIL()
-	catch
-		PASS()
-	endtry
+	BUG_TS("abcd")
 
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
 	CHECK_EQUAL_VAR(bugCount, 1)
@@ -5793,12 +5783,9 @@ End
 
 threadsafe static Function BugHelper(variable idx)
 
-	try
-		BUG_TS(num2str(idx))
-		return 1
-	catch
-		return 0
-	endtry
+	BUG_TS(num2str(idx))
+
+	return TSDS_ReadVar(TSDS_BUGCOUNT) == 0
 End
 
 Function BUG_TSWorks2()

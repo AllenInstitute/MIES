@@ -529,7 +529,8 @@ Function BUG(msg)
 #ifdef AUTOMATED_TESTING
 	NVAR bugCount = $GetBugCount()
 	bugCount += 1
-	ASSERT(IsNaN(bugCount), "BUG: Should never be called during automated testing.")
+
+	print "BUG: Should never be called during automated testing."
 #endif
 End
 
@@ -556,7 +557,7 @@ threadsafe Function BUG_TS(string msg)
 	TSDS_Write(TSDS_BUGCOUNT, var = bugCount)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
-	ASSERT_TS(IsNaN(bugCount), "BUG_TS: Should never be called during automated testing.")
+	print "BUG_TS: Should never be called during automated testing."
 #endif
 End
 
