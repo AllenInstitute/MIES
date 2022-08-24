@@ -1954,3 +1954,5 @@ Constant BROWSER_MODE_USER       = 0x01
 Constant BROWSER_MODE_AUTOMATION = 0x02
 Constant BROWSER_MODE_ALL        = 0xFF
 /// @}
+
+Constant THREAD_QUEUE_TRIES = 1000
