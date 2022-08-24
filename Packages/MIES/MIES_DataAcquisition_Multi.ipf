@@ -76,6 +76,9 @@ Function DQM_FIFOMonitor(s)
 			case HARDWARE_ITC_DAC:
 				NVAR tgID = $GetThreadGroupIDFIFO(device)
 				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+
+				// once TFH_FifoLoop is finished the thread is done as well and
+				// therefore we get NaN from TS_GetNewestFromThreadQueue
 				isFinished = IsNaN(fifoLatest)
 
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode
