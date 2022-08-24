@@ -122,6 +122,10 @@ static StrConstant SF_PLOTTER_GUIDENAME = "HOR"
 
 static StrConstant SF_XLABEL_USER = ""
 
+static Constant SF_MSG_OK = 1
+static Constant SF_MSG_ERROR = 0
+static Constant SF_MSG_WARN = -1
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
@@ -1886,10 +1890,17 @@ static Function/S SF_PreprocessInput(string formula)
 	return formula
 End
 
+static Function SF_SetStatusDisplay(string bsPanel, string errMsg, variable errState)
+
+	ASSERT(errState == SF_MSG_ERROR || errState == SF_MSG_OK || errState == SF_MSG_WARN, "Unknown error state for SF status")
+	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=errState)
+	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
+End
+
 Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
-	variable jsonId
+	variable jsonId, errState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1909,8 +1920,8 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			SF_CheckInputCode(formula, dfr)
 
 			errMsg = ROStr(GetSweepFormulaParseErrorMessage())
-			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=IsEmpty(errMsg))
-			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
+			errState = IsEmpty(errMsg) ? SF_MSG_OK : SF_MSG_ERROR
+			SF_SetStatusDisplay(bsPanel, errMsg, errState)
 
 			json_nb = BSP_GetSFJSON(mainPanel)
 			jsonID = ROVar(GetSweepFormulaJSONid(dfr))
@@ -2026,8 +2037,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 
-			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
-			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
 
 			// catch Abort from SF_ASSERT
 			try
@@ -2037,8 +2047,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
-				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
-				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
+				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
 			endtry
 
 			break
