@@ -19,7 +19,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 56
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 41
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 42
 Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -1880,4 +1880,36 @@ Constant DFREF_FREE = 0x2
 /// @anchor CalledOnceNames
 /// @{
 StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
+StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
+/// @}
+
+/// @name Constants for SweepFormula Meta data in JSON format
+/// @anchor SFMetaDataConstants
+/// @{
+StrConstant SF_META_DATATYPE = "/DataType" // string
+StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
+StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
+StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
+StrConstant SF_META_XVALUES = "/XValues" // numeric wave
+StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
+StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
+StrConstant SF_META_OPSTACK = "/OperationStack" // string
+
+StrConstant SF_DATATYPE_SWEEP = "SweepData"
+StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
+StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
+StrConstant SF_DATATYPE_LABNOTEBOOK = "LabNotebook"
+StrConstant SF_DATATYPE_BUTTERWORTH = "Butterworth"
+StrConstant SF_DATATYPE_AREA = "Area"
+StrConstant SF_DATATYPE_INTEGRATE = "Integrate"
+StrConstant SF_DATATYPE_DERIVATIVE = "Derivative"
+StrConstant SF_DATATYPE_STDEV = "StDev"
+StrConstant SF_DATATYPE_VARIANCE = "Variance"
+StrConstant SF_DATATYPE_RMS = "RMS"
+StrConstant SF_DATATYPE_AVG = "Average"
+StrConstant SF_DATATYPE_MAX = "Max"
+StrConstant SF_DATATYPE_MIN = "Min"
+StrConstant SF_DATATYPE_RANGE = "Range"
+StrConstant SF_DATATYPE_EPOCHS = "Epochs"
+StrConstant SF_DATATYPE_TP = "TestPulse"
 /// @}

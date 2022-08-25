@@ -970,7 +970,7 @@ Window DataBrowser() : Graph
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)=A"!!,An!!#C1J,hkX!!#:bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"QBk2=!z"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode=1,highColor=(0,65535,0),lowColor=(0,0,0),zeroColor=(65535,0,0)
+	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode=1,highColor=(0,65535,0),lowColor=(65535,65535,0),zeroColor=(65535,0,0)
 	ValDisplay status_sweepFormula_parser,value=#"1"
 	Button button_sweepFormula_display,pos={9.00,421.00},size={51.00,22.00},disable=3,proc=SF_button_sweepFormula_display
 	Button button_sweepFormula_display,title="Display"
