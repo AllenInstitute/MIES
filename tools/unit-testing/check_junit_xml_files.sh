@@ -2,7 +2,7 @@
 
 set -e
 
-for i in $(ls *.xml)
+for i in $(find -iname "JU_*.xml")
 do
   xmllint --noout $i
 done

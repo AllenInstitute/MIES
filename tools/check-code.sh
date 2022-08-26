@@ -39,7 +39,7 @@ matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/M
 
 if [[ -n "$matches" ]]
 then
-  echo "Global constants are only allowed in MIES_Constants.ipf, MIES_ConversionConstants.ipf and UTF_HardwareMain.ipf:"
+  echo "Global constants are only allowed in MIES_Constants.ipf, MIES_ConversionConstants.ipf and UTF_HardwareHelperFunctions.ipf:"
   echo "$matches"
   ret=1
 fi
@@ -48,7 +48,7 @@ matches=$(git grep $opts "^Structure\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_S
 
 if [[ -n "$matches" ]]
 then
-  echo "Global structures are only allowed in MIES_Structures.ipf and UTF_HardwareMain.ipf:"
+  echo "Global structures are only allowed in MIES_Structures.ipf and UTF_HardwareHelperFunctions.ipf:"
   echo "$matches"
   ret=1
 fi

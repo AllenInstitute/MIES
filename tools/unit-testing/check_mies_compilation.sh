@@ -1,28 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-rm -rf input.txt define.txt
+# https://stackoverflow.com/a/246128
+ScriptDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
-echo MIES_Include >> input.txt
+input=${ScriptDir}/../Packages/tests/Compilation/input.txt
+define=${ScriptDir}/../Packages/tests/Compilation/define.txt
 
-# test UTF includes as well
-if [ "$#" -gt 0 -a "$1" = "all" ]
-then
+rm -rf ${input} ${define}
 
-  echo UTF_Main         >> input.txt
-  echo UTF_HardwareMain >> input.txt
+echo MIES_Include                  >> ${input}
+echo UTF_Basic                     >> ${input}
+echo UTF_PAPlot                    >> ${input}
+echo UTF_HardwareAnalysisFunctions >> ${input}
+echo UTF_HardwareBasic             >> ${input}
 
-  # discard first parameter
-  shift
-fi
+echo DEBUGGING_ENABLED         >> ${define}
+echo EVIL_KITTEN_EATING_MODE   >> ${define}
+echo BACKGROUND_TASK_DEBUGGING >> ${define}
+echo THREADING_DISABLED        >> ${define}
+echo SWEEPFORMULA_DEBUG        >> ${define}
 
-echo DEBUGGING_ENABLED >> define.txt
-echo EVIL_KITTEN_EATING_MODE >> define.txt
-echo BACKGROUND_TASK_DEBUGGING >> define.txt
-echo THREADING_DISABLED >> define.txt
-echo SWEEPFORMULA_DEBUG >> define.txt
-
-./autorun-test.sh $@
+${ScriptDir}/autorun-test.sh $@
 
 exit 0

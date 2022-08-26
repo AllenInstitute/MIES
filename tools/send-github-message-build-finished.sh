@@ -31,7 +31,7 @@ SHA=${bamboo_repository_revision_number}
 GITHUB_STATUS_ENDPOINT=$GITHUB_API/repos/$REPO/statuses/$SHA
 CONTEXT=${bamboo_shortJobName}
 
-RESULT_FILES=$(find $top_level/tools/*-testing -iname "JU_*.xml")
+RESULT_FILES=$(find $top_level/Packages/tests -iname "JU_*.xml")
 
 if [ -z "$RESULT_FILES" ]
 then
