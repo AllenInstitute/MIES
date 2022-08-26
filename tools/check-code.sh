@@ -35,7 +35,7 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/MIES_ConversionConstants.ipf' ':^*/UTF_HardwareMain.ipf')
+matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/MIES_ConversionConstants.ipf' ':^*/UTF_HardwareHelperFunctions.ipf')
 
 if [[ -n "$matches" ]]
 then
@@ -44,7 +44,7 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^Structure\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Structures.ipf' ':^*/UTF_HardwareMain.ipf')
+matches=$(git grep $opts "^Structure\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Structures.ipf' ':^*/UTF_HardwareHelperFunctions.ipf')
 
 if [[ -n "$matches" ]]
 then
