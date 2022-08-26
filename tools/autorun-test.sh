@@ -2,9 +2,8 @@
 
 # Usage: $0 [-p <name of pxp to run against>] [-v <igor version string>] [-t <timeout with unit>]
 
-StateFile=DO_AUTORUN.txt
-
-touch $StateFile
+# https://stackoverflow.com/a/246128
+ScriptDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 usage()
 {
@@ -39,15 +38,18 @@ fi
 
 if [ -z "${experiment}" ]
 then
-  experiment=$(ls *.pxp | head -n1)
+  exit 1
 fi
+
+StateFile=$(dirname ${experiment})/DO_AUTORUN.txt
+touch $StateFile
 
 if [ -z "${igorProVersion}" ]
 then
-  igorProVersion="IP_8_64"
+  exit 1
 fi
 
-igorProPath=$(./get-igor-path.sh ${igorProVersion})
+igorProPath=$(${ScriptDir}/get-igor-path.sh ${igorProVersion})
 
 echo "Running experiment $experiment"
 
