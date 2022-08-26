@@ -819,6 +819,8 @@ threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Is your ITC Device connected to your computer?"
 		print "- Have you tried unlocking/locking the device already?"
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
+		printf "Responsible function: %s\r", GetRTStackInfo(2)
+		printf "Complete call stack: %s\r", GetRTStackInfo(3)
 		BUG_TS("The ITC XOP returned an error!")
 	elseif(ITCXOPError != 0 && outputErrorMessage)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
