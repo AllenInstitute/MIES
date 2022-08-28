@@ -7,8 +7,7 @@ Function CheckSweepSavingCompatible_IGNORE(string device)
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "BreakConfigWave")
 
-	NVAR bugCount = $GetBugCount()
-	bugCount = NaN
+	DisableBugChecks()
 End
 
 /// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
