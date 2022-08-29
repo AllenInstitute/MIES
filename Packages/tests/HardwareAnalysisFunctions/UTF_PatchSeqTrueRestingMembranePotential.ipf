@@ -27,77 +27,23 @@
 ///
 /// @endrst
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO postInitializeFunc, FUNCREF CALLABLE_PROTO preAcquireFunc])
-	string stimset
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                     + \
+								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PSQ_TrueRest_DA_0:")
 
-	EnsureMCCIsOpen()
+	 return [s]
+End
 
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
-
-	DoUpdate/W=$device
+static Function GlobalPreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+End
 
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
+static Function GlobalPreInit(string device)
 
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-
-	stimset = "PSQ_TrueRest_DA_0"
-	AdjustAnalysisParamsForPSQ(device, stimset)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
-
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	OpenDatabrowser()
+	AdjustAnalysisParamsForPSQ(device, "PSQ_TrueRest_DA_0")
 	PrepareForPublishTest()
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
@@ -228,7 +174,7 @@ Function CheckBaselineChunks(string device, WAVE chunkTimes)
 	CheckPSQChunkTimes(device, chunkTimes)
 End
 
-static Function PS_VM1_IGNORE(device)
+static Function PS_VM1_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -253,14 +199,12 @@ static Function PS_VM1_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -333,7 +277,7 @@ static Function PS_VM1_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM2_IGNORE(device)
+static Function PS_VM2_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -358,14 +302,12 @@ static Function PS_VM2_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -446,7 +388,7 @@ static Function PS_VM2_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM3_IGNORE(device)
+static Function PS_VM3_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -471,14 +413,12 @@ static Function PS_VM3_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -555,7 +495,7 @@ static Function PS_VM3_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM4_IGNORE(device)
+static Function PS_VM4_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -580,14 +520,12 @@ static Function PS_VM4_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -668,7 +606,7 @@ static Function PS_VM4_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5_IGNORE(device)
+static Function PS_VM5_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -693,14 +631,12 @@ static Function PS_VM5_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -781,7 +717,7 @@ static Function PS_VM5_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5a_IGNORE(device)
+static Function PS_VM5a_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -805,14 +741,12 @@ static Function PS_VM5a_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM5a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM5a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -900,7 +834,7 @@ static Function PS_VM5a_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5b_IGNORE(device)
+static Function PS_VM5b_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -925,14 +859,12 @@ static Function PS_VM5b_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM5b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM5b_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -1013,7 +945,7 @@ static Function PS_VM5b_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM6_IGNORE(device)
+static Function PS_VM6_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -1038,14 +970,12 @@ static Function PS_VM6_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -1074,7 +1004,7 @@ static Function PS_VM6([str])
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
 End
 
-static Function PS_VM7_IGNORE(device)
+static Function PS_VM7_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -1099,14 +1029,12 @@ static Function PS_VM7_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM7_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -1187,7 +1115,7 @@ static Function PS_VM7_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM7a_IGNORE(device)
+static Function PS_VM7a_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -1212,14 +1140,12 @@ static Function PS_VM7a_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM7a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM7a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -1300,7 +1226,7 @@ static Function PS_VM7a_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM7b_IGNORE(device)
+static Function PS_VM7b_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -1325,14 +1251,12 @@ static Function PS_VM7b_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM7b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM7b_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
@@ -1414,7 +1338,7 @@ static Function PS_VM7b_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM8_IGNORE(device)
+static Function PS_VM8_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
@@ -1440,14 +1364,12 @@ static Function PS_VM8_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_VM8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_VM8_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
