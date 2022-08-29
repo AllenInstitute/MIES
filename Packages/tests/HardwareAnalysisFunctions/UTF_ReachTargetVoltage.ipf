@@ -4,6 +4,29 @@
 
 static Constant HEADSTAGE = 1
 
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                                             + \
+								 "__HS" + num2str(HEADSTAGE) + "_DA1_AD1_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	 return [s]
+End
+
+static Function GlobalPreAcq(string device)
+
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
+
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
+End
+
+static Function GlobalPreInit(string device)
+
+	PASS()
+End
+
 static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resistanceErr, WAVE/Z autobiasFromDialog] GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -15,27 +38,12 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function RTV_Works_Setter(device)
-	string device
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
-
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
-End
-
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function RTV_Works([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "StimulusSetA_DA_0", str, numHeadstages = 2, preAcquireFunc = RTV_Works_Setter)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function RTV_Works_REENTRY([str])
@@ -58,30 +66,19 @@ static Function RTV_Works_REENTRY([str])
 	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
 End
 
-static Function RTV_WorksWithIndexing_Setter(device)
+static Function RTV_WorksWithIndexing_preAcq(device)
 	string device
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
-
-	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
 
 	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var=1)
 	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str="StimulusSetB_DA_0")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(!HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function RTV_WorksWithIndexing([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "StimulusSetA_DA_0", str, numHeadstages = 2, preAcquireFunc = RTV_WorksWithIndexing_Setter)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function RTV_WorksWithIndexing_REENTRY([str])
