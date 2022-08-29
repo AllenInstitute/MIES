@@ -24,79 +24,24 @@
 ///
 /// @endrst
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO postInitializeFunc, FUNCREF CALLABLE_PROTO preAcquireFunc])
-	string stimset
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                        + \
+								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
+	 return [s]
+End
 
-	EnsureMCCIsOpen()
+static Function GlobalPreInit(string device)
 
-	string unlockedDevice = DAP_CreateDAEphysPanel()
+	ST_SetStimsetParameter("PSQ_QC_Stimsets_DA_0", "Analysis function (generic)", str = "PSQ_AccessResistanceSmoke")
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	AdjustAnalysisParamsForPSQ(device, "PSQ_QC_Stimsets_DA_0")
+	PrepareForPublishTest()
+End
 
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
-
-	DoUpdate/W=$device
+static Function GlobalPreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-
-	stimset = "PSQ_QC_stimsets_DA_0"
-	AdjustAnalysisParamsForPSQ(device, stimset)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
-
-	ST_SetStimsetParameter(stimset, "Analysis function (generic)", str = "PSQ_AccessResistanceSmoke")
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
-
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	OpenDatabrowser()
-	PrepareForPublishTest()
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
@@ -258,7 +203,7 @@ static Function CheckTestPulseLikeEpochs(string device,[variable incomplete, var
 	endif
 End
 
-static Function PS_AR1_IGNORE(string device)
+static Function PS_AR1_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -280,13 +225,11 @@ static Function PS_AR1_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR1([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -332,7 +275,7 @@ static Function PS_AR1_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_AR2_IGNORE(string device)
+static Function PS_AR2_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -354,13 +297,11 @@ static Function PS_AR2_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR2([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -409,7 +350,7 @@ static Function PS_AR2_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str)
 End
 
-static Function PS_AR3_IGNORE(string device)
+static Function PS_AR3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -431,13 +372,11 @@ static Function PS_AR3_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR3([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -486,7 +425,7 @@ static Function PS_AR3_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str)
 End
 
-static Function PS_AR4_IGNORE(string device)
+static Function PS_AR4_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -508,13 +447,11 @@ static Function PS_AR4_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR4([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -563,7 +500,7 @@ static Function PS_AR4_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str)
 End
 
-static Function PS_AR5_IGNORE(string device)
+static Function PS_AR5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -585,13 +522,11 @@ static Function PS_AR5_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR5([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -639,7 +574,7 @@ static Function PS_AR5_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_AR6_IGNORE(string device)
+static Function PS_AR6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -661,13 +596,11 @@ static Function PS_AR6_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR6([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -742,7 +675,7 @@ static Function PS_AR6_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str, sweep = 3)
 End
 
-static Function PS_AR6a_IGNORE(string device)
+static Function PS_AR6a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -764,13 +697,11 @@ static Function PS_AR6a_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR6a([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR6a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -819,7 +750,7 @@ static Function PS_AR6a_REENTRY([string str])
 	CheckTestPulseLikeEpochs(str)
 End
 
-static Function PS_AR7_IGNORE(string device)
+static Function PS_AR7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -841,12 +772,11 @@ static Function PS_AR7_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR7([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
-	AcquireData(s, str, preAcquireFunc=PS_AR7_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
@@ -855,7 +785,7 @@ static Function PS_AR7([string str])
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
 End
 
-static Function PS_AR8_IGNORE(string device)
+static Function PS_AR8_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
@@ -878,13 +808,11 @@ static Function PS_AR8_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_AR8([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, preAcquireFunc=PS_AR8_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_ACC_RES_SMOKE)
 
