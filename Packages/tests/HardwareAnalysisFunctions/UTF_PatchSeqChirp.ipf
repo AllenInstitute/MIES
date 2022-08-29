@@ -2,88 +2,30 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTestChirp
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string device
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	string stimset, unlockedDevice
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                      + \
+								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PatchSeqChirp_DA_0:")
+
+	 return [s]
+End
+
+static Function GlobalPreAcq(string device)
 	variable ret
-
-	EnsureMCCIsOpen()
-
-	KillWaves/Z root:overrideResults
-	Make/O/N=(0) root:overrideResults/Wave=overrideResults
-	Note/K overrideResults
-
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
-
-	unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 
-	stimset = "PatchSeqChirp_DA_0"
-	AdjustAnalysisParamsForPSQ(device, stimset)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 
 	ret = AI_SendToAmp(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, LPF_BYPASS)
 	REQUIRE(!ret)
+End
 
-	DoUpdate/W=$device
+static Function GlobalPreInit(string device)
 
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	AdjustAnalysisParamsForPSQ(device, "PatchSeqChirp_DA_0")
+	PrepareForPublishTest()
 End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()
@@ -201,7 +143,8 @@ static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE ch
 	CheckPSQChunkTimes(device, baselineChunks, sweep = sweep)
 End
 
-static Function PS_CR1_IGNORE(string device)
+static Function PS_CR1_preAcq(string device)
+	variable ret
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -219,13 +162,12 @@ End
 
 // BBAA but with zero value which results in PSQ_CR_RERUN
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
@@ -280,7 +222,7 @@ static Function PS_CR1_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
 End
 
-static Function PS_CR2_IGNORE(string device)
+static Function PS_CR2_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -299,13 +241,12 @@ static Function PS_CR2_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -363,7 +304,7 @@ static Function PS_CR2_REENTRY([str])
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {522, 854.6995}, empty)
 End
 
-static Function PS_CR2a_IGNORE(string device)
+static Function PS_CR2a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -379,13 +320,12 @@ static Function PS_CR2a_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR2a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR2a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -442,7 +382,7 @@ static Function PS_CR2a_REENTRY([str])
 	// CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
 End
 
-static Function PS_CR2b_IGNORE(string device)
+static Function PS_CR2b_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -458,13 +398,12 @@ static Function PS_CR2b_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR2b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR2b_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -522,7 +461,7 @@ static Function PS_CR2b_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
 End
 
-static Function PS_CR3_IGNORE(string device)
+static Function PS_CR3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -539,13 +478,12 @@ static Function PS_CR3_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// BL fails, rest passes
@@ -605,7 +543,7 @@ End
 
 // No a, b as we don't do boundsState evaluation
 
-static Function PS_CR4_IGNORE(string device)
+static Function PS_CR4_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -622,13 +560,12 @@ static Function PS_CR4_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -719,7 +656,7 @@ static Function PS_CR4_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR4a_IGNORE(string device)
+static Function PS_CR4a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -735,13 +672,12 @@ static Function PS_CR4a_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR4a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR4a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -831,7 +767,7 @@ static Function PS_CR4a_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR4b_IGNORE(string device)
+static Function PS_CR4b_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -847,13 +783,12 @@ static Function PS_CR4b_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR4b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR4b_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -943,7 +878,7 @@ static Function PS_CR4b_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR5_IGNORE(string device)
+static Function PS_CR5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -959,13 +894,12 @@ static Function PS_CR5_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1056,7 +990,7 @@ End
 
 // No a, b as this is the same as PS_CR4 for non-symmetric
 
-static Function PS_CR6_IGNORE(string device)
+static Function PS_CR6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1072,13 +1006,12 @@ static Function PS_CR6_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1170,7 +1103,7 @@ End
 
 // No a, b as this is the same as PS_CR4 for non-symmetric
 
-static Function PS_CR7_IGNORE(string device)
+static Function PS_CR7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1186,13 +1119,12 @@ static Function PS_CR7_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR7_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1279,7 +1211,7 @@ End
 
 // No a, b as we can't have RERUN for non-symmetric
 
-static Function PS_CR8_IGNORE(string device)
+static Function PS_CR8_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1295,13 +1227,12 @@ static Function PS_CR8_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR8_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1387,7 +1318,7 @@ End
 
 // No a, b as we can't have RERUN for non-symmetric
 
-static Function PS_CR9_IGNORE(string device)
+static Function PS_CR9_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1405,13 +1336,12 @@ End
 
 // Enough passing sweeps but not enough with the same DAScale
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR9([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR9_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1501,7 +1431,7 @@ static Function PS_CR9_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR9a_IGNORE(string device)
+static Function PS_CR9a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1519,13 +1449,12 @@ End
 
 // Enough passing sweeps but not enough with the same DAScale
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR9a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR9a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1615,7 +1544,7 @@ static Function PS_CR9a_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR9b_IGNORE(string device)
+static Function PS_CR9b_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1633,13 +1562,12 @@ End
 
 // Enough passing sweeps but not enough with the same DAScale
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR9b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR9b_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1729,7 +1657,7 @@ static Function PS_CR9b_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 5)
 End
 
-static Function PS_CR10_IGNORE(string device)
+static Function PS_CR10_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1747,13 +1675,12 @@ End
 
 // Early abort as not enough sweeps with the same DASCale value pass
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR10([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR10_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -1840,7 +1767,7 @@ End
 
 // No a, b as this is the same as PS_CR9 for non-symmetric
 
-static Function PS_CR11_IGNORE(string device)
+static Function PS_CR11_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1859,13 +1786,12 @@ static Function PS_CR11_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR11([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR11_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
@@ -1927,7 +1853,7 @@ End
 
 // No a, b as boundsState evaluation is always passing
 
-static Function PS_CR12_IGNORE(string device)
+static Function PS_CR12_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -1946,13 +1872,12 @@ static Function PS_CR12_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR12([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR12_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -2012,7 +1937,7 @@ End
 
 // No a, b as boundsState evaluation is always passing
 
-static Function PS_CR13_IGNORE(string device)
+static Function PS_CR13_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2033,13 +1958,12 @@ End
 
 // Early abort as not enough sweeps with the same DASCale value pass
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR13([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR13_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -2113,7 +2037,7 @@ static Function PS_CR13_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, {520, 1519.992}, sweep = 4)
 End
 
-static Function PS_CR13a_IGNORE(string device)
+static Function PS_CR13a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2136,13 +2060,12 @@ End
 // Early abort as not enough sweeps with the same DASCale value pass
 // and user onset delay
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR13a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR13a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
@@ -2218,7 +2141,7 @@ End
 
 // No a, b as boundsState evaluation is always passing
 
-static Function PS_CR14_IGNORE(string device)
+static Function PS_CR14_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2237,13 +2160,12 @@ End
 
 // Same as PS_CR1 but with failing sampling interval check
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR14([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR14_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
@@ -2300,7 +2222,7 @@ End
 
 // No a, b as boundsState evaluation is always passing
 
-static Function PS_CR15_IGNORE(string device)
+static Function PS_CR15_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2318,13 +2240,12 @@ static Function PS_CR15_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR15([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR15_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -2386,7 +2307,7 @@ End
 
 // No a, b as boundsState evaluation is always passing
 
-static Function PS_CR16_IGNORE(string device)
+static Function PS_CR16_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2405,13 +2326,12 @@ static Function PS_CR16_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR16([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR16_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
@@ -2471,7 +2391,7 @@ static Function PS_CR16_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
 End
 
-static Function PS_CR17_IGNORE(string device)
+static Function PS_CR17_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2488,13 +2408,12 @@ static Function PS_CR17_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR17([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR17_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// layer 0: BL
@@ -2558,7 +2477,7 @@ static Function PS_CR17_REENTRY([str])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty, sweep = 3)
 End
 
-static Function PS_CR18_IGNORE(string device)
+static Function PS_CR18_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
@@ -2575,13 +2494,12 @@ static Function PS_CR18_IGNORE(string device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_CR18([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = PS_CR18_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests would pass, but the NumberOfChirpCycles is too large
