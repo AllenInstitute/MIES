@@ -3,71 +3,30 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=MultiPatchSeqDAScale
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string device
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
-
-	EnsureMCCIsOpen()
-
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str ="MSQ_DAScale_DA_0")
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
-
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	MSQ_CreateOverrideResults(device, 0, MSQ_DA_SCALE)
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
-End
-
 static Constant INDEP_EACH_SCI = 0x01
 static Constant EACH_SCI       = 0x02
 static Constant INDEP          = 0x04
 static Constant SINGLE_SCI     = 0x08
+
+static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                   + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:MSQ_DAScale_DA_0:")
+
+	 return [s]
+End
+
+static Function GlobalPreAcq(string device)
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
+
+	MSQ_CreateOverrideResults(device, 0, MSQ_DA_SCALE)
+End
+
+static Function GlobalPreInit(string device)
+
+	PASS()
+End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, mode)
 	variable sweepNo
@@ -99,14 +58,12 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, m
 	endswitch
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function MSQ_DS1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function MSQ_DS1_REENTRY([str])
