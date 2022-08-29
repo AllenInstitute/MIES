@@ -3,77 +3,30 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=MultiPatchSeqSpikeControl
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string device
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
-
-	EnsureMCCIsOpen()
-
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-
-	// HS 1 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
-
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str ="SC_SpikeControl_DA_0")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str ="SC_SpikeControl_DA_0")
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
-
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	OpenDatabrowser()
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-End
-
 static Constant INDEP_EACH_SCI   = 0x01
 static Constant EACH_SCI         = 0x02
 static Constant INDEP            = 0x04
 static Constant SINGLE_SCI       = 0x08
 static Constant INDEP_SINGLE_SCI = 0x10
+
+static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:SC_SpikeControl_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:SC_SpikeControl_DA_0:")
+
+	 return [s]
+End
+
+static Function GlobalPreAcq(string device)
+
+	PASS()
+End
+
+static Function GlobalPreInit(string device)
+
+	PASS()
+End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string str, variable headstage, variable mode, [variable textualEntry])
 
@@ -208,7 +161,7 @@ static Function TestSpikeCounts([WAVE vals])
 	CHECK_EQUAL_VAR(MIES_SC#SC_SpikeCountsCalcDetail(vals[%minimum], vals[%maximum], vals[%idealNumber]), vals[%expectedState])
 End
 
-static Function SC_Test1_IGNORE(device)
+static Function SC_Test1_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -222,14 +175,12 @@ static Function SC_Test1_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test1_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -295,7 +246,7 @@ static Function SC_Test1_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test2_IGNORE(device)
+static Function SC_Test2_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -309,14 +260,12 @@ static Function SC_Test2_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test2_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -386,7 +335,7 @@ static Function SC_Test2_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test3_IGNORE(device)
+static Function SC_Test3_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -400,14 +349,12 @@ static Function SC_Test3_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test3_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -476,7 +423,7 @@ static Function SC_Test3_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test4_IGNORE(device)
+static Function SC_Test4_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -490,14 +437,12 @@ static Function SC_Test4_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test4_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -571,7 +516,7 @@ static Function SC_Test4_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test5_IGNORE(device)
+static Function SC_Test5_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -585,14 +530,12 @@ static Function SC_Test5_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test5_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -662,7 +605,7 @@ static Function SC_Test5_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test6_IGNORE(device)
+static Function SC_Test6_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -676,14 +619,12 @@ static Function SC_Test6_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test6_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -753,7 +694,7 @@ static Function SC_Test6_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test7_IGNORE(device)
+static Function SC_Test7_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -767,14 +708,12 @@ static Function SC_Test7_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test7_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -864,7 +803,7 @@ static Function SC_Test7_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test8_IGNORE(device)
+static Function SC_Test8_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=2)
@@ -878,14 +817,12 @@ static Function SC_Test8_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test8_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
@@ -991,7 +928,7 @@ static Function SC_Test8_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test9_IGNORE(device)
+static Function SC_Test9_preInit(device)
 	string device
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
@@ -1005,20 +942,18 @@ static Function SC_Test9_IGNORE(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
-static Function SC_Test9_Pre_IGNORE(device)
+static Function SC_Test9_preAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_Test9([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-
-	AcquireData(s, str, postInitializeFunc=SC_Test9_IGNORE, preAcquireFunc=SC_Test9_Pre_IGNORE)
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
 
