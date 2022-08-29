@@ -1202,7 +1202,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	if(WaveExists(wv))
 		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
 	else
-		Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
+		Make/D/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/Wave=wv
 	endif
 
 	wv[] = 0
