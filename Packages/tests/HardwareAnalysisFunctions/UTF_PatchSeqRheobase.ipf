@@ -3,77 +3,39 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRheobase
 
-static Constant PSQ_RHEOBASE_TEST_DURATION = 2
+static Constant PSQ_RHEOBASE_TEST_DURATION  = 2
+static Constant PSQ_RB_FINALSCALE_FAKE_HIGH = 70e-12
+static Constant PSQ_RB_FINALSCALE_FAKE_LOW  = 40e-12
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(STRUCT DAQSettings& s, variable finalDAScaleFake, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
-	string stimset, unlockedDevice
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	EnsureMCCIsOpen()
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"               + \
+								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Rheobase_DA_0:")
 
-	Make/O/N=(0) root:overrideResults/Wave=overrideResults
-	Note/K overrideResults
-	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, finalDaScaleFake)
-	unlockedDevice = DAP_CreateDAEphysPanel()
+	 return [s]
+End
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+static Function GlobalPreAcq(string device)
+	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 
-	stimset = "Rheobase_DA_0"
-	AdjustAnalysisParamsForPSQ(device, stimset)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+End
 
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
+static Function GlobalPreInit(string device)
 
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
+	AdjustAnalysisParamsForPSQ(device, "Rheobase_DA_0")
+	PrepareForPublishTest()
+End
 
-	DoUpdate/W=$device
+static Function SetFinalDAScale(variable var)
 
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
+	Make/O/N=(0) root:overrideResults/Wave=overrideResults
+	Note/K overrideResults
 
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, var)
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
@@ -147,21 +109,22 @@ static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function PS_RB1_IGNORE(string device)
+static Function PS_RB1_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// all tests fail, baseline QC, async QC and alternating spike finding
@@ -238,21 +201,22 @@ static Function PS_RB1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
-static Function PS_RB2_IGNORE(string device)
+static Function PS_RB2_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and no spikes at all
@@ -320,21 +284,22 @@ static Function PS_RB2_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB3_IGNORE(string device)
+static Function PS_RB3_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and always spikes
@@ -402,21 +367,22 @@ static Function PS_RB3_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB4_IGNORE(string device)
+static Function PS_RB4_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not
@@ -484,21 +450,22 @@ static Function PS_RB4_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB5_IGNORE(string device)
+static Function PS_RB5_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, second does
@@ -566,21 +533,22 @@ static Function PS_RB5_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB6_IGNORE(string device)
+static Function PS_RB6_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes (except first) and first two spike not, third does
@@ -650,21 +618,22 @@ static Function PS_RB6_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB7_IGNORE(string device)
+static Function PS_RB7_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB7_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// frist two sweeps: baseline QC fails
@@ -739,21 +708,22 @@ static Function PS_RB7_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 7)
 End
 
-static Function PS_RB8_IGNORE(string device)
+static Function PS_RB8_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_LOW)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_LOW, str, preAcquireFunc = PS_RB8_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes
@@ -831,22 +801,23 @@ static Function PS_RB8_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB9_IGNORE(string device)
+static Function PS_RB9_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_DASCALE_STEP_LARGE)
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB9([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE, str, preAcquireFunc = PS_RB9_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not, third spikes
@@ -920,22 +891,23 @@ static Function PS_RB9_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB10_IGNORE(string device)
+static Function PS_RB10_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(-8e-12)
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB10([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, -8e-12, str, preAcquireFunc = PS_RB10_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, rest spikes
@@ -1007,24 +979,25 @@ static Function PS_RB10_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
-static Function PS_RB11_IGNORE(string device)
+static Function PS_RB11_preAcq(string device)
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var=10)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	SetFinalDAScale(PSQ_RB_FINALSCALE_FAKE_HIGH)
 End
 
 // Same as PS_RB1 but with failing sampling frequency check
 //
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_RB11([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB11_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// all tests fail, baseline QC and alternating spike finding
