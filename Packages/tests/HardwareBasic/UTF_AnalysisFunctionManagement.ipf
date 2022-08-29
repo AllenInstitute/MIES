@@ -170,7 +170,7 @@ static Function AFT1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	try
 		AcquireData_AFT(s, "AnaFuncInvalid1_DA*", str); AbortOnRTE
@@ -233,7 +233,7 @@ static Function AFT2([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	try
 		AcquireData_AFT(s, "AnaFuncInvalid2_DA*", str); AbortOnRTE
@@ -296,7 +296,7 @@ static Function AFT3([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid1_DA*", str)
 End
@@ -371,7 +371,7 @@ static Function AFT4([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid1_DA*", str)
 End
@@ -446,7 +446,7 @@ static Function AFT5([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid2_DA*", str)
 End
@@ -512,7 +512,7 @@ static Function AFT6([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid2_DA*", str)
 End
@@ -587,7 +587,7 @@ static Function AFT6a([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid3_DA*", str)
 End
@@ -658,7 +658,7 @@ static Function AFT6b([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncGeneric_DA*", str)
 End
@@ -734,7 +734,7 @@ static Function AFT7([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValidMult_DA*", str, numHeadstages = 2)
 End
@@ -819,7 +819,7 @@ static Function AFT8([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "StimulusSetA_DA*", str, TTLstimset = "AnaFuncTTLNot_TTL_*")
 End
@@ -877,7 +877,7 @@ static Function AFT9([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValid3Lon_DA*", str)
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
@@ -918,7 +918,7 @@ static Function AFT10([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncMissing_DA*", str)
 End
@@ -974,7 +974,7 @@ static Function AFT11([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncDiff_DA*", str)
 End
@@ -1049,7 +1049,7 @@ static Function AFT12([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	try
 		AcquireData_AFT(s, "AnaFuncAbortPre_DA*", str, numHeadstages = 2); AbortOnRTE
@@ -1123,7 +1123,7 @@ static Function AFT13([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncStopMid_DA*", str, numHeadstages = 2)
 End
@@ -1205,7 +1205,7 @@ static Function AFT14([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams1_IGNORE
 	AcquireData_AFT(s, "AnaFuncParams1_DA_0", str, postInitializeFunc = f)
@@ -1287,7 +1287,7 @@ static Function AFT14a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams2_IGNORE
 	AcquireData_AFT(s, "AnaFuncParams2_DA_0", str, postInitializeFunc = f)
@@ -1329,7 +1329,7 @@ static Function AFT14b([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams3_IGNORE
 
@@ -1379,7 +1379,7 @@ static Function AFT14c([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams4_IGNORE
 
@@ -1431,7 +1431,7 @@ static Function AFT14d([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams5_IGNORE
 
@@ -1485,7 +1485,7 @@ static Function AFT14e([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams6_IGNORE
 
@@ -1537,7 +1537,7 @@ static Function AFT14f([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams7_IGNORE
 
@@ -1582,7 +1582,7 @@ static Function AFT14g([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams8_IGNORE
 
@@ -1625,7 +1625,7 @@ static Function AFT14h([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams9_IGNORE
 
@@ -1667,7 +1667,7 @@ static Function AFT15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncVeryShort*", str, preAcquireFunc=DisableInsertTP_IGNORE)
 End
@@ -1701,7 +1701,7 @@ static Function AFT16([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncVeryShort*", str, preAcquireFunc=DisableInsertTP_IGNORE)
 End
@@ -1735,7 +1735,7 @@ static Function AFT17([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1")
 
 	try
 		AcquireData_AFT(s, "AnaFuncPreDAQHar_DA_0", str); AbortOnRTE
@@ -1785,7 +1785,7 @@ static Function AFT18([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2")
 
 	AcquireData_AFT(s, "AnaFuncIdx1_DA_0", str, preAcquireFunc = SetIndexingEnd_IGNORE)
 End
@@ -1829,7 +1829,7 @@ static Function AFT19([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncPreSetHar_DA_0", str)
 End
@@ -1863,7 +1863,7 @@ static Function AFT19a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncPreSwCfg_DA_0", str)
 End
@@ -1897,7 +1897,7 @@ static Function AFT20([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncOrder_DA_0", str)
 End
@@ -1929,7 +1929,7 @@ static Function AFT21([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncPostDAQ_DA_0", str)
 End
@@ -1968,7 +1968,7 @@ static Function AFT22([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncValidMult_DA*", str, numHeadstages = 2, preAcquireFunc = EnableOnlyHS1_IGNORE)
 End
@@ -2041,7 +2041,7 @@ static Function CanModifyStimsetInPreSweepConfig([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_AFT(s, "AnaFuncModStim*", str)
 End

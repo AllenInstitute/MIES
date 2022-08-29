@@ -18,7 +18,7 @@ End
 static Function DAB_Indexing([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1")
 	BasicHardwareTests#AcquireData(s, str, preAcquireFunc = DAB_Indexing_IGNORE)
 End
 
@@ -89,7 +89,7 @@ End
 static Function DAB_Skipping([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 	BasicHardwareTests#AcquireData(s, str, preAcquireFunc = DAB_Skipping_IGNORE)
 End
 

@@ -241,7 +241,7 @@ Function Events_Common(t)
 	t.events_HS1[][POST_SWEEP_EVENT] = p
 End
 
-Function Events_MD0_RA0_I0_L0_BKG_0(t)
+Function Events_MD0_RA0_I0_L0_BKG0(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -257,7 +257,7 @@ Function Events_MD0_RA0_I0_L0_BKG_0(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
-Function MD0_RA0_I0_L0_BKG_0([str])
+Function MD0_RA0_I0_L0_BKG0([str])
 	string str
 
 	PrepareForPublishTest()
@@ -267,7 +267,7 @@ Function MD0_RA0_I0_L0_BKG_0([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD0_RA0_I0_L0_BKG_0_REENTRY([str])
+Function MD0_RA0_I0_L0_BKG0_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -276,7 +276,7 @@ Function MD0_RA0_I0_L0_BKG_0_REENTRY([str])
 	t.sweepWaveType    = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA0_I0_L0_BKG_0(t)
+	Events_MD0_RA0_I0_L0_BKG0(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -294,14 +294,14 @@ Function MD0_RA0_I0_L0_BKG_0_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD1_RA0_I0_L0_BKG_1(t)
+Function Events_MD1_RA0_I0_L0_BKG1(t)
 	STRUCT TestSettings &t
 
-	Events_MD0_RA0_I0_L0_BKG_0(t)
+	Events_MD0_RA0_I0_L0_BKG0(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function MD1_RA0_I0_L0_BKG_1([str])
+Function MD1_RA0_I0_L0_BKG1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -309,7 +309,7 @@ Function MD1_RA0_I0_L0_BKG_1([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD1_RA0_I0_L0_BKG_1_REENTRY([str])
+Function MD1_RA0_I0_L0_BKG1_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -318,7 +318,7 @@ Function MD1_RA0_I0_L0_BKG_1_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA0_I0_L0_BKG_1(t)
+	Events_MD1_RA0_I0_L0_BKG1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -333,7 +333,7 @@ Function MD1_RA0_I0_L0_BKG_1_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD0_RA1_I0_L0_BKG_1(t)
+Function Events_MD0_RA1_I0_L0_BKG1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -363,7 +363,7 @@ Function Events_MD0_RA1_I0_L0_BKG_1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
-Function MD0_RA1_I0_L0_BKG_0([str])
+Function MD0_RA1_I0_L0_BKG0([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -371,7 +371,7 @@ Function MD0_RA1_I0_L0_BKG_0([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD0_RA1_I0_L0_BKG_0_REENTRY([str])
+Function MD0_RA1_I0_L0_BKG0_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -380,7 +380,7 @@ Function MD0_RA1_I0_L0_BKG_0_REENTRY([str])
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_I0_L0_BKG_1(t)
+	Events_MD0_RA1_I0_L0_BKG1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -395,14 +395,14 @@ Function MD0_RA1_I0_L0_BKG_0_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD1_RA1_I0_L0_BKG_1(t)
+Function Events_MD1_RA1_I0_L0_BKG1(t)
 	STRUCT TestSettings &t
 
-	Events_MD0_RA1_I0_L0_BKG_1(t)
+	Events_MD0_RA1_I0_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function MD1_RA1_I0_L0_BKG_1([str])
+Function MD1_RA1_I0_L0_BKG1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -410,7 +410,7 @@ Function MD1_RA1_I0_L0_BKG_1([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD1_RA1_I0_L0_BKG_1_REENTRY([str])
+Function MD1_RA1_I0_L0_BKG1_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -419,7 +419,7 @@ Function MD1_RA1_I0_L0_BKG_1_REENTRY([str])
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_I0_L0_BKG_1(t)
+	Events_MD1_RA1_I0_L0_BKG1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -434,7 +434,7 @@ Function MD1_RA1_I0_L0_BKG_1_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD1_RA1_I1_L0_BKG_1(t)
+Function Events_MD1_RA1_I1_L0_BKG1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -478,7 +478,7 @@ Function Events_MD1_RA1_I1_L0_BKG_1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function MD1_RA1_I1_L0_BKG_1([str])
+Function MD1_RA1_I1_L0_BKG1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -486,7 +486,7 @@ Function MD1_RA1_I1_L0_BKG_1([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD1_RA1_I1_L0_BKG_1_REENTRY([str])
+Function MD1_RA1_I1_L0_BKG1_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -495,7 +495,7 @@ Function MD1_RA1_I1_L0_BKG_1_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_I1_L0_BKG_1(t)
+	Events_MD1_RA1_I1_L0_BKG1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -513,14 +513,14 @@ Function MD1_RA1_I1_L0_BKG_1_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD0_RA1_I1_L0_BKG_0(t)
+Function Events_MD0_RA1_I1_L0_BKG0(t)
 	STRUCT TestSettings &t
 
-	Events_MD1_RA1_I1_L0_BKG_1(t)
+	Events_MD1_RA1_I1_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
-Function MD0_RA1_I1_L0_BKG_0([str])
+Function MD0_RA1_I1_L0_BKG0([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -528,7 +528,7 @@ Function MD0_RA1_I1_L0_BKG_0([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD0_RA1_I1_L0_BKG_0_REENTRY([str])
+Function MD0_RA1_I1_L0_BKG0_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -537,7 +537,7 @@ Function MD0_RA1_I1_L0_BKG_0_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_I1_L0_BKG_0(t)
+	Events_MD0_RA1_I1_L0_BKG0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -555,7 +555,7 @@ Function MD0_RA1_I1_L0_BKG_0_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD1_RA1_I1_L1_BKG_1(t)
+Function Events_MD1_RA1_I1_L1_BKG1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -606,7 +606,7 @@ Function Events_MD1_RA1_I1_L1_BKG_1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function MD1_RA1_I1_L1_BKG_1([str])
+Function MD1_RA1_I1_L1_BKG1([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -614,7 +614,7 @@ Function MD1_RA1_I1_L1_BKG_1([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD1_RA1_I1_L1_BKG_1_REENTRY([str])
+Function MD1_RA1_I1_L1_BKG1_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -623,7 +623,7 @@ Function MD1_RA1_I1_L1_BKG_1_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_I1_L1_BKG_1(t)
+	Events_MD1_RA1_I1_L1_BKG1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -640,14 +640,14 @@ Function MD1_RA1_I1_L1_BKG_1_REENTRY([str])
 	AllTests(t, str)
 End
 
-Function Events_MD0_RA1_I1_L1_BKG_0(t)
+Function Events_MD0_RA1_I1_L1_BKG0(t)
 	STRUCT TestSettings &t
 
-	Events_MD1_RA1_I1_L1_BKG_1(t)
+	Events_MD1_RA1_I1_L1_BKG1(t)
 End
 
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
-Function MD0_RA1_I1_L1_BKG_0([str])
+Function MD0_RA1_I1_L1_BKG0([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -655,7 +655,7 @@ Function MD0_RA1_I1_L1_BKG_0([str])
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
-Function MD0_RA1_I1_L1_BKG_0_REENTRY([str])
+Function MD0_RA1_I1_L1_BKG0_REENTRY([str])
 	string str
 
 	STRUCT TestSettings t
@@ -664,7 +664,7 @@ Function MD0_RA1_I1_L1_BKG_0_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_I1_L1_BKG_0(t)
+	Events_MD0_RA1_I1_L1_BKG0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -736,7 +736,7 @@ Function RepeatSets_1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES2")
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
@@ -847,7 +847,7 @@ Function RepeatSets_2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2")
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
@@ -979,7 +979,7 @@ Function RepeatSets_3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG1_RES2")
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1)
 End
 
@@ -1115,7 +1115,7 @@ Function RepeatSets_4([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG1_RES2")
 	AcquireData_BHT(s, str, preAcquireFunc = SwitchIndexingOrder_IGNORE, setAnalysisFuncs = 1)
 End
 
@@ -1228,7 +1228,7 @@ Function RepeatSets_5([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2")
 	AcquireData_BHT(s, str, preAcquireFunc = SwitchIndexingOrder_IGNORE, setAnalysisFuncs = 1)
 End
 
@@ -1280,7 +1280,7 @@ Function RepeatSets_6([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = ChangeStimSets_IGNORE)
 End
 
@@ -1331,7 +1331,7 @@ Function CheckActiveSetCountU([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = ActiveSetCountStimsets_IGNORE, preAcquireFunc = ActiveSetCount_IGNORE)
 End
 
@@ -1349,7 +1349,7 @@ Function CheckActiveSetCountL([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = ActiveSetCountStimsets_IGNORE, preAcquireFunc = ActiveSetCount_IGNORE)
 End
 
@@ -1404,7 +1404,7 @@ Function RepeatSets_7([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1, preAcquireFunc = RepeatSets7_IGNORE)
 End
 
@@ -1446,7 +1446,7 @@ Function RepeatSets_8([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = RepeatSets_8_IGNORE)
 End
 
@@ -1491,7 +1491,7 @@ Function RepeatSets_9([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = RepeatSets_9_IGNORE)
 End
 
@@ -1544,7 +1544,7 @@ Function SweepSkipping([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsStimsetsP_IGNORE, preAcquireFunc = SkipSweepsStimsets_IGNORE)
 End
 
@@ -1597,7 +1597,7 @@ Function SweepSkippingAdvanced([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsStimsetsAdvancedP_IGNORE, preAcquireFunc = SkipSweepsStimsetsAdvanced_IGNORE)
 End
 
@@ -1646,7 +1646,7 @@ Function SkipSweepsDuringITI_SD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
@@ -1675,7 +1675,7 @@ Function SkipSweepsDuringITI_MD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
@@ -1721,7 +1721,7 @@ Function SkipSweepsBackDuringITI([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_0")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES0")
 	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsBackDuringITIAnaFuncs_IGNORE, preAcquireFunc = SkipSweepsBackDuringITIStimsets_IGNORE)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipSweepBackDuringITI_IGNORE
@@ -1813,7 +1813,7 @@ Function Abort_ITI_TP_SD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -1843,7 +1843,7 @@ Function Abort_ITI_TP_MD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -1873,7 +1873,7 @@ Function Abort_ITI_TP_A_TP_SD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -1904,7 +1904,7 @@ Function Abort_ITI_TP_A_TP_MD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -1935,7 +1935,7 @@ Function AbortTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0")
 	AcquireData_BHT(s, str, startTPInstead=1)
 
 	CtrlNamedBackGround DelayReentry, start=(ticks + 300), period=60, proc=JustDelay_IGNORE
@@ -1978,7 +1978,7 @@ Function StartDAQDuringTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1_RES_0")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_RES0")
 	AcquireData_BHT(s, str, startTPInstead=1, postInitializeFunc=StartDAQDuringTP_IGNORE)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
@@ -2015,7 +2015,7 @@ Function Abort_ITI_PressAcq_SD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -2044,7 +2044,7 @@ Function Abort_ITI_PressAcq_MD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -2073,7 +2073,7 @@ Function Abort_ITI_TP_A_PressAcq_SD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -2102,7 +2102,7 @@ Function Abort_ITI_TP_A_PressAcq_MD([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
@@ -2141,7 +2141,7 @@ Function ChangeToSingleDeviceDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, postInitializeFunc=SetSingleDeviceDAQ_IGNORE)
 End
 
@@ -2174,7 +2174,7 @@ Function ChangeToMultiDeviceDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, postInitializeFunc=SetMultiDeviceDAQ_IGNORE)
 End
 
@@ -2206,7 +2206,7 @@ Function ChangeStimSetDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = ChangeStimSetDuringDAQ_IGNORE)
 End
 
@@ -2275,7 +2275,7 @@ Function UnassociatedChannelsAndTTLs([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = EnableUnassocChannels_IGNORE)
 End
 
@@ -2530,7 +2530,7 @@ Function CheckSamplingInterval1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=DisableSecondHeadstage_IGNORE)
 End
 
@@ -2581,7 +2581,7 @@ Function CheckSamplingInterval2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=UseSamplingInterval_IGNORE)
 End
 
@@ -2632,7 +2632,7 @@ Function CheckSamplingInterval3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=UseFixedFrequency_IGNORE)
 End
 
@@ -2678,7 +2678,7 @@ Function ChangeCMDuringSweep([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2746,7 +2746,7 @@ Function ChangeCMDuringSweepWMS([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=EnableApplyOnModeSwitch_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2806,7 +2806,7 @@ Function ChangeCMDuringSweepNoRA([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2856,7 +2856,7 @@ Function ChangeCMDuringITI([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=ITISetupNoTP_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2912,7 +2912,7 @@ Function ChangeCMDuringITIWithTP([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=ITISetupWithTP_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2970,7 +2970,7 @@ Function AutoPipetteOffsetIgnoresApplyOnModeSwitch([str])
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=EnableApplyOnModeSwitch_IGNORE, startTPInstead = 1)
 
 	CtrlNamedBackGround DelayReentry, start=(ticks + 300), period=60, proc=AutoPipetteOffsetAndStopTP_IGNORE
@@ -3006,7 +3006,7 @@ Function TPDuringDAQOnlyTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQOnlyTP_IGNORE)
 End
 
@@ -3073,7 +3073,7 @@ Function TPDuringDAQOnlyTPWithLockedIndexing([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_3")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES3")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQOnlyTPWithLockedIndexing_IGNORE)
 End
 
@@ -3110,7 +3110,7 @@ Function TPDuringDAQTPAndAssoc([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQTPAndAssoc_IGNORE)
 End
 
@@ -3195,7 +3195,7 @@ Function TPDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQ_IGNORE)
 End
 
@@ -3268,7 +3268,7 @@ Function TPDuringDAQWithoodDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQWithoodDAQ_IGNORE)
 End
 
@@ -3351,7 +3351,7 @@ Function TPDuringDAQTPStoreCheck([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQTPStoreCheck_IGNORE)
 End
 
@@ -3419,7 +3419,7 @@ Function CheckThatTPsCanBeFound([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, startTPInstead=1, preAcquireFunc=CheckThatTPsCanBeFound_IGNORE)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
@@ -3494,7 +3494,7 @@ Function TPDuringDAQWithTTL([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQWithTTL_IGNORE)
 End
 
@@ -3559,7 +3559,7 @@ Function RunPowerSpectrum([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=RunPowerSpectrum_IGNORE, startTPInstead = 1)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
@@ -3588,7 +3588,7 @@ Function CheckIZeroClampMode([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, setAnalysisFuncs = 1, preAcquireFunc=CheckIZeroClampMode_IGNORE)
 End
 
@@ -3601,7 +3601,7 @@ Function CheckIZeroClampMode_REENTRY([str])
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA0_I0_L0_BKG_1(t)
+	Events_MD1_RA0_I0_L0_BKG1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -3636,7 +3636,7 @@ Function HasNaNAsDefaultWhenAborted([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc=HasNaNAsDefaultWhenAborted_IGNORE)
 End
@@ -3676,7 +3676,7 @@ Function TestPulseCachingWorks([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA3_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA3_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc=TestPulseCachingWorks_IGNORE)
 End
@@ -3745,7 +3745,7 @@ Function UnassocChannelsDuplicatedEntry([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc = UnassocChannelsDuplicatedEntry_IGNORE)
 End
 
@@ -3859,7 +3859,7 @@ Function LabnotebookEntriesCanBeQueried([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = LabnotebookEntriesCanBeQueried_IGNORE)
 End
@@ -3890,7 +3890,7 @@ Function DataBrowserCreatesBackupsByDefault([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str)
 End
@@ -3946,7 +3946,7 @@ Function IncrementalLabnotebookCacheUpdate([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 	KillOrMoveToTrash(wv = anaFuncTracker)
@@ -4039,7 +4039,7 @@ Function TestSweepRollback([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = TestSweepRollbackPreAcquire_IGNORE)
 End
@@ -4121,7 +4121,7 @@ Function TestAcquiringNewDataOnOldData([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str)
 End
@@ -4140,7 +4140,7 @@ Function TestAcquiringNewDataOnOldData_REENTRY([str])
 
 	// restart data acquisition
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str)
 
@@ -4190,7 +4190,7 @@ Function AsyncAcquisitionLBN([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = AsyncAcquisitionLBN_IGNORE)
 End
@@ -4257,7 +4257,7 @@ Function CheckSettingsFails([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	try
 		AcquireData_BHT(s, str, preAcquireFunc = CheckSettingsFails_IGNORE)
@@ -4297,7 +4297,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckAcquisitionStates_MD([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=CheckAcquisitionStates_IGNORE)
 End
 
@@ -4308,7 +4308,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
 Function CheckAcquisitionStates_SD([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES1")
 	AcquireData_BHT(s, str, preAcquireFunc=CheckAcquisitionStates_IGNORE)
 End
 
@@ -4447,7 +4447,7 @@ Function ConfigureFails([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	try
 		AcquireData_BHT(s, str, preAcquireFunc = ConfigureFails_IGNORE)
@@ -4473,7 +4473,7 @@ Function StopDAQDueToUnlocking([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround UnlockDevice, start, period=30, proc=StopAcqByUnlocking_IGNORE
@@ -4501,7 +4501,7 @@ Function StopDAQDueToUncompiled([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
 	AcquireData_BHT(s, str)
 
 	CtrlNamedBackGround UncompileProcedures, start, period=30, proc=StopAcqByUncompiled_IGNORE
@@ -4575,7 +4575,7 @@ Function ExportIntoNWB([str])
 	string filePathExport, experimentName
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, startTPInstead = 1)
 
@@ -4620,7 +4620,7 @@ Function ExportIntoNWBSweepBySweep([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = ExportIntoNWBSweepBySweep_IGNORE)
 End
@@ -4665,7 +4665,7 @@ Function ExportOnlyCommentsIntoNWB([string str])
 	variable fileID
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	try
 		AcquireData_BHT(s, str, preAcquireFunc = ExportOnlyCommentsIntoNWB_IGNORE)
@@ -4699,7 +4699,7 @@ End
 Function CheckPulseInfoGathering([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckPulseInfoGathering_IGNORE)
 End
@@ -4752,7 +4752,7 @@ End
 /// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckCalculatedTPEntries([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckCalculatedTPEntries_IGNORE)
 End
@@ -4838,7 +4838,7 @@ Function CheckTPBaseline([WAVE/WAVE pair])
 	variable/G TPbaseline = baselines[0]
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, device, startTPInstead = 1, preAcquireFunc = CheckTPBaseline_IGNORE)
 End
@@ -4926,7 +4926,7 @@ End
 /// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckTPEntriesFromLBN([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckTPEntriesFromLBN_IGNORE)
 End
@@ -5094,7 +5094,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function TPCachingWorks([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_0")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES0")
 	AcquireData_BHT(s, str, startTPInstead=1, preAcquireFunc=TPCachingWorks_IGNORE)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
@@ -5146,7 +5146,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function RepeatedAcquisitionWithOneSweepMD([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = RepeatedAcquisitionWithOneSweepStimsets_IGNORE, preAcquireFunc = RepeatedAcquisitionWithOneSweep_IGNORE)
 End
 
@@ -5158,7 +5158,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
 Function RepeatedAcquisitionWithOneSweepSD([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = RepeatedAcquisitionWithOneSweepStimsets_IGNORE, preAcquireFunc = RepeatedAcquisitionWithOneSweep_IGNORE)
 End
 
@@ -5296,7 +5296,7 @@ End
 /// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckTPStorage1([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage1_IGNORE, startTPinstead = 1)
 End
@@ -5321,7 +5321,7 @@ End
 /// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckTPStorage2([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage2_IGNORE, startTPinstead = 1)
 End
@@ -5346,7 +5346,7 @@ End
 /// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 Function CheckTPStorage3([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage3_IGNORE, startTPinstead = 1)
 End
@@ -5371,7 +5371,7 @@ Function EnableIndexingInPostDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
 	AcquireData_BHT(s, str, postInitializeFunc = EnableIndexingInPostDAQStimsets_IGNORE, preAcquireFunc = EnableIndexingInPostDAQ_IGNORE)
 End
 
@@ -5395,7 +5395,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function ScaleZeroWithCycling([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES2")
 	AcquireData_BHT(s, str, preAcquireFunc = ScaleZeroWithCycling_IGNORE)
 End
 
@@ -5443,8 +5443,8 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function AcquireWithoutAmplifier([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
-	AcquireData(s, str, useAmplifier = 0, preAcquireFunc = AcquireWithoutAmplifier_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0")
+	AcquireData_BHT(s, str, useAmplifier = 0, preAcquireFunc = AcquireWithoutAmplifier_IGNORE)
 End
 
 static Function AcquireWithoutAmplifier_REENTRY([string str])
@@ -5484,8 +5484,8 @@ End
 static Function SkipAhead([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, str, preAcquireFunc = SkipAhead_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+	AcquireData_BHT(s, str, preAcquireFunc = SkipAhead_IGNORE)
 End
 
 static Function SkipAhead_REENTRY([string str])

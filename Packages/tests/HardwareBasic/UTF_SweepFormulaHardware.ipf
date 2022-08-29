@@ -569,7 +569,7 @@ static Function SF_TPTest([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_3")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3")
 	AcquireData(s, str, "EpochTest0_DA_0", "EpochTest0_DA_0")
 End
 
@@ -590,7 +590,7 @@ static Function SF_ButtonTest([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_3")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3")
 	AcquireData(s, str, "EpochTest0_DA_0", "EpochTest0_DA_0")
 End
 
@@ -608,7 +608,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function TestSweepFormulaCodeResults([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES1")
 	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "SetSweepFormula", preAcquireFunc = TestSweepFormulaCodeResults_IGNORE)
 End
 
@@ -707,7 +707,7 @@ static Function SF_InsertedTPVersusTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0")
 	AcquireData_BHT(s, str, preAcquireFunc = SF_InsertedTPVersusTP_IGNORE, startTPinstead = 1)
 End
 

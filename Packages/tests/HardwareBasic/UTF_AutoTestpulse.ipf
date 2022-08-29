@@ -123,7 +123,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function AutoTP_OptimumValues([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_OptimumValues_IGNORE)
 End
@@ -178,7 +178,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function AutoTP_BadValues([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_BadValues_IGNORE)
 End
@@ -238,7 +238,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function AutoTP_MixedOptimumBadValues([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_MixedOptimumBadValues_IGNORE)
 End
@@ -299,7 +299,7 @@ End
 // UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
 static Function AutoTP_SpecialCases([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
 	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_SpecialCases_IGNORE)
 End

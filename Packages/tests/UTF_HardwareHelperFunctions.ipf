@@ -703,37 +703,6 @@ Function StopTPAfterFiveSeconds_IGNORE(s)
 	return 1
 End
 
-/// @brief Structure to hold various common DAQ DAQSettings
-///
-/// MultiDevice (MD: 1/0)
-/// Repeated Acquisition (RA: 1/0)
-/// Indexing (IDX: 1/0)
-/// Locked Indexing (LIDX: 1/0)
-/// Background Data acquisition (BKG_DAQ: 1/0)
-/// Repeat Sets (RES: [1, inf])
-Structure DAQSettings
-	variable MD, RA, IDX, LIDX, BKG_DAQ, RES
-EndStructure
-
-/// @brief Fill the #DAQSetttings structure from a specially crafted string
-Function InitDAQSettingsFromString(s, str)
-	STRUCT DAQSettings& s
-	string str
-
-	variable md, ra, idx, lidx, bkg_daq, res
-
-	/// @todo use longer names once IP8 is mandatory
-	sscanf str, "MD%d_RA%d_I%d_L%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
-	REQUIRE_GE_VAR(V_Flag, 5)
-
-	s.md        = md
-	s.ra        = ra
-	s.idx       = idx
-	s.lidx      = lidx
-	s.bkg_daq   = bkg_daq
-	s.res       = limit(res, 1, inf)
-End
-
 /// @brief Similiar to InitDAQSettingsFromString() but uses the function name of the caller
 Function InitSettings(s)
 	STRUCT DAQSettings& s
@@ -1552,7 +1521,7 @@ static Function SetAnalysisFunctions_IGNORE()
 End
 
 // @brief Acquire data with the given DAQSettings
-static Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, useAmplifier])
+Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, useAmplifier])
 	STRUCT DAQSettings& s
 	string devices
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
@@ -1749,4 +1718,428 @@ Function AcquireData_AFT(s, stimset, device, [numHeadstages, TTLStimset, postIni
 	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
+End
+
+Structure DAQSettings
+	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI
+
+	WAVE hs, da, ad, cm, ttl, aso
+	WAVE/T st, ist, af, st_ttl, iaf
+	FUNCREF CALLABLE_PROTO preAcquireFunc, preInitFunc
+	FUNCREF CALLABLE_PROTO globalPreAcquireFunc, globalPreInitFunc
+EndStructure
+
+Function AcquireDataDoNothing(string device)
+	PASS()
+End
+
+static Function/S AcquireDataSelectFunction(string module, string funcName)
+	string funcWithModule
+
+	funcWithModule = module + "#" + funcName
+
+	FUNCREF CALLABLE_PROTO func = $funcWithModule
+
+	if(FuncRefIsAssigned(FuncRefInfo(func)))
+		return funcWithModule
+	endif
+
+	return "AcquireDataDoNothing"
+End
+
+// assumes that the caller of the caller is an UTF test case
+static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
+	string funcName, stacktrace, module, testcaseInfo, preInitFunc, preAcquireFunc
+
+	stacktrace = GetRTStackInfo(3)
+	testcaseInfo = StringFromList(ItemsInList(stacktrace, ";") - 3, stacktrace, ";")
+
+	funcName = StringFromList(0, testcaseInfo, ",")
+	CHECK_PROPER_STR(funcName)
+
+	module = StringByKey("MODULE", FunctionInfo(funcName, StringFromList(1, testcaseInfo, ",")))
+	CHECK_PROPER_STR(module)
+
+	FUNCREF CALLABLE_PROTO s.globalPreAcquireFunc = $AcquireDataSelectFunction(module, "GlobalPreAcq")
+	FUNCREF CALLABLE_PROTO s.globalPreInitFunc = $AcquireDataSelectFunction(module, "GlobalPreInit")
+
+	FUNCREF CALLABLE_PROTO s.preAcquireFunc = $AcquireDataSelectFunction(module, funcName + "_PreAcq")
+	FUNCREF CALLABLE_PROTO s.preInitFunc = $AcquireDataSelectFunction(module, funcName + "_PreInit")
+End
+
+static Function ParseNumber(string str, string name, [variable defValue])
+
+	string output
+
+	SplitString/E=(name + "([[:digit:]]+)") str, output
+
+	if(V_Flag == 1)
+		return str2num(output)
+	endif
+
+	if(ParamIsDefault(defValue))
+		FAIL()
+	endif
+
+	return defValue
+End
+
+static Function/S ParseString(string str, string name, [string defValue])
+
+	string output
+
+	SplitString/E=(name + ":([^:]+):") str, output
+
+	if(V_Flag == 1)
+		return output
+	endif
+
+	if(ParamIsDefault(defValue))
+		FAIL()
+	endif
+
+	return defValue
+End
+
+/// @brief Fill the #DAQSetttings structure from a specially crafted string
+Function InitDAQSettingsFromString(s, str)
+	STRUCT DAQSettings& s
+	string str
+
+	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
+	string elem, output
+
+	sscanf str, "MD%d_RA%d_I%d_L%d_BKG%d", md, ra, idx, lidx, bkg_daq
+	REQUIRE_GE_VAR(V_Flag, 5)
+
+	s.md        = md
+	s.ra        = ra
+	s.idx       = idx
+	s.lidx      = lidx
+	s.bkg_daq   = bkg_daq
+
+	s.res = ParseNumber(str, "_RES", defValue = 0)
+
+	s.db = ParseNumber(str, "_DB", defValue = 0)
+
+	s.dDAQ = ParseNumber(str, "_dDAQ", defValue = 0)
+
+	s.oodDAQ = ParseNumber(str, "_oodDAQ", defValue = 0)
+
+	s.od = ParseNumber(str, "_OD", defValue = 0)
+
+	s.td = ParseNumber(str, "_TD", defValue = 0)
+
+	s.tp = ParseNumber(str, "_TP", defValue = 0)
+
+	s.amp = ParseNumber(str, "_AMP", defValue = 1)
+
+	s.iti = ParseNumber(str, "_ITI", defValue = NaN)
+
+	s.gsi = ParseNumber(str, "_GSI", defValue = 1)
+
+	s.tpi = ParseNumber(str, "_TPI", defValue = 1)
+
+	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
+
+	if(WaveExists(hsConfig))
+		// Throw away first element as that is not a hsConfig element
+		DeletePoints ROWS, 1, hsConfig
+
+		Make/FREE/N=(NUM_HEADSTAGES) s.hs  = 0
+		Make/FREE/N=(NUM_HEADSTAGES) s.ttl = 0
+		Make/FREE/N=(NUM_HEADSTAGES) s.ad  = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.da  = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.cm  = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.aso = NaN
+		Make/FREE/T/N=(NUM_HEADSTAGES) s.st, s.ist, s.af, s.st_ttl, s.iaf
+
+		for(elem : hsConfig)
+			// no __ prefix as we have splitted it above at two __
+
+			if(GrepString(elem, "^TTL"))
+				ttl = ParseNumber(elem, "TTL")
+				s.ttl[ttl] = 1
+
+				s.st_ttl[ttl] = ParseString(elem, "_ST", defValue = "")
+				continue
+			endif
+
+			headstage = ParseNumber(elem, "HS")
+			s.hs[headstage] = 1
+
+			s.da[headstage] = ParseNumber(elem, "_DA")
+
+			s.ad[headstage] = ParseNumber(elem, "_AD")
+
+			output = ParseString(elem, "_CM")
+
+			strswitch(output)
+				case "IC":
+					clampMode = I_CLAMP_MODE
+					break
+				case "VC":
+					clampMode = V_CLAMP_MODE
+					break
+				case "I=0":
+					clampMode = I_EQUAL_ZERO_MODE
+					break
+				default:
+					FAIL()
+			endswitch
+
+			s.cm[headstage] = clampMode
+
+			s.st[headstage]  = ParseString(elem, "_ST", defValue = "")
+			s.ist[headstage] = ParseString(elem, "_IST", defValue = "")
+			s.af[headstage]  = ParseString(elem, "_AF", defValue = "")
+			s.iaf[headstage] = ParseString(elem, "_IAF", defValue = "")
+
+			s.aso[headstage] = ParseNumber(elem, "_ASO", defValue = 1)
+		endfor
+	endif
+End
+
+/// @brief Configuration management for executing tests which require hardware
+///
+/// Setting up data acquisition is a tedious task. We have therefore developed a configuration management to speed that up.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+/// 	static Function MyTest([string str])
+///
+///			struct DAQSettings s
+///			InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"             + \
+/// 	                                 "__HS0_DA0_AD0_CM:IC:_ST:ABCD:")
+///
+///			AcquireData_NG(s, md.s0)
+/// 	End
+///
+/// 	static Function MyTest_REENTRY([string str])
+/// 	    // ...
+/// 	End
+/// \endrst
+///
+/// This starts data acquisition with one active headstage (HS0) in current clamp (:IC:) on DA0 and AD0 with stimulus set ABCD.
+/// As a rule of thumb new entries should be added here if we have more than three users of a setting.
+///
+/// Numeric parmeters are directly passed after the name, string parameters are enclosed in colons (`:`).
+///
+/// Required:
+/// - MultiDevice (MD: 1/0)
+/// - Repeated Acquisition (RA: 1/0)
+/// - Indexing (I: 1/0)
+/// - Locked Indexing (L: 1/0)
+/// - Background Data acquisition (BKG: 1/0)
+///
+/// Optional:
+/// - Use amplifier: (amp: 1/0)
+/// - Distributed data acquisition: (dDAQ: 1/0)
+/// - Optimized overlap distributed data acquisition: (oodDAQ: 1/0)
+/// - Repeat Sets (RES: [1, inf])
+/// - Open Databrowser (DB: 1/0)
+/// - Onset user delay (OD: > 0)
+/// - Termination delay (TD: > 0)
+/// - Run testpulse instead (TP: 1/0)
+/// - Set the ITI (ITI: > 0)
+/// - Get/Set ITI checkbox (GSI: 1/0)
+/// - TP during ITI checkbox (TPI: 1/0)
+///
+/// HeadstageConfig:
+/// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
+///   Required:
+///      - HS
+///      - AD
+///      - DA
+///      - CM (VC/IC/IZ): clamp mode
+///   Optional:
+///      - ST: stimulus set
+///      - IST: indexing stimulus set
+///      - AF: analysis function for stimulus set
+///      - IAF: analysis function for indexing stimulus set
+///      - ASO (1/0): severes the amplifier connection and disables the headstage again after configuration, thus making the
+///                   DA and AD channels unassociated
+///
+/// TTLConfig:
+/// - Full specification: __TTLXX_ST:XX:
+///   Required:
+///      - TTL
+///   Optional:
+///      - ST: TTL stimulus set
+///
+/// For tweaking data acquisition with full flexibility we also support
+/// customization functions before initialization, preInit aka before the DAEphys
+/// panel is created, and before acquisition, preAcq aka before the Start DAQ/TP
+/// button is pressed. The global functions, which are still per test suite,
+/// must be called `GlobalPreAcq`/`GlobalPreInit` and the per test case ones
+/// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static.
+Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
+	string unlockedDevice, device, ctrl
+	variable i, j, numEntries, activeHS
+
+	if(s.amp)
+		EnsureMCCIsOpen()
+	endif
+
+	FetchCustomizationFunctions(s)
+
+	KillOrMoveToTrash(wv = GetTrackSweepCounts())
+	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
+	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = stringFromList(i, devices)
+
+		s.preInitFunc(device)
+		s.globalPreInitFunc(device)
+
+		unlockedDevice = DAP_CreateDAEphysPanel()
+
+		PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+
+		REQUIRE(WindowExists(device))
+
+		for(j = 0; j < NUM_HEADSTAGES; j += 1)
+
+			PGC_SetAndActivateControl(device, "Popup_Settings_Headstage", val = j)
+			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+			if(!s.hs[j])
+				ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+				PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED, switchTab = 1)
+				continue
+			endif
+
+			PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = num2str(s.da[j]))
+			PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[j]))
+			PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[j]))
+			PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[j]))
+
+			ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
+
+			if(s.amp && activeHS < 2)
+				// first entry is none
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
+
+				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+			endif
+
+			if(IsEmpty(s.st[j]))
+				CHECK(s.TP)
+			else
+				ctrl = GetPanelControl(s.da[j], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				PGC_SetAndActivateControl(device, ctrl, str = s.st[j])
+			endif
+
+			if(!IsEmpty(s.ist[j]))
+				ctrl = GetPanelControl(s.da[j], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+				PGC_SetAndActivateControl(device, ctrl, str = s.ist[j])
+
+				if(!IsEmpty(s.iaf[j]))
+					ST_SetStimsetParameter(s.ist[j], "Analysis function (Generic)", str = s.iaf[j])
+				endif
+			endif
+
+			if(!IsEmpty(s.af[j]))
+				ST_SetStimsetParameter(s.st[j], "Analysis function (Generic)", str = s.af[j])
+			endif
+
+			ctrl = DAP_GetClampModeControl(s.cm[j], j)
+			PGC_SetAndActivateControl(device, ctrl, val = 1)
+			DoUpdate/W=$device
+
+			if(!s.aso[j])
+				// clear the headstages channel connection and make the DA and AD channels unassociated
+				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+				ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+				PGC_SetAndActivateControl(device, ctrl , val=CHECKBOX_UNSELECTED)
+			endif
+
+			activeHS += 1
+		endfor
+
+		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
+
+			if(!s.ttl[j])
+				continue
+			endif
+
+			if(j >= NUM_ITC_TTL_BITS_PER_RACK                 \
+			   && (GetHardwareType(device) == HARDWARE_NI_DAC \
+			       || HW_ITC_GetNumberOfRacks(device) < 2))
+				// ignore unavailable TTLs
+				continue
+			endif
+
+			ctrl = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl, val=s.ttl[j])
+
+			if(!IsEmpty(s.st_ttl[j]))
+				ctrl = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+				PGC_SetAndActivateControl(device, ctrl, str = s.st_ttl[j])
+			endif
+		endfor
+
+		PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
+		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
+		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
+
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = s.dDAQ)
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = s.oodDAQ)
+
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = s.od)
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = s.td)
+
+		PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
+
+		// these don't have good defaults
+		if(IsFinite(s.iti))
+			PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = s.iti)
+		endif
+
+		PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = s.tpi)
+
+		if(!s.MD)
+			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+		else
+			CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
+		endif
+
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
+	endfor
+
+	device = devices
+
+#ifdef TESTS_WITH_YOKING
+	PGC_SetAndActivateControl(device, "button_Hardware_Lead1600")
+	PGC_SetAndActivateControl(device, "popup_Hardware_AvailITC1600s", val=0)
+	PGC_SetAndActivateControl(device, "button_Hardware_AddFollower")
+
+	ARDLaunchSeqPanel()
+	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
+#endif
+
+	s.preAcquireFunc(device)
+	s.globalPreAcquireFunc(device)
+
+	if(s.DB)
+		OpenDatabrowser()
+	endif
+
+	if(s.TP)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+	else
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
+	endif
 End
