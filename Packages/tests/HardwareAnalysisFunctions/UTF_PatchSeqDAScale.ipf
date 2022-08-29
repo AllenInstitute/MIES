@@ -5,78 +5,32 @@
 
 // This file also holds the test for the baseline evaluation for all PSQ analysis functions
 
-/// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string stimset
-	string device
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string stimset)
 
-	Make/O/N=(0) root:overrideResults/Wave=overrideResults
-	Note/K overrideResults
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                  + \
+								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
 
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
-	string unlockedDevice = DAP_CreateDAEphysPanel()
+	AdjustAnalysisParamsForPSQ(device, stimset)
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	return [s]
+End
 
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = PSQ_TEST_HEADSTAGE)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
-	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
-	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+static Function GlobalPreAcq(string device)
+	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 
-	AdjustAnalysisParamsForPSQ(device, stimset)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+End
 
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
+static Function GlobalPreInit(string device)
 
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
+	PrepareForPublishTest()
 
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	// Ensure that PSQ_DS_GetDAScaleOffset already sees the test override as enabled
+	Make/O/N=(0) root:overrideResults/Wave=overrideResults
+	Note/K overrideResults
 End
 
 static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
@@ -144,20 +98,19 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 	endswitch
 End
 
-static Function PS_DS_Sub1_IGNORE(string device)
+static Function PS_DS_Sub1_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
@@ -291,20 +244,19 @@ static Function PS_DS_Sub1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
-static Function PS_DS_Sub2_IGNORE(string device)
+static Function PS_DS_Sub2_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// only pre pulse chunk pass, async QC passes, others fail
@@ -488,20 +440,19 @@ static Function PS_DS_Sub2_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
-static Function PS_DS_Sub3_IGNORE(string device)
+static Function PS_DS_Sub3_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -661,20 +612,19 @@ static Function PS_DS_Sub3_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
-static Function PS_DS_Sub4_IGNORE(string device)
+static Function PS_DS_Sub4_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -879,20 +829,19 @@ static Function PS_DS_Sub4_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
-static Function PS_DS_Sub5_IGNORE(string device)
+static Function PS_DS_Sub5_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails
@@ -1030,20 +979,19 @@ static Function PS_DS_Sub5_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
-static Function PS_DS_Sub5a_IGNORE(string device)
+static Function PS_DS_Sub5a_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub5a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub5a_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails due to targetV
@@ -1181,20 +1129,19 @@ static Function PS_DS_Sub5a_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520})
 End
 
-static Function PS_DS_Sub6_IGNORE(string device)
+static Function PS_DS_Sub6_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -1400,20 +1347,19 @@ static Function PS_DS_Sub6_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020})
 End
 
-static Function PS_DS_Sub7_IGNORE(string device)
+static Function PS_DS_Sub7_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub7_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -1581,20 +1527,19 @@ static Function PS_DS_Sub7_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 6)
 End
 
-static Function PS_DS_Sub8_IGNORE(string device)
+static Function PS_DS_Sub8_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub8_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -1771,7 +1716,7 @@ static Function PS_DS_Sub8_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 8)
 End
 
-static Function PS_DS_Sub9_IGNORE(device)
+static Function PS_DS_Sub9_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSShortThreshold", var = 0.150)
@@ -1784,13 +1729,12 @@ static Function PS_DS_Sub9_IGNORE(device)
 End
 
 // Same as PS_DS_Sub1 but with custom RMS short/long thresholds
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub9([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub9_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
@@ -1923,7 +1867,7 @@ static Function PS_DS_Sub9_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
-static Function PS_DS_Sub10_IGNORE(device)
+static Function PS_DS_Sub10_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "SamplingFrequency", var = 10)
@@ -1935,13 +1879,12 @@ static Function PS_DS_Sub10_IGNORE(device)
 End
 
 // Same as PS_DS_Sub3, but with non-matching sampling interval
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub10([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str, preAcquireFunc = PS_DS_Sub10_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2103,7 +2046,7 @@ End
 
 // no baseline checks for supra
 
-static Function PS_DS_Supra1_IGNORE(string device)
+static Function PS_DS_Supra1_preAcq(string device)
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -2111,13 +2054,12 @@ static Function PS_DS_Supra1_IGNORE(string device)
 End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, preAcquireFunc = PS_DS_Supra1_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2207,7 +2149,7 @@ static Function PS_DS_Supra1_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
-static Function PS_DS_Supra2_IGNORE(string device)
+static Function PS_DS_Supra2_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
 
 	Make/FREE asyncChannels = {2, 4}
@@ -2217,13 +2159,12 @@ static Function PS_DS_Supra2_IGNORE(string device)
 End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, preAcquireFunc = PS_DS_Supra2_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2313,7 +2254,7 @@ static Function PS_DS_Supra2_REENTRY([str])
 End
 
 // FinalSlopePercent present but not reached
-static Function PS_DS_Supra3_IGNORE(device)
+static Function PS_DS_Supra3_preAcq(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
@@ -2325,13 +2266,12 @@ static Function PS_DS_Supra3_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra3_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2421,7 +2361,7 @@ static Function PS_DS_Supra3_REENTRY([str])
 End
 
 // FinalSlopePercent present and reached
-static Function PS_DS_Supra4_IGNORE(device)
+static Function PS_DS_Supra4_preAcq(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
@@ -2433,13 +2373,12 @@ static Function PS_DS_Supra4_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra4_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2531,7 +2470,7 @@ End
 static Constant DAScaleModifierPerc = 25
 
 // MinimumSpikeCount, MaximumSpikeCount, DAScaleModifier present
-static Function PS_DS_Supra5_IGNORE(device)
+static Function PS_DS_Supra5_preAcq(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
@@ -2545,13 +2484,12 @@ static Function PS_DS_Supra5_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra5_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -2654,7 +2592,7 @@ End
 
 // MinimumSpikeCount, MaximumSpikeCount, DAScaleModifier present
 // async QC fails
-static Function PS_DS_Supra6_IGNORE(device)
+static Function PS_DS_Supra6_preAcq(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
@@ -2668,13 +2606,12 @@ static Function PS_DS_Supra6_IGNORE(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Supra6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra6_IGNORE)
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
+	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
