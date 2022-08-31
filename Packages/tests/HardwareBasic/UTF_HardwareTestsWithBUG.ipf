@@ -3,20 +3,28 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareTestsWithBUG
 
-Function CheckSweepSavingCompatible_IGNORE(string device)
+static Function GlobalPreAcq(string device)
 
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "BreakConfigWave")
+	PASS()
+End
+
+static Function GlobalPreInit(string device)
 
 	DisableBugChecks()
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+Function CheckSweepSavingCompatible_PreAcq(string device)
+
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "BreakConfigWave")
+End
+
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 Function CheckSweepSavingCompatible([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckSweepSavingCompatible_IGNORE)
+	AcquireData_NG(s, str)
 End
 
 Function CheckSweepSavingCompatible_REENTRY([string str])
