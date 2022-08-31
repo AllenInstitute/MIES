@@ -2,7 +2,25 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma ModuleName=SetControlsTesting
 
-static Function SC_SetControls1_Setter(device)
+static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device)
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                      + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
+
+	 return [s]
+End
+
+static Function GlobalPreAcq(string device)
+
+	PASS()
+End
+
+static Function GlobalPreInit(string device)
+
+	PASS()
+End
+
+static Function SC_SetControls1_preAcq(device)
 	string device
 
 	Make/FREE/T payload = {"Pre DAQ", "1"}
@@ -13,14 +31,12 @@ static Function SC_SetControls1_Setter(device)
 End
 
 // ignores invalid control
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls1([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls1_Setter)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls1_REENTRY([str])
@@ -40,22 +56,21 @@ static Function SC_SetControls1_REENTRY([str])
 	CHECK_GT_VAR(strsearch(contents, "The analysis parameter Title_DataAcq_Bridge is a control which can not be set.", 0), 0)
 End
 
-static Function SC_SetControls2_Setter(device)
+static Function SC_SetControls2_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="myValue")
 End
 
 // complains on wrong parameter type (string)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls2([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls2_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -73,22 +88,21 @@ static Function SC_SetControls2_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls2a_Setter(device)
+static Function SC_SetControls2a_preAcq(device)
 	string device
 
 	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", var = 1)
 End
 
 // complains on wrong parameter type (numeric)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls2a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls2a_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -106,7 +120,7 @@ static Function SC_SetControls2a_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls2b_Setter(device)
+static Function SC_SetControls2b_preAcq(device)
 	string device
 
 	Make/FREE wv
@@ -114,15 +128,14 @@ static Function SC_SetControls2b_Setter(device)
 End
 
 // complains on wrong parameter type (numeric wave)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls2b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls2b_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -140,7 +153,7 @@ static Function SC_SetControls2b_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls3_Setter(device)
+static Function SC_SetControls3_preAcq(device)
 	string device
 
 	Make/FREE/T/N=3 wv
@@ -148,15 +161,14 @@ static Function SC_SetControls3_Setter(device)
 End
 
 // invalid parameter wave size
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls3([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls3_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -174,7 +186,7 @@ static Function SC_SetControls3_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls3a_Setter(device)
+static Function SC_SetControls3a_preAcq(device)
 	string device
 
 	Make/FREE/T wv = {"Unknown", "1"}
@@ -182,15 +194,14 @@ static Function SC_SetControls3a_Setter(device)
 End
 
 // invalid event type (unknown)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls3a([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls3a_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -208,7 +219,7 @@ static Function SC_SetControls3a_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls3b_Setter(device)
+static Function SC_SetControls3b_preAcq(device)
 	string device
 
 	Make/FREE/T wv = {"Mid Sweep", "1"}
@@ -216,15 +227,14 @@ static Function SC_SetControls3b_Setter(device)
 End
 
 // invalid event type (mid sweep)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls3b([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls3b_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -242,7 +252,7 @@ static Function SC_SetControls3b_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls3c_Setter(device)
+static Function SC_SetControls3c_PreAcq(device)
 	string device
 
 	Make/FREE/T wv = {"Generic", "1"}
@@ -250,15 +260,14 @@ static Function SC_SetControls3c_Setter(device)
 End
 
 // invalid event type (generic)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls3c([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls3c_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -276,7 +285,7 @@ static Function SC_SetControls3c_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls4_Setter(device)
+static Function SC_SetControls4_preAcq(device)
 	string device
 
 	Make/FREE/T wv = {"Pre Sweep", "1"}
@@ -284,15 +293,14 @@ static Function SC_SetControls4_Setter(device)
 End
 
 // unchangeable control in other event than pre DAQ
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls4([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
 
 	try
-		AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls4_Setter)
+		AcquireData_NG(s, str)
 		FAIL()
 	catch
 		PASS()
@@ -310,7 +318,7 @@ static Function SC_SetControls4_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function SC_SetControls5_Setter(device)
+static Function SC_SetControls5_preAcq(device)
 	string device
 
 	Make/FREE/T wv = {"Post Sweep", "0"}
@@ -318,14 +326,12 @@ static Function SC_SetControls5_Setter(device)
 End
 
 // hidden control is ignored
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls5([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls5_Setter)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls5_REENTRY([str])
@@ -341,7 +347,7 @@ static Function SC_SetControls5_REENTRY([str])
 	CHECK_EQUAL_VAR(GetCheckBoxState(str, "Check_DataAcqHS_00"), 1)
 End
 
-static Function SC_SetControls6_Setter(device)
+static Function SC_SetControls6_preAcq(device)
 	string device
 
 	// indexing and repeated acquistion are special as both can only be set in Pre/POST DAQ
@@ -370,14 +376,12 @@ static Function SC_SetControls6_Setter(device)
 End
 
 // works with different controls
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls6([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls6_Setter)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls6_REENTRY([str])
@@ -405,7 +409,7 @@ static Function SC_SetControls6_REENTRY([str])
 	CHECK_EQUAL_VAR(GetPopupMenuIndex(str, "Popup_Settings_SampIntMult"), 2)
 End
 
-static Function SC_SetControls7_Setter(device)
+static Function SC_SetControls7_preAcq(device)
 	string device
 
 	Make/FREE/T/N=4 wv
@@ -417,14 +421,12 @@ static Function SC_SetControls7_Setter(device)
 End
 
 // works with event/data tuples and also accepts incorrect casing for the event names
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls7([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls7_Setter)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls7_REENTRY([str])
@@ -443,29 +445,23 @@ static Function SC_SetControls7_REENTRY([str])
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_DataAcq_SetRepeats"), 1)
 End
 
-static Function SC_SetControls8_Setter(device)
+static Function SC_SetControls8_preAcq(device)
 	string device
 
 	Make/FREE/T/N=2 wv
 	wv[] = {"Post DAQ", "abcdefgh"}
 	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "NB", wv = wv)
-End
-
-static Function SC_SetControls8_Setter2(device)
-	string device
 
 	PGC_SetAndActivateControl(device, "button_DataAcq_OpenCommentNB")
 End
 
 // works with event/data tuples setting notebook text
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls8([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls8_Setter, preAcquireFunc = SC_SetControls8_Setter2)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls8_REENTRY([str])
@@ -484,7 +480,7 @@ static Function SC_SetControls8_REENTRY([str])
 	CHECK_EQUAL_STR(expected, actual)
 End
 
-static Function SC_SetControls9_Setter(device)
+static Function SC_SetControls9_preAcq(device)
 	string device
 
 	Make/FREE/T/N=2 wv
@@ -497,14 +493,12 @@ static Function SC_SetControls9_Setter(device)
 End
 
 // supports "Pre Sweep" (old) and "Pre Sweep Config" (new)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SC_SetControls9([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
-
-	AcquireData_AFT(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls9_Setter)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function SC_SetControls9_REENTRY([str])
