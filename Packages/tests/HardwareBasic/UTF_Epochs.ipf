@@ -9,92 +9,14 @@ static Constant OODDAQ_PRECISION       = 0.001
 static Constant OTHER_EPOCHS_PRECISION = 0.050
 static Constant MAX_ITERATIONS = 100000
 
-/// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData_BHT(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction])
-	STRUCT DAQSettings& s
-	string devices
-	string stimSetName1, stimSetName2, analysisFunction
-	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
+static Function GlobalPreAcq(string device)
 
-	string unlockedDevice, device
-	variable i, numEntries
+	PASS()
+End
 
-	EnsureMCCIsOpen()
+static Function GlobalPreInit(string device)
 
-	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
-	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
-	analysisFunction = SelectString(ParamIsDefault(analysisFunction), analysisFunction, "")
-
-	numEntries = ItemsInList(devices)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, devices)
-
-		unlockedDevice = DAP_CreateDAEphysPanel()
-
-		PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-		REQUIRE(WindowExists(device))
-
-		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1, switchTab = 1)
-		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-
-		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimSetName1)
-		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimSetName2)
-
-		// HS 0 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-
-		// HS 1 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
-
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
-		DoUpdate/W=$device
-
-		PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-
-		if(!s.MD)
-			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-		else
-			CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-		endif
-
-		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = dDAQ)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = oodDAQ)
-
-		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = onsetDelayUser)
-		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = terminationDelay)
-
-		PASS()
-	endfor
-
-	if(!IsEmpty(analysisFunction))
-		ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
-		ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
-	endif
-
-	device = devices
-
-#ifdef TESTS_WITH_YOKING
-	PGC_SetAndActivateControl(device, "button_Hardware_Lead1600")
-	PGC_SetAndActivateControl(device, "popup_Hardware_AvailITC1600s", val=0)
-	PGC_SetAndActivateControl(device, "button_Hardware_AddFollower")
-
-	ARDLaunchSeqPanel()
-	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
-#endif
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
+	PASS()
 End
 
 /// @brief Tests if the 2D text wave e is tightly packed each row in all cols from top
@@ -553,212 +475,258 @@ End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest1([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest0_DA_0", "EpochTest0_DA_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest1_REENTRY([str])
+static Function EP_EpochTest1_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest2([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest1_DA_0", "EpochTest1_DA_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest2_REENTRY([str])
+static Function EP_EpochTest2_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest3([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest2_DA_0", "EpochTest2_DA_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest3_REENTRY([str])
+static Function EP_EpochTest3_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest4([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest4([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest2_DA_0", "EpochTest2_DA_0", dDAQ = 1)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1"                + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest4_REENTRY([str])
+static Function EP_EpochTest4_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest5([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest5([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest2_DA_0", "EpochTest2_DA_0", oodDAQ = 1)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest5_REENTRY([str])
+static Function EP_EpochTest5_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest6([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest6([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest2_DA_0", "EpochTest3_DA_0", oodDAQ = 1)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest6_REENTRY([str])
+static Function EP_EpochTest6_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest7([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest7([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest4_DA_0", "EpochTest4_DA_0", oodDAQ = 1)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest7_REENTRY([str])
+static Function EP_EpochTest7_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest8([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest8([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest5_DA_0", "EpochTest5_DA_0", onsetDelayUser = 50, terminationDelay = 100)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest8_REENTRY([str])
+static Function EP_EpochTest8_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest9([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest9([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest6_DA_0", "EpochTest6_DA_0", onsetDelayUser = 50, terminationDelay = 100)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"           + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest9_REENTRY([str])
+static Function EP_EpochTest9_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest10([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest10([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "StimulusSetA_DA_0", "TestPulse")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest10_REENTRY([str])
+static Function EP_EpochTest10_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest11([str])
-	string str
+static Function EP_EpochTest11_preInit(string device)
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG_1_RES_1")
 	WB_MakeStimsetThirdParty("StimulusSetB_DA_0")
-	AcquireData_BHT(s, str, "StimulusSetA_DA_0", "StimulusSetB_DA_0")
 End
 
-Function EP_EpochTest11_REENTRY([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest11([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest11_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest12([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest12([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "StopMidSweep_V3")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                             + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest12_REENTRY([str])
+static Function EP_EpochTest12_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest13([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest13([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "AddTooLargeUserEpoch_V3")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                                     + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest13_REENTRY([str])
+static Function EP_EpochTest13_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_TestUserEpochs([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_TestUserEpochs([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "AddUserEpoch_V3")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                             + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_TestUserEpochs_REENTRY([str])
+static Function EP_TestUserEpochs_REENTRY([str])
 	string str
 
 	variable i, j, k, nextSweep, DAC
@@ -810,16 +778,19 @@ Function EP_TestUserEpochs_REENTRY([str])
 	endfor
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function EP_EpochTest14([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest14([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
-	AcquireData_BHT(s, str, "EpochTest_Trig_DA_0", "EpochTest_TrigFl_DA_0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:"    + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function EP_EpochTest14_REENTRY([str])
+static Function EP_EpochTest14_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
