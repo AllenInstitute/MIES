@@ -18,8 +18,22 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 static Constant TP_BASELINE_FITTING_INSET     = 0.3 // ms
 static Constant TP_SET_PRECISION              = 2
 
-// comment in for debugging
-// #define TP_ANALYSIS_DEBUGGING
+/// Comment in for debugging of TP_TSAnalysis
+///
+/// For visualising the evaluation ranges from the returned DFREF:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		Duplicate/O dfr:data, root:data
+///		Duplicate/O dfr:colors, root:colors
+///
+///		ModifyGraph zColor(data)={colors,*,*,Rainbow,1}
+///
+/// \endrst
+#if 0
+#define TP_ANALYSIS_DEBUGGING
+#endif
 
 /// @brief Check if the value is a valid baseline fraction
 Function TP_IsValidBaselineFraction(variable value)
