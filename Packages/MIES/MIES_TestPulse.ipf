@@ -947,13 +947,13 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	avgTPSS = mean(data, refTime - evalRange, refTime)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
-	DEBUGPRINT_TS("TPSS range begin (ms): ", var = refTime - evalRange)
-	DEBUGPRINT_TS("TPSS range eng (ms): ", var = refTime)
-	DEBUGPRINT_TS("average TPSS: ", var = avgTPSS)
-	// color SS
+	DEBUGPRINT_TS("steady state range begin (ms): ", var = refTime - evalRange)
+	DEBUGPRINT_TS("steady state range eng (ms): ", var = refTime)
+	DEBUGPRINT_TS("steady state average: ", var = avgTPSS)
+	// color steady state
 	refpt = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
 	colors[refpt - evalRange / sampleInt, refpt] = 50
-	// color INST
+	// color instantaneous
 	refpt = tpStartPoint + evalOffsetPointsCorrected
 	colors[refpt, refpt + 0.25 / sampleInt] = 50
 #endif
@@ -964,8 +964,8 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	instVal = data[instPoint]
 
 #if defined(TP_ANALYSIS_DEBUGGING)
-	DEBUGPRINT_TS("refPoint IntSS: ", var = instPoint)
-	DEBUGPRINT_TS("average InstSS: ", var = instVal)
+	DEBUGPRINT_TS("instantaneous refPoint: ", var = instPoint)
+	DEBUGPRINT_TS("instantaneous value: ", var = instVal)
 	colors[instPoint] = 75
 #endif
 
@@ -981,8 +981,8 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	outData[4] = instVal
 
 #if defined(TP_ANALYSIS_DEBUGGING)
-	DEBUGPRINT_TS("IntRes: ", var = outData[2])
-	DEBUGPRINT_TS("SSRes: ", var = outData[1])
+	DEBUGPRINT_TS("instantaneous resistance: ", var = outData[2])
+	DEBUGPRINT_TS("steady state resistance: ", var = outData[1])
 #endif
 
 	// additional data copy
