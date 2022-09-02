@@ -929,7 +929,7 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	// color BASE
-	variable refpt = tpStartPoint - TP_EVAL_POINT_OFFSET
+	variable refpt = refTime / sampleInt
 	colors[refpt - evalRange / sampleInt, refpt] = 50
 	DEBUGPRINT_TS("SampleInt: ", var = sampleInt)
 	DEBUGPRINT_TS("tpStartPoint: ", var = tpStartPoint)
