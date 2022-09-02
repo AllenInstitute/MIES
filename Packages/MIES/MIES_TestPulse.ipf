@@ -912,7 +912,7 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	// 1: steady state resistance
 	// 2: instantaneous resistance
 	// 3: averaged elevated level (steady state)
-	// 4: avrraged elevated level (instantaneous)
+	// 4: averaged elevated level (instantaneous)
 	Make/N=5/D dfrOut:outData/wave=outData
 	SetDimLabel ROWS, 0, BASELINE, outData
 	SetDimLabel ROWS, 1, STEADYSTATERES, outData
