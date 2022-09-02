@@ -102,11 +102,11 @@ point with maximum value is determined.
    .. math::
       locMax = MaxLocation(P_I); P_I = P[begin, end]
 
-The instantaneous level is determined by averaging over the data point **p** at
-**locMax** and its two neighboring points:
+The instantaneous level is determined by the data point **p** at
+**locMax**:
 
    .. math::
-      instantaneouslevel = \frac{1}{3} \sum^{locMax + 1}_{n=locMax - 1} p_n
+      instantaneouslevel = p_{locMax}
 
 Note that the constant *const* for the reference point offset is the same for
 all three ranges.
@@ -242,12 +242,12 @@ The range is converted to points by dividing through the sample interval.
 
 The reference point for the base line determination is defined by the base line
 fraction multiplied by the length of the test pulse in points, which gives the
-onset point of the active test pulse. A constant of ``TP_EVAL_POINT_OFFSET`` is
-subtracted, default = 5.
+onset point of the active test pulse.
 
 .. code-block:: igorpro
 
-   refPoint = baselineFrac * lengthTPInPoints - TP_EVAL_POINT_OFFSET
+   evalOffsetPointsCorrected = (TP_EVAL_POINT_OFFSET / sampleInt) * HARDWARE_ITC_MIN_SAMPINT
+   refPoint = baselineFrac * lengthTPInPoints - evalOffsetPointsCorrected
 
 The base line range in points is defined from the reference point minus the
 ``evalRangeInPoints`` to the reference point.
@@ -259,12 +259,11 @@ The base line range in points is defined from the reference point minus the
 
 The reference point for the steady state level determination is defined by
 1 - base line fraction multiplied by the length of the test pulse, which gives
-the end point of the active test pulse.  A constant of ``TP_EVAL_POINT_OFFSET`` is
-subtracted, default = 5.
+the end point of the active test pulse.
 
 .. code-block:: igorpro
 
-   refPoint = (1 - baselineFrac) * lengthTPInPoints - TP_EVAL_POINT_OFFSET
+   refPoint = (1 - baselineFrac) * lengthTPInPoints - evalOffsetPointsCorrected
 
 The steady state range in points is defined from the reference point minus the
 ``evalRangeInPoints`` to the reference point.
@@ -283,12 +282,11 @@ of 0.25 ms. It is converted to points by dividing the sample interval.
 
 The reference point is defined by the base line
 fraction multiplied by the length of the test pulse in points, which gives the
-onset point of the active test pulse. A constant of ``TP_EVAL_POINT_OFFSET`` is
-added, default = 5.
+onset point of the active test pulse.
 
 .. code-block:: igorpro
 
-   refPoint = baselineFrac * lengthTPInPoints + TP_EVAL_POINT_OFFSET
+   refPoint = baselineFrac * lengthTPInPoints + evalOffsetPointsCorrected
 
 The range of points for the instantaneous resistance calculation is defined from
 the reference point to the reference point plus 0.25 ms in points.
