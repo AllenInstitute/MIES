@@ -1653,9 +1653,7 @@ End
 
 /// @brief Create the amplifier connection waves
 Function AI_FindConnectedAmps()
-
-	variable numRows, i
-	string str, list = ""
+	string list
 
 	IH_RemoveAmplifierConnWaves()
 
@@ -1670,11 +1668,12 @@ Function AI_FindConnectedAmps()
 
 	SetDataFolder saveDFR
 
-	numRows = DimSize(telegraphServers, ROWS)
-	for(i=0; i < numRows; i+=1)
-		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
-		list = AddListItem(str, list, ";", inf)
-	endfor
+	list = DAP_FormatTelegraphServerList(telegraphServers)
+
+	if(IsEmpty(list))
+		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		ControlWindowToFront()
+	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 End

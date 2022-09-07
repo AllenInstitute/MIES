@@ -1915,21 +1915,22 @@ End
 /// @brief Return a nicely layouted list of amplifier channels
 Function/S DAP_GetNiceAmplifierChannelList()
 
-	variable i, numRows
-	string str
-	string list = NONE
-
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
-	numRows = DimSize(telegraphServers, ROWS)
-	if(!numRows)
-		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		ControlWindowToFront()
-		list = AddListItem("\\M1(MC not available", list, ";", inf)
-		return list
+	if(!DimSize(telegraphServers, ROWS))
+		return AddListItem("\\M1(MC not available", NONE, ";", inf)
 	endif
 
-	for(i=0; i < numRows; i+=1)
+	return AddListItem(DAP_FormatTelegraphServerList(telegraphServers), NONE, ";", inf)
+End
+
+Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
+	variable i, numRows
+	string str
+	string list = ""
+
+	numRows = DimSize(telegraphServers, ROWS)
+	for(i = 0; i < numRows; i += 1)
 		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
 		list = AddListItem(str, list, ";", inf)
 	endfor
@@ -1937,7 +1938,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	return list
 End
 
-Function/S DAP_GetAmplifierDef(ampSerial, ampChannel)
+static Function/S DAP_GetAmplifierDef(ampSerial, ampChannel)
 	variable ampSerial, ampChannel
 
 	string str
@@ -5297,15 +5298,13 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 	Setvariable setvar_Settings_IC_ADgain win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
-	if(cmpstr(DAP_GetNiceAmplifierChannelList(), NONE))
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
-		if(isFinite(ampSerial) && isFinite(ampChannelID))
-			entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-			Popupmenu popup_Settings_Amplifier win = $device, popmatch=entry
-		else
-			Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
-		endif
+	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
+	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+	if(isFinite(ampSerial) && isFinite(ampChannelID))
+		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+		Popupmenu popup_Settings_Amplifier win = $device, popmatch=entry
+	else
+		Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
 	endif
 End
 

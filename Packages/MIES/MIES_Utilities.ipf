@@ -6,9 +6,6 @@
 #pragma ModuleName=MIES_UTILS
 #endif
 
-/// The size in bytes of a wave with zero points. Experimentally determined in Igor Pro 6.34 under windows.
-static Constant PROPRIETARY_HEADER_SIZE = 320
-
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
