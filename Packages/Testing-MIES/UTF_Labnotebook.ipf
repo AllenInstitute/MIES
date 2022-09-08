@@ -1006,7 +1006,11 @@ End
 Function/WAVE AllDescriptionWaves()
 	Make/FREE/WAVE/N=1 wvs
 
-	wvs[0] = GetLBNumericalDescription()
+	// GetLBNumericalDescription creates a wave within the MIES datafolder, but that is killed at Test Begin
+	// Thus, we use a copy of that wave here
+	WAVE wDesc = GetLBNumericalDescription()
+	Duplicate/FREE wDesc, wT
+	wvs[0] = wT
 
 	return wvs
 End
