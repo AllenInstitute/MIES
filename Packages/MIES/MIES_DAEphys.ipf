@@ -2052,7 +2052,7 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string device
-	variable headStage
+	variable headStage, daVC, daIC, adVC, adIC
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -2062,6 +2062,30 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 			WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
 			headStage = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
+
+			daVC = ChanAmpAssign[%VC_DA][headStage]
+			daIC = ChanAmpAssign[%IC_DA][headStage]
+
+			adVC = ChanAmpAssign[%VC_AD][headStage]
+			adIC = ChanAmpAssign[%IC_AD][headStage]
+
+			WAVE channelClampMode = GetChannelClampMode(device)
+
+			if(IsFinite(daVC))
+				channelClampMode[daVC][%DAC][%Headstage] = NaN
+			endif
+
+			if(IsFinite(daIC))
+				channelClampMode[daIC][%DAC][%Headstage] = NaN
+			endif
+
+			if(IsFinite(adVC))
+				channelClampMode[adVC][%ADC][%Headstage] = NaN
+			endif
+
+			if(IsFinite(adIC))
+				channelClampMode[adIC][%ADC][%Headstage] = NaN
+			endif
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
 			ChanAmpAssign[0, 6;2][headStage] = NaN
