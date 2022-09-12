@@ -4891,7 +4891,7 @@ threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string nam
 		endif
 
 		if(WaveExists(ttlEntryRackOne))
-			entries += StringFromList(p, ttlEntryRackOne[index])
+			entries[NUM_ITC_TTL_BITS_PER_RACK, inf] += StringFromList(p - NUM_ITC_TTL_BITS_PER_RACK, ttlEntryRackOne[index])
 		endif
 
 		return entries
