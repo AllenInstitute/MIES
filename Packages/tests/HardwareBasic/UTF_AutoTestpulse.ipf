@@ -3,57 +3,23 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AutoTP
 
-/// @brief Acquire testpulses with the given DAQSettings
-static Function AcquireTestpulse(s, device, [postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string device
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+static Function [STRUCT DAQSettings s] AutoTP_GetDAQSettings(string device)
 
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
+								 "__HS0_DA0_AD0_CM:IC:"       + \
+								 "__HS1_DA1_AD1_CM:IC:")
 
-	EnsureMCCIsOpen()
+	 return [s]
+End
 
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
+static Function GlobalPreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str ="MSQ_DAScale_DA_0")
+End
 
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
+static Function GlobalPreInit(string device)
 
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	PGC_SetAndActivateControl(device, "TestpulseButton")
+	PASS()
 End
 
 static Function/WAVE GetEntriesWave_IGNORE()
@@ -98,10 +64,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device)
 	return wv
 End
 
-static Function AutoTP_OptimumValues_IGNORE(string device)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+static Function AutoTP_OptimumValues_preAcq(string device)
 
 	WAVE overrideResults = MIES_TP#TP_CreateOverrideResults(device, TP_OVERRIDE_RESULTS_AUTO_TP)
 
@@ -120,12 +83,11 @@ static Function AutoTP_OptimumValues_IGNORE(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AutoTP_OptimumValues([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
-	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_OptimumValues_IGNORE)
+	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function AutoTP_OptimumValues_REENTRY([string str])
@@ -153,7 +115,7 @@ static Function AutoTP_OptimumValues_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.35}, mode = WAVE_DATA, tol = 1e-6)
 End
 
-static Function AutoTP_BadValues_IGNORE(string device)
+static Function AutoTP_BadValues_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
@@ -175,12 +137,11 @@ static Function AutoTP_BadValues_IGNORE(string device)
 	CtrlNamedBackGround StopTP, start, period=30, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AutoTP_BadValues([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
-	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_BadValues_IGNORE)
+	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function AutoTP_BadValues_REENTRY([string str])
@@ -207,10 +168,7 @@ static Function AutoTP_BadValues_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%amplitudeIC], {50, 50, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
-static Function AutoTP_MixedOptimumBadValues_IGNORE(string device)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+static Function AutoTP_MixedOptimumBadValues_preAcq(string device)
 
 	WAVE overrideResults = MIES_TP#TP_CreateOverrideResults(device, TP_OVERRIDE_RESULTS_AUTO_TP)
 
@@ -235,12 +193,10 @@ static Function AutoTP_MixedOptimumBadValues_IGNORE(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AutoTP_MixedOptimumBadValues([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_MixedOptimumBadValues_IGNORE)
+	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function AutoTP_MixedOptimumBadValues_REENTRY([string str])
@@ -268,10 +224,7 @@ static Function AutoTP_MixedOptimumBadValues_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.25}, mode = WAVE_DATA)
 End
 
-static Function AutoTP_SpecialCases_IGNORE(string device)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+static Function AutoTP_SpecialCases_preAcq(string device)
 
 	WAVE overrideResults = MIES_TP#TP_CreateOverrideResults(device, TP_OVERRIDE_RESULTS_AUTO_TP)
 
@@ -296,12 +249,11 @@ static Function AutoTP_SpecialCases_IGNORE(string device)
 	CtrlNamedBackGround StopTP, start, period=1, proc=StopTPWhenFinished
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AutoTP_SpecialCases([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
 
-	AcquireData_BHT(s, str, startTPInstead = 1, preAcquireFunc = AutoTP_SpecialCases_IGNORE)
+	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
+	AcquireData_NG(s, str)
 End
 
 static Function AutoTP_SpecialCases_REENTRY([string str])
