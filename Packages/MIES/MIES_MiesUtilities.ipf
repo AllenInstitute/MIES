@@ -7020,7 +7020,8 @@ End
 
 /// @brief Map from analysis function name to numeric constant
 ///
-/// @return One of @ref SpecialAnalysisFunctionTypes which includes #INVALID_ANALYSIS_FUNCTION
+/// @return One of @ref SpecialAnalysisFunctionTypes which includes
+///         #INVALID_ANALYSIS_FUNCTION and for CI testing #TEST_ANALYSIS_FUNCTION
 Function MapAnaFuncToConstant(anaFunc)
 	string anaFunc
 
@@ -7050,7 +7051,11 @@ Function MapAnaFuncToConstant(anaFunc)
 		case "SC_SpikeControl":
 			return SC_SPIKE_CONTROL
 		default:
+#ifdef AUTOMATED_TESTING
+			return TEST_ANALYSIS_FUNCTION
+#else
 			return INVALID_ANALYSIS_FUNCTION
+#endif
 	endswitch
 End
 
@@ -7103,6 +7108,11 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 		case PSQ_TRUE_REST_VM:
 			prefix = PSQ_VM_LBN_PREFIX
 			break
+#ifdef AUTOMATED_TESTING
+		case TEST_ANALYSIS_FUNCTION:
+			prefix = "test analysis function"
+			break
+#endif
 		default:
 			return ""
 			break

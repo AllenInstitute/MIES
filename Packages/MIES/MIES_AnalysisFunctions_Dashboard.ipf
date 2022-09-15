@@ -171,6 +171,9 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case SC_SPIKE_CONTROL:
 			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case INVALID_ANALYSIS_FUNCTION:
+#ifdef AUTOMATED_TESTING
+		case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+#endif
 			return NOT_AVAILABLE
 		default:
 			ASSERT(0, "Unsupported analysis function")
@@ -212,6 +215,21 @@ static Function AD_FillWaves(win, list, info)
 		WAVE textualValues   = textualValuesWave[i]
 		WAVE numericalValues = numericalValuesWave[i]
 
+		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+
+		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+		if(!WaveExists(headstages))
+			continue
+		endif
+
+		WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
+			continue
+		endif
+
+		WAVE/Z lastSweepStimsetCycleIDs = GetLastSetting(numericalValues, WaveMax(totalSweepsPresent), STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
@@ -227,27 +245,14 @@ static Function AD_FillWaves(win, list, info)
 			WAVE/T anaFuncs = LBN_GetTextWave(defValue = NOT_AVAILABLE)
 		endif
 
-		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
-
-		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
-		if(!WaveExists(headstages))
-			continue
-		endif
+		WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(stimsets), "No stimsets found")
 
 		for(j = 0; j < NUM_HEADSTAGES; j += 1)
 
 			headstage = j
 
 			if(headstages[headstage] != 1)
-				continue
-			endif
-
-			anaFuncType = anaFuncTypes[headstage]
-			anaFunc = anaFuncs[headstage]
-
-			WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
-
-			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
 				continue
 			endif
 
@@ -265,14 +270,15 @@ static Function AD_FillWaves(win, list, info)
 				endif
 			endif
 
-			WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(stimsets), "No stimsets found")
-
+			anaFuncType = anaFuncTypes[headstage]
+			anaFunc = anaFuncs[headstage]
 			stimset = stimsets[headstage]
 
 			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
 				passed = NaN
-				ongoingDAQ = 0
+				// current sweep is from the same SCI than the last acquired sweep and DAQ is not inactive
+				ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
+				ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
 			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -343,6 +349,9 @@ static Function AD_FillWaves(win, list, info)
 					endif
 					break
 				case INVALID_ANALYSIS_FUNCTION:
+#ifdef AUTOMATED_TESTING
+				case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design
+#endif
 					// all sweeps are both passing and failing
 					Duplicate/FREE sweeps, failingSweeps
 					Duplicate/FREE sweeps, passingSweeps
@@ -366,7 +375,7 @@ End
 
 static Function/S AD_FormatListKey(variable stimsetCycleID, variable headstage)
 
-	return num2str(stimsetCycleID) + "_HS" + num2str(headstage)
+	return num2strHighPrec(stimsetCycleID, shorten = 1) + "_HS" + num2str(headstage)
 End
 
 static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
@@ -407,7 +416,10 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	ASSERT(IsFinite(stepSize), "Missing DAScale stepsize LBN entry")
+	if(!IsFinite(stepSize))
+		BUG("Missing DAScale stepsize LBN entry")
+		return "Failure"
+	endif
 
 	if(stepSize != PSQ_SP_INIT_AMP_p10)
 		sprintf msg, "Failure as we did not reach the desired DAScale step size of %.0W0PA but only %.0W0PA", PSQ_SP_INIT_AMP_p10, stepSize

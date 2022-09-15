@@ -1138,6 +1138,7 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 /// @{
 
 Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
+Constant TEST_ANALYSIS_FUNCTION    = 0x10000
 
 /// Legacy analysis functions
 /// @{

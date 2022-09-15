@@ -791,6 +791,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				repurposedTime = 10
 			endif
 
+#ifdef AUTOMATED_TESTING
+			repurposedTime = 0.5
+#endif
 			return ANALYSIS_FUNC_RET_REPURP_TIME
 		elseif(!leakCurPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
