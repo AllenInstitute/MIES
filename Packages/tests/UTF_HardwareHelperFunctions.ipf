@@ -703,14 +703,6 @@ Function StopTPAfterFiveSeconds_IGNORE(s)
 	return 1
 End
 
-/// @brief Similiar to InitDAQSettingsFromString() but uses the function name of the caller
-Function InitSettings(s)
-	STRUCT DAQSettings& s
-
-	string caller = GetRTStackInfo(2)
-	InitDAQSettingsFromString(s, caller)
-End
-
 Function CALLABLE_PROTO(device)
 	string device
 	FAIL()
@@ -1512,20 +1504,12 @@ Function EnsureMCCIsOpen()
 	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 End
 
-static Function SetAnalysisFunctions_IGNORE()
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
-	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
-	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
-	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
-End
-
 // @brief Acquire data with the given DAQSettings
-Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, useAmplifier])
+Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, startTPInstead, useAmplifier])
 	STRUCT DAQSettings& s
 	string devices
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-	variable setAnalysisFuncs, startTPInstead, useAmplifier
+	variable startTPInstead, useAmplifier
 
 	string unlockedDevice, device
 	variable i, numEntries
@@ -1544,20 +1528,10 @@ Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, setAna
 		startTPInstead = !!startTPInstead
 	endif
 
-	if(ParamIsDefault(setAnalysisFuncs))
-		setAnalysisFuncs = 0
-	else
-		setAnalysisFuncs = !!setAnalysisFuncs
-	endif
-
 	if(ParamIsDefault(useAmplifier))
 		useAmplifier = 1
 	else
 		useAmplifier = !!useAmplifier
-	endif
-
-	if(setAnalysisFuncs)
-		SetAnalysisFunctions_IGNORE()
 	endif
 
 	if(useAmplifier)
@@ -1638,86 +1612,6 @@ Function AcquireData_BHT(s, devices, [postInitializeFunc, preAcquireFunc, setAna
 	else
 		PGC_SetAndActivateControl(device, "DataAcquireButton")
 	endif
-End
-
-/// @brief Acquire data with the given DAQSettings
-Function AcquireData_AFT(s, stimset, device, [numHeadstages, TTLStimset, postInitializeFunc, preAcquireFunc])
-	STRUCT DAQSettings& s
-	string stimset
-	string device
-	variable numHeadstages
-	string TTLStimset
-	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-
-	variable i
-
-	if(ParamIsDefault(numHeadstages))
-		numHeadstages = 1
-	endif
-
-	EnsureMCCIsOpen()
-
-	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
-	KillOrMoveToTrash(wv = anaFuncTracker)
-
-	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
-	KillOrMoveToTrash(wv = anaFuncOrder)
-
-	WAVE anaFuncTracker = TrackAnalysisFunctionCalls(numHeadstages = numHeadstages)
-
-	if(!ParamIsDefault(postInitializeFunc))
-		postInitializeFunc(device)
-	endif
-
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-
-	REQUIRE(WindowExists(device))
-
-	PGC_SetAndActivateControl(device, "ADC", val=0)
-	DoUpdate/W=$device
-
-	for(i = 0; i < numHeadstages; i += 1)
-		PGC_SetAndActivateControl(device, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-		PGC_SetAndActivateControl(device, GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
-
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = i + 1)
-
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, i), val=1)
-	endfor
-
-	if(!ParamIsDefault(TTLStimset))
-		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str = TTLStimset)
-		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
-	endif
-
-	DoUpdate/W=$device
-
-	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-
-	if(!s.MD)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	else
-		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-	endif
-
-	DoUpdate/W=$device
-
-	if(!ParamIsDefault(preAcquireFunc))
-		preAcquireFunc(device)
-	endif
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 Structure DAQSettings
@@ -2142,4 +2036,36 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 	else
 		PGC_SetAndActivateControl(device, "DataAcquireButton")
 	endif
+End
+
+Function CheckDAQStopReason(string device, variable stopReason, [variable sweepNo])
+	string key
+
+	key = "DAQ stop reason"
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK_GE_VAR(DimSize(sweeps, ROWS), 1)
+
+	if(ParamIsDefault(sweepNo))
+		sweepNo = sweeps[0]
+	endif
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], stopReason)
+End
+
+Function CheckStartStopMessages(string mode, string state)
+	string msg, actual, expected
+	variable jsonID
+
+	msg = FetchPublishedMessage(DAQ_TP_STATE_CHANGE_FILTER)
+
+	jsonID = JSON_Parse(msg)
+	actual = JSON_GetString(jsonID, "/" + mode)
+	expected = state
+	CHECK_EQUAL_STR(actual, expected)
+	JSON_Release(jsonID)
 End

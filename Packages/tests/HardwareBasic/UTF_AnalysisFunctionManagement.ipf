@@ -3,6 +3,22 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisFunctionTesting
 
+static Function GlobalPreAcq(string device)
+
+	PASS()
+End
+
+static Function GlobalPreInit(string device)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+	KillOrMoveToTrash(wv = anaFuncTracker)
+
+	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
+	KillOrMoveToTrash(wv = anaFuncOrder)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+End
+
 static Function ChangeAnalysisFunctions_IGNORE()
 
 	ST_SetStimsetParameter("AnaFuncAbortPre_DA_0", "Analysis pre DAQ function", str = "AbortPreDAQ")
@@ -165,15 +181,16 @@ static Function AnalysisParamsMustHaveSameOptionality()
 End
 
 // invalid analysis functions
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
 
 	try
-		AcquireData_AFT(s, "AnaFuncInvalid1_DA*", str); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -226,17 +243,18 @@ static Function AFT1_REENTRY([str])
 End
 
 // can not call prototype analysis functions as they reside in the wrong file
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT2([str])
 	string str
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
 
 	try
-		AcquireData_AFT(s, "AnaFuncInvalid2_DA*", str); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -289,16 +307,14 @@ static Function AFT2_REENTRY([str])
 End
 
 // uses a valid V1 function and got calls for all events except post set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT3([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid1_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT3_REENTRY([str])
@@ -364,16 +380,14 @@ static Function AFT3_REENTRY([str])
 End
 
 // uses a valid V1 function and got calls for all events including post set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT4([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid1_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT4_REENTRY([str])
@@ -439,16 +453,14 @@ static Function AFT4_REENTRY([str])
 End
 
 // uses a valid V2 function and got calls for all events except post set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT5([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid2_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT5_REENTRY([str])
@@ -505,16 +517,14 @@ static Function AFT5_REENTRY([str])
 End
 
 // uses a valid V2 function and got calls for all events including post set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT6([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid2_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT6_REENTRY([str])
@@ -580,16 +590,14 @@ static Function AFT6_REENTRY([str])
 End
 
 // uses a valid V3 function and got calls for all events including post set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT6a([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid3_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT6a_REENTRY([str])
@@ -651,16 +659,14 @@ End
 // uses a valid V3 generic function and then ignores other set analysis functions
 // The wavebuilder does not store other analysis functions if the generic name is set.
 // That is the reason why they are in the labnotebook but not called.
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT6b([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncGeneric_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncGeneric_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT6b_REENTRY([str])
@@ -727,16 +733,15 @@ static Function AFT6b_REENTRY([str])
 End
 
 // ana func called for each headstage
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT7([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValidMult_DA*", str, numHeadstages = 2)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                             + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValidMult_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT7_REENTRY([str])
@@ -812,16 +817,15 @@ static Function AFT7_REENTRY([str])
 End
 
 // not called if attached to TTL stimsets
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT8([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "StimulusSetA_DA*", str, TTLstimset = "AnaFuncTTLNot_TTL_*")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                    + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL0:_ST:AnaFuncTTLNot_TTL_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT8_REENTRY([str])
@@ -870,16 +874,14 @@ static Function AFT8_REENTRY([str])
 End
 
 // does not call some ana funcs if aborted
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT9([str])
 	string str
 
-	variable sweepNo
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncValid3Lon_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                              + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3Lon_DA_0:")
+	AcquireData_NG(s, str)
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
 
@@ -913,14 +915,14 @@ static Function AFT9_REENTRY([str])
 End
 
 // DAQ works if the analysis function can not be found
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT10([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncMissing_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncMissing_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT10_REENTRY([str])
@@ -969,14 +971,14 @@ static Function AFT10_REENTRY([str])
 End
 
 // calls correct analysis functions
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT11([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncDiff_DA*", str)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncDiff_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT11_REENTRY([str])
@@ -1044,15 +1046,17 @@ End
 
 // abort early results in other analysis functions not being called
 // preDAQ
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT12([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
 
 	try
-		AcquireData_AFT(s, "AnaFuncAbortPre_DA*", str, numHeadstages = 2); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -1118,14 +1122,15 @@ End
 
 // abort early results in other analysis functions not being called
 // midSweep
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT13([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	AcquireData_AFT(s, "AnaFuncStopMid_DA*", str, numHeadstages = 2)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncStopMid_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncStopMid_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT13_REENTRY([str])
@@ -1186,7 +1191,7 @@ static Function AFT13_REENTRY([str])
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
-static Function SetParams1_IGNORE(device)
+static Function AFT14_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams1_DA_0"
@@ -1200,15 +1205,14 @@ End
 // test parameter handling
 // tests also that no type parameters
 // in Params1_V3_GetParams() are okay
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams1_IGNORE
-	AcquireData_AFT(s, "AnaFuncParams1_DA_0", str, postInitializeFunc = f)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT14_REENTRY([str])
@@ -1273,7 +1277,7 @@ static Function AFT14_REENTRY([str])
 	CHECK_WAVE(anaFuncParams, TEXT_WAVE)
 End
 
-static Function SetParams2_IGNORE(device)
+static Function AFT14a_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams2_DA_0"
@@ -1282,15 +1286,14 @@ static Function SetParams2_IGNORE(device)
 End
 
 // test parameter handling with valid type string and optional parameter
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams2_IGNORE
-	AcquireData_AFT(s, "AnaFuncParams2_DA_0", str, postInitializeFunc = f)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams2_DA_0:")
+	AcquireData_NG(s, str)
 End
 
 static Function AFT14a_REENTRY([str])
@@ -1316,7 +1319,7 @@ static Function AFT14a_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams3_IGNORE(device)
+static Function AFT14b_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams3_DA_0"
@@ -1324,21 +1327,18 @@ static Function SetParams3_IGNORE(device)
 End
 
 // test parameter handling with non-matching type string
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14b([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams3_IGNORE
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
 
 	try
-		ClearRTError()
-		AcquireData_AFT(s, "AnaFuncParams3_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
-		ClearRTError()
 		PASS()
 	endtry
 End
@@ -1366,7 +1366,7 @@ static Function AFT14b_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams4_IGNORE(device)
+static Function AFT14c_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams4_DA_0"
@@ -1374,21 +1374,18 @@ static Function SetParams4_IGNORE(device)
 End
 
 // test parameter handling with invalid type string
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14c([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams4_IGNORE
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
 
 	try
-		ClearRTError()
-		AcquireData_AFT(s, "AnaFuncParams4_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
-		ClearRTError()
 		PASS()
 	endtry
 End
@@ -1416,7 +1413,7 @@ static Function AFT14c_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams5_IGNORE(device)
+static Function AFT14d_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
@@ -1426,21 +1423,18 @@ End
 
 // test parameter handling with analysis parameter check and help function and
 // non-passing check
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14d([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams5_IGNORE
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
-		ClearRTError()
-		AcquireData_AFT(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
-		ClearRTError()
 		PASS()
 	endtry
 End
@@ -1468,7 +1462,7 @@ static Function AFT14d_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams6_IGNORE(device)
+static Function AFT14e_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
@@ -1480,21 +1474,18 @@ End
 // - Check asserts out on MyNum == NaN
 // - Help also asserts out but that is silently ignored
 // - Asserting out is equal to not passing the check function
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14e([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-
-	FUNCREF CALLABLE_PROTO f = SetParams6_IGNORE
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
-		ClearRTError()
-		AcquireData_AFT(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
-		ClearRTError()
 		PASS()
 	endtry
 End
@@ -1522,7 +1513,7 @@ static Function AFT14e_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams7_IGNORE(device)
+static Function AFT14f_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
@@ -1532,16 +1523,15 @@ End
 
 // test parameter handling with analysis parameter check and help function
 // - Checks pass
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14f([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
-	FUNCREF CALLABLE_PROTO f = SetParams7_IGNORE
-
-	AcquireData_AFT(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT14f_REENTRY([str])
@@ -1567,7 +1557,7 @@ static Function AFT14f_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams8_IGNORE(device)
+static Function AFT14g_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
@@ -1577,16 +1567,15 @@ End
 // test parameter handling with analysis parameter check and help function
 // - Checks pass, MyNum is not present and optional and is therefore not checked
 //   (the check would assert out)
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14g([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                            + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
-	FUNCREF CALLABLE_PROTO f = SetParams8_IGNORE
-
-	AcquireData_AFT(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT14g_REENTRY([str])
@@ -1612,7 +1601,7 @@ static Function AFT14g_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetParams9_IGNORE(device)
+static Function AFT14h_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams6_DA_0"
@@ -1620,16 +1609,15 @@ static Function SetParams9_IGNORE(device)
 End
 
 // test parameter handling with new analysis parameter check signature
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT14h([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams6_DA_0:")
 
-	FUNCREF CALLABLE_PROTO f = SetParams9_IGNORE
-
-	AcquireData_AFT(s, "AnaFuncParams6_DA_0", str, postInitializeFunc = f)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT14h_REENTRY([str])
@@ -1655,21 +1643,22 @@ static Function AFT14h_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function DisableInsertTP_IGNORE(device)
+static Function AFT15_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 0)
 End
 
 // MD: mid sweep event is also called for very short stimsets
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncVeryShort*", str, preAcquireFunc=DisableInsertTP_IGNORE)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT15_REENTRY([str])
@@ -1695,15 +1684,22 @@ static Function AFT15_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
+static Function AFT16_PreAcq(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 0)
+End
+
 // SD: mid sweep event is also called for very short stimsets
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
+// UTF_TD_GENERATOR DeviceNameGeneratorMD0
 static Function AFT16([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncVeryShort*", str, preAcquireFunc=DisableInsertTP_IGNORE)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT16_REENTRY([str])
@@ -1730,15 +1726,16 @@ static Function AFT16_REENTRY([str])
 End
 
 // Calling Abort during pre DAQ event will prevent DAQ
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT17([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
 
 	try
-		AcquireData_AFT(s, "AnaFuncPreDAQHar_DA_0", str); AbortOnRTE
+		AcquireData_NG(s, str); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -1771,23 +1768,18 @@ static Function AFT17_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetIndexingEnd_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "AnaFuncIdx2_DA_0")
-End
-
 // Analysis functions work properly with indexing
 // We index from AnaFuncIdx1_DA_0 to AnaFuncIdx2_DA_0
 // but only the second one has a analysis function set
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT18([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2"                                          + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncIdx1_DA_0", str, preAcquireFunc = SetIndexingEnd_IGNORE)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT18_REENTRY([str])
@@ -1824,14 +1816,15 @@ static Function AFT18_REENTRY([str])
 End
 
 // check that pre-set-event can abort
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT19([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSetHar_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncPreSetHar_DA_0", str)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT19_REENTRY([str])
@@ -1858,14 +1851,15 @@ static Function AFT19_REENTRY([str])
 End
 
 // check that pre sweep config can abort
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT19a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                            + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSwCfg_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncPreSwCfg_DA_0", str)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT19a_REENTRY([str])
@@ -1892,14 +1886,15 @@ static Function AFT19a_REENTRY([str])
 End
 
 // check total ordering of events via timestamps
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT20([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncOrder_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncOrder_DA_0", str)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT20_REENTRY([str])
@@ -1924,14 +1919,15 @@ static Function AFT20_REENTRY([str])
 End
 
 // it possible to change the stimset in POST DAQ event
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT21([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPostDAQ_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncPostDAQ_DA_0", str)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT21_REENTRY([str])
@@ -1956,21 +1952,16 @@ static Function AFT21_REENTRY([str])
 	REQUIRE_EQUAL_STR(stimset, expected)
 End
 
-static Function EnableOnlyHS1_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
-End
-
 // POST_SET_EVENT works with only HS1 active
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT22([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncValidMult_DA*", str, numHeadstages = 2, preAcquireFunc = EnableOnlyHS1_IGNORE)
+	AcquireData_NG(s, str)
 End
 
 static Function AFT22_REENTRY([str])
@@ -2036,14 +2027,15 @@ static Function AFT22_REENTRY([str])
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CanModifyStimsetInPreSweepConfig([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncModStim_DA_0:")
 
-	AcquireData_AFT(s, "AnaFuncModStim*", str)
+	AcquireData_NG(s, str)
 End
 
 static Function CanModifyStimsetInPreSweepConfig_REENTRY([str])

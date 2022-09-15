@@ -417,9 +417,7 @@ Function/S GetDataBrowserWithData()
 	return win
 End
 
-Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
-	variable numHeadstages
-
+Function/WAVE TrackAnalysisFunctionCalls()
 	variable i
 
 	DFREF dfr = root:
@@ -428,7 +426,7 @@ Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(TOTAL_NUM_EVENTS, numHeadstages) dfr:anaFuncTracker/WAVE=wv
+		Make/N=(TOTAL_NUM_EVENTS, 2) dfr:anaFuncTracker/WAVE=wv
 	endif
 
 	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)

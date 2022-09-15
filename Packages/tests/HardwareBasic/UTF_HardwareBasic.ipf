@@ -14,6 +14,7 @@
 #include "UTF_Epochs"
 #include "UTF_HardwareTestsWithBUG"
 #include "UTF_SweepFormulaHardware"
+#include "UTF_TrackSweepCounts"
 #include "UTF_VeryBasicHardwareTests"
 
 #include "UTF_VeryLastTestSuite"
@@ -74,6 +75,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
 	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
+	list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", inf)
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
 	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)
 	list = AddListItem("UTF_Dashboard.ipf", list, ";", inf)
