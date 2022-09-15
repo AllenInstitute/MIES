@@ -3,23 +3,20 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DashboardTests
 
-static Function DAB_Indexing_IGNORE(string device)
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "DashboardAnaFunc")
-
+static Function DAB_Indexing_preAcq(string device)
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Total number of steps", var = 2)
-
-	OpenDatabrowser()
 End
 
-// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function DAB_Indexing([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1")
-	BasicHardwareTests#AcquireData(s, str, preAcquireFunc = DAB_Indexing_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_DB1"                                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:"  + \
+								                     "_IST:StimulusSetB_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
 static Function DAB_Indexing_REENTRY([string str])
@@ -75,22 +72,20 @@ static Function DAB_Indexing_REENTRY([string str])
 	CHECK_EQUAL_WAVES(selectedSweeps, {3, 4})
 End
 
-static Function DAB_Skipping_IGNORE(string device)
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "JustFail")
+static Function DAB_Skipping_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val=CHECKBOX_SELECTED)
-
-	OpenDatabrowser()
 End
 
-// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function DAB_Skipping([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
-	BasicHardwareTests#AcquireData(s, str, preAcquireFunc = DAB_Skipping_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DB1"                                   + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:"  + \
+								                     "_IST:StimulusSetB_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
 static Function DAB_Skipping_REENTRY([string str])
