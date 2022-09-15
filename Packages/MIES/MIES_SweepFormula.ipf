@@ -2278,7 +2278,7 @@ End
 static Function/WAVE SF_OperationTPImpl(string graph, variable outType, WAVE/Z selectData, WAVE/Z ignoreTPs, string opShort)
 
 	variable i, numSelected, sweepNo, chanNr, chanType, dacChannelNr, settingsIndex, headstage, tpBaseLinePoints, index
-	string unitKey, epShortName, baselineUnit, yAxisLabel
+	string unitKey, epShortName, baselineUnit, yAxisLabel, debugGraph
 	STRUCT TPAnalysisInput tpInput
 	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
 
@@ -2392,6 +2392,19 @@ static Function/WAVE SF_OperationTPImpl(string graph, variable outType, WAVE/Z s
 		DFREF dfrTPAnalysisInput = dfrTPAnalysis:input
 		DFREF dfr = TP_TSAnalysis(dfrTPAnalysisInput)
 		WAVE tpOutData = dfr:outData
+
+		// handle waves sent out when TP_ANALYSIS_DEBUGGING is defined
+		if(WaveExists(dfr:data) && WaveExists(dfr:colors))
+			Duplicate/O dfr:data, root:data/WAVE=data
+			Duplicate/O dfr:colors, root:colors/WAVE=colors
+
+			debugGraph = "DebugTPRanges"
+			if(!WindowExists(debugGraph))
+				Display/N=$debugGraph/K=1
+				AppendToGraph/W=$debugGraph data
+				ModifyGraph/W=$debugGraph zColor(data)={colors,*,*,Rainbow,1}
+			endif
+		endif
 
 		switch(outType)
 			case SF_OP_TP_TYPE_STATIC_NUM:

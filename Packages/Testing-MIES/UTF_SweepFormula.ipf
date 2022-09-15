@@ -2289,7 +2289,7 @@ static Function TPWithModelCell()
 	CHECK_EQUAL_STR(ref, results)
 
 	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
-	ref = "17.158406068163004;"
+	ref = "17.366739401496286;"
 	CHECK_EQUAL_STR(ref, results)
 End
 
