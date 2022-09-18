@@ -55,7 +55,7 @@ Packages/Artwork      export-ignore
 *.ifn binary
 *.ift binary
 
-tools/unit-testing/*.pxp filter=compress
+*.pxp filter=compress
 *.nwb filter=compress
 
 # github specialities, see https://github.com/github/linguist

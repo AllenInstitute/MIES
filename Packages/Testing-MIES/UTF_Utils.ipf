@@ -3978,6 +3978,8 @@ Function FR_WorksWithAliasFiles()
 	ref = ResolveAlias(S_path)
 	CHECK_EQUAL_STR(expected, ref)
 
+	DeleteFile/Z alias + ".lnk"
+
 	// alias is a file
 	target = 	FunctionPath("")
 	alias  = GetFolder(target) + "alias.ipf"
@@ -3989,6 +3991,8 @@ Function FR_WorksWithAliasFiles()
 	expected = target
 	ref = ResolveAlias(S_path)
 	CHECK_EQUAL_STR(expected, ref)
+
+	DeleteFile/Z alias + ".lnk"
 End
 
 /// @}

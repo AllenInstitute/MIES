@@ -2921,7 +2921,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 
 	string func, listOfAnalysisFunctions
 	string info, str, suppParams, suppName, suppType, reqNamesAndTypesFromFunc, reqNames, reqName
-	string diff, name, type, suppNames, reqType, errorMessage
+	string diff, name, suppNames, reqType, errorMessage
 	variable i, j, numEntries
 
 	if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
@@ -3012,7 +3012,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 
 			// invalid types are not allowed
 			if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
-				printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", device, reqName, func, setName, type
+				printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", device, reqName, func, setName, reqType
 				ControlWindowToFront()
 				return 1
 			endif
