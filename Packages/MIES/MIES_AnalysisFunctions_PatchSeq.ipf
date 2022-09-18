@@ -2609,7 +2609,7 @@ Function PSQ_SquarePulse(device, s)
 					WAVE spikeWithDAScaleZeroReduced = ZapNaNs(spikeWithDAScaleZero)
 					if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
 						PSQ_ForceSetEvent(device, s.headstage)
-						RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+						RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(device, s.headstage, absolute=DAScale + stepsize)
@@ -2623,7 +2623,7 @@ Function PSQ_SquarePulse(device, s)
 
 					if(sweepPassed)
 						PSQ_ForceSetEvent(device, s.headstage)
-						RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+						RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
@@ -2657,7 +2657,7 @@ Function PSQ_SquarePulse(device, s)
 
 			if(!samplingFrequencyPassed)
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 			endif
 
 			break
@@ -2668,7 +2668,7 @@ Function PSQ_SquarePulse(device, s)
 
 			if(!setPassed)
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 			endif
 
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
@@ -2914,7 +2914,7 @@ Function PSQ_Rheobase(device, s)
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 				break
 			endif
 			if(!baselineQCPassed || !asyncAlarmPassed)
@@ -2968,7 +2968,7 @@ Function PSQ_Rheobase(device, s)
 						result[INDEP_HEADSTAGE] = 1
 						ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 						PSQ_ForceSetEvent(device, s.headstage)
-						RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+						RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 
 						DEBUGPRINT("Sweep has passed")
 						break
@@ -3000,7 +3000,7 @@ Function PSQ_Rheobase(device, s)
 					ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
+					RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 
 					DEBUGPRINT("Set has failed")
 					break
@@ -3035,7 +3035,7 @@ Function PSQ_Rheobase(device, s)
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 
 				DEBUGPRINT("Set has failed")
 				break
@@ -3056,7 +3056,7 @@ Function PSQ_Rheobase(device, s)
 				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 
 				DEBUGPRINT("Set has failed")
 			endif
@@ -4369,21 +4369,21 @@ Function PSQ_Chirp(device, s)
 
 			if(setPassed)
 				PSQ_ForceSetEvent(device, s.headstage)
-				RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 			else
 				if((maxOccurences + leftSweeps) < PSQ_CR_NUM_SWEEPS_PASS)
 					// not enough sweeps left to pass the set
 					// we need PSQ_CR_NUM_SWEEPS_PASS with the same
 					// DAScale value
 					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
+					RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 				elseif(failsInSet >= numSweepsFailedAllowed)
 					// failed too many sweeps
 					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
+					RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 				elseif(!samplingFrequencyPassed)
 					PSQ_ForceSetEvent(device, s.headstage)
-					RA_SkipSweeps(device, inf)
+					RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 				endif
 			endif
 
@@ -4471,7 +4471,7 @@ Function PSQ_Chirp(device, s)
 	if(IsNaN(chirpStart) || IsNaN(chirpEnd))
 		// error calculating chirp evaluation user epoch
 		PSQ_ForceSetEvent(device, s.headstage)
-		RA_SkipSweeps(device, inf)
+		RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6074,12 +6074,12 @@ static Function PSQ_DetermineSweepQCResults(string device, variable type, variab
 		// not enough sweeps left to pass the set
 		if((sweepsInSet - acquiredSweepsInSet) < (requiredPassesInSet - passesInSet))
 			PSQ_ForceSetEvent(device, headstage)
-			RA_SkipSweeps(device, inf)
+			RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 			return PSQ_RESULTS_DONE
 		elseif(failsInSet >= numSweepsFailedAllowed)
 			// failed too many sweeps
 			PSQ_ForceSetEvent(device, headstage)
-			RA_SkipSweeps(device, inf)
+			RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 			return PSQ_RESULTS_DONE
 		endif
 
@@ -6089,13 +6089,13 @@ static Function PSQ_DetermineSweepQCResults(string device, variable type, variab
 
 		if(!samplingFrequencyPassed)
 			PSQ_ForceSetEvent(device, headstage)
-			RA_SkipSweeps(device, inf)
+			RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 			return PSQ_RESULTS_DONE
 		endif
 	else
 		if(passesInSet >= requiredPassesInSet)
 			PSQ_ForceSetEvent(device, headstage)
-			RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+			RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 			return PSQ_RESULTS_DONE
 		endif
 	endif

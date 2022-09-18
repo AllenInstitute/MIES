@@ -782,7 +782,7 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 	endfor
 
 	if(redoLastSweep && DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
-		RA_SkipSweeps(device, -1)
+		RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO)
 	endif
 End
 

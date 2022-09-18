@@ -2205,6 +2205,7 @@ End
 /// - 56: Double precision data
 /// - 57: Save amplifier settings
 /// - 58: Require amplifier
+/// - 59: Skip Ahead
 Function/Wave GetSweepSettingsKeyWave(device)
 	string device
 
@@ -2223,9 +2224,9 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 59) wv
+		Redimension/N=(-1, 60) wv
 	else
-		Make/T/N=(3, 59) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 60) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2469,6 +2470,10 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Parameter][58] = "Require amplifier"
 	wv[%Units][58]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][58] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][59] = "Skip Ahead"
+	wv[%Units][59]     = ""
+	wv[%Tolerance][59] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

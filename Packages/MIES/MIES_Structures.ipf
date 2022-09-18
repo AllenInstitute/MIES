@@ -562,6 +562,9 @@ Structure DataConfigurationResult
 	/// Headstage of ADC if associated, `NaN` iff unassociated
 	/// Uses active channel indexing like DataConfigurationResult::ADCList
 	WAVE/D headstageADC
+
+	/// Number of sweeps to skip over on start of data acquisition
+	variable skipAhead
 EndStructure
 
 /// @brief Helper struct for storing the number of active channels per rack

@@ -1111,7 +1111,7 @@ Function SC_SpikeControl(device, s)
 			if(!sweepPassed)
 				if(SC_CanStillSkip(maxTrials, s.params))
 					skippedBack = 1
-					RA_SkipSweeps(device, -1, limitToSetBorder=1)
+					RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO, limitToSetBorder=1)
 				else
 					rerunExceededResult = 1
 				endif
@@ -1149,7 +1149,7 @@ Function SC_SpikeControl(device, s)
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
 				ED_AddEntryToLabnotebook(device, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(device, inf, limitToSetBorder=1)
+				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder=1)
 				AD_UpdateAllDatabrowser()
 			endif
 

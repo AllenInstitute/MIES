@@ -1699,6 +1699,9 @@ Function SweepSkipping_REENTRY([str])
 	WAVE/Z skippingSweeps = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE)
 	REQUIRE_WAVE(skippingSweeps, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(skippingSweeps, {2, 0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z skipSweepsSource = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_SOURCE_KEY, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO}, mode = WAVE_DATA)
 End
 
 Function SkipSweepsStimsetsAdvancedP_IGNORE(device)
@@ -1761,6 +1764,9 @@ Function SweepSkippingAdvanced_REENTRY([str])
 
 	WaveTransform/O zapNans, anaFuncActiveSetCount
 	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {3, 3, 1, 1})
+
+	WAVE/Z skipSweepsSource = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_SOURCE_KEY, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, NaN}, mode = WAVE_DATA)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -5591,4 +5597,38 @@ static Function AcquireWithoutAmplifier_REENTRY([string str])
 
 	WAVE/Z saveAmpSettings = GetLastSetting(numericalValues, sweepNo, "Save amplifier settings", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(saveAmpSettings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
+End
+
+static Function SkipAhead_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 2)
+	// redo so that the limits that the now updated limits are used
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 2)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function SkipAhead([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, preAcquireFunc = SkipAhead_IGNORE)
+End
+
+static Function SkipAhead_REENTRY([string str])
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	sweepNo = 0
+
+	WAVE/Z setSweepCount = GetLastSetting(numericalValues, sweepNo, "Set sweep count", DATA_ACQUISITION_MODE)
+
+	CHECK_EQUAL_WAVES(setSweepCount, {2, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z skipAhead = GetLastSetting(numericalValues, sweepNo, "Skip Ahead", DATA_ACQUISITION_MODE)
+
+	CHECK_EQUAL_WAVES(skipAhead, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
 End

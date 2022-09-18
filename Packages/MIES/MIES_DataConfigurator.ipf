@@ -1024,6 +1024,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Double precision data", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "Check_Settings_UseDoublePrec"))
 	DC_DocumentChannelProperty(device, "Save amplifier settings", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
 	DC_DocumentChannelProperty(device, "Require amplifier", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
+	DC_DocumentChannelProperty(device, "Skip Ahead", INDEP_HEADSTAGE, NaN, NaN, var=s.skipAhead)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1299,6 +1300,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	s.distributedDAQOptPre  = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPre")
 	s.distributedDAQOptPost = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost")
 	s.powerSpectrum         = DAG_GetNumericalValue(device, "check_settings_show_power")
+	s.skipAhead             = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz

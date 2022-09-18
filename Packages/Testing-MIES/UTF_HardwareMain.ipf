@@ -706,7 +706,7 @@ Function SkipToEndDuringITI_IGNORE(s)
 	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		RA_SkipSweeps(device, inf)
+		RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
 		return 1
 	endif
 
@@ -723,7 +723,7 @@ Function SkipSweepBackDuringITI_IGNORE(s)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
 		CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), 0)
-		RA_SkipSweeps(device, -1)
+		RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO)
 		return 1
 	endif
 
