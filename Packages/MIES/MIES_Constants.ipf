@@ -18,7 +18,7 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 56
+Constant DA_EPHYS_PANEL_VERSION           = 57
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 42
 Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
@@ -1866,6 +1866,13 @@ StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;
 /// @{
 CONSTANT PSQ_RESULTS_DONE = 0x1
 CONSTANT PSQ_RESULTS_CONT = 0x2
+/// @}
+
+/// @name Possible mode parameters for AdaptDependentControls
+/// @anchor DependentControlModes
+/// @{
+Constant DEP_CTRLS_SAME   = 0x1
+Constant DEP_CTRLS_INVERT = 0x2
 /// @}
 
 Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro

@@ -641,6 +641,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetControlUserData(device, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(device, "Check_Settings_BackgrndDataAcq", "oldState", "")
 	SetControlUserData(device, "check_Settings_TP_SaveTP", "oldState", "")
+	SetControlUserData(device, "check_Settings_SaveAmpSettings", "oldState", "")
 
 	CheckBox Check_Settings_BkgTP WIN = $device,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $device, value= 1
@@ -2846,7 +2847,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(DAGain, gain, tol=1e-4))
+	if(!CheckIfClose(DAGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", device, DACchannel, DAGain, gain
 		ControlWindowToFront()
 		return 1
@@ -2867,7 +2868,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && cmpstr(ADUnit, unit))
+	if(cmpstr(ADUnit, unit))
 		printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, ADCchannel, ADUnit, unit
 		ControlWindowToFront()
 		return 1
@@ -2880,7 +2881,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(ADGain, gain, tol=1e-4))
+	if(!CheckIfClose(ADGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, ADCchannel, ADGain, gain
 		ControlWindowToFront()
 		return 1
@@ -4062,7 +4063,7 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 			device = cba.win
 			checked = cba.checked
 			DAG_Update(device, cba.ctrlName, val = checked)
-			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", checked)
+			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
 			break
 	endswitch
 
@@ -4172,9 +4173,9 @@ Function DAP_AdaptAutoTPColorAndDependent(string device)
 	disabledSaveTP = IsControlDisabled(device, "check_Settings_TP_SaveTP")
 
 	if(hasAutoTPActive && !disabledSaveTP)
-		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_SELECTED)
+		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED, CHECKBOX_SELECTED, DEP_CTRLS_SAME)
 	elseif(!hasAutoTPActive && disabledSaveTP)
-		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED)
+		AdaptDependentControls(device, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED, CHECKBOX_UNSELECTED, DEP_CTRLS_SAME)
 	endif
 
 	if(hasAutoTPActive && runMode != TEST_PULSE_NOT_RUNNING && !(runMode & TEST_PULSE_DURING_RA_MOD))
@@ -5562,6 +5563,25 @@ Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
 			else
 				DisableControl(pa.win, "Popup_Settings_FixedFreq")
 			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_CheckProc_RequireAmplifier(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable checked
+	string device
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			checked = cba.checked
+			device  = cba.win
+			DAG_Update(device, cba.ctrlName, val = checked)
+
+			AdaptDependentControls(device, "check_Settings_SaveAmpSettings", CHECKBOX_SELECTED, checked, DEP_CTRLS_SAME)
 			break
 	endswitch
 

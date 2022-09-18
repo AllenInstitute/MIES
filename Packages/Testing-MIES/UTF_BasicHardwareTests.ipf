@@ -51,16 +51,14 @@ static Function SetAnalysisFunctions_IGNORE()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead])
+static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, useAmplifier])
 	STRUCT DAQSettings& s
 	string devices
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-	variable setAnalysisFuncs, startTPInstead
+	variable setAnalysisFuncs, startTPInstead, useAmplifier
 
 	string unlockedDevice, device
 	variable i, numEntries
-
-	EnsureMCCIsOpen()
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
@@ -82,8 +80,18 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		setAnalysisFuncs = !!setAnalysisFuncs
 	endif
 
+	if(ParamIsDefault(useAmplifier))
+		useAmplifier = 1
+	else
+		useAmplifier = !!useAmplifier
+	endif
+
 	if(setAnalysisFuncs)
 		SetAnalysisFunctions_IGNORE()
+	endif
+
+	if(useAmplifier)
+		EnsureMCCIsOpen()
 	endif
 
 	numEntries = ItemsInList(devices)
@@ -105,19 +113,24 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC_DA_0")
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetD_DA_0")
 
-		// HS 0 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
+		if(useAmplifier)
+			// HS 0 with Amp
+			PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-		// HS 1 with Amp
-		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
-		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
+			// HS 1 with Amp
+			PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
 
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
-		DoUpdate/W=$device
+			PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
+			PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
 
-		PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+			DoUpdate/W=$device
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+		else
+			PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = CHECKBOX_UNSELECTED)
+		endif
 
 		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
@@ -5520,4 +5533,62 @@ static Function ScaleZeroWithCycling_REENTRY([string str])
 	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 1, 1, 0, 0, 0}, mode = WAVE_DATA)
 	WAVE/Z stimScale_HS1 = GetLastSettingEachRAC(numericalValues, sweepNo, "Stim Scale Factor", 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
+End
+
+static Function AcquireWithoutAmplifier_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 11)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = 21e-5)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = 31)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = 41e-5)
+
+	// toggle headstage to use the newly changed gains
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
+
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 10)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = 20e-5)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = 30)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = 40e-5)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AcquireWithoutAmplifier([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	AcquireData(s, str, useAmplifier = 0, preAcquireFunc = AcquireWithoutAmplifier_IGNORE)
+End
+
+static Function AcquireWithoutAmplifier_REENTRY([string str])
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	sweepNo = 0
+
+	WAVE/Z DAGain = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAGain, {11, 30, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z ADGain = GetLastSetting(numericalValues, sweepNo, "AD Gain", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADGain, {21e-5, 40e-5, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z operationMode = GetLastSetting(numericalValues, sweepNo, "Operating Mode", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(operationMode, NULL_WAVE)
+
+	WAVE/Z requireAmplifier = GetLastSetting(numericalValues, sweepNo, "Require amplifier", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(requireAmplifier, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
+
+	WAVE/Z saveAmpSettings = GetLastSetting(numericalValues, sweepNo, "Save amplifier settings", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(saveAmpSettings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
 End

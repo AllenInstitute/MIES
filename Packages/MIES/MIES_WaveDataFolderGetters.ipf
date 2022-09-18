@@ -2059,7 +2059,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 34
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 35
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2202,6 +2202,9 @@ End
 /// - 53: TP after DAQ
 /// - 54: Epochs version
 /// - 55: Get/Set Inter-trial interval
+/// - 56: Double precision data
+/// - 57: Save amplifier settings
+/// - 58: Require amplifier
 Function/Wave GetSweepSettingsKeyWave(device)
 	string device
 
@@ -2220,9 +2223,9 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 56) wv
+		Redimension/N=(-1, 59) wv
 	else
-		Make/T/N=(3, 56) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 59) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2454,6 +2457,18 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Parameter][55] = "Get/Set Inter-trial interval"
 	wv[%Units][55]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][55] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][56] = "Double precision data"
+	wv[%Units][56]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][56] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][57] = "Save amplifier settings"
+	wv[%Units][57]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][57] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][58] = "Require amplifier"
+	wv[%Units][58]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][58] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
