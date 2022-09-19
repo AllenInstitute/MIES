@@ -3,7 +3,22 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=SweepSkipping
 
-static Function SkipAhead_IGNORE(string device)
+static Function [STRUCT DAQSettings s] GetDAQSettings(string mandConfig)
+
+	InitDAQSettingsFromString(s, mandConfig                                                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
+End
+
+static Function GlobalPreInit(string device)
+	PASS()
+End
+
+static Function GlobalPreAcq(string device)
+	PASS()
+End
+
+static Function SkipAhead_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 
@@ -12,12 +27,11 @@ static Function SkipAhead_IGNORE(string device)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 2)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function SkipAhead([string str])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-	AcquireData_BHT(s, str, preAcquireFunc = SkipAhead_IGNORE)
+	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
+	AcquireData_NG(s, str)
 End
 
 static Function SkipAhead_REENTRY([string str])
@@ -37,33 +51,28 @@ static Function SkipAhead_REENTRY([string str])
 	CHECK_EQUAL_WAVES(skipAhead, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
 End
 
-Function SkipSweepsStimsetsP_IGNORE(device)
+static Function SweepSkipping_PreAcq(device)
 	string device
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweeps")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweeps")
 	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "SkipSweeps")
 	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "SkipSweeps")
-End
-
-static Function SkipSweepsStimsets_IGNORE(device)
-	string device
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function SweepSkipping([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function SweepSkipping([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1")
-	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsStimsetsP_IGNORE, preAcquireFunc = SkipSweepsStimsets_IGNORE)
+	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I1_L0_BKG1")
+	AcquireData_NG(s, str)
 End
 
-Function SweepSkipping_REENTRY([str])
+static Function SweepSkipping_REENTRY([str])
 	string str
 
 	variable numSweeps = 4
@@ -91,32 +100,27 @@ Function SweepSkipping_REENTRY([str])
 	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO}, mode = WAVE_DATA)
 End
 
-Function SkipSweepsStimsetsAdvancedP_IGNORE(device)
+static Function SweepSkippingAdvanced_PreAcq(device)
 	string device
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
 	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
 	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
-End
-
-static Function SkipSweepsStimsetsAdvanced_IGNORE(device)
-	string device
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function SweepSkippingAdvanced([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function SweepSkippingAdvanced([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
-	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsStimsetsAdvancedP_IGNORE, preAcquireFunc = SkipSweepsStimsetsAdvanced_IGNORE)
+	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
+	AcquireData_NG(s, str)
 End
 
-Function SweepSkippingAdvanced_REENTRY([str])
+static Function SweepSkippingAdvanced_REENTRY([str])
 	string str
 
 	variable numSweeps = 4
@@ -156,96 +160,54 @@ Function SweepSkippingAdvanced_REENTRY([str])
 	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, NaN}, mode = WAVE_DATA)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD0
-Function SkipSweepsDuringITI_SD([str])
-	string str
+// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DeviceNameGenerator
+static Function SkipSweepsDuringITI([STRUCT IUTF_MDATA &md])
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG1_RES5")
-	AcquireData_BHT(s, str)
+	[STRUCT DAQSettings s] = GetDAQSettings("MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_RES5_GSI0_ITI5")
+	AcquireData_NG(s, md.s0)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function SkipSweepsDuringITI_SD_REENTRY([str])
-	string str
+static Function SkipSweepsDuringITI_REENTRY([STRUCT IUTF_MDATA &md])
 
 	string device
 	variable numEntries, i
 
-	numEntries = ItemsInList(str)
+	numEntries = ItemsInList(md.s0)
 	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+		device = StringFromList(i, md.s0)
 		NVAR runMode = $GetDataAcqRunMode(device)
 
 		CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
 	endfor
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function SkipSweepsDuringITI_MD([str])
-	string str
-
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES5")
-	AcquireData_BHT(s, str)
-
-	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
-End
-
-Function SkipSweepsDuringITI_MD_REENTRY([str])
-	string str
-
-	string device
-	variable numEntries, i
-
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
-		NVAR runMode = $GetDataAcqRunMode(device)
-
-		CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
-	endfor
-End
-
-Function SkipSweepsBackDuringITIAnaFuncs_IGNORE(device)
+static Function SkipSweepsBackDuringITI_PreAcq(device)
 	string device
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
 	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
 	ST_SetStimsetParameter("StimulusSetD_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
-End
-
-static Function SkipSweepsBackDuringITIStimsets_IGNORE(device)
-	string device
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function SkipSweepsBackDuringITI([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function SkipSweepsBackDuringITI([str])
 	string str
 
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES0")
-	AcquireData_BHT(s, str, postInitializeFunc = SkipSweepsBackDuringITIAnaFuncs_IGNORE, preAcquireFunc = SkipSweepsBackDuringITIStimsets_IGNORE)
+	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")
+	AcquireData_NG(s, str)
 
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipSweepBackDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function SkipSweepsBackDuringITI_REENTRY([str])
+static Function SkipSweepsBackDuringITI_REENTRY([str])
 	string str
 
 	variable numSweeps = 4
