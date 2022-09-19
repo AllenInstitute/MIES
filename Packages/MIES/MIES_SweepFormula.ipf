@@ -2569,7 +2569,6 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 
 		FindValue/TXOP=4/TEXT=epochName epNames
 		if(V_Row == -1)
-			index += 1
 			continue
 		endif
 		epIndex = V_Row
