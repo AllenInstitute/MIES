@@ -1735,6 +1735,11 @@ static Function TestOperationData()
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
+	// non existing epoch
+	str = "data(WhatEpochIsThis,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
+
 	// range begin
 	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
