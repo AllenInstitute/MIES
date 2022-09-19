@@ -1444,6 +1444,21 @@ static Function SF_SplitPlotting(WAVE wv, variable dim, variable i, variable spl
 	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
 
+static Function/WAVE SF_GetEmptyRange()
+
+	Make/FREE/D range = {NaN, NaN}
+
+	return range
+End
+
+static Function SF_IsEmptyRange(WAVE range)
+
+	ASSERT(IsNumericWave(range), "Invalid Range wave")
+	WAVE rangeRef = SF_GetEmptyRange()
+
+	return	EqualWaves(rangeRef, range, 1)
+End
+
 /// @brief Returns a range from a epochName
 ///
 /// @param graph name of databrowser graph
@@ -1456,7 +1471,7 @@ static Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variab
 	string regex
 	variable numEpochs
 
-	Make/FREE/D range = {NaN, NaN}
+	WAVE range = SF_GetEmptyRange()
 	if(IsEmpty(epochName) || !IsValidSweepNumber(sweep))
 		return range
 	endif
