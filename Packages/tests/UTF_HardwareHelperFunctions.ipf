@@ -2069,3 +2069,25 @@ Function CheckStartStopMessages(string mode, string state)
 	CHECK_EQUAL_STR(actual, expected)
 	JSON_Release(jsonID)
 End
+
+Function GetMinSamplingInterval([unit])
+	string unit
+
+	variable factor
+
+	if(ParamIsDefault(unit))
+		FAIL()
+	elseif(cmpstr(unit, "µs"))
+		factor = 1
+	elseif(cmpstr(unit, "ms"))
+		factor = 1000
+	else
+		FAIL()
+	endif
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	return factor * HARDWARE_NI_DAC_MIN_SAMPINT
+#else
+	return factor * HARDWARE_ITC_MIN_SAMPINT
+#endif
+End
