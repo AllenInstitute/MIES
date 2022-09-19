@@ -1590,6 +1590,9 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 		if(WaveExists(wEpochName))
 			DAChannel = SF_GetDAChannel(graph, sweepNo, chanType, chanNr)
 			WAVE range = SF_GetRangeFromEpoch(graph, epochName, sweepNo, DAChannel)
+			if(SF_IsEmptyRange(range))
+				continue
+			endif
 		endif
 		rangeStart = range[0]
 		rangeEnd = range[1]
