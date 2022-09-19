@@ -656,7 +656,8 @@ select `100 ms` to `300 ms` or by using `cursors` that also returns a range spec
 used but there are no cursors on the graph, the full x-range is used. A numerical range applies to all sweeps.
 
 Instead of a numerical range also the short name of an epoch can be given. Then the range
-is determined from the epoch information of each sweep/channel data iterates over.
+is determined from the epoch information of each sweep/channel data iterates over. If a specified epoch does not exist in a sweep
+that sweep data is not included in the sweep data returned.
 
 selectData is retrieved through the `select` operation. It selects for which sweeps and channels sweep data is returned.
 `select` also allows to choose currently displayed sweeps or all existing sweeps as data source.
@@ -871,7 +872,7 @@ If there was nothing selected the number of returned data waves is zero.
 If the selection contains channels that do not have epoch information stored, e.g. `AD`, these selections are skipped in the evaluation.
 For example if `select()` is used for the selectData argument then all channels are selected, but only for `DA` channels epoch information is stored in the labnotebook.
 Thus, there are data waves only returned for the `DA` channels.
-If a selection has epoch information stored in the labnotebook but the specified epoch does not exist therein then the data wave is a null wave.
+If a selection has epoch information stored in the labnotebook and the specified epoch does not exist it is skipped and thus, not included in the output waves.
 
 The output data varies depending on the requested type.
 
