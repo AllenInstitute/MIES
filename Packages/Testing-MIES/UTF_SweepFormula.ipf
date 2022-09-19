@@ -2060,10 +2060,7 @@ static Function TestOperationEpochs()
 	// channels with epochs, but name that does not match any epoch
 	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
-	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
-	for(data : dataWref)
-		CHECK(!WaveExists(data))
-	endfor
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid sweep
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), " + num2istr(numSweeps) + "))"
