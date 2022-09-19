@@ -3,20 +3,31 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TestPulseAndTPDuringDAQ
 
-Function CheckCalculatedTPEntries_IGNORE(string device)
+static Function GlobalPreInit(string device)
+	PASS()
+End
+
+static Function GlobalPreAcq(string device)
+	PASS()
+End
+
+static Function CheckCalculatedTPEntries_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "2")
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckCalculatedTPEntries([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckCalculatedTPEntries([string str])
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckCalculatedTPEntries_IGNORE)
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function CheckCalculatedTPEntries_REENTRY([string str])
+static Function CheckCalculatedTPEntries_REENTRY([string str])
 	variable samplingInterval, samplingIntervalMult, sweepNo
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -55,26 +66,7 @@ Function CheckCalculatedTPEntries_REENTRY([string str])
 #endif
 End
 
-static Function/WAVE GenerateBaselineValues()
-
-	WAVE/T/Z devices = DeviceNameGeneratorMD1()
-
-	Make/FREE/WAVE/N=(2) wvInner1, wvInner2, wvInner3
-
-	Make/FREE wv1 = {25}
-	Make/FREE wv2 = {35}
-	Make/FREE wv3 = {45}
-
-	wvInner1[] = {wv1, devices}
-	wvInner2[] = {wv2, devices}
-	wvInner3[] = {wv3, devices}
-
-	Make/FREE/WAVE/N=(3) wvOuter = {wvInner1, wvInner2, wvInner3}
-
-	return wvOuter
-End
-
-Function CheckTPBaseline_IGNORE(string device)
+Function CheckTPBaseline_PreAcq(string device)
 	NVAR/Z TPBaseline
 	CHECK(NVAR_Exists(TPBaseline))
 
@@ -84,40 +76,33 @@ Function CheckTPBaseline_IGNORE(string device)
 	CtrlNamedBackGround StopTP, start=(ticks + 100), period=1, proc=StopTPWhenWeHaveOne
 End
 
-/// UTF_TD_GENERATOR GenerateBaselineValues
-Function CheckTPBaseline([WAVE/WAVE pair])
+/// UTF_TD_GENERATOR v0:GenerateBaselineValues
+/// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 	string device
 
-	WAVE/T devices = pair[1]
-	CHECK_WAVE(devices, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(devices, ROWS), 1)
-	device = devices[0]
-
-	WAVE/Z baselines = pair[0]
-	variable/G TPbaseline = baselines[0]
+	device = md.s0
+	variable/G TPbaseline = md.v0
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	AcquireData_BHT(s, device, startTPInstead = 1, preAcquireFunc = CheckTPBaseline_IGNORE)
+	AcquireData_NG(s, device)
 End
 
-Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
+static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
 	string device
-	variable i, numEntries, baselineFraction, pulseDuration, tpLength, samplingInterval
+	variable i, numEntries, baselineFraction, baselineFractionRef, pulseDuration, tpLength, samplingInterval
 
-	WAVE/T devices = pair[1]
-	CHECK_WAVE(devices, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(devices, ROWS), 1)
-	device = devices[0]
-
-	WAVE/Z baselineRef = pair[0]
+	device = md.s0
+	baselineFractionRef = md.v0 * PERCENT_TO_ONE
 
 	WAVE/T textualValues   = GetLBTextualValues(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 
 	baselineFraction = GetLastSettingIndep(numericalValues, NaN, "TP Baseline Fraction", TEST_PULSE_MODE)
-	CHECK_CLOSE_VAR(baselineFraction, baselineRef[0] / 100)
+	CHECK_CLOSE_VAR(baselineFraction, baselineFractionRef)
 
 	pulseDuration = GetLastSettingIndep(numericalValues, NaN, "TP Pulse Duration", TEST_PULSE_MODE)
 	CHECK_CLOSE_VAR(pulseDuration, 10)
@@ -138,10 +123,7 @@ Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
 	endfor
 End
 
-Function CheckTPEntriesFromLBN_IGNORE(string device)
-
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 3)
+static Function CheckTPEntriesFromLBN_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = 15)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 30)
@@ -182,12 +164,15 @@ End
 /// The analysis function ChangeTPSettings changes some settings in POST_SWEEP of sweep 1 and PRE_SWEEP_CONFIG of sweep 2. We check
 /// that these settings are correctly refelected in the LBN as now TP and DAQ settings for sweep 1 differ.
 ///
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckTPEntriesFromLBN([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1")
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckTPEntriesFromLBN([string str])
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckTPEntriesFromLBN_IGNORE)
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
 static Function/WAVE GetTPLBNEntriesWave_IGNORE()
@@ -227,7 +212,7 @@ static Function/WAVE GetTPLBNEntries_IGNORE(string device, variable sweepNo, var
 	return wv
 End
 
-Function CheckTPEntriesFromLBN_REENTRY([string str])
+static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	// sweep 0
 	WAVE/WAVE/Z entries_S0_DAQ = GetTPLBNEntries_IGNORE(str, 0, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(entries_S0_DAQ, WAVE_WAVE)
@@ -343,23 +328,24 @@ Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
 
-Function TPCachingWorks_IGNORE(string device)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=3)
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=CHECKBOX_UNSELECTED)
+static Function TPCachingWorks_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val=CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str="4")
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPCachingWorks([string str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPCachingWorks([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES0")
-	AcquireData_BHT(s, str, startTPInstead=1, preAcquireFunc=TPCachingWorks_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1"                 + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
 End
 
-Function TPCachingWorks_REENTRY([string str])
+static Function TPCachingWorks_REENTRY([string str])
 	variable sweepNo, numEntries, samplingInterval, samplingIntervalMultiplier
 
 	NVAR runModeDAQ = $GetDataAcqRunMode(str)
@@ -505,9 +491,7 @@ static Function EnsureUnityGain(string device, variable headstage)
 	REQUIRE_EQUAL_VAR(gain, 1)
 End
 
-Function CheckTPStorage1_IGNORE(string device)
-
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+static Function CheckTPStorage1_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 15)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -75)
@@ -518,19 +502,22 @@ Function CheckTPStorage1_IGNORE(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckTPStorage1([string str])
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckTPStorage1([string str])
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage1_IGNORE, startTPinstead = 1)
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function CheckTPStorage1_REENTRY([string str])
+static Function CheckTPStorage1_REENTRY([string str])
 	CheckTPStorage(str)
 End
 
-Function CheckTPStorage2_IGNORE(string device)
+static Function CheckTPStorage2_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
 
@@ -543,19 +530,21 @@ Function CheckTPStorage2_IGNORE(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckTPStorage2([string str])
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckTPStorage2([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage2_IGNORE, startTPinstead = 1)
+	AcquireData_NG(s, str)
 End
 
-Function CheckTPStorage2_REENTRY([string str])
+static Function CheckTPStorage2_REENTRY([string str])
 	CheckTPStorage(str)
 End
 
-Function CheckTPStorage3_IGNORE(string device)
+static Function CheckTPStorage3_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
 
@@ -568,35 +557,32 @@ Function CheckTPStorage3_IGNORE(string device)
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckTPStorage3([string str])
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckTPStorage3([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	AcquireData_BHT(s, str, preAcquireFunc = CheckTPStorage3_IGNORE, startTPinstead = 1)
+	AcquireData_NG(s, str)
 End
 
-Function CheckTPStorage3_REENTRY([string str])
+static Function CheckTPStorage3_REENTRY([string str])
 	CheckTPStorage(str)
 End
 
-Function TPDuringDAQOnlyTP_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
-End
-
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQOnlyTP([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQOnlyTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQOnlyTP_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"             + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQOnlyTP_REENTRY([str])
+static Function TPDuringDAQOnlyTP_REENTRY([str])
 	string str
 
 	variable sweepNo, col
@@ -644,44 +630,31 @@ Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-Function TPDuringDAQOnlyTPWithLockedIndexing_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), str = "Test*")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
-End
-
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQOnlyTPWithLockedIndexing([str])
-	string str
+// UTF_TD_GENERATOR v0:IndexingPossibilities
+// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function TPDuringDAQOnlyTPAndIndexing([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES3")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQOnlyTPWithLockedIndexing_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L" + num2str(md.v0) + "_BKG1_RES3" + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, md.s0)
 End
 
-Function TPDuringDAQOnlyTPWithLockedIndexing_REENTRY([str])
-	string str
+static Function TPDuringDAQOnlyTPAndIndexing_REENTRY([STRUCT IUTF_MDATA &md])
 
-	variable sweepNo, col, tpAmplitude
-	string ctrl
+	variable sweepNo
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(md.s0, "SetVar_Sweep"), 3)
 
-	sweepNo = AFH_GetLastSweepAcquired(str)
+	sweepNo = AFH_GetLastSweepAcquired(md.s0)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
 	// generic properties are checked in TPDuringDAQOnlyTP
 End
 
-Function TPDuringDAQTPAndAssoc_IGNORE(device)
+static Function TPDuringDAQTPAndAssoc_PreAcq(device)
 	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
 
 	// cut association
 	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
@@ -691,16 +664,19 @@ Function TPDuringDAQTPAndAssoc_IGNORE(device)
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQTPAndAssoc([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQTPAndAssoc([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQTPAndAssoc_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"             + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"  + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQTPAndAssoc_REENTRY([str])
+static Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	string str
 
 	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc
@@ -770,22 +746,19 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
 
-Function TPDuringDAQ_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-End
-
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQ([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQ_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"           + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQ_REENTRY([str])
+static Function TPDuringDAQ_REENTRY([str])
 	string str
 
 	variable sweepNo, col, daGain
@@ -838,27 +811,26 @@ Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-Function TPDuringDAQWithoodDAQ_IGNORE(device)
+static Function TPDuringDAQWithoodDAQ_PreAcq(device)
 	string device
 
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
-	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 1)
-
-	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
-	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC_DA_0")
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQWithoodDAQ([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQWithoodDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQWithoodDAQ_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"            + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQWithoodDAQ_REENTRY([str])
+static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	string str
 
 	variable sweepNo, col, daGain, oodDAQ
@@ -913,41 +885,35 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-Function TPDuringDAQTPStoreCheck_IGNORE(device)
+static Function TPDuringDAQTPStoreCheck_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
 
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PulseTrain_10Hz_DA_0")
-
-	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
-	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
 End
 
 static Constant TP_WAIT_TIMEOUT = 5
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQTPStoreCheck([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQTPStoreCheck([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQTPStoreCheck_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQTPStoreCheck_REENTRY([str])
+static Function TPDuringDAQTPStoreCheck_REENTRY([str])
 	string str
 
 	WaitAndCheckStoredTPs_IGNORE(str, 2)
 End
 
-Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
+static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	string device
 	variable expectedNumTPchannels
 
@@ -992,7 +958,7 @@ End
 
 static Constant TP_DURATION_S = 5
 
-Function CheckThatTPsCanBeFound_IGNORE(device)
+static Function CheckThatTPsCanBeFound_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
@@ -1000,18 +966,21 @@ Function CheckThatTPsCanBeFound_IGNORE(device)
 	PrepareForPublishTest()
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function CheckThatTPsCanBeFound([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckThatTPsCanBeFound([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, startTPInstead=1, preAcquireFunc=CheckThatTPsCanBeFound_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                   + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"    + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-Function CheckThatTPsCanBeFound_REENTRY([str])
+static Function CheckThatTPsCanBeFound_REENTRY([str])
 	string str
 
 	variable duration, index, col, i
@@ -1064,27 +1033,25 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	CheckStartStopMessages("tp", "stopping")
 End
 
-Function TPDuringDAQWithTTL_IGNORE(device)
-	string device
+static Function TPDuringDAQWithTTL_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 0)
-
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_TTL_0")
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TPDuringDAQWithTTL([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQWithTTL([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=TPDuringDAQWithTTL_IGNORE)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                    + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+								 "__TTL0_ST:StimulusSetA_TTL_0:")
+
+	AcquireData_NG(s, str)
 End
 
-Function TPDuringDAQWithTTL_REENTRY([str])
+static Function TPDuringDAQWithTTL_REENTRY([str])
 	string str
 
 	variable sweepNo, col, tpAmplitude, daGain, i
@@ -1134,24 +1101,27 @@ Function TPDuringDAQWithTTL_REENTRY([str])
 	endfor
 End
 
-Function RunPowerSpectrum_IGNORE(device)
+static Function RunPowerSpectrum_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function RunPowerSpectrum([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function RunPowerSpectrum([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1")
-	AcquireData_BHT(s, str, preAcquireFunc=RunPowerSpectrum_IGNORE, startTPInstead = 1)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"  + \
+								 "__HS0_DA0_AD0_CM:VC:"         + \
+								 "__HS1_DA1_AD1_CM:IC:")
+
+	AcquireData_NG(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-Function RunPowerSpectrum_REENTRY([str])
+static Function RunPowerSpectrum_REENTRY([str])
 	string str
 
 	variable sweepNo, col, tpAmplitude, daGain, i
@@ -1163,24 +1133,19 @@ Function RunPowerSpectrum_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-Function TestPulseCachingWorks_IGNORE(device)
-	string device
-
-	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 3)
-End
-
-// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function TestPulseCachingWorks([str])
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TestPulseCachingWorks([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA3_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"           + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	AcquireData_BHT(s, str, preAcquireFunc=TestPulseCachingWorks_IGNORE)
+	AcquireData_NG(s, str)
 End
 
-Function TestPulseCachingWorks_REENTRY([str])
+static Function TestPulseCachingWorks_REENTRY([str])
 	string str
 
 	variable sweepNo
@@ -1199,21 +1164,21 @@ Function TestPulseCachingWorks_REENTRY([str])
 	CHECK_GE_VAR(stats[V_Value][%Hits], 1)
 End
 
-/// UTF_TD_GENERATOR HardwareHelperFunctions#DeviceNameGeneratorMD1
-Function ExportIntoNWB([str])
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function ExportIntoNWB([str])
 	string str
 
-	string filePathExport, experimentName
-
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                 + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
-	AcquireData_BHT(s, str, startTPInstead = 1)
+	AcquireData_NG(s, str)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-Function ExportIntoNWB_REENTRY([str])
+static Function ExportIntoNWB_REENTRY([str])
 	string str
 	variable sweepNo
 
@@ -1222,7 +1187,7 @@ Function ExportIntoNWB_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 
-	RegisterReentryFunction(GetRTStackInfo(1))
+	RegisterReentryFunction("TestPulseAndTPDuringDAQ#" + GetRTStackInfo(1))
 
 	PGC_SetAndActivateControl(str, "Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(str, "StartTestPulseButton")
@@ -1230,7 +1195,7 @@ Function ExportIntoNWB_REENTRY([str])
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-Function ExportIntoNWB_REENTRY_REENTRY([str])
+static Function ExportIntoNWB_REENTRY_REENTRY([str])
 	string str
 	variable sweepNo
 
