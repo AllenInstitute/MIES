@@ -990,7 +990,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 		endif
 	endfor
 
-	dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(\\U)")
+	dataUnits = SelectString(addDataUnitsInAnnotation && !IsNull(dataUnitCheck) && !IsEmpty(dataUnitCheck), "", "(\\U)")
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)

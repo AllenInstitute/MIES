@@ -174,6 +174,18 @@ static Function	TestSweepFormulaButtons(string device)
 	CHECK_EQUAL_STR(refStr, win)
 End
 
+static Function TestSweepFormulaNoDataPlotted(string device)
+
+	string plotWin, dbPanel, formula
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "data(cursors(A,B),select(channels(AD10),sweeps(),all))"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	PASS()
+End
+
 static Function	TestSweepFormulaAnnotations(string device)
 
 	string plotWin, dbPanel, formula,annoInfo
@@ -516,6 +528,7 @@ static Function SF_TPTest_REENTRY([str])
 	TestSweepFormulaAxisLabels(str)
 	TestSweepFormulaFittingXAxis(str)
 	TestSweepFormulaDefaultMetaDataInheritance(str)
+	TestSweepFormulaNoDataPlotted(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
