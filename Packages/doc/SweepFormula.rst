@@ -787,9 +787,9 @@ It is intended to be used with operations like `data`, `labnotebook`, `epochs` a
 
 .. code-block:: bash
 
-   select([array channels, array sweeps[, string mode]])
+   select([array channels, array sweeps[, string mode[, string clampMode]]])
 
-The function accepts none, two or three arguments.
+The function accepts none, two, three or four arguments.
 
 channels
   array with channel specification from `channels` operation. When channels is not specified, it defaults to `channels()`.
@@ -799,6 +799,9 @@ sweeps
 
 mode
   string specifying which sweeps are selected. Possible strings are `displayed` and `all` that refer to the currently displayed sweeps or all acquired sweeps. When mode is not specified it defaults to `displayed`.
+
+clampMode
+  string specifying which clamp mode is selected. Possible strings are `all`, `vc`, `ic` and  `izero`. When clampMode is not specified it defaults to `all`.
 
 To retrieve a correct array of channels the `channels` function must be used.
 
@@ -811,7 +814,8 @@ e.g. for two sweeps numbered 0, 1 that have channels AD0, AD1, DA6, DA7:
 `{{0, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 1, 0, 0, 1, 1}, {0, 1, 6, 7, 0, 1, 6, 7}}`.
 
 If the mode is `displayed` and no traces are displayed then a null wave is returned.
-If sweeps or channels is a null wave then select returns a null wave as well.
+If sweeps or channels is a null wave then select returns a null wave.
+If there are no matching sweeps found a null wave is returned.
 
 .. code-block:: bash
 
@@ -819,6 +823,7 @@ If sweeps or channels is a null wave then select returns a null wave as well.
    select(channels(AD), sweeps(), all)
    select(channels(AD4, DA), [1, 5]], all)
    select(channels(AD2, DA5, AD0, DA6), [0, 1, 3, 7], all)
+   select(channels(AD2, DA5, AD0, DA6), [0, 1, 3, 7], all, ic)
 
 range
 """""
