@@ -96,6 +96,15 @@ then
   ret=1
 fi
 
+matches=$(rg ${rg_opts} --multiline '[^\n]\z' ${files})
+
+if [[ -n "$matches" ]]
+then
+  echo "The missing newline at end of file check failed and found the following occurences:"
+  echo "$matches"
+  ret=1
+fi
+
 matches=$(rg ${rg_opts} '[[:space:]]+$' ${files})
 
 if [[ -n "$matches" ]]
