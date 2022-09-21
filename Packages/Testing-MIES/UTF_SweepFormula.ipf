@@ -1735,6 +1735,11 @@ static Function TestOperationData()
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
+	// non existing epoch
+	str = "data(WhatEpochIsThis,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
+
 	// range begin
 	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	try
@@ -2060,10 +2065,7 @@ static Function TestOperationEpochs()
 	// channels with epochs, but name that does not match any epoch
 	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
-	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
-	for(data : dataWref)
-		CHECK(!WaveExists(data))
-	endfor
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid sweep
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), " + num2istr(numSweeps) + "))"
