@@ -326,6 +326,59 @@ static Function	TestSweepFormulaDefaultMetaDataInheritance(string device)
 	CHECK_EQUAL_STR(strRef, str)
 End
 
+static Function TestSweepFormulaSelectClampMode(string device)
+
+	string dbPanel, plotWin, formula, tInfo, wPath, strRef, str
+	variable sweepNo
+
+	[dbPanel, plotWin] = GetNewDBforSF_IGNORE()
+
+	formula = "select(channels(AD),sweeps(),all,all)"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	Sort/A traces, traces
+	CHECK_EQUAL_VAR(3, DimSize(traces, ROWS))
+	WAVE wY = TraceNameToWaveRef(plotWin, traces[0])
+	Make/FREE/N=(6, 3) dataRef
+	dataRef[][0] = {0, 0, 1, 1, 2, 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {1, 2, 1, 2, 1, 2}
+	CHECK_EQUAL_WAVES(dataRef, wY, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = "select(channels(AD),sweeps(),all,ic)"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	Sort/A traces, traces
+	CHECK_EQUAL_VAR(3, DimSize(traces, ROWS))
+	WAVE wY = TraceNameToWaveRef(plotWin, traces[0])
+	Make/FREE/N=(3, 3) dataRef
+	dataRef[][0] = {0, 1, 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {1, 1, 1}
+	CHECK_EQUAL_WAVES(dataRef, wY, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = "select(channels(AD),sweeps(),all,vc)"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	Sort/A traces, traces
+	CHECK_EQUAL_VAR(3, DimSize(traces, ROWS))
+	WAVE wY = TraceNameToWaveRef(plotWin, traces[0])
+	Make/FREE/N=(3, 3) dataRef
+	dataRef[][0] = {0, 1, 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {2, 2, 2}
+	CHECK_EQUAL_WAVES(dataRef, wY, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = "select(channels(AD),sweeps(),all,izero)"
+	SF_SetFormula(dbPanel, formula)
+	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_display", val = 1)
+	WAVE/T traces = ListToTextWave(TraceNameList(plotWin, ";", 1), ";")
+	CHECK_EQUAL_VAR(0, DimSize(traces, ROWS))
+End
+
 static Function	TestSweepFormulaTP(string device)
 
 	string graph, dbPanel
@@ -529,6 +582,7 @@ static Function SF_TPTest_REENTRY([str])
 	TestSweepFormulaFittingXAxis(str)
 	TestSweepFormulaDefaultMetaDataInheritance(str)
 	TestSweepFormulaNoDataPlotted(str)
+	TestSweepFormulaSelectClampMode(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
