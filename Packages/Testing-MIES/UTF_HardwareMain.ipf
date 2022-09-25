@@ -560,15 +560,18 @@ End
 ///        as reentry part of the given test case.
 ///
 /// Does nothing if the reentry function does not exist. Supports both plain test cases and multi data test cases
-/// accepting string/ref wave arguments.
+/// accepting string/ref wave arguments and multi-multi data test cases.
+///
+/// @param testcase function name of the testcase, needs to include a module specification `ABC#` if it's static
 Function RegisterReentryFunction(string testcase)
 
 	string reentryFuncName = testcase + "_REENTRY"
 	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
 	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
 	FUNCREF TEST_CASE_PROTO_MD_WVWAVEREF reentryFuncRefWave = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD reentryFuncMDD = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncRefWave)))
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncRefWave)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDD)))
 		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
