@@ -750,14 +750,6 @@ Function TestNwbExportV2()
 	HDF5CloseFile/Z fileID
 End
 
-static Function/WAVE NWBVersionStrings()
-	variable i, numEntries
-	string name
-
-	Make/T/FREE data = {"2.0b", "2.0.1", "2.1.0", "2.2.0"}
-	return data
-End
-
 // UTF_TD_GENERATOR NWBVersionStrings
 Function TestNWBVersionStrings([str])
 	string str
@@ -769,17 +761,6 @@ Function TestNWBVersionStrings([str])
 	EnsureValidNWBVersion(version0)
 
 	REQUIRE_NEQ_VAR(version1, NaN)
-End
-
-static Function/WAVE NeuroDataRefTree()
-	variable i, numEntries
-	string name
-
-	Make/T/FREE data = {"VoltageClampSeries:TimeSeries;PatchClampSeries;VoltageClampSeries;", \
-						"CurrentClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;", \
-						"IZeroClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries;" \
-						}
-	return data
 End
 
 // UTF_TD_GENERATOR NeuroDataRefTree

@@ -138,24 +138,6 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-Function/WAVE SpikeCountsStateValues()
-	variable numEntries = 6
-	variable idx
-
-	Make/FREE/WAVE/N=(numEntries) wv
-
-	wv[idx++] = WaveRef({2, 2, 2, SC_SPIKE_COUNT_NUM_GOOD})
-	wv[idx++] = WaveRef({1, 1, 1, SC_SPIKE_COUNT_NUM_GOOD})
-	wv[idx++] = WaveRef({1, 2, 1, SC_SPIKE_COUNT_NUM_TOO_MANY})
-	wv[idx++] = WaveRef({1, 2, 2, SC_SPIKE_COUNT_NUM_TOO_FEW})
-	wv[idx++] = WaveRef({1, 3, 2, SC_SPIKE_COUNT_NUM_MIXED})
-	wv[idx++] = WaveRef({NaN, NaN, 2, SC_SPIKE_COUNT_NUM_MIXED})
-
-	Make/FREE/N=(numEntries) indexHelper = SetDimensionLabels(wv[p], "minimum;maximum;idealNumber;expectedState", ROWS)
-
-	return wv
-End
-
 // UTF_TD_GENERATOR SpikeCountsStateValues
 static Function TestSpikeCounts([WAVE vals])
 	CHECK_EQUAL_VAR(MIES_SC#SC_SpikeCountsCalcDetail(vals[%minimum], vals[%maximum], vals[%idealNumber]), vals[%expectedState])

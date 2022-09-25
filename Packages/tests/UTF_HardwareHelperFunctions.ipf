@@ -5,6 +5,7 @@
 
 #include "UTF_HelperFunctions"
 #include "UTF_BackgroundFunctions"
+#include "UTF_DataGenerators"
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 
@@ -14,116 +15,6 @@ Constant PSQ_TEST_HEADSTAGE = 2
 
 /// @file UTF_HardwareHelperFunctions.ipf
 /// @brief This file holds helper functions for the hardware tests
-
-Function/WAVE IndexingPossibilities()
-	Make/FREE wv = {0, 1}
-
-	SetDimensionLabels(wv, "UnlockedIndexing;LockedIndexing", ROWS)
-
-	return wv
-End
-
-Function/WAVE SingleMultiDeviceDAQ()
-
-	WAVE multiDevices = HardwareHelperFunctions#DeviceNameGeneratorMD1()
-	WAVE singleDevices = HardwareHelperFunctions#DeviceNameGeneratorMD0()
-
-	Make/FREE wv = {1}
-	SetDimLabel ROWS, 0, MultiDevice, wv
-
-	if(DimSize(singleDevices, ROWS) > 0)
-		InsertPoints/M=(ROWS)/V=0 0, 1, wv
-		SetDimLabel ROWS, 0, SingleDevice, wv
-	endif
-
-	return wv
-End
-
-Function/WAVE DeviceNameGenerator()
-	return DeviceNameGeneratorMD1()
-End
-
-Function/WAVE DeviceNameGeneratorMD1()
-
-	string devList = ""
-	string lblList = ""
-	variable i
-
-#ifdef TESTS_WITH_NI_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-#define *** NI Hardware has no Yoking support
-#else
-	devList = AddListItem("Dev1", devList, ":")
-	lblList = AddListItem("NI", lblList)
-#endif
-
-#endif
-
-#ifdef TESTS_WITH_ITC18USB_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-#define *** ITC18USB has no Yoking support
-#else
-	devList = AddListItem("ITC18USB_Dev_0", devList, ":")
-	lblList = AddListItem("ITC", lblList)
-#endif
-
-#endif
-
-#ifdef TESTS_WITH_ITC1600_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	devList = AddListItem("ITC1600_Dev_0;ITC1600_Dev_1", devList, ":")
-	lblList = AddListItem("ITC600_YOKED", lblList)
-#else
-	devList = AddListItem("ITC1600_Dev_1", devList, ":")
-	lblList = AddListItem("ITC1600", lblList)
-#endif
-
-#endif
-
-	WAVE data = ListToTextWave(devList, ":")
-	for(i = 0; i < DimSize(data, ROWS); i += 1)
-		SetDimLabel ROWS, i, $StringFromList(i, lblList), data
-	endfor
-
-	return data
-End
-
-Function/WAVE DeviceNameGeneratorMD0()
-
-#ifdef TESTS_WITH_NI_HARDWARE
-	// NI Hardware has no single device support
-	Make/FREE/T/N=0 data
-	return data
-#endif
-
-#ifdef TESTS_WITH_ITC18USB_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/T/N=0 data
-	return data
-#else
-	return DeviceNameGeneratorMD1()
-#endif
-
-#endif
-
-#ifdef TESTS_WITH_ITC1600_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/T/N=0 data
-	return data
-#else
-	return DeviceNameGeneratorMD1()
-#endif
-
-#endif
-
-End
 
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
@@ -1051,15 +942,6 @@ Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable 
 	nwbFile = UniqueFileOrFolder("home", GetExperimentName(), suffix = suffix)
 
 	return [baseFolder, nwbFile]
-End
-
-static Function/WAVE MajorNWBVersions()
-
-	Make/FREE wv = {1, 2}
-
-	SetDimensionLabels(wv, "v1;v2", ROWS)
-
-	return wv
 End
 
 Function/S GetExperimentNWBFileForExport()
