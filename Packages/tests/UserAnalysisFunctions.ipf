@@ -583,23 +583,13 @@ Function Params6_V3(device, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
-Function ChangeToSingleDeviceDAQAF(device, eventType, DAQDataWave, headStage, realDataLength)
+Function ChangeToOtherDeviceDAQAF(device, eventType, DAQDataWave, headStage, realDataLength)
 	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
 
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = CHECKBOX_UNSELECTED)
-	return 0
-End
-
-Function ChangeToMultiDeviceDAQAF(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
-	variable eventType
-	Wave DAQDataWave
-	variable headstage, realDataLength
-
-	PGC_SetAndActivateControl(device, "check_Settings_MD", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(device, "check_Settings_MD", val = !GetCheckBoxState(device, "check_Settings_MD"))
 	return 0
 End
 
@@ -1096,4 +1086,47 @@ End
 
 Function JustFail(string device, STRUCT AnalysisFunction_V3& s)
 	FAIL()
+End
+
+static Function ILCUCheck_IGNORE(string device, STRUCT AnalysisFunction_V3& s)
+
+	variable nonExistingSweep
+
+	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	// fetch some existing entries from the LBN
+	WAVE/Z sweepCounts = GetLastSetting(numericalValues, s.sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(sweepCounts, NUMERIC_WAVE)
+
+	WAVE/T/Z foundStimSets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(foundStimSets, TEXT_WAVE)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, 0)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(sweeps, ROWS), s.sweepNo + 1)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, s.sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(sweeps, ROWS), s.sweepNo + 1)
+
+	if(s.sweepNo == 0)
+		// now fetch non-existing ones from the next sweep
+		// this adds "missing" entries to the LBN cache
+		// our wave cache updating results in these missing values being move to uncached on the cache update
+		nonExistingSweep = s.sweepNo + 1
+		WAVE/Z sweepCounts = GetLastSetting(numericalValues, nonExistingSweep, "Set Sweep Count", DATA_ACQUISITION_MODE)
+		CHECK_WAVE(sweepCounts, NULL_WAVE)
+
+		WAVE/T/Z foundStimSets = GetLastSetting(textualValues, nonExistingSweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(foundStimSets, NULL_WAVE)
+
+		WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, nonExistingSweep, 0)
+		CHECK_WAVE(sweeps, NULL_WAVE)
+
+		WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, nonExistingSweep)
+		CHECK_WAVE(sweeps, NULL_WAVE)
+	else
+		CHECK_EQUAL_VAR(s.sweepNo, 1)
+	endif
 End

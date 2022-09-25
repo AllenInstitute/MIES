@@ -13,6 +13,34 @@ Constant PSQ_TEST_HEADSTAGE = 2
 /// @file UTF_HardwareHelperFunctions.ipf
 /// @brief This file holds helper functions for the hardware tests
 
+Function/WAVE IndexingPossibilities()
+	Make/FREE wv = {0, 1}
+
+	SetDimensionLabels(wv, "UnlockedIndexing;LockedIndexing", ROWS)
+
+	return wv
+End
+
+Function/WAVE SingleMultiDeviceDAQ()
+
+	WAVE multiDevices = HardwareHelperFunctions#DeviceNameGeneratorMD1()
+	WAVE singleDevices = HardwareHelperFunctions#DeviceNameGeneratorMD0()
+
+	Make/FREE wv = {1}
+	SetDimLabel ROWS, 0, MultiDevice, wv
+
+	if(DimSize(singleDevices, ROWS) > 0)
+		InsertPoints/M=(ROWS)/V=0 0, 1, wv
+		SetDimLabel ROWS, 0, SingleDevice, wv
+	endif
+
+	return wv
+End
+
+Function/WAVE DeviceNameGenerator()
+	return DeviceNameGeneratorMD1()
+End
+
 Function/WAVE DeviceNameGeneratorMD1()
 
 	string devList = ""
