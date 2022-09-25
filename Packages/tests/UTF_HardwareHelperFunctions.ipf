@@ -2,11 +2,13 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareHelperFunctions
+
 #include "UTF_HelperFunctions"
+#include "UTF_BackgroundFunctions"
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 
-StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
+static StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
 Constant PSQ_TEST_HEADSTAGE = 2
 
@@ -454,281 +456,6 @@ Function RegisterReentryFunction(string testcase)
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
 	endif
-End
-
-/// @brief Background function to wait until DAQ is finished.
-Function WaitUntilDAQDone_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string dev
-	variable numEntries, i
-
-	SVAR devices = $GetLockedDevices()
-
-	numEntries = ItemsInList(devices)
-	for(i = 0; i < numEntries; i += 1)
-		dev = StringFromList(i, devices)
-
-		NVAR dataAcqRunMode = $GetDataAcqRunMode(dev)
-
-		if(IsNaN(dataAcqRunMode))
-			// not active
-			continue
-		endif
-
-		if(dataAcqRunMode != DAQ_NOT_RUNNING)
-			return 0
-		endif
-	endfor
-
-	return 1
-End
-
-/// @brief Background function to wait until TP is finished.
-///
-/// If it is finished pushes the next two, one setup and the
-/// corresponding `Test`, testcases to the queue.
-Function WaitUntilTPDone_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device
-	variable numEntries, i
-
-	SVAR devices = $GetLockedDevices()
-
-	numEntries = ItemsInList(devices)
-	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, devices)
-
-		NVAR runMode = $GetTestpulseRunMode(device)
-
-		if(IsNaN(runMode))
-			// not active
-			continue
-		endif
-
-		if(runMode != TEST_PULSE_NOT_RUNNING)
-			return 0
-		endif
-	endfor
-
-	return 1
-End
-
-Function StopAcqDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(device, "DataAcquireButton")
-		return 1
-	endif
-
-	return 0
-End
-
-Function StopAcqByUnlocking_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(device, "button_SettingsPlus_unLockDevic")
-		return 1
-	endif
-
-	return 0
-End
-
-Function StopAcqByUncompiled_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		ForceRecompile()
-		return 1
-	endif
-
-	return 0
-End
-
-Function StartTPDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		return 1
-	endif
-
-	return 0
-End
-
-Function SkipToEndDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO)
-		return 1
-	endif
-
-	return 0
-End
-
-Function SkipSweepBackDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), 0)
-		RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO)
-		return 1
-	endif
-
-	return 0
-End
-
-Function StopAcq_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-	variable runMode = ROVAR(GetDataAcqRunMode(device))
-
-	if(runMode == DAQ_NOT_RUNNING)
-		return 0
-	endif
-
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-
-	return 1
-End
-
-Function JustDelay_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	return 1
-End
-
-Function AutoPipetteOffsetAndStopTP_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC")
-	PGC_SetAndActivateControl(device, "StartTestPulseButton")
-
-	return 1
-End
-
-Function StopTP_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-	PGC_SetAndActivateControl(device, "StartTestPulseButton")
-
-	return 1
-End
-
-Function StartAcq_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-
-	return 1
-End
-
-Function ChangeStimSet_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string ctrl
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
-
-	NVAR tpRunMode = $GetTestpulseRunMode(device)
-
-	if(dataAcqRunMode != DAQ_NOT_RUNNING && !(tpRunMode & TEST_PULSE_DURING_RA_MOD))
-		ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
-
-		return 1
-	endif
-
-	return 0
-End
-
-Function ClampModeDuringSweep_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
-
-	if(dataAcqRunMode != DAQ_NOT_RUNNING)
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
-		return 1
-	endif
-
-	return 0
-End
-
-Function ClampModeDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
-
-	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, TASKNAME_TIMERMD))
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
-		return 1
-	endif
-
-	return 0
-End
-
-Function StopTPAfterFiveSeconds_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	PGC_SetAndActivateControl(device, "StartTestPulseButton")
-
-	return 1
 End
 
 Function CALLABLE_PROTO(device)
@@ -1231,28 +958,6 @@ Function CheckPublishedMessage(string device, variable type)
 	JSON_Release(jsonID)
 End
 
-Function AddLabnotebookEntries_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		// add entry for AS_ITI
-		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
-		Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
-		values[0] = AS_ITI
-		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", values)
-		valuesText[0] = AS_StateToString(AS_ITI)
-		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", valuesText)
-		return 1
-	endif
-
-	return 0
-End
-
 static Function TestSweepReconstruction_IGNORE(string device)
 	variable i, numEntries, sweepNo
 	string list, nameRecon, nameOrig
@@ -1370,18 +1075,6 @@ Function/S GetExperimentNWBFileForExport()
 	return S_path + experimentName + ".nwb"
 End
 
-Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	if(TP_TestPulseHasCycled(device, 1))
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		return 1
-	endif
-
-	return 0
-End
-
 Function CheckPSQChunkTimes(string dev, WAVE chunkTimes, [variable sweep])
 	string shortNameFormat
 
@@ -1491,27 +1184,6 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 
 	// In the case we did not reached the inner checks of the upper loop
 	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
-End
-
-Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
-
-	WAVE settings = GetTPSettings(device)
-
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-
-	Duplicate/FREE/RMD=[FindDimLabel(settings, ROWS, "autoTPEnable")][0, NUM_HEADSTAGES - 1] settings, autoTPEnable
-	Redimension/N=(numpnts(autoTPEnable)) autoTPEnable
-
-	autoTPEnable[] = statusHS[p] && autoTPEnable[p]
-
-	if(Sum(autoTPEnable) == 0)
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		return 1
-	endif
-
-	return 0
 End
 
 Function OpenDatabrowser()
