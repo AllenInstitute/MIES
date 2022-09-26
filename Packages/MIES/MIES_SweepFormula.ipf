@@ -100,6 +100,11 @@ static StrConstant SF_OP_EPOCHS_TYPE_TREELEVEL = "treelevel"
 static StrConstant SF_OP_TP_TYPE_BASELINE = "base"
 static StrConstant SF_OP_TP_TYPE_INSTANT = "inst"
 static StrConstant SF_OP_TP_TYPE_STATIC = "ss"
+static StrConstant SF_OP_SELECT_CLAMPMODE_ALL = "all"
+static StrConstant SF_OP_SELECT_CLAMPMODE_IC = "ic"
+static StrConstant SF_OP_SELECT_CLAMPMODE_VC = "vc"
+static StrConstant SF_OP_SELECT_CLAMPMODE_IZERO = "izero"
+static Constant SF_OP_SELECT_CLAMPCODE_ALL = -1
 static Constant SF_OP_TP_TYPE_BASELINE_NUM = 0
 static Constant SF_OP_TP_TYPE_INSTANT_NUM = 1
 static Constant SF_OP_TP_TYPE_STATIC_NUM = 2
@@ -1670,10 +1675,11 @@ End
 /// @param channels        @c SF_FormulaExecutor style @c channels() wave
 /// @param sweeps          @c SF_FormulaExecutor style @c sweeps() wave
 /// @param fromDisplayed   boolean variable, if set the selectdata is determined from the displayed sweeps
+/// @param clampMode       numerical variable, sets the clamp mode considered
 ///
 /// @return a selectData style wave with three columns
 ///         containing sweepNumber, channelType and channelNumber
-static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z channels, WAVE/Z sweeps, variable fromDisplayed)
+static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z channels, WAVE/Z sweeps, variable fromDisplayed, variable clampMode)
 
 	variable i, j, k, l, channelType, channelNumber, sweepNo, sweepNoT, outIndex
 	variable numSweeps, numInChannels, numSettings, maxChannels, activeChannel, numActiveChannels
@@ -1694,7 +1700,11 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 	fromDisplayed = !!fromDisplayed
 
 	if(fromDisplayed)
-		WAVE/T/Z traces = GetTraceInfos(graph)
+		if(clampMode == SF_OP_SELECT_CLAMPCODE_ALL)
+			WAVE/T/Z traces = GetTraceInfos(graph)
+		else
+			WAVE/T/Z traces = GetTraceInfos(graph, addFilterKeys = {"clampMode"}, addFilterValues={num2istr(clampMode)})
+		endif
 		if(!WaveExists(traces))
 			return $""
 		endif
@@ -1859,10 +1869,19 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 					if(!WaveExists(activeChannels))
 						continue
 					endif
+					if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL)
+						WAVE/Z clampModes = GetLastSetting(numericalValues, sweepNo, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
+						if(!WaveExists(clampModes))
+							continue
+						endif
+					endif
 					if(IsNaN(channelNumber))
 						// faster than ZapNaNs due to no mem alloc
 						numActiveChannels = DimSize(activeChannels, ROWS)
 						for(l = 0; l < numActiveChannels; l += 1)
+							if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL && clampMode != clampModes[l])
+								continue
+							endif
 							activeChannel = activeChannels[l]
 							if(!IsNaN(activeChannel) && activeChannel < maxChannels)
 								selectData[outIndex][dimPosSweep] = sweepNo
@@ -1873,7 +1892,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 						endfor
 					elseif(channelNumber < maxChannels)
 						FindValue/V=(channelNumber) activeChannels
-						if(V_Value >= 0)
+						if(V_Value >= 0 && (clampMode == SF_OP_SELECT_CLAMPCODE_ALL || clampMode == clampModes[V_Value]))
 							selectData[outIndex][dimPosSweep] = sweepNo
 							selectData[outIndex][dimPosChannelType] = channelType
 							selectData[outIndex][dimPosChannelNumber] = channelNumber
@@ -3356,13 +3375,15 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, opStack="")
 End
 
-/// `select([array channels, array sweeps, [string mode]])`
+/// `select([array channels, array sweeps, [string mode, [string clamp]]])`
 ///
 /// returns n x 3 with columns [sweepNr][channelType][channelNr]
 static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
+	string clamp
 	string mode = "displayed"
+	variable clampMode = SF_OP_SELECT_CLAMPCODE_ALL
 
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
@@ -3371,7 +3392,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1)
 		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
 	else
-		SF_ASSERT(numArgs >= 2 && numArgs <= 3, "Function requires None, 2 or 3 arguments.")
+		SF_ASSERT(numArgs >= 2 && numArgs <= 4, "Function requires None, 2 or 3 arguments.")
 		WAVE channels = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
 		SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
@@ -3380,16 +3401,32 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 			SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 		endif
 
-		if(numArgs == 3)
+		if(numArgs > 2)
 			WAVE/T wMode = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2, checkExist=1)
 			SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
 			SF_ASSERT(!CmpStr(mode, "displayed") || !CmpStr(mode, "all"), "mode must be \"all\" or \"displayed\".")
 		endif
+
+		if(numArgs > 3)
+			WAVE/T wClamp = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 3, checkExist=1)
+			SF_ASSERT(IsTextWave(wClamp), "clamp parameter can not be a number. Use \"all\",  \"ic\" or \"vc\".")
+			SF_ASSERT(!DimSize(wClamp, COLS) && DimSize(wClamp, ROWS) == 1, "clamp must not be an array with multiple options.")
+			clamp = wClamp[0]
+			if(!CmpStr(clamp, SF_OP_SELECT_CLAMPMODE_VC))
+				clampMode = V_CLAMP_MODE
+			elseif(!CmpStr(clamp, SF_OP_SELECT_CLAMPMODE_IC))
+				clampMode = I_CLAMP_MODE
+			elseif(!CmpStr(clamp, SF_OP_SELECT_CLAMPMODE_IZERO))
+				clampMode = I_EQUAL_ZERO_MODE
+			elseif(CmpStr(clamp, SF_OP_SELECT_CLAMPMODE_ALL))
+				SF_ASSERT(0, "clamp must be \"all\", \"vc\", \"ic\" or \"izero\".")
+			endif
+		endif
 	endif
 
-	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"))
+	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"), clampMode)
 
 	return SF_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, opStack="")
 End

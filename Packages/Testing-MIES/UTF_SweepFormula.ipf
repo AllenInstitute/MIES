@@ -1410,7 +1410,7 @@ static Function TestOperationSelect()
 
 	variable numSweeps = 2
 	variable dataSize = 10
-	variable i, j
+	variable i, j, clampMode
 	string trace, name
 	string channelTypeList = "DA;AD;DA;AD;"
 	string channelNumberList = "2;6;3;7;"
@@ -1514,11 +1514,12 @@ static Function TestOperationSelect()
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
+			clampMode = mod(sweepNo, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode)})
 		endfor
 	endfor
 
@@ -1546,6 +1547,34 @@ static Function TestOperationSelect()
 	str = "select(channels(AD),sweeps())"
 	WAVE data = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(2, 3) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	str = "select(channels(AD6),sweeps(),displayed,all)"
+	WAVE data = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = {sweepNo}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6}
+	str = "select(channels(AD6),sweeps(),displayed, ic)"
+	WAVE data = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = {sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6}
+	str = "select(channels(AD6),sweeps(),displayed, vc)"
+	WAVE data = GetSingleResult(str, win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "select(channels(AD6),sweeps(),displayed, izero)"
+	WAVE/Z data = GetSingleResult(str, win)
+	CHECK(!WaveExists(data))
 
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
