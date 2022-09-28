@@ -3,6 +3,20 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisFuncParamTesting
 
+static Function TEST_SUITE_BEGIN_OVERRIDE(string name)
+
+	LoadStimsetsIfRequired()
+
+	RetrieveAllWindowsInCI()
+End
+
+static Function TEST_CASE_BEGIN_OVERRIDE(string name)
+
+	AdditionalExperimentCleanup()
+
+	MoveStimsetsIntoPlace()
+End
+
 static Function UpgradeToEncodedAnalysisParamsWorks()
 
 	string params, actual, expected
