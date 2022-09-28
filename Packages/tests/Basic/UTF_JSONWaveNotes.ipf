@@ -46,6 +46,7 @@ End
 static Function TestSetStringInJSONWaveNote()
 
 	string nullStr, strRef, strData
+	variable err
 
 	WAVE/Z wv = $""
 	try
@@ -67,6 +68,7 @@ static Function TestSetStringInJSONWaveNote()
 		JWN_SetStringInWaveNote(wv, "nullStr", nullStr); AbortOnRTE
 		FAIL()
 	catch
+		err = GetRTError(1)
 		PASS()
 	endtry
 
