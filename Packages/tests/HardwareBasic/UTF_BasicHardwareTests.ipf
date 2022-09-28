@@ -368,13 +368,16 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 	string str
 
 	string device, sweeps, configs, unit, expectedStr
-	variable numEntries, i, j, k, numSweeps
+	variable numEntries, i, j, k, numSweeps, numRacks, hardwareType
 
 	numSweeps = 1
 
 	numEntries = ItemsInList(str)
 	for(i = 0; i < numEntries; i += 1)
 		device = stringFromList(i, str)
+
+		numRacks = HW_ITC_GetNumberOfRacks(device)
+		hardwareType = GetHardwareType(device)
 
 		CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), numSweeps)
 		sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
@@ -395,7 +398,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
 
-			switch(GetHardwareType(device))
+			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
 					CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
 					break
@@ -425,10 +428,10 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE/Z ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, j)
 			CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
 
-			switch(GetHardwareType(device))
+			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO), \
 												 HW_ITC_GetITCXOPChannelForRack(device, RACK_ONE)}, mode = WAVE_DATA)
 					else
@@ -439,7 +442,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
 
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 					else
 						CHECK_WAVE(foundStimSets, NULL_WAVE)
@@ -452,7 +455,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 					CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
 					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						// TTL 5 and 7 are active -> 2^(5 - 4) + 2^(7 - 4) = 10
 						CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
 					else
@@ -461,7 +464,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack zero channel", DATA_ACQUISITION_MODE)
 
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 2)
 					else
 						CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
@@ -469,7 +472,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[1]}, mode = WAVE_DATA)
 					else
 						CHECK_WAVE(channels, NULL_WAVE)
@@ -479,7 +482,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack zero set sweep counts", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack one set sweep counts", DATA_ACQUISITION_MODE)
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
 					else
 						CHECK_WAVE(sweepCounts, NULL_WAVE)
@@ -489,7 +492,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL rack zero set cycle counts", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
 					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL rack one set cycle counts", DATA_ACQUISITION_MODE)
-					if(HW_ITC_GetNumberOfRacks(device) > 1)
+					if(numRacks == 2)
 						CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
 					else
 						CHECK_WAVE(cycleCounts, NULL_WAVE)
@@ -564,7 +567,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 			WAVE TTL = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HARDWARE_CHANNEL)
 
-			if(GetHardwareType(device) == HARDWARE_NI_DAC)
+			if(hardwareType == HARDWARE_NI_DAC)
 				Make/FREE/D TTLRef = {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN}
 			else
 				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) TTLRef = NaN
