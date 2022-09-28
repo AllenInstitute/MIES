@@ -1171,7 +1171,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
-	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT, flags=HARDWARE_ABORT_ON_ERROR)
+	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT, flags=(HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP))
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)

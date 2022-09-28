@@ -70,7 +70,7 @@ Function DQS_DataAcq(device)
 	do
 		DoXOPIdle
 
-		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos)
+		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=(HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP))
 		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 		if(gotTPChannels)
@@ -140,7 +140,7 @@ Function DQS_FIFOMonitor(s)
 	SVAR runningDevice       = $GetRunningSingleDevice()
 	NVAR deviceID = $GetDAQDeviceID(runningDevice)
 
-	moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
+	moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=(HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP))
 
 	SCOPE_UpdateOscilloscopeData(runningDevice, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 

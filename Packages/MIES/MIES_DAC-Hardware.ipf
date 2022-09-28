@@ -1463,7 +1463,7 @@ End
 /// @param[out] fifoPos            allows to query the current fifo position (ADC)
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
-/// @return 1 if more data needs to be acquired, 0 if done
+/// @return 1 if more data needs to be acquired, 0 if done. On hardware error we also return 1.
 threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
@@ -1471,7 +1471,7 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 	variable &fifoPos
 	variable flags
 
-	variable fifoPosValue, offset
+	variable fifoPosValue, offset, ret
 
 	offset = GetDataOffset(config)
 
@@ -1481,12 +1481,20 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=(HW_ITC_GetZValue(flags)) config_t, fifoAvail_t
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+	ret = HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
+	if(ret)
+		fifoPosValue = HARDWARE_ITC_FIFO_ERROR
+	else
+		fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
+	endif
 
 	if(!ParamIsDefault(fifoPos))
 		fifoPos = fifoPosValue
+	endif
+
+	if(ret)
+		return 1
 	endif
 
 	return (offset + fifoPosValue) < stopCollectionPoint
@@ -1502,7 +1510,7 @@ End
 /// @param[out] fifoPos            [optional] allows to query the current fifo position (ADC)
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
-/// @return 1 if more data needs to be acquired, 0 if done
+/// @return 1 if more data needs to be acquired, 0 if done. On hardware error we also return 1.
 Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
@@ -1511,7 +1519,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	variable &fifoPos
 	variable flags
 
-	variable fifoPosValue, offset
+	variable fifoPosValue, offset, ret
 	string device
 
 	DEBUGPRINTSTACKINFO()
@@ -1544,11 +1552,20 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=(HW_ITC_GetZValue(flags)) config_t, fifoAvail_t
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
-	fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
+	ret = HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	if(ret)
+		fifoPosValue = HARDWARE_ITC_FIFO_ERROR
+	else
+		fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
+	endif
 
 	if(!ParamIsDefault(fifoPos))
 		fifoPos = fifoPosValue
+	endif
+
+	if(ret)
+		return 1
 	endif
 
 	return (offset + fifoPosValue) < stopCollectionPoint
