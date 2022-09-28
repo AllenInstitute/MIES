@@ -2138,3 +2138,31 @@ static Function AcquireWithoutAmplifier_REENTRY([string str])
 	WAVE/Z saveAmpSettings = GetLastSetting(numericalValues, sweepNo, "Save amplifier settings", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(saveAmpSettings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, CHECKBOX_UNSELECTED}, mode = WAVE_DATA)
 End
+
+// UTF_TD_GENERATOR GetITCDevices
+Function HandlesFIFOTimeoutProperly([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0"               + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround ExecuteDuringDAQ, start, period=30, proc=UseFakeFIFOThreadWithTimeout_IGNORE
+End
+
+Function HandlesFIFOTimeoutProperly_REENTRY([str])
+	string str
+
+	variable stopReason
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	stopReason = GetLastSettingIndep(numericalValues, 0, "DAQ stop reason", UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FIFO_TIMEOUT)
+
+	stopReason = GetLastSettingIndep(numericalValues, 1, "DAQ stop reason", UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
+End

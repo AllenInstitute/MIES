@@ -1317,7 +1317,8 @@ StrConstant MSQ_FMT_LBN_RERUN_TRIAL          = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC      = "%s Rerun Trials exceeded"
 /// @}
 
-Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
+Constant TP_MD_THREAD_DEAD_MAX_RETRIES  = 10
+Constant DAQ_MD_THREAD_DEAD_MAX_RETRIES = 10
 
 /// @todo: IP8 convert all call sites to use MultiThread/T=
 Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
@@ -1667,6 +1668,7 @@ Constant DQ_STOP_REASON_TP_STARTED        = 0x0040
 Constant DQ_STOP_REASON_STIMSET_SELECTION = 0x0080
 Constant DQ_STOP_REASON_UNLOCKED_DEVICE   = 0x0100
 Constant DQ_STOP_REASON_OUT_OF_MEMORY     = 0x0200
+Constant DQ_STOP_REASON_FIFO_TIMEOUT      = 0x0400
 Constant DQ_STOP_REASON_INVALID           = 0xFFFF
 /// @}
 

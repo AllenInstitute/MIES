@@ -17,13 +17,18 @@
 ///
 /// @ingroup BackgroundFunctions
 Function DQM_FIFOMonitor(s)
-	STRUCT WMBackgroundStruct &s
+	STRUCT BackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
 	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels
 	variable bufferSize
 	string device, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
+
+	if(s.wmbs.started)
+		s.wmbs.started    = 0
+		s.threadDeadCount = 0
+	endif
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
 		deviceID   = ActiveDeviceList[i][%DeviceID]
@@ -75,7 +80,23 @@ Function DQM_FIFOMonitor(s)
 				break
 			case HARDWARE_ITC_DAC:
 				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_default = HARDWARE_ITC_FIFO_ERROR, timeout_tries = THREAD_QUEUE_TRIES)
+
+				if(fifoLatest == HARDWARE_ITC_FIFO_ERROR)
+					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_FIFO_TIMEOUT, startTPAfterDAQ = 0)
+
+					if(s.threadDeadCount < DAQ_MD_THREAD_DEAD_MAX_RETRIES)
+						s.threadDeadCount += 1
+						printf "Trying to restart data acquisition to cope with FIFO timeout issues, keep fingers crossed (%d/%d)\r", s.threadDeadCount, DAQ_MD_THREAD_DEAD_MAX_RETRIES
+						ControlWindowToFront()
+
+						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+						DQ_RestartDAQ(device, DAQ_BG_MULTI_DEVICE)
+						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+					endif
+
+					continue
+				endif
 
 				// once TFH_FifoLoop is finished the thread is done as well and
 				// therefore we get NaN from TS_GetNewestFromThreadQueue
