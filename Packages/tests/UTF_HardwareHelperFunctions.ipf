@@ -125,25 +125,7 @@ Function TEST_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	filepath = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
-	GetFileFolderInfo/Q/Z filePath
-
-	// speedup executing the tests locally
-	if(!DataFolderExists("root:WaveBuilder"))
-		needsLoading = 1
-	else
-		NVAR/Z modTime = root:WaveBuilder:modTime
-
-		if(!NVAR_Exists(modTime) || V_modificationDate != modTime)
-			needsloading = 1
-		endif
-	endif
-
-	if(needsLoading)
-		NWB_LoadAllStimsets(filename = filepath, overwrite = 1)
-		DuplicateDataFolder/O=1 root:MIES:WaveBuilder, root:WaveBuilder; AbortOnRTE
-		variable/G root:WaveBuilder:modTime = V_modificationDate
-	endif
+	LoadStimsetsIfRequired()
 
 	RetrieveAllWindowsInCI()
 End
@@ -161,9 +143,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	AdditionalExperimentCleanup()
 
-	GetMiesPath()
-	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
-	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
+	MoveStimsetsIntoPlace()
 
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion

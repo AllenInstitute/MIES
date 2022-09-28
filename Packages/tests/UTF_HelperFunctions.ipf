@@ -616,3 +616,35 @@ Function ExhaustMemory(amountOfFreeMemoryLeft)
 		endif
 	endfor
 End
+
+Function LoadStimsetsIfRequired()
+	string filepath
+	variable needsLoading
+
+	filepath = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	GetFileFolderInfo/Q/Z filePath
+
+	// speedup executing the tests locally
+	if(!DataFolderExists("root:WaveBuilder"))
+		needsLoading = 1
+	else
+		NVAR/Z modTime = root:WaveBuilder:modTime
+
+		if(!NVAR_Exists(modTime) || V_modificationDate != modTime)
+			needsloading = 1
+		endif
+	endif
+
+	if(needsLoading)
+		NWB_LoadAllStimsets(filename = filepath, overwrite = 1)
+		DuplicateDataFolder/O=1 root:MIES:WaveBuilder, root:WaveBuilder; AbortOnRTE
+		variable/G root:WaveBuilder:modTime = V_modificationDate
+	endif
+End
+
+Function MoveStimsetsIntoPlace()
+
+	GetMiesPath()
+	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
+	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
+End
