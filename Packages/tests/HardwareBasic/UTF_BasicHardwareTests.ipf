@@ -400,7 +400,11 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
-					CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+					if(numRacks == 2)
+						CHECK_EQUAL_VAR(DimSize(config, ROWS), 8)
+					else
+						CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+					endif
 					break
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_VAR(DimSize(config, ROWS), 8)
@@ -426,7 +430,11 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE TTLs = GetTTLListFromConfig(config)
 
 			WAVE/Z ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, j)
-			CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
+			if(numRacks == 2)
+				CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0"})
+			else
+				CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
+			endif
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -438,14 +446,14 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 						CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
 					endif
 
-					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
-					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+					WAVE/T/Z foundStimSetsRackZero = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(foundStimSetsRackZero, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
+					WAVE/T/Z foundStimSetsRackOne = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
 
 					if(numRacks == 2)
-						CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
+						CHECK_EQUAL_TEXTWAVES(foundStimSetsRackOne, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 					else
-						CHECK_WAVE(foundStimSets, NULL_WAVE)
+						CHECK_WAVE(foundStimSetsRackOne, NULL_WAVE)
 					endif
 
 					CHECK_EQUAL_VAR(NUM_ITC_TTL_BITS_PER_RACK, 4)
@@ -519,16 +527,31 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 			// hardware agnostic TTL entries
 			WAVE/T/Z foundIndexingEndStimSets = GetLastSetting(textualValues, j, "TTL Indexing End stimset", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;;;;"})
+
+			if(numRacks == 2)
+				CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;;- none -;"})
+			else
+				CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;;;;"})
+			endif
 
 			WAVE/Z settings = GetLastSetting(textualValues, j, "TTL Stimset wave note", DATA_ACQUISITION_MODE)
 			CHECK_WAVE(settings, TEXT_WAVE)
 
 			WAVE/T/Z stimWaveChecksums = GetLastSetting(textualValues, j, "TTL Stim Wave Checksum", DATA_ACQUISITION_MODE)
-			CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;;;;"))
+
+			if(numRacks == 2)
+				CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;"))
+			else
+				CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;;;;"))
+			endif
 
 			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
+
+			if(numRacks == 2)
+				CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
+			else
+				CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
+			endif
 
 			Variable index
 
@@ -573,6 +596,11 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) TTLRef = NaN
 				index = HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)
 				TTLRef[index] = index
+
+				if(numRacks == 2)
+					index = HW_ITC_GetITCXOPChannelForRack(device, RACK_ONE)
+					TTLRef[index] = index
+				endif
 			endif
 
 			CHECK_EQUAL_WAVES(TTL, TTLRef)
