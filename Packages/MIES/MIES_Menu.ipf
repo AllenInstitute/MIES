@@ -43,6 +43,7 @@ Menu "Mies Panels"
 		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
 		"MIES Log"                             , /Q, MEN_OpenMiesLogFile()
 		"ZeroMQ-XOP Log"                       , /Q, MEN_OpenZeroMQXOPLogFile()
+		"ITCXOP2 Log"                          , /Q, MEN_OpenITCXOP2LogFile()
 	End
 	"-"
 	"Check Installation"                       , /Q, CHI_CheckInstallation()
@@ -254,6 +255,11 @@ End
 Function MEN_OpenZeroMQXOPLogFile()
 
 	MEN_OpenLogFile(GetZeroMQXOPLogfile(), "ZeroMQLogFile")
+End
+
+Function MEN_OpenITCXOP2LogFile()
+
+	MEN_OpenLogFile(GetITCXOP2Logfile(), "ITCXOP2LogFile")
 End
 
 Function MEN_DownloadStimsets()

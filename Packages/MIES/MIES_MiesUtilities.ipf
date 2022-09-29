@@ -7477,6 +7477,13 @@ Function/S GetZeroMQXOPLogfile()
 	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ZeroMQ:Log.jsonl"
 End
 
+/// @brief Return the disc location of the (possibly non-existing) ITCXOP2 logfile
+Function/S GetITCXOP2Logfile()
+
+	// one down and up to "ITCXOP2"
+	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ITCXOP2:Log.jsonl"
+End
+
 /// @brief Tries to find deleted sweep and config waves which are still present due to 1D waves from databrowser backups or
 ///        labnotebook entries
 ///
