@@ -225,16 +225,15 @@ Function MEN_OpenPackageSettingsAsNotebook()
 	JSONid = NaN
 End
 
-Function MEN_OpenMIESLogFile()
-	string name, path
-
-	name = "MIESLogFile"
+/// @brief Generic routine for displaying a logfile in a notebook
+///
+/// @param path full path to the file on disc
+/// @param name notebook name
+static Function MEN_OpenLogFile(string path, string name)
 
 	if(WindowExists(name))
 		DoWindow/F $name
 	else
-		path = LOG_GetFile(PACKAGE_MIES)
-
 		if(!FileExists(path))
 			print "The log file does not (yet) exist."
 			ControlwindowToFront()
@@ -247,26 +246,14 @@ Function MEN_OpenMIESLogFile()
 	NotebookSelectionAtEnd(name)
 End
 
+Function MEN_OpenMIESLogFile()
+
+	MEN_OpenLogFile(LOG_GetFile(PACKAGE_MIES), "MIESLogFile")
+End
+
 Function MEN_OpenZeroMQXOPLogFile()
-	string name, path
 
-	name = "ZeroMQLogFile"
-
-	if(WindowExists(name))
-		DoWindow/F $name
-	else
-		path = GetZeroMQXOPLogfile()
-
-		if(!FileExists(path))
-			print "The log file does not (yet) exist."
-			ControlwindowToFront()
-			return NaN
-		endif
-
-		OpenNotebook/K=1/ENCG=1/N=$name/R path
-	endif
-
-	NotebookSelectionAtEnd(name)
+	MEN_OpenLogFile(GetZeroMQXOPLogfile(), "ZeroMQLogFile")
 End
 
 Function MEN_DownloadStimsets()
