@@ -7457,17 +7457,23 @@ static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, va
 	return [keys, values]
 End
 
-/// @brief Update the logging template used by the ZeroMQ-XOP
-Function UpdateZeroMQXOPLoggingTemplate()
+/// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2
+Function UpdateXOPLoggingTemplate()
 	variable JSONid
 	string str
 
 	JSONid = LOG_GenerateEntryTemplate("XOP")
 
 	str = JSON_Dump(JSONid)
-	JSON_Release(JSONid)
-
 	zeromq_set_logging_template(str)
+
+	// ITCXOP2 adds a timestamp itself, this is better see
+	// https://github.com/AllenInstitute/MIES/issues/1182
+	JSON_Remove(JSONid, "/ts")
+	str = JSON_Dump(JSONid)
+	HW_ITC_SetLoggingTemplate(str)
+
+	JSON_Release(JSONid)
 End
 
 /// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile

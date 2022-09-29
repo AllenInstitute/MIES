@@ -253,7 +253,7 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	PS_FixPackageLocation(PACKAGE_MIES)
 
 	LOG_MarkSessionStart(PACKAGE_MIES)
-	UpdateZeroMQXOPLoggingTemplate()
+	UpdateXOPLoggingTemplate()
 
 	miesVersion = ROStr(GetMiesVersion())
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"version", "computername", "username", "igorinfo"}, \
