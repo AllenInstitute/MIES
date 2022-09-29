@@ -1570,6 +1570,12 @@ Function/WAVE HW_ITC_GetVersionInfo([variable flags])
 	return versionInfo
 End
 
+Function HW_ITC_SetLoggingTemplate(string template, [variable flags])
+
+	// can't set /Z here as that is enabling/disabling it globally
+	ITCSetGlobals2/LTS=template
+End
+
 #else
 
 Function/S HW_ITC_ListOfOpenDevices()
@@ -1771,6 +1777,11 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 End
 
 Function/WAVE HW_ITC_GetVersionInfo([variable flags])
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_SetLoggingTemplate(string template, [variable flags])
+
 	DEBUGPRINT("Unimplemented")
 End
 
