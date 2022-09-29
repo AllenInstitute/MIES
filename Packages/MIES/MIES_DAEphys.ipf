@@ -1073,7 +1073,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 				endif
 
 				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
-				PGC_SetAndActivateControl(device, control, val=allChecked)
+				PGC_SetAndActivateControl(device, control, val=allChecked, mode = PGC_MODE_SKIP_ON_DISABLED)
 			endfor
 			break
 	endswitch

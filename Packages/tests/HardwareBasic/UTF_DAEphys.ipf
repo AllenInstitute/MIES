@@ -269,3 +269,24 @@ Function CheckStimsetPopupMetadata([str])
 		endif
 	endfor
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+Function AllChannelControlsWork([string str])
+
+	string unlockedDevice, ctrl
+	variable channelType
+
+	unlockedDevice = DAP_CreateDAEphysPanel()
+
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	REQUIRE(WindowExists(str))
+
+	Make/FREE channelTypes = {CHANNEL_TYPE_ADC, CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
+
+	for(channelType : channelTypes)
+		ctrl = GetPanelControl(CHANNEL_INDEX_ALL, channelType, CHANNEL_CONTROL_CHECK)
+		CHECK_EQUAL_VAR(GetCheckBoxState(str, ctrl), CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(str, ctrl, val = CHECKBOX_SELECTED)
+	endfor
+End
