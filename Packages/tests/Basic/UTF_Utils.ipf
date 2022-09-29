@@ -280,6 +280,11 @@ Function AcceptsValid14()
 	CHECK_EQUAL_VAR(actual, expected)
 	actual = ParseISO8601Timestamp("1904-01-1T01:00:01+01:00")
 	CHECK_EQUAL_VAR(actual, expected)
+
+	// works also with standard timezone format which does not have : separator
+	// between hour and minutes
+	actual = ParseISO8601Timestamp("1904-01-1T01:00:01+0100")
+	CHECK_EQUAL_VAR(actual, expected)
 End
 
 /// @}
