@@ -14,7 +14,7 @@
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
 	int32 count           ///< Number of invocations of background function
-	int32 threadDeadCount ///< TP-MD only: Number of successive tries to get data from the thread
+	int32 threadDeadCount ///< DAQ/TP-MD with ITC hardware only: Number of successive tries to get data from the thread
 EndStructure
 
 Structure PostPlotSettings
