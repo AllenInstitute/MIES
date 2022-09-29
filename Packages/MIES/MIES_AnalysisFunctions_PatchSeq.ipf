@@ -4705,9 +4705,9 @@ static Function/S PSQ_ExecuteSweepFormula(string device, string code)
 
 	databrowser = DB_GetBoundDataBrowser(device)
 
-	bsPanel = BSP_GetPanel(databrowser)
-
 	SF_SetFormula(databrowser, code)
+
+	bsPanel = BSP_GetPanel(databrowser)
 
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
