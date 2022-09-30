@@ -1927,3 +1927,10 @@ StrConstant SF_DATATYPE_TP = "TestPulse"
 Constant SWEEP_SKIP_USER = 0x1
 Constant SWEEP_SKIP_AUTO = 0x2
 /// @}
+
+/// @name Public constants from MIES_Configuration
+/// @anchor ExpConfigUserData
+/// @{
+StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
+StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
+/// @}

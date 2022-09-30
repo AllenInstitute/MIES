@@ -111,8 +111,6 @@ static StrConstant EXPCONFIG_FIELD_NOTEBOOKTEXT = "NotebookText"
 
 static StrConstant EXPCONFIG_UDATA_NICENAME = "Config_NiceName"
 static StrConstant EXPCONFIG_UDATA_JSONPATH = "Config_GroupPath"
-static StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
-static StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 static StrConstant EXPCONFIG_UDATA_BUTTONPRESS = "Config_PushButtonOnRestore"
 // Lower means higher priority
 static StrConstant EXPCONFIG_UDATA_RESTORE_PRIORITY = "Config_RestorePriority"
