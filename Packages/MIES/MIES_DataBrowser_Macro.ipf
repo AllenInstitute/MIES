@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(372,523.25,804,860)/K=1  as "DataBrowser"
+	Display /W=(739.5,170,1279.5,715.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -82,11 +82,11 @@ Window DataBrowser() : Graph
 	GroupBox group_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	GroupBox group_dDAQ,userdata(tabnum)="0",userdata(tabcontrol)="Settings"
-	Slider slider_BrowserSettings_dDAQ,pos={348.00,59.00},size={56.00,278.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,pos={348.00,59.00},size={53.00,278.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)="0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)="Settings"
-	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,Hi!!#?%!!#>n!!#BEz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,Hi!!#?%!!#>b!!#BEz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value=-1
@@ -947,7 +947,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,Dg!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={434.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
@@ -1263,12 +1263,14 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(Config_DontRestore)="1"
+	SetWindow kwTopWin,userdata(Config_DontSave)="1"
 	RenameWindow #,sweepFormula_json
 	SetActiveSubwindow ##
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
-	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
+	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)uNa2l$r6juaSr.@(O3s1Uq&W)/A(*I2niY!B*!lQ'Dkpdh3KVT$I/Ich)!tpS$YV?Caacs`,6k*H,LAsL=dd[9$7$\\?7Rp9,rS6o6siMbe4WImX)**?3\\C//MaM+2MT@U<AU%T'QkVG;,VC2-&>L8H:5?&W/sRLGQ=$k.U\\7Ce78\\6TQl!OeDHmk=c$b_1:YZ:k\\;$kjKuM_]jLqiiF?VBdWNkN<TCkG0kd!!)\\i68n"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)uNa2l$r6juaS]NAgm*X3eh,8(:b/3qDf`$IZ2\"c,0hdT&QD#tZ!q>8lc2\"sb*'?t0`LOsu56M&O#8%0(kYUuD?'Lb'WM2S$2n35;Co_bnHG;[8413O#OCe=>%L&rkt2`4Wb4*2%$_9qC;7eC9(Z%8BPJ\\er8p1`7uY(`<2AMfKJPE4[$a\")KaohdHS(QjNH<A=49T(a^pr(1dP!pF/h^9M&3&cHe#dcUh\\e\"9;;O6<4"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="0"
@@ -1287,6 +1289,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(Config_DontRestore)="1"
+	SetWindow kwTopWin,userdata(Config_DontSave)="1"
 	RenameWindow #,sweepFormula_help
 	SetActiveSubwindow ##
 	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
@@ -1391,6 +1395,8 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=Description /W=(145,49,436,148)/FG=(FL,FT,UGVL,FB) /HOST=# /OPTS=11
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=1, showRuler=0, rulerUnits=0
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,86}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	SetWindow kwTopWin,userdata(Config_DontRestore)="1"
+	SetWindow kwTopWin,userdata(Config_DontSave)="1"
 	RenameWindow #,Description
 	SetActiveSubwindow ##
 	RenameWindow #,SettingsHistoryPanel
