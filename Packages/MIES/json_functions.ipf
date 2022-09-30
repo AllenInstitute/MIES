@@ -787,7 +787,7 @@ threadsafe Function JSON_SetVariable(jsonID, jsonPath, value, [significance, ign
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	if(trunc(value) == value)
+	if(trunc(value) == value && !numtype(value))
 		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/I=(value) jsonID, jsonPath
 	elseif(ParamIsDefault(significance))
 		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/V=(value) jsonID, jsonPath

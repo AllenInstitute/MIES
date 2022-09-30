@@ -68,7 +68,7 @@ Thirty six hints for writing analysis functions
 #. Add preliminary dashboard support. We do check for every testcase that
    the dashboard works.
 
-#. Create a new test suite and add it to ``UTF_HardwareMain.ipf``. Be sure to
+#. Create a new test suite and add it to ``UTF_HardwareAnalysisFunctions.ipf``. Be sure to
    base it on the test suite of the last added analysis function to avoid copying
    deprecated approaches.
 

@@ -134,37 +134,40 @@ Automatic release package building
 Compilation testing
 ~~~~~~~~~~~~~~~~~~~
 
-The full MIES installation and the partial installations are IGOR Pro
-compiled using a bamboo job. This allows to catch compile time errors
+The full MIES installation with and without hardware XOPs are IGOR Pro
+compile tested using a bamboo job. This allows to catch compile time errors
 early on.
 
 For testing compilation manually perform the following steps:
 
 -  Create in ``User Procedures`` a shortcut pointing to
-   ``Packages\MIES_Include.ipf`` and ``Packages\unit-testing``
+   ``Packages\MIES_Include.ipf`` and ``Packages\tests``
 -  Remove the shortcut ``Packages\MIES_Include.ipf`` in
    ``Igor Procedures``
 -  Close all Igor Pro instances
--  Execute ``tools\unit-testing\check_mies_compilation.sh``
+-  Execute ``tools\check_mies_compilation.sh``
 -  Watch the output
 
-Testing
-~~~~~~~
+Unit and integration testing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A couple of our bamboo jobs is responsible for executing our tests. All
-tests must be written using the `Igor Unit Testing
-Framework <https://docs.byte-physics.de/igor-unit-testing-framework>`__ and
-referenced in the main test experiments located in
-``tools\unit-testing``.
+A couple of our bamboo jobs are responsible for executing tests. All
+tests are written using the `Igor Unit Testing
+Framework <https://docs.byte-physics.de/igor-unit-testing-framework>`__.
+
+The folders in ``Packages\tests`` follow a common naming scheme. Each folder
+holds a separate Igor Experiment with tests. The tests in folders starting with
+``Hardware`` requires present hardware, the others don't. In each folder an Igor
+Experiment named like the folder with ``.pxp``-suffix is present which allows
+to execute all the tests from that folder.
 
 For executing the tests manually perform the followings steps:
 
 - Create in ``User Procedures`` a shortcut pointing to
-  ``Packages\MIES_Include.ipf``, ``Packages\unit-testing`` and
-  ``Packages\Testing-MIES``
+  ``Packages\MIES_Include.ipf`` and ``Packages\tests``
 - Remove the shortcut ``Packages\MIES_Include.ipf`` in ``Igor Procedures``
-- Open one of the test experiments in ``tools\unit-testing``
-- Call ``run()``
+- Open one of the test experiments in ``Packages\tests``
+- Call ``RunWithOpts()``
 - Watch the output
 
 Documentation building

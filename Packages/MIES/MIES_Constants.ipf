@@ -1188,8 +1188,6 @@ Constant PSQ_RB_DASCALE_SMALL_BORDER   = 50e-12
 Constant PSQ_RB_DASCALE_STEP_LARGE     = 10e-12
 Constant PSQ_RB_DASCALE_STEP_SMALL     =  2e-12
 StrConstant PSQ_RB_FINALSCALE_FAKE_KEY = "PSQRheobaseFinalDAScaleFake"
-Constant PSQ_RB_FINALSCALE_FAKE_HIGH   = 70e-12
-Constant PSQ_RB_FINALSCALE_FAKE_LOW    = 40e-12
 /// @}
 
 /// @name PatchSeq DAScale

@@ -35,14 +35,14 @@ then
   exit 1
 fi
 
-cd $top_level/tools
+cd $top_level
 
 if [ "$result" = "1" ]
 then
-  cp JU_Failed.xml unit-testing
+  cp tools/JU_Failed.xml Packages/tests
 elif [ "$result" = "0" ]
 then
-  cp JU_Passed.xml unit-testing
+  cp tools/JU_Passed.xml Packages/tests
 else
   usage
 fi

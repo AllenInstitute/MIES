@@ -51,4 +51,7 @@ bld/
 [Oo]bj/
 UserConfig*.txt
 JU_*.xml
-tools/unit-testing/HardwareTests*.nwb
+Packages/tests/**/*.nwb
+
+# intermediate test files
+rewritten_config.json
