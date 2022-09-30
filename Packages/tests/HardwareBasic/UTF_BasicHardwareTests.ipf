@@ -122,7 +122,7 @@ End
 static Function Abort_ITI_TP_A_TP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5"                      + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5_RES5"             + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 	AcquireData_NG(s, md.s0)
 
@@ -151,7 +151,7 @@ End
 static Function AbortTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1"                      + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_TP1"                   + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 	AcquireData_NG(s, md.s0)
 
@@ -188,7 +188,7 @@ End
 static Function StartDAQDuringTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_RES0"                   + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_RES0_TP1"                                                 + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:WriteIntoLBNOnPreDAQ:")
 	AcquireData_NG(s, md.s0)
 
