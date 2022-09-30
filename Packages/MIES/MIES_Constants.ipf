@@ -1897,6 +1897,8 @@ StrConstant SF_META_DATATYPE = "/DataType" // string
 StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
 StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
 StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
+StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
+StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
 StrConstant SF_META_XVALUES = "/XValues" // numeric wave
 StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
 StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
@@ -1919,6 +1921,7 @@ StrConstant SF_DATATYPE_MIN = "Min"
 StrConstant SF_DATATYPE_RANGE = "Range"
 StrConstant SF_DATATYPE_EPOCHS = "Epochs"
 StrConstant SF_DATATYPE_TP = "TestPulse"
+StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
 /// @}
 
 /// @name Available source options for RA_SkipSweeps()
