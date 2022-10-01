@@ -324,3 +324,31 @@ static Function TCONF_DupCtrlArrayNameRestore()
 		PASS()
 	endtry
 End
+
+/// @brief Check for notebook window saving
+static Function TCONF_SaveNotebookAndRestore()
+
+	string wName = "nbText"
+	string fName = "NotebookTest.json"
+	string nbTextRef = "This is fine."
+	string nbTextRef2 = "This is not fine."
+	string nbText
+
+	DoWindow/K $wName
+	NewNotebook/N=$wName/F=0
+	ReplaceNotebookText(wName, nbTextRef)
+	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName))
+	ReplaceNotebookText(wName, nbTextRef2)
+	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(fName))
+	nbText = GetNotebookText(wName, mode=2)
+	CHECK_EQUAL_STR(nbTextRef, nbText)
+
+	ReplaceNotebookText(wName, nbTextRef)
+	SetWindow $wName, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
+	SetWindow $wName, userdata($EXPCONFIG_UDATA_EXCLUDE_SAVE)="1"
+	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName))
+	ReplaceNotebookText(wName, nbTextRef2)
+	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(fName))
+	nbText = GetNotebookText(wName, mode=2)
+	CHECK_EQUAL_STR(nbTextRef2, nbText)
+End
