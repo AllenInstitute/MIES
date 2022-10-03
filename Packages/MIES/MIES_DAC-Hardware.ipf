@@ -2813,9 +2813,6 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 
 #if exists("DAQmx_DeviceInfo")
 	DAQmx_DeviceInfo/DEV=device
-#else
-	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing DAQmx_DeviceInfo. Please contact the manufacturer for an updated version.")
-#endif
 
 	Make/FREE/T/N=(8) deviceInfo
 	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo
@@ -2839,6 +2836,12 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	deviceInfo[%DIOPortWidth] = num2str(fDAQmx_DIO_PortWidth(device, HARDWARE_NI_TTL_PORT))
 
 	return deviceInfo
+#else
+	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing DAQmx_DeviceInfo. Please contact the manufacturer for an updated version.")
+
+	return $""
+#endif
+
 End
 
 #else
