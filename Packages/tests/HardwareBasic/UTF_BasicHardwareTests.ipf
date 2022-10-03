@@ -2166,3 +2166,31 @@ Function HandlesFIFOTimeoutProperly_REENTRY([str])
 	stopReason = GetLastSettingIndep(numericalValues, 1, "DAQ stop reason", UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
 End
+
+// UTF_TD_GENERATOR GetITCDevices
+Function HandlesStuckFIFOProperly([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0"                    + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround ExecuteDuringDAQ, start, period=30, proc=UseFakeFIFOThreadBeingStuck_IGNORE
+End
+
+Function HandlesStuckFIFOProperly_REENTRY([str])
+	string str
+
+	variable stopReason
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	stopReason = GetLastSettingIndep(numericalValues, 0, "DAQ stop reason", UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_STUCK_FIFO)
+
+	stopReason = GetLastSettingIndep(numericalValues, 1, "DAQ stop reason", UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
+End

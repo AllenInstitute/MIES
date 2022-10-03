@@ -1662,3 +1662,24 @@ Function UseFakeFIFOThreadWithTimeout_IGNORE(s)
 
 	return 0
 End
+
+Function UseFakeFIFOThreadBeingStuck_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	variable fifoPos
+
+	SVAR devices = $GetLockedDevices()
+	string device = StringFromList(0, devices)
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	fifoPos = ROVar(GetFifoPosition(device))
+
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && fifoPos > 10000)
+		StartFakeThreadMonitor_IGNORE(device, 12345)
+
+		return 1
+	endif
+
+	return 0
+End
