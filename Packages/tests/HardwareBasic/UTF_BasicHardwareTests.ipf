@@ -8,10 +8,8 @@
 /// Test matrix for DQ_STOP_REASON_XXX
 ///
 /// DQ_STOP_REASON_DAQ_BUTTON
-/// - Abort_ITI_TP_A_PressAcq_MD
-/// - Abort_ITI_TP_A_PressAcq_SD
-/// - Abort_ITI_PressAcq_MD
-/// - Abort_ITI_PressAcq_SD
+/// - Abort_ITI_TP_A_PressAcq
+/// - Abort_ITI_PressAcq
 ///
 /// DQ_STOP_REASON_CONFIG_FAILED
 /// - ConfigureFails
@@ -23,10 +21,8 @@
 /// - StopDAQDueToUncompiled
 ///
 /// DQ_STOP_REASON_TP_STARTED
-/// - Abort_ITI_TP_A_TP_MD
-/// - Abort_ITI_TP_A_TP_SD
-/// - Abort_ITI_TP_MD
-/// - Abort_ITI_TP_SD
+/// - Abort_ITI_TP_A_TP
+/// - Abort_ITI_TP
 ///
 /// DQ_STOP_REASON_STIMSET_SELECTION
 /// - ChangeStimSetDuringDAQ
@@ -122,7 +118,7 @@ End
 static Function Abort_ITI_TP_A_TP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5"                      + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_GSI0_ITI5_RES5"             + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 	AcquireData_NG(s, md.s0)
 
@@ -151,7 +147,7 @@ End
 static Function AbortTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1"                      + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1_TP1"                   + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 	AcquireData_NG(s, md.s0)
 
@@ -188,7 +184,7 @@ End
 static Function StartDAQDuringTP([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_RES0"                   + \
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1_RES0_TP1"                                                 + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:WriteIntoLBNOnPreDAQ:")
 	AcquireData_NG(s, md.s0)
 
