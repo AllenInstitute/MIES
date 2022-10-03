@@ -8,10 +8,8 @@
 /// Test matrix for DQ_STOP_REASON_XXX
 ///
 /// DQ_STOP_REASON_DAQ_BUTTON
-/// - Abort_ITI_TP_A_PressAcq_MD
-/// - Abort_ITI_TP_A_PressAcq_SD
-/// - Abort_ITI_PressAcq_MD
-/// - Abort_ITI_PressAcq_SD
+/// - Abort_ITI_TP_A_PressAcq
+/// - Abort_ITI_PressAcq
 ///
 /// DQ_STOP_REASON_CONFIG_FAILED
 /// - ConfigureFails
@@ -23,10 +21,8 @@
 /// - StopDAQDueToUncompiled
 ///
 /// DQ_STOP_REASON_TP_STARTED
-/// - Abort_ITI_TP_A_TP_MD
-/// - Abort_ITI_TP_A_TP_SD
-/// - Abort_ITI_TP_MD
-/// - Abort_ITI_TP_SD
+/// - Abort_ITI_TP_A_TP
+/// - Abort_ITI_TP
 ///
 /// DQ_STOP_REASON_STIMSET_SELECTION
 /// - ChangeStimSetDuringDAQ
