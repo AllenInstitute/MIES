@@ -1026,7 +1026,7 @@ End
 
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
-	variable channelNumber, channelType, sweepNo
+	variable channelNumber, channelType, sweepNo, isAveraged
 	string channelId, prefix
 	string traceAnnotation
 
@@ -1053,12 +1053,22 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 			else
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-				sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-				if(IsNaN(channelNumber) || IsNaN(channelType) || IsNaN(sweepNo))
+				if(IsNaN(channelNumber) || IsNaN(channelType))
 					return ""
 				endif
+				isAveraged = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+				if(IsNaN(isAveraged) || !isAveraged)
+					sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+					if(IsNaN(sweepNo))
+						return ""
+					endif
+				endif
 				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-				sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+				if(isAveraged)
+					sprintf traceAnnotation, "%s Sweep(s) averaged %s", prefix, channelId
+				else
+					sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+				endif
 			endif
 			break
 	endswitch
