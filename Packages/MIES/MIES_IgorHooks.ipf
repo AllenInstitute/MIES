@@ -140,6 +140,8 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 		NWB_Flush(fileIDExport)
 	endif
 
+	UpdateXOPLoggingTemplate()
+
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
