@@ -240,7 +240,7 @@ static Function MEN_OpenLogFile(string path, string name)
 			return NaN
 		endif
 
-		OpenNotebook/K=1/ENCG=1/N=$name/R path
+		OpenNotebook/R/K=1/ENCG=1/N=$name/R path
 	endif
 
 	NotebookSelectionAtEnd(name)
