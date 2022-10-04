@@ -237,6 +237,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
 
+	UpdateXOPLoggingTemplate()
 	StartZeroMQSockets()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
