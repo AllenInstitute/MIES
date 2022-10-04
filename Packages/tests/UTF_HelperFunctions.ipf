@@ -144,11 +144,32 @@ Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = samplingFrequency)
 End
 
-Function DoInstrumentation()
-	variable instru = str2numSafe(GetEnvironmentVariable("BAMBOO_INSTRUMENT_TESTS")) == 1           \
-	                  || !cmpstr(GetEnvironmentVariable("bamboo_repository_git_branch"), "main")
+// Read the environment variable `key` as number and if present, return 1 for
+// all finite values not equal to 0 and 0 otherwise. Return `NaN` in all other
+// cases.
+Function GetEnvironmentVariableAsBoolean(string key)
+	variable value
 
-	return instru
+	value = str2numSafe(GetEnvironmentVariable(key))
+
+	if(IsFinite(value))
+		return !!value
+	endif
+
+	return NaN
+End
+
+Function DoInstrumentation()
+
+	variable instru
+
+	instru = GetEnvironmentVariableAsBoolean("BAMBOO_INSTRUMENT_TESTS")
+
+	if(IsFinite(instru))
+		return instru
+	endif
+
+	return !cmpstr(GetEnvironmentVariable("bamboo_repository_git_branch"), "main")
 End
 
 Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
@@ -499,8 +520,7 @@ Function/WAVE GetTrackSweepCounts()
 End
 
 Function IsRunningInCI()
-	// we always have expensive checks enabled in CI
-	return str2numSafe(GetEnvironmentVariable("BAMBOO_EXPENSIVE_CHECKS")) == 1
+	return !IsEmpty(GetEnvironmentVariable("bamboo_repository_git_branch"))
 End
 
 Function RetrieveAllWindowsInCI()

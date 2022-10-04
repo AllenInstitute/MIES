@@ -96,11 +96,19 @@ End
 
 Function DoExpensiveChecks()
 
+	variable expensive
+
 #ifdef AUTOMATED_TESTING_EXPENSIVE
 	return 1
 #endif
 
-	return IsRunningInCI()
+	expensive = GetEnvironmentVariableAsBoolean("BAMBOO_EXPENSIVE_CHECKS")
+
+	if(IsFinite(expensive))
+		return expensive
+	endif
+
+	return 0
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
