@@ -1083,7 +1083,7 @@ End
 
 static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
-	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal
+	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged
 
 	s.red = 0xFFFF
 	s.green = 0x0000
@@ -1112,7 +1112,8 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStac
 
 	channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 	channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-	sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	isAveraged = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+	sweepNo = isAveraged == 1 ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 	if(!IsValidSweepNumber(sweepNo))
 		return [s]
 	endif
