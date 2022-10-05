@@ -453,6 +453,13 @@ static Function SC_SetControls8_preAcq(device)
 	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "NB", wv = wv)
 
 	PGC_SetAndActivateControl(device, "button_DataAcq_OpenCommentNB")
+
+	wv[] = {"Post Sweep", "1 + 2"}
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "sweepFormula_formula", wv = wv)
+
+	// create two databrowser locked to this device
+	CreateLockedDatabrowser(device)
+	CreateLockedDatabrowser(device)
 End
 
 // works with event/data tuples setting notebook text
@@ -468,7 +475,7 @@ static Function SC_SetControls8_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string expected, actual
+	string expected, actual, nb
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -478,6 +485,18 @@ static Function SC_SetControls8_REENTRY([str])
 	expected	= "abcdefgh"
 	actual = GetNotebookText(str + "#UserComments#NB")
 	CHECK_EQUAL_STR(expected, actual)
+
+	WAVE/T/Z allDBs = DB_FindAllDataBrowser(str)
+	CHECK_WAVE(allDBs, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(allDbs, ROWS), 2)
+
+	for(databrowser : allDBs)
+		nb = BSP_GetSFFormula(databrowser)
+
+		expected = "1 + 2"
+		actual = GetNotebookText(nb, mode = 2)
+		CHECK_EQUAL_STR(expected, actual)
+	endfor
 End
 
 static Function SC_SetControls9_preAcq(device)
