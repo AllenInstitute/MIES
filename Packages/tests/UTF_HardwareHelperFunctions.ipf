@@ -1361,7 +1361,7 @@ End
 /// must be called `GlobalPreAcq`/`GlobalPreInit` and the per test case ones
 /// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static.
 Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
-	string unlockedDevice, device, ctrl
+	string device, ctrl
 	variable i, j, numEntries, activeHS
 
 	if(s.amp)
@@ -1381,10 +1381,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 		s.preInitFunc(device)
 		s.globalPreInitFunc(device)
 
-		unlockedDevice = DAP_CreateDAEphysPanel()
-
-		PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
-		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+		CreateLockedDAEphys(device)
 
 		REQUIRE(WindowExists(device))
 
@@ -1578,4 +1575,18 @@ Function GetMinSamplingInterval([unit])
 #else
 	return factor * HARDWARE_ITC_MIN_SAMPINT
 #endif
+End
+
+/// @brief Open a DAEphys panel and lock it to the given device
+///
+/// In case unlockedDevice is given, no new panel is created.
+Function CreateLockedDAEphys(string device, [string unlockedDevice])
+
+	if(ParamIsDefault(unlockedDevice))
+		unlockedDevice = DAP_CreateDAEphysPanel()
+	endif
+
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	REQUIRE(WindowExists(device))
 End
