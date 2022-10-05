@@ -222,7 +222,7 @@ static Function/S CreateMiesVersion()
 			// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
 			// but we can use the helper command which outputs a slightly uglier version, but is much faster
 			// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper list >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
 			DEBUGPRINT("Cmd to execute: ", str=cmd)
 			ExecuteScriptText/B/Z cmd
 
