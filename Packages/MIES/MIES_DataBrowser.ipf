@@ -702,13 +702,27 @@ End
 Function/S DB_FindDataBrowser(device)
 	string device
 
+	WAVE/T/Z matches = DB_FindAllDataBrowser(device)
+
+	if(!WaveExists(matches))
+		return ""
+	endif
+
+	return matches[0]
+End
+
+/// @brief Find all Databrowser which are locked to the given DAEphys panel
+Function/WAVE DB_FindAllDataBrowser(string device)
+
 	string panelList
 	string panel
-	variable numPanels, i
+	variable numPanels, i, idx
 
 	panelList = WinList("DB_*", ";", "WIN:1")
-
 	numPanels = ItemsInList(panelList)
+
+	Make/FREE/N=(numPanels)/T matches
+
 	for(i = 0; i < numPanels; i += 1)
 		panel = StringFromList(i, panelList)
 
@@ -716,12 +730,20 @@ Function/S DB_FindDataBrowser(device)
 			continue
 		endif
 
-		if(!cmpstr(device, BSP_GetDevice(panel)))
-			return panel
+		if(cmpstr(device, BSP_GetDevice(panel)))
+			continue
 		endif
+
+		matches[idx++] = panel
 	endfor
 
-	return ""
+	if(idx == 0)
+		return $""
+	endif
+
+	Redimension/N=(idx) matches
+
+	return matches
 End
 
 /// @brief Returns a databrowser bound to the given `device`

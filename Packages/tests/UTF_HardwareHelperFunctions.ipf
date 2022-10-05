@@ -1590,3 +1590,11 @@ Function CreateLockedDAEphys(string device, [string unlockedDevice])
 	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(device))
 End
+
+Function CreateLockedDatabrowser(string device)
+	string win, bsPanel
+
+	win = DB_OpenDatabrowser()
+	bsPanel = BSP_GetPanel(win)
+	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+End
