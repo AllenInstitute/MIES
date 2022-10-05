@@ -18,11 +18,17 @@ echo UTF_HardwareAnalysisFunctions >> ${input}
 echo UTF_HardwareBasic             >> ${input}
 
 # keep sorted
-echo BACKGROUND_TASK_DEBUGGING >> ${define}
-echo DEBUGGING_ENABLED         >> ${define}
-echo EVIL_KITTEN_EATING_MODE   >> ${define}
-echo SWEEPFORMULA_DEBUG        >> ${define}
-echo THREADING_DISABLED        >> ${define}
+echo AUTOMATED_TESTING            >> ${define}
+echo AUTOMATED_TESTING_DEBUGGING  >> ${define}
+echo AUTOMATED_TESTING_EXPENSIVE  >> ${define}
+echo BACKGROUND_TASK_DEBUGGING    >> ${define}
+echo DEBUGGING_ENABLED            >> ${define}
+echo EVIL_KITTEN_EATING_MODE      >> ${define}
+echo SWEEPFORMULA_DEBUG           >> ${define}
+echo TESTS_WITH_ITC1600_HARDWARE  >> ${define}
+echo TESTS_WITH_ITC18USB_HARDWARE >> ${define}
+echo TESTS_WITH_NI_HARDWARE       >> ${define}
+echo THREADING_DISABLED           >> ${define}
 
 ${ScriptDir}/autorun-test.sh $@
 
