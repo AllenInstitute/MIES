@@ -10,17 +10,19 @@ define=${ScriptDir}/../Packages/tests/Compilation/define.txt
 
 rm -rf ${input} ${define}
 
+# keep sorted
 echo MIES_Include                  >> ${input}
 echo UTF_Basic                     >> ${input}
 echo UTF_PAPlot                    >> ${input}
 echo UTF_HardwareAnalysisFunctions >> ${input}
 echo UTF_HardwareBasic             >> ${input}
 
+# keep sorted
+echo BACKGROUND_TASK_DEBUGGING >> ${define}
 echo DEBUGGING_ENABLED         >> ${define}
 echo EVIL_KITTEN_EATING_MODE   >> ${define}
-echo BACKGROUND_TASK_DEBUGGING >> ${define}
-echo THREADING_DISABLED        >> ${define}
 echo SWEEPFORMULA_DEBUG        >> ${define}
+echo THREADING_DISABLED        >> ${define}
 
 ${ScriptDir}/autorun-test.sh $@
 
