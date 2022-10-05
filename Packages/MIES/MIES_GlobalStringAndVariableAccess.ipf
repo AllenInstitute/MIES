@@ -230,7 +230,7 @@ static Function/S CreateMiesVersion()
 		break
 	endfor
 
-	open/R/Z refNum as path + "version.txt"
+	open/R/Z refNum as fullVersionPath
 	if(V_flag != 0)
 		printf "Could not determine the MIES version.\r"
 		printf "Possible reasons:\r"
