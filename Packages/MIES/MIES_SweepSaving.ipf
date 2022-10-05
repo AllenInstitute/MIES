@@ -98,15 +98,15 @@ End
 /// @param device device name
 static Function SWS_AfterSweepDataChangeHook(string device)
 
-	string databrowser
+	WAVE/T/Z allDBs = DB_FindAllDataBrowser(device)
 
-	databrowser = DB_FindDataBrowser(device)
-
-	if(IsEmpty(databrowser))
+	if(!WaveExists(allDBs))
 		return NaN
 	endif
 
-	DB_UpdateToLastSweep(databrowser)
+	for(win : allDBs)
+		DB_UpdateToLastSweep(win)
+	endfor
 End
 
 /// @brief Return a free wave with all channel gains
