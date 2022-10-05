@@ -22,7 +22,8 @@
 /// if no other viable candidate panel was found.
 ///
 /// The GUI state is saved in a text file in json format. In the basic structure of the file the main blocks
-/// are the windows and subwindows and within are the control blocks.
+/// are the windows and subwindows and within are the control blocks. For notebook windows the content of the notebook is saved
+/// as plain text and restored as plain text.
 /// A bitmask parameter allows to configure which control information is saved. See WindowControlSavingMask
 /// Currently supported is Value, Position/Size, Userdata, Disabled state and Type of a control.
 /// Not implemented is e.g. Color/Background Color
@@ -106,11 +107,10 @@ static StrConstant EXPCONFIG_FIELD_CTRLPOSALIGN = "Align"
 static StrConstant EXPCONFIG_FIELD_CTRLUSERDATA = "Userdata"
 static StrConstant EXPCONFIG_FIELD_BASE64PREFIX = "Base64 "
 static StrConstant EXPCONFIG_FIELD_CTRLARRAYVALUES = "Values"
+static StrConstant EXPCONFIG_FIELD_NOTEBOOKTEXT = "NotebookText"
 
 static StrConstant EXPCONFIG_UDATA_NICENAME = "Config_NiceName"
 static StrConstant EXPCONFIG_UDATA_JSONPATH = "Config_GroupPath"
-static StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
-static StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 static StrConstant EXPCONFIG_UDATA_BUTTONPRESS = "Config_PushButtonOnRestore"
 // Lower means higher priority
 static StrConstant EXPCONFIG_UDATA_RESTORE_PRIORITY = "Config_RestorePriority"
@@ -975,7 +975,7 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 	string excludeList
 
 	variable i, colNiceName, colArrayName, colCtrlName, winNum, numCtrl, numWinCtrl, numGroups, numNice, offset, numWindows, numCtrlArrays, numArrayElem, isTagged
-	variable arrayNameIndex
+	variable arrayNameIndex, wType
 	string ctrlName, niceName, arrayName, ctrlList, wList, uData, winHandle, jsonCtrlGroupPath, subWinTarget, str, errMsg
 
 	AssertOnAndClearRTError()
@@ -997,7 +997,12 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 		for(winNum = 0; winNum < numWindows; winNum += 1)
 			str = tgtWinNames[winNum]
 			subWinTarget = SelectString(IsEmpty(str), wName + "#" + str, wName)
-			ASSERT(WinType(subWinTarget), "Window " + subWinTarget + " does not exist!")
+			wType = WinType(subWinTarget)
+			ASSERT(wType, "Window " + subWinTarget + " does not exist!")
+			if(wType == WINTYPE_NOTEBOOK)
+				CONF_RestoreNotebookWindow(subWinTarget, srcWinNames[winNum], jsonID)
+				continue
+			endif
 
 			Make/FREE/T/N=(0, 4) ctrlData
 			SetDimLabel COLS, 0, NICENAME, ctrlData
@@ -1112,6 +1117,23 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 	endtry
 
 	return wName
+End
+
+/// @brief Restores a notebook window content
+///
+/// @param wName  Name of notebook window in Igor
+/// @param srcWin Name of window in JSON
+/// @param jsonID Id of JSON
+static Function CONF_RestoreNotebookWindow(string wName, string srcWin, variable jsonID)
+
+	string jsonPath, nbText
+
+	if(!CmpStr(GetUserData(wName, "", EXPCONFIG_UDATA_EXCLUDE_RESTORE), "1"))
+		return NaN
+	endif
+	jsonPath = srcWin + "/" + EXPCONFIG_FIELD_NOTEBOOKTEXT
+	nbText = JSON_GetString(jsonID, jsonPath)
+	ReplaceNotebookText(wName, nbText)
 End
 
 /// @brief Returns the window with the set window handle
@@ -1395,6 +1417,12 @@ Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
 		for(i = 0; i < numWins; i += 1)
 			curWinName = StringFromList(i, wList)
 			jsonIDWin = CONF_WindowToJSON(curWinName, saveMask, excCtrlTypes = excCtrlTypes)
+
+			if(JSON_GetType(jsonIDWin, "") == JSON_NULL)
+				JSON_Release(jsonIDWin)
+				continue
+			endif
+
 			WAVE/T ctrlList = JSON_GetKeys(jsonIDWin, "")
 			if(DimSize(ctrlList, ROWS))
 				JSON_SetJSON(jsonID, curWinName, jsonIDWin)
@@ -1433,13 +1461,18 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 
 	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
-	variable rbcIndex
+	variable rbcIndex, wType
 
 	AssertOnAndClearRTError()
 	try
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
-		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
+		wType = WinType(wName)
+		ASSERT(wType, "Window " + wName + " does not exist!")
 		jsonID = JSON_New()
+		if(wType == WINTYPE_NOTEBOOK)
+			CONF_NotebookToJSON(wName, jsonID)
+			return jsonID
+		endif
 
 		ctrlList = ControlNameList(wName, ";", "*")
 		numCtrl = ItemsInList(ctrlList)
@@ -1584,6 +1617,21 @@ static Function/S CONF_GetCompleteJSONCtrlPath(path)
 	endfor
 
 	return completePath
+End
+
+/// @brief Adds a notebook window including content to a json
+///
+/// @param wName  Window name
+/// @param jsonID ID of existing json
+static Function CONF_NotebookToJSON(string wName, variable jsonID)
+
+	string nbText
+
+	if(!CmpStr(GetUserData(wName, "", EXPCONFIG_UDATA_EXCLUDE_SAVE), "1"))
+		return NaN
+	endif
+	nbText = GetNotebookText(wName, mode=2)
+	JSON_AddString(jsonID, EXPCONFIG_FIELD_NOTEBOOKTEXT, nbText)
 End
 
 /// @brief Adds properties of a control to a json

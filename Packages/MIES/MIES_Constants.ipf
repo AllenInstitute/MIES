@@ -19,7 +19,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 57
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 42
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 43
 Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -1926,4 +1926,11 @@ StrConstant SF_DATATYPE_TP = "TestPulse"
 /// @{
 Constant SWEEP_SKIP_USER = 0x1
 Constant SWEEP_SKIP_AUTO = 0x2
+/// @}
+
+/// @name Public constants from MIES_Configuration
+/// @anchor ExpConfigUserData
+/// @{
+StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
+StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 /// @}
