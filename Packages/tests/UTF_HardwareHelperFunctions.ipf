@@ -117,6 +117,14 @@ Function TEST_CASE_END_OVERRIDE(name)
 	string dev, experimentNWBFile, baseFolder, nwbFile
 	variable numEntries, i, fileID, nwbVersion, expensiveChecks
 
+	// be sure that DAQ/TP is stopped before we do anything else
+#ifndef TESTS_WITH_NI_HARDWARE
+	DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_INVALID)
+	TP_StopTestPulseOnAllDevices()
+
+	HW_ITC_CloseAllDevices()
+#endif
+
 	expensiveChecks = DoExpensiveChecks()
 
 	// cut off multi data suffix
