@@ -186,6 +186,8 @@ End
 static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
 	variable unsavedExp, unsavedNotebooks, unsavedProcedures
 
+	variable err
+
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	IH_Cleanup()
@@ -193,7 +195,7 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	// save the experiment silently if it was saved before
 	if(unsavedExp == 0 && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
 		LOG_AddEntry(PACKAGE_MIES, "before save")
-		SaveExperiment
+		SaveExperiment; err = GetRTError(1)
 		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
 
