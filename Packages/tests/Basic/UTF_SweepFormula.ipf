@@ -2356,3 +2356,68 @@ static Function ZeroSizedSubArrayTest()
 	WAVE wv = wRefResult[0]
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
 End
+
+static Function/WAVE TestAverageOverSweeps_CreateData(variable val, variable channelNumber, variable channelType, variable sweepNo)
+
+	Make/FREE data = val
+	JWN_SetNumberInWaveNote(data, SF_META_CHANNELNUMBER, channelNumber)
+	JWN_SetNumberInWaveNote(data, SF_META_CHANNELTYPE, channelType)
+	JWN_SetNumberInWaveNote(data, SF_META_SWEEPNO, sweepNo)
+
+	return data
+End
+
+static Function/WAVE TestAverageOverSweeps_CheckMeta(WAVE data, variable channelNumber, variable channelType, variable firstSweep)
+
+	variable val
+
+	val = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+	CHECK_EQUAL_VAR(channelNumber, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+	CHECK_EQUAL_VAR(channelType, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP)
+	CHECK_EQUAL_VAR(firstSweep, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+	CHECK_EQUAL_VAR(1, val)
+
+	return data
+End
+
+static Function TestAverageOverSweeps()
+
+	Make/FREE/WAVE/N=6 input
+
+	WAVE data0 = TestAverageOverSweeps_CreateData(1, 1, 1, 0)
+	WAVE data1 = TestAverageOverSweeps_CreateData(3, 1, 1, 1)
+
+	WAVE data2 = TestAverageOverSweeps_CreateData(3, 2, 1, 2)
+	WAVE data3 = TestAverageOverSweeps_CreateData(5, 2, 1, 3)
+
+	WAVE data4 = TestAverageOverSweeps_CreateData(5, 1, 1, NaN)
+	WAVE data5 = TestAverageOverSweeps_CreateData(7, 1, 1, NaN)
+
+	input[0] = data0
+	input[1] = data1
+	input[2] = data2
+	input[3] = data3
+	input[4] = data4
+	input[5] = data5
+
+	WAVE/WAVE output = MIES_SF#SF_AverageDataOverSweeps(input)
+	CHECK_EQUAL_VAR(3, DimSize(output, ROWS))
+	WAVE data = output[0]
+	Make/FREE dataRef = 2
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, 1, 1, 0)
+
+	WAVE data = output[1]
+	Make/FREE dataRef = 4
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, 2, 1, 2)
+
+	WAVE data = output[2]
+	Make/FREE dataRef = 6
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, NaN, NaN, NaN)
+
+End
