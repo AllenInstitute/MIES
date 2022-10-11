@@ -169,68 +169,68 @@ static Function/S CreateMiesVersion()
 	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
 	fullVersionPath = path + "version.txt"
 
-	// standard locations for 32bit and 64bit standalone git versions
-	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe;C:\\Program Files\\Git\\cmd\\git.exe"
-
-	// Atlassian Sourcetree (Embedded git)
-	userName = GetSystemUserName()
-	gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\git.exe", gitPathCandidates, ";", Inf)
-
-	// user installation of git for windows
-	gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Programs\\Git\\cmd\\git.exe", gitPathCandidates, ";", Inf)
-
-	numEntries = ItemsInList(gitPathCandidates)
-	for(i = 0; i < numEntries; i += 1)
-		gitPath = StringFromList(i, gitPathCandidates)
-		if(!FileExists(gitPath))
-			continue
-		endif
-
-		// git is installed, try to regenerate version.txt
-		DEBUGPRINT("Found git at: ", str=gitPath)
-		topDir = ParseFilePath(5, path, "*", 0, 0)
-		gitDir = topDir + ".git"
-		if(!FolderExists(gitDir))
-			break
-		endif
-
+	topDir = ParseFilePath(5, path, "*", 0, 0)
+	gitDir = topDir + ".git"
+	if(FolderExists(gitDir))
 		// topDir is a git repository
-		// delete the old version.txt so that we can be sure to get the correct one afterwards
-		DeleteFile/Z fullVersionPath
-		DEBUGPRINT("Folder is a git repository: ", str=topDir)
-		// explanation:
-		// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-		DEBUGPRINT("Cmd to execute: ", str=cmd)
-		ExecuteScriptText/B/Z cmd
-		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-		sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
-		DEBUGPRINT("Cmd to execute: ", str=cmd)
-		ExecuteScriptText/B/Z cmd
-		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+		// standard locations for 32bit and 64bit standalone git versions
+		gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe;C:\\Program Files\\Git\\cmd\\git.exe"
 
-		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-		DEBUGPRINT("Cmd to execute: ", str=cmd)
-		ExecuteScriptText/B/Z cmd
-		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+		// Atlassian Sourcetree (Embedded git)
+		userName = GetSystemUserName()
+		gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\git.exe", gitPathCandidates, ";", Inf)
 
-		sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
-		DEBUGPRINT("Cmd to execute: ", str=cmd)
-		ExecuteScriptText/B/Z cmd
-		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+		// user installation of git for windows
+		gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Programs\\Git\\cmd\\git.exe", gitPathCandidates, ";", Inf)
 
-		// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
-		// but we can use the helper command which outputs a slightly uglier version, but is much faster
-		// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper list >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-		DEBUGPRINT("Cmd to execute: ", str=cmd)
-		ExecuteScriptText/B/Z cmd
+		numEntries = ItemsInList(gitPathCandidates)
+		for(i = 0; i < numEntries; i += 1)
+			gitPath = StringFromList(i, gitPathCandidates)
+			if(!FileExists(gitPath))
+				continue
+			endif
 
-		break
-	endfor
+			// git is installed, try to regenerate version.txt
+			DEBUGPRINT("Found git at: ", str=gitPath)
 
-	open/R/Z refNum as path + "version.txt"
+			// delete the old version.txt so that we can be sure to get the correct one afterwards
+			DeleteFile/Z fullVersionPath
+			DEBUGPRINT("Folder is a git repository: ", str=topDir)
+			// explanation:
+			// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
+			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/B/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/B/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/B/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/B/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
+			// but we can use the helper command which outputs a slightly uglier version, but is much faster
+			// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
+			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/B/Z cmd
+
+			break
+		endfor
+	endif
+
+	open/R/Z refNum as fullVersionPath
 	if(V_flag != 0)
 		printf "Could not determine the MIES version.\r"
 		printf "Possible reasons:\r"
