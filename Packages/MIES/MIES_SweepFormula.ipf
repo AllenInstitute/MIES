@@ -88,6 +88,7 @@ static StrConstant SF_OP_EPOCHS = "epochs"
 static StrConstant SF_OP_TP = "tp"
 static StrConstant SF_OP_STORE = "store"
 static StrConstant SF_OP_SELECT = "select"
+static StrConstant SF_OP_POWERSPECTRUM = "powerspectrum"
 
 static StrConstant SF_OPSHORT_MINUS = "minus"
 static StrConstant SF_OPSHORT_PLUS = "plus"
@@ -134,13 +135,28 @@ static Constant SF_MSG_WARN = -1
 static Constant SF_NUMTRACES_ERROR_THRESHOLD = 10000
 static Constant SF_NUMTRACES_WARN_THRESHOLD = 1000
 
+static StrConstant SF_AVERAGING_NONSWEEPDATA_LBL = "NOSWEEPDATA"
+
+static StrConstant SF_POWERSPECTRUM_UNIT_DEFAULT = "default"
+static StrConstant SF_POWERSPECTRUM_UNIT_DB = "db"
+static StrConstant SF_POWERSPECTRUM_UNIT_NORMALIZED = "normalized"
+static StrConstant SF_POWERSPECTRUM_AVG_ON = "avg"
+static StrConstant SF_POWERSPECTRUM_AVG_OFF = "noavg"
+static StrConstant SF_POWERSPECTRUM_WINFUNC_NONE = "none"
+static Constant SF_POWERSPECTRUM_RATIO_DELTAHZ = 10
+static Constant SF_POWERSPECTRUM_RATIO_EPSILONHZ = 0.25
+static Constant SF_POWERSPECTRUM_RATIO_EPSILONPOSFIT = 1E-3
+static Constant SF_POWERSPECTRUM_RATIO_MAXFWHM = 5
+static Constant SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM = 2.35482004503
+static Constant SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS = 4
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
 					  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_TEXT, SF_OP_LOG, \
 					  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 					  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP, \
-					  SF_OP_STORE, SF_OP_SELECT}
+					  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM}
 
 	return wt
 End
@@ -923,6 +939,9 @@ Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath
 		case SF_OP_SELECT:
 			WAVE out = SF_OperationSelect(jsonId, jsonPath, graph)
 			break
+		case SF_OP_POWERSPECTRUM:
+			WAVE out = SF_OperationPowerSpectrum(jsonId, jsonPath, graph)
+			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
 	endswitch
@@ -1007,7 +1026,7 @@ End
 
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
-	variable channelNumber, channelType, sweepNo
+	variable channelNumber, channelType, sweepNo, isAveraged
 	string channelId, prefix
 	string traceAnnotation
 
@@ -1034,12 +1053,22 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 			else
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-				sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-				if(IsNaN(channelNumber) || IsNaN(channelType) || IsNaN(sweepNo))
+				if(IsNaN(channelNumber) || IsNaN(channelType))
 					return ""
 				endif
+				isAveraged = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+				if(IsNaN(isAveraged) || !isAveraged)
+					sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+					if(IsNaN(sweepNo))
+						return ""
+					endif
+				endif
 				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-				sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+				if(isAveraged)
+					sprintf traceAnnotation, "%s Sweep(s) averaged %s", prefix, channelId
+				else
+					sprintf traceAnnotation, "%s Sweep %d %s", prefix, sweepNo, channelId
+				endif
 			endif
 			break
 	endswitch
@@ -1054,7 +1083,7 @@ End
 
 static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
-	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal
+	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged
 
 	s.red = 0xFFFF
 	s.green = 0x0000
@@ -1083,7 +1112,8 @@ static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStac
 
 	channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 	channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-	sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	isAveraged = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+	sweepNo = isAveraged == 1 ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 	if(!IsValidSweepNumber(sweepNo))
 		return [s]
 	endif
@@ -3375,6 +3405,242 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 	return SF_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, opStack="")
 End
 
+static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
+
+	variable i, numArgs, doAvg, debugVal
+	string errMsg
+	string avg = SF_POWERSPECTRUM_AVG_OFF
+	string unit = SF_POWERSPECTRUM_UNIT_DEFAULT
+	string winFunc = "Hanning"
+	variable cutoff = 1000
+	variable ratioFreq
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs >= 1 && numArgs <= 6, "The powerspectrum operation requires 1 to 6 arguments")
+
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_POWERSPECTRUM, 0)
+	if(numArgs > 1)
+		WAVE/T wUnit = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist=1)
+		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
+		SF_ASSERT(IsTextWave(wUnit), errMsg)
+		SF_ASSERT(!DimSize(wUnit, COLS) && DimSize(wUnit, ROWS) == 1, "Second argument (unit) must not be an array with multiple options.")
+		unit = wUnit[0]
+		sprintf errMsg, "Second argument (unit) must be %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
+		SF_ASSERT(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED), errMsg)
+	endif
+	if(numArgs > 2)
+		WAVE/T wAvg = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist=1)
+		sprintf errMsg, "Third argument (avg) can not be a number. Use %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
+		SF_ASSERT(IsTextWave(wAvg), errMsg)
+		SF_ASSERT(!DimSize(wAvg, COLS) && DimSize(wAvg, ROWS) == 1, "Third argument (avg) must not be an array with multiple options.")
+		avg = wAvg[0]
+		sprintf errMsg, "Third argument (avg) must be %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
+		SF_ASSERT(!CmpStr(avg, SF_POWERSPECTRUM_AVG_ON) || !CmpStr(avg, SF_POWERSPECTRUM_AVG_OFF), errMsg)
+	endif
+	if(numArgs > 3)
+		WAVE wRatioFreq = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist=1)
+		SF_ASSERT(IsNumericWave(wRatioFreq), "Fourth argument (frequency for ratio) must be a number.")
+		SF_ASSERT(!DimSize(wRatioFreq, COLS) && DimSize(wRatioFreq, ROWS) == 1, "Fourth argument (frequency for ratio) must not be an array with multiple options.")
+		ratioFreq = wRatioFreq[0]
+		sprintf errMsg, "Fourth argument (Frequency for ratio) must >= %f.", 0
+		SF_ASSERT(ratioFreq >= 0, errMsg)
+	endif
+	if(numArgs > 4)
+		WAVE wCutoff = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist=1)
+		SF_ASSERT(IsNumericWave(wCutoff), "Fifth argument (cutoff frequency) must be a number.")
+		SF_ASSERT(!DimSize(wCutoff, COLS) && DimSize(wCutoff, ROWS) == 1, "Fifth argument (cutoff frequency) must not be an array with multiple options.")
+		cutoff = wCutoff[0]
+		SF_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
+	endif
+	if(numArgs > 5)
+		WAVE/T wWinf = SF_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist=1)
+		SF_ASSERT(IsTextWave(wWinf), "Sixth argument (window function) can not be a number.")
+		SF_ASSERT(!DimSize(wWinf, COLS) && DimSize(wWinf, ROWS) == 1, "Sixth argument (window function) must not be an array with multiple options.")
+		winFunc = wWinf[0]
+		SF_ASSERT(WhichListItem(winFunc, FFT_WINF) >= 0 || !CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE), "Sixth argument (window function) is invalid.")
+		if(!CmpStr(winFunc, SF_POWERSPECTRUM_WINFUNC_NONE))
+			winFunc = ""
+		endif
+	endif
+
+	for(data : input)
+		if(!WaveExists(data))
+			continue
+		endif
+		SF_ASSERT(IsNumericWave(data), "powerspectrum requires numeric input data.")
+	endfor
+	Make/FREE/N=(DimSize(input, ROWS)) indexHelper
+	MultiThread indexHelper[] = SF_RemoveEndOfSweepNaNs(input[p])
+
+	doAvg = !CmpStr(avg, "avg")
+	cutOff = ratioFreq == 0 ? cutOff : NaN
+
+	if(doAvg)
+		Make/FREE/WAVE/N=(DimSize(input, ROWS)) output
+	else
+		WAVE/WAVE output = SF_CreateSFRefWave(graph, SF_OP_POWERSPECTRUM, DimSize(input, ROWS))
+	endif
+
+	MultiThread output[] = SF_OperationPowerSpectrumImpl(input[p], unit, cutoff, winFunc)
+
+	SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_POWERSPECTRUM, SF_DATATYPE_POWERSPECTRUM)
+
+	if(doAvg)
+		WAVE/WAVE outputAvg = SF_AverageDataOverSweeps(output)
+		WAVE/WAVE outputAvgPS = SF_CreateSFRefWave(graph, SF_OP_POWERSPECTRUM, DimSize(outputAvg, ROWS))
+		JWN_SetStringInWaveNote(outputAvgPS, SF_META_DATATYPE, SF_DATATYPE_POWERSPECTRUM)
+		JWN_SetStringInWaveNote(outputAvgPS, SF_META_OPSTACK, JWN_GetStringFromWaveNote(output, SF_META_OPSTACK))
+		outputAvgPS[] = outputAvg[p]
+		WAVE/WAVE output = outputAvgPS
+	endif
+
+	if(ratioFreq)
+		Duplicate/FREE/WAVE output, inputRatio
+#ifdef DEBUGGING_ENABLED
+		if(DP_DebuggingEnabledForCaller())
+			debugVal = DimSize(output, ROWS)
+			Redimension/N=(debugVal * 2) output, inputRatio
+			for(i = 0; i < debugVal; i += 1)
+				Duplicate/FREE inputRatio[i], wv
+				inputRatio[debugVal + i] = wv
+			endfor
+			output[0, debugVal - 1] = SF_PowerSpectrumRatio(inputRatio[p], ratioFreq, SF_POWERSPECTRUM_RATIO_DELTAHZ, fitData=inputRatio[p + debugVal])
+			output[debugVal,] = inputRatio[p]
+		endif
+#else
+		output[] = SF_PowerSpectrumRatio(inputRatio[p], ratioFreq, SF_POWERSPECTRUM_RATIO_DELTAHZ)
+#endif
+	endif
+
+	return SF_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear=input)
+End
+
+static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz[, WAVE fitData])
+
+	string sLeft, sRight, maxSigma, minAmp
+	variable err, left, right, minFreq, maxFreq, endFreq, base
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	endFreq = IndexToScale(input, DimSize(input, ROWS) - SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS - 1, ROWS)
+	ratioFreq = limit(ratioFreq, 0, endFreq)
+	minFreq = limit(ratioFreq - deltaHz, 0, endFreq)
+	maxFreq = limit(ratioFreq + deltaHz, 0, endFreq)
+
+	Make/FREE/D wCoef = {0, 0, 1, ratioFreq, SF_POWERSPECTRUM_RATIO_MAXFWHM * SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM}
+
+	left = ratioFreq - SF_POWERSPECTRUM_RATIO_EPSILONHZ
+	right = ratioFreq + SF_POWERSPECTRUM_RATIO_EPSILONHZ
+	sLeft = "K3 > " + num2str(left, "%.2f")
+	sRight = "K3 < " + num2str(right, "%.2f")
+	maxSigma = "K4 < " + num2str(SF_POWERSPECTRUM_RATIO_MAXFWHM / SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM, "%f")
+	minAmp = "K2 >= 0"
+	Make/FREE/T wConstraints = {minAmp, sLeft, sRight, maxSigma}
+
+	AssertOnAndClearRTError()
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints/D=fitData; err = GetRTError(1)
+		Duplicate/FREE/R=(minFreq, maxFreq) fitData, fitDataRanged
+		Redimension/N=(DimSize(fitDataRanged, ROWS)) fitData
+		CopyScales/P fitDataRanged, fitData
+		if(err)
+			FastOp fitData = (NaN)
+		else
+			fitData[] = fitDataRanged[p]
+		endif
+	endif
+#else
+	FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints; err = GetRTError(1)
+#endif
+	Redimension/N=1 input
+	input[0] = 0
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		SetScale/P x, ratioFreq, 1, WaveUnits(input, ROWS), input
+	endif
+#else
+	SetScale/P x, wCoef[3], 1, WaveUnits(input, ROWS), input
+#endif
+	SetScale/P d, 0, 1, "power ratio", input
+
+	if(err)
+		return input
+	endif
+
+	base = wCoef[0] + wCoef[1] * wCoef[3]
+	left -= SF_POWERSPECTRUM_RATIO_EPSILONPOSFIT
+	right += SF_POWERSPECTRUM_RATIO_EPSILONPOSFIT
+	if(base <= 0 || wCoef[3] < left || wCoef[3] > right || wCoef[2] < 0)
+		return input
+	endif
+
+	input[0] = (wCoef[2] + base) / base
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		printf "PS ratio, peak position, baseline, peak amplitude : %f %f %f %f\r", input[0], wCoef[3], base, wCoef[2]
+	endif
+#endif
+	return input
+End
+
+Function SF_LineNoiseFit(WAVE w, variable x) : FitFunc
+	// Formula: linear + gauss fit
+	// y0 + m * x + A * exp(-((x - x0) / sigma)^2)
+	// Coefficients:
+	// 0: offset, y0
+	// 1: slope, m
+	// 2: amplitude, A
+	// 3: peak position, x0
+	// 4: sigma, sigma
+	return w[0] + w[1] * x + w[2] * exp(-((x - w[3]) / w[4])^2)
+End
+
+threadsafe static Function/WAVE SF_OperationPowerSpectrumImpl(WAVE/Z input, string unit, variable cutoff, string winFunc)
+
+	variable size, m
+
+	if(!WaveExists(input))
+		return $""
+	endif
+
+	if(!IsFloatingPointWave(input))
+		Redimension/D input
+	endif
+
+	ZeroWaveImpl(input)
+
+	if(!CmpStr(WaveUnits(input, ROWS), "ms"))
+		SetScale/P x, DimOffset(input, ROWS) * MILLI_TO_ONE, DimDelta(input, ROWS) * MILLI_TO_ONE, "s", input
+	endif
+
+	if(IsEmpty(winFunc))
+		WAVE wFFT = DoFFT(input)
+	else
+		WAVE wFFT = DoFFT(input, winFunc=winFunc)
+	endif
+	size = IsNaN(cutOff) ? DimSize(wFFT, ROWS) : min(ScaleToIndex(wFFT, cutoff, ROWS), DimSize(wFFT, ROWS))
+
+	Make/FREE/N=(size) output
+	CopyScales/P wFFT, output
+	if(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT))
+		MultiThread output[] = magsqr(wFFT[p])
+		SetScale/I y, 0, 1, WaveUnits(input, -1) + "^2", output
+	elseif(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB))
+		MultiThread output[] = 10 * log(magsqr(wFFT[p]))
+		SetScale/I y, 0, 1, "dB", output
+	elseif(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED))
+		MultiThread output[] = magsqr(wFFT[p])
+		m = mean(output)
+		MultiThread output[] = output[p] / m
+		SetScale/I y, 0, 1, "mean(" + WaveUnits(input, -1) + "^2)", output
+	endif
+
+	return output
+End
+
 /// `select([array channels, array sweeps, [string mode, [string clamp]]])`
 ///
 /// returns n x 3 with columns [sweepNr][channelType][channelNr]
@@ -4259,4 +4525,96 @@ static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE
 	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
+End
+
+static Function/WAVE SF_AverageDataOverSweeps(WAVE/WAVE input)
+
+	variable i, channelNumber, channelType, sweepNo, pos, size, numGroups, numInputs
+	variable isSweepData
+	string lbl
+
+	numInputs = DimSize(input, ROWS)
+	Make/FREE/N=(numInputs) groupIndexCount
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) groupWaves
+	for(data : input)
+		if(!WaveExists(data))
+			continue
+		endif
+
+		channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+		channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+		sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+
+		isSweepData = !IsNaN(channelNumber) && !IsNaN(channelType) && !IsNaN(sweepNo)
+		if(isSweepData)
+			lbl = num2istr(channelType) + "_" + num2istr(channelNumber)
+		else
+			lbl = SF_AVERAGING_NONSWEEPDATA_LBL
+		endif
+
+		pos = FindDimLabel(groupWaves, ROWS, lbl)
+		if(pos == -2)
+			size = DimSize(groupWaves, ROWS)
+			if(size == numGroups)
+				Redimension/N=(size + MINIMUM_WAVE_SIZE) groupWaves
+			endif
+			SetDimLabel ROWS, numGroups, $lbl, groupWaves
+			pos = numGroups
+
+			Make/FREE/WAVE/N=(numInputs) group
+			if(isSweepData)
+				JWN_SetNumberInWaveNote(group, SF_META_CHANNELNUMBER, channelNumber)
+				JWN_SetNumberInWaveNote(group, SF_META_CHANNELTYPE, channelType)
+				JWN_SetNumberInWaveNote(group, SF_META_AVERAGED_FIRST_SWEEP, sweepNo)
+			endif
+			groupWaves[pos] = group
+
+			numGroups += 1
+		endif
+
+		WAVE group = groupWaves[pos]
+		size = groupIndexCount[pos]
+		group[size] = data
+		groupIndexCount[pos] +=1
+	endfor
+	Redimension/N=(numGroups) groupWaves
+	for(i = 0; i < numGroups; i += 1)
+		WAVE group = groupWaves[i]
+		Redimension/N=(groupIndexCount[i]) group
+	endfor
+
+	numGroups = DimSize(groupWaves, ROWS)
+	Make/FREE/WAVE/N=(numGroups) output
+	MultiThread output[] = SF_SweepAverageHelper(groupWaves[p])
+	for(i = 0; i < numGroups; i += 1)
+		WAVE wData = output[i]
+		JWN_SetNumberInWaveNote(wData, SF_META_ISAVERAGED, 1)
+		if(CmpStr(GetDimLabel(groupWaves, ROWS, i), SF_AVERAGING_NONSWEEPDATA_LBL))
+			WAVE group = groupWaves[i]
+			JWN_SetNumberInWaveNote(wData, SF_META_CHANNELNUMBER, JWN_GetNumberFromWaveNote(group, SF_META_CHANNELNUMBER))
+			JWN_SetNumberInWaveNote(wData, SF_META_CHANNELTYPE, JWN_GetNumberFromWaveNote(group, SF_META_CHANNELTYPE))
+			JWN_SetNumberInWaveNote(wData, SF_META_AVERAGED_FIRST_SWEEP, JWN_GetNumberFromWaveNote(group, SF_META_AVERAGED_FIRST_SWEEP))
+		endif
+	endfor
+
+	return output
+End
+
+threadsafe static Function/WAVE SF_SweepAverageHelper(WAVE/WAVE group)
+
+	WAVE/WAVE avgResult = MIES_fWaveAverage(group, 0, IGOR_TYPE_32BIT_FLOAT)
+
+	return avgResult[0]
+End
+
+threadsafe static Function SF_RemoveEndOfSweepNaNs(WAVE/Z input)
+
+	if(!WaveExists(input))
+		return NaN
+	endif
+
+	FindValue/Z/FNAN input
+	if(V_Value >= 0)
+		Redimension/N=(V_Value) input
+	endif
 End

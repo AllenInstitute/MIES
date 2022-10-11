@@ -776,6 +776,61 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta
 
    apfrequency([10, 20, 30], 1, 15)
 
+powerspectrum
+"""""""""""""
+
+The `powerspectrum` operation returns the power spectrum of the input data
+
+.. code-block:: bash
+
+   powerspectrum(array data[, string unit[, string average[, variable ratioFrequency[, variable cutOffFrequency[, string windowFunction]]]]])
+
+data
+  one or multiple data waves.
+
+unit
+  the unit can be either `default`, `dB` for decibel or `normalized` for the spectrum normalized by its total energy. The default method is `default`.
+  `default` means e.g. if the signal unit is `V` then the y-axis unit of the power spectrum is `V^2`.
+
+average
+  this argument allows to enable averaging over all sweeps of the same channel/channeltype combination. Possible values are `avg` and `noavg`.
+  The default average setting is `noavg`. If data waves do not originate from a sweep, then it is averaged over all of these data waves.
+  e.g. if there are two data waves from sweep 0,1 AD1, two data waves from sweep 0,1 AD2 and two data waves not from a sweep then
+  there will be three averaged waves: over all sweeps for channel combination AD1, over all sweeps for channel combination AD2 and over all data waves not from a sweep.
+
+ratioFrequency
+  this argument allows to specify a frequency where the ratio between base line and signal is determined through a gaussian fit with a linear base.
+  A typical use is to look for line noise at 50 Hz or 60 Hz. If a non zero ratioFrequency is set then the result is a single data point per power spectrum wave.
+  The returned ratio is `(amplitude + baseline_level) / baseline_level`. The default ratioFrequency is `0`, that disables the ratio determination.
+
+cutOffFrequency
+  The cutOffFrequency allows to limit the maximum displayed frequency of the powerspectrum. The default cutOffFrequncy is `1000` Hz.
+  The maximum cutOffFrequency is half of the sample frequency. This argument is ignored if a ratioFrequency > 0 is set.
+
+windowFunction
+  allows to specify the window function applied for the FFT. The default windowFunction is `Hanning`.
+  Possible options are `none` to disable the application of a window function and the window functions known to Igor Pro 9. See `DisplayHelpTopic "FFT"`.
+
+The gaussian fit for the power ratio calculation uses the following constraints:
+
+- The peak position must be between ratioFrequency ± 0.25 Hz
+- The maximum FWHM are 5 Hz
+- The amplitude must be >= 0
+- The base of the peak must be > 0
+
+If the fit fails a ratio of 0 is returned.
+
+The returned data type is `SF_DATATYPE_POWERSPECTRUM`.
+If input data type is `SF_DATATYPE_SWEEP` from the data operation and non-averaged power spectrum is calculated the sweep meta data is transferred to the returned data waves.
+
+.. code-block:: bash
+
+   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)))
+
+   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
+
+   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
+
 Utility Functions
 ^^^^^^^^^^^^^^^^^
 

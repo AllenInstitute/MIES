@@ -6026,3 +6026,31 @@ threadsafe Function IsValidRegexp(string regexp)
 
 	return err == 0
 End
+
+/// @brief Calculate PowerSpectrum on a per column basis on each input[][col]
+///        and write the result into output[][col]. The result is capped to the output rows.
+///        No window function is applied.
+threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
+	variable numRows = DimSize(input, ROWS)
+
+	Duplicate/FREE/RMD=[*][col] input, slice
+	Redimension/N=(numRows) slice
+
+	WAVE powerSpectrum = DoFFT(slice)
+
+	output[][col] = magsqr(powerSpectrum[p])
+End
+
+/// @brief Perform FFT on input with optionally given window function
+///        The input data gets padded to the next power of 2 points.
+threadsafe Function/WAVE DoFFT(WAVE input[, string winFunc])
+
+	if(ParamIsDefault(winFunc))
+		FFT/PAD={TP_GetPowerSpectrumLength(DimSize(input, ROWS))}/DEST=result/FREE input
+	else
+		ASSERT_TS(WhichListItem(winFunc, FFT_WINF) >= 0, "Invalid window function for FFT")
+		FFT/PAD={TP_GetPowerSpectrumLength(DimSize(input, ROWS))}/WINF=$winFunc/DEST=result/FREE input
+	endif
+
+	return result
+End

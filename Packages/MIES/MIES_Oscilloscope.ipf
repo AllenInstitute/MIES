@@ -443,18 +443,6 @@ Function SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
 	endfor
 End
 
-/// @brief Perform FFT on input[col] and write the result into output[col]
-threadsafe static Function DoFFT(WAVE input, WAVE output, variable col)
-	variable numRows = DimSize(input, ROWS)
-
-	Duplicate/FREE/RMD=[*][col] input, slice
-	Redimension/N=(numRows) slice
-
-	FFT/PAD={TP_GetPowerSpectrumLength(numRows)}/DEST=powerSpectrum/FREE slice
-
-	output[][col] = magsqr(powerSpectrum[p])
-End
-
 static Function SCOPE_UpdatePowerSpectrum(device)
 	String device
 
@@ -471,7 +459,7 @@ static Function SCOPE_UpdatePowerSpectrum(device)
 
 		Make/FREE/N=(numADCs) junk
 
-		MultiThread junk[] = DoFFT(OscilloscopeData, TPOscilloscopeData, (startOfADColumns + p))
+		MultiThread junk[] = DoPowerSpectrum(OscilloscopeData, TPOscilloscopeData, (startOfADColumns + p))
 
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * ONE_TO_MILLI, DimDelta(OscilloscopeData, ROWS) * ONE_TO_MILLI, "ms", OscilloscopeData
 	endif

@@ -1898,6 +1898,8 @@ StrConstant SF_META_DATATYPE = "/DataType" // string
 StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
 StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
 StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
+StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
+StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
 StrConstant SF_META_XVALUES = "/XValues" // numeric wave
 StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
 StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
@@ -1920,6 +1922,7 @@ StrConstant SF_DATATYPE_MIN = "Min"
 StrConstant SF_DATATYPE_RANGE = "Range"
 StrConstant SF_DATATYPE_EPOCHS = "Epochs"
 StrConstant SF_DATATYPE_TP = "TestPulse"
+StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
 /// @}
 
 /// @name Available source options for RA_SkipSweeps()
@@ -1934,4 +1937,10 @@ Constant SWEEP_SKIP_AUTO = 0x2
 /// @{
 StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
 StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
+/// @}
+
+/// @name FFT Window Functions
+/// @anchor FFTWinFunctions
+/// @{
+StrConstant FFT_WINF = "Bartlet;Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;Parzen;Poisson2;Poisson3;Poisson4;Riemann;SFT3F;SFT3M;FTNI;SFT4F;SFT5F;SFT4M;FTHP;HFT70;FTSRS;SFT5M;HFT90D;HFT95;HFT116D;HFT144D;HFT169D;HFT196D;HFT223D;HFT248D;"
 /// @}

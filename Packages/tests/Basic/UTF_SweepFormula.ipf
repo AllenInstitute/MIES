@@ -1847,6 +1847,168 @@ static Function TestOperationData()
 
 End
 
+Function/WAVE FakeSweepDataGeneratorPS(WAVE sweep, variable numChannels)
+
+	variable pnts = 100000
+	variable targetFreq = 100
+	variable divisor
+
+	Redimension/D/N=(pnts, numChannels) sweep
+	SetScale/P x, 0, HARDWARE_NI_DAC_MIN_SAMPINT, "ms", sweep
+	divisor = targetFreq / 2 * pnts * HARDWARE_NI_DAC_MIN_SAMPINT * MILLI_TO_ONE
+	MultiThread sweep = sin(2 * Pi * IndexToScale(sweep, p, ROWS) / divisor)
+
+	return sweep
+End
+
+static Function TestOperationPowerSpectrum()
+
+	string win, device
+	string channelTypeList = "DA;AD;DA;AD;"
+	string channelNumberList = "2;6;3;7;"
+
+	variable sweepNo, val
+	string str, strRef
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	sweepNo = 0
+	FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorPS
+
+	CreateFakeSweepData(device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
+	CreateFakeSweepData(device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_EQUAL_VAR(trunc(V_min), 0)
+	CHECK_CLOSE_VAR(V_max, 603758976, tol=0.01)
+	val = IndexToScale(data, DimSize(data, ROWS), ROWS)
+	CHECK_CLOSE_VAR(val, 1000, tol=0.001)
+	str = WaveUnits(data, -1)
+	strRef = "^2"
+	CHECK_EQUAL_STR(strRef, str)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_CLOSE_VAR(V_max, 88, tol=0.01)
+	str = WaveUnits(data, -1)
+	strRef = "dB"
+	CHECK_EQUAL_STR(strRef, str)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),normalized)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_CLOSE_VAR(V_max, 129, tol=0.01)
+	str = WaveUnits(data, -1)
+	strRef = "mean(^2)"
+	CHECK_EQUAL_STR(strRef, str)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)),dB,avg)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(2, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_CLOSE_VAR(V_max, 88, tol=0.01)
+	WAVE data = dataWref[1]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_CLOSE_VAR(V_max, 88, tol=0.01)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,100)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_EQUAL_VAR(1, DimSize(data, ROWS))
+	CHECK_CLOSE_VAR(data[0], 1.32, tol=0.01)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,0,2000)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	val = IndexToScale(data, DimSize(data, ROWS), ROWS)
+	CHECK_CLOSE_VAR(val, 2000, tol=0.001)
+
+	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,0,1000,HFT248D)"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
+	WAVE data = dataWref[0]
+	WaveStats/Q/M=1 data
+	CHECK_CLOSE_VAR(V_maxLoc, 100, tol=0.01)
+	CHECK_CLOSE_VAR(V_max, 94, tol=0.01)
+
+	try
+		str = "powerspectrum()"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), not_exist)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, not_exist)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, -1)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, -1)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, 1000, not_exist)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, 1000, Bartlet, not_exist)"
+		WAVE/WAVE dataWref = GetMultipleResults(str, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function TestOperationLabNotebook()
 	Variable i, j, sweepNumber, channelNumber
 	String str, trace, key, name, epochStr
@@ -2355,4 +2517,69 @@ static Function ZeroSizedSubArrayTest()
 	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
 	WAVE wv = wRefResult[0]
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
+
+static Function/WAVE TestAverageOverSweeps_CreateData(variable val, variable channelNumber, variable channelType, variable sweepNo)
+
+	Make/FREE data = val
+	JWN_SetNumberInWaveNote(data, SF_META_CHANNELNUMBER, channelNumber)
+	JWN_SetNumberInWaveNote(data, SF_META_CHANNELTYPE, channelType)
+	JWN_SetNumberInWaveNote(data, SF_META_SWEEPNO, sweepNo)
+
+	return data
+End
+
+static Function/WAVE TestAverageOverSweeps_CheckMeta(WAVE data, variable channelNumber, variable channelType, variable firstSweep)
+
+	variable val
+
+	val = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
+	CHECK_EQUAL_VAR(channelNumber, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
+	CHECK_EQUAL_VAR(channelType, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP)
+	CHECK_EQUAL_VAR(firstSweep, val)
+	val = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
+	CHECK_EQUAL_VAR(1, val)
+
+	return data
+End
+
+static Function TestAverageOverSweeps()
+
+	Make/FREE/WAVE/N=6 input
+
+	WAVE data0 = TestAverageOverSweeps_CreateData(1, 1, 1, 0)
+	WAVE data1 = TestAverageOverSweeps_CreateData(3, 1, 1, 1)
+
+	WAVE data2 = TestAverageOverSweeps_CreateData(3, 2, 1, 2)
+	WAVE data3 = TestAverageOverSweeps_CreateData(5, 2, 1, 3)
+
+	WAVE data4 = TestAverageOverSweeps_CreateData(5, 1, 1, NaN)
+	WAVE data5 = TestAverageOverSweeps_CreateData(7, 1, 1, NaN)
+
+	input[0] = data0
+	input[1] = data1
+	input[2] = data2
+	input[3] = data3
+	input[4] = data4
+	input[5] = data5
+
+	WAVE/WAVE output = MIES_SF#SF_AverageDataOverSweeps(input)
+	CHECK_EQUAL_VAR(3, DimSize(output, ROWS))
+	WAVE data = output[0]
+	Make/FREE dataRef = 2
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, 1, 1, 0)
+
+	WAVE data = output[1]
+	Make/FREE dataRef = 4
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, 2, 1, 2)
+
+	WAVE data = output[2]
+	Make/FREE dataRef = 6
+	CHECK_EQUAL_WAVES(dataRef, data, mode=WAVE_DATA)
+	TestAverageOverSweeps_CheckMeta(data, NaN, NaN, NaN)
+
 End
