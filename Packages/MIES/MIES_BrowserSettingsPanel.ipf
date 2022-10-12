@@ -589,6 +589,16 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	endif
 End
 
+Function BSP_HidePanel(string win)
+
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	SetWindow $win hide=1
+
+	BSP_MainPanelButtonToggle(mainPanel, 1)
+End
+
 /// @brief panel close hook for side panel
 Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
@@ -597,13 +607,9 @@ Function BSP_ClosePanelHook(s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILLVOTE:
-			mainPanel = GetMainWindow(s.winName)
-			SetWindow $s.winName hide=1
-
-			BSP_MainPanelButtonToggle(mainPanel, 1)
+			BSP_HidePanel(s.winName)
 
 			return 2 // don't kill window
-
 	endswitch
 
 	return 0
