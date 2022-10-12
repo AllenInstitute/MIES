@@ -4703,7 +4703,7 @@ End
 static Function/S PSQ_ExecuteSweepFormula(string device, string code)
 	string databrowser, bsPanel, sfNotebook
 
-	databrowser = DB_GetBoundDataBrowser(device)
+	databrowser = DB_GetBoundDataBrowser(device, mode = BROWSER_MODE_AUTOMATION)
 
 	SF_SetFormula(databrowser, code)
 
