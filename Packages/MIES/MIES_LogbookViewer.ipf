@@ -175,32 +175,6 @@ static Function/DF LBV_GetTPStorageLocation(string win)
 	return GetAnalysisDeviceTestpulse(dataFolder, device)
 End
 
-/// @brief panel close hook for settings history panel
-Function LBV_CloseSettingsHistoryHook(STRUCT WMWinHookStruct &s)
-	string mainPanel, shPanel
-
-	switch(s.eventCode)
-		case EVENT_WINDOW_HOOK_KILLVOTE:
-			mainPanel = GetMainWindow(s.winName)
-
-			if(!BSP_IsDataBrowser(mainPanel))
-				return 0
-			endif
-
-			shPanel = LBV_GetSettingsHistoryPanel(mainPanel)
-
-			ASSERT(!cmpstr(s.winName, shPanel), "This hook is only available for Setting History Panel.")
-
-			SetWindow $s.winName hide=1
-
-			BSP_MainPanelButtonToggle(mainPanel, 1)
-
-			return 2 // don't kill window
-	endswitch
-
-	return 0
-End
-
 Function LBV_ButtonProc_ClearGraph(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)

@@ -570,7 +570,7 @@ End
 ///
 /// @param mainPanel 	main Panel window
 /// @param visible 		set status of external Panel (opened: visible = 1)
-Function BSP_MainPanelButtonToggle(mainPanel, visible)
+static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	string mainPanel
 	variable visible
 
