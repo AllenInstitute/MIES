@@ -12,7 +12,7 @@ Function/S CreateFakeSweepBrowser_IGNORE()
 	DFREF dfr = GetDataFolderDFR()
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
-	BSP_SetSweepBrowser(win)
+	BSP_SetSweepBrowser(win, BROWSER_MODE_USER)
 
 	return win
 End
@@ -42,7 +42,7 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 
 	Display/N=$win as device
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
-	BSP_SetDataBrowser(win)
+	BSP_SetDataBrowser(win, BROWSER_MODE_USER)
 	BSP_SetDevice(win, device)
 	MIES_DB#DB_SetUserData(win, device)
 End

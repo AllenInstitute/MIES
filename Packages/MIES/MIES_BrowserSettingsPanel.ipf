@@ -431,35 +431,87 @@ End
 
 /// @brief set DEVICE property to the userdata of the main panel
 ///
-/// @param win 	name of external panel or main window
-/// @param type One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
-static Function/S BSP_SetBrowserType(string win, string type)
+/// @param win 	   name of external panel or main window
+/// @param type    One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
+/// @param mode    One of @ref BrowserModes
+static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 	string mainPanel
+
+	string title, suffix
 
 	mainPanel = GetMainWindow(win)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER) = type
 
-	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
-		DoWindow/T $mainPanel, SWEEPBROWSER_WINDOW_TITLE
-	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
-		DoWindow/T $mainPanel, DATABROWSER_WINDOW_TITLE
+	if(mode == BROWSER_MODE_USER)
+		suffix = ""
+	elseif(mode == BROWSER_MODE_AUTOMATION)
+		suffix = " (A*U*T*O*M*A*T*I*O*N)"
 	endif
+
+	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE) = BSP_SerializeBrowserMode(mode)
+
+	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
+		title = SWEEPBROWSER_WINDOW_TITLE
+	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
+		title = DATABROWSER_WINDOW_TITLE
+	else
+		ASSERT(0, "Invalid type")
+	endif
+
+	title += suffix
+
+	DoWindow/T $mainPanel, title
+End
+
+static Function BSP_ParseBrowserMode(string mode)
+	strswitch(mode)
+		case "User":
+			return BROWSER_MODE_USER
+		case "Automation":
+			return BROWSER_MODE_AUTOMATION
+		case "All":
+			return BROWSER_MODE_ALL
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
+End
+
+static Function/S BSP_SerializeBrowserMode(variable mode)
+	switch(mode)
+		case BROWSER_MODE_USER:
+			return "User"
+		case BROWSER_MODE_AUTOMATION:
+			return "Automation"
+		case BROWSER_MODE_ALL:
+			return "All"
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
+End
+
+Function BSP_HasMode(string win, variable mode)
+
+	string mainPanel
+	variable foundMode
+
+	mainPanel = GetMainWindow(win)
+	foundMode = BSP_ParseBrowserMode(GetUserData(mainPanel, "", MIES_BSP_BROWSER_MODE))
+
+	return foundMode & mode
 End
 
 /// @brief wrapper function for external calls
-Function BSP_SetDataBrowser(win)
-	string win
+Function BSP_SetDataBrowser(string win, variable mode)
 
-	BSP_SetBrowserType(win, BROWSERTYPE_DATABROWSER)
+	BSP_SetBrowserType(win, BROWSERTYPE_DATABROWSER, mode)
 End
 
 /// @brief wrapper function for external calls
-Function BSP_SetSweepBrowser(win)
-	string win
+Function BSP_SetSweepBrowser(string win, variable mode)
 
-	BSP_SetBrowserType(win, BROWSERTYPE_SWEEPBROWSER)
+	BSP_SetBrowserType(win, BROWSERTYPE_SWEEPBROWSER, mode)
 End
 
 /// @brief wrapper function for external calls
@@ -579,9 +631,11 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	visible = !!visible ? 1 : 0
 
 	panelButton = "button_BSP_open"
-	if(!ControlExists(mainPanel, panelButton))
-		return 0
+
+	if(!ControlExists(mainPanel, panelButton) || IsControlDisabled(mainPanel, panelButton))
+		return NaN
 	endif
+
 	if(visible)
 		ShowControl(mainPanel, panelButton)
 	else

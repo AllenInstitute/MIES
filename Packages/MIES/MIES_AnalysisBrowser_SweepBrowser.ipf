@@ -387,16 +387,22 @@ Function SB_SweepBrowserWindowHook(s)
 	return 0
 End
 
-Function/DF SB_OpenSweepBrowser()
+Function/DF SB_OpenSweepBrowser([variable mode])
 
 	string mainWin, renameWin
+
+	if(ParamIsDefault(mode))
+		mode = BROWSER_MODE_USER
+	else
+		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
+	endif
 
 	Execute "DataBrowser()"
 
 	mainWin = GetMainWindow(GetCurrentWindow())
 
 	AddVersionToPanel(mainWin, DATA_SWEEP_BROWSER_PANEL_VERSION)
-	BSP_SetSweepBrowser(mainWin)
+	BSP_SetSweepBrowser(mainWin, mode)
 
 	SetWindow $mainWin, hook(cleanup)=SB_SweepBrowserWindowHook
 	SB_SetUserData(mainWin)
