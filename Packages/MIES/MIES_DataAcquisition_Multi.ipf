@@ -174,6 +174,8 @@ End
 Function DQM_TerminateOngoingDAQHelper(device)
 	String device
 
+	variable returnedHardwareType
+
 	NVAR deviceID = $GetDAQDeviceID(device)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
@@ -181,7 +183,19 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
-	HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+
+	try
+		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	catch
+		if(hardwareType == HARDWARE_ITC_DAC)
+			print "Stopping data acquisition was not successfull, trying to close and reopen the device"
+			LOG_AddEntry(PACKAGE_MIES, "begin closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+			HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
+			HW_OpenDevice(device, returnedHardwareType)
+			ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Error opening the device again")
+			LOG_AddEntry(PACKAGE_MIES, "end closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+		endif
+	endtry
 
 	// remove device passed in from active device lists
 	DQM_RemoveDevice(device, deviceID)
