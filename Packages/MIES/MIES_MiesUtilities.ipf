@@ -7320,7 +7320,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		ASSERT(0, "Invalid firstDate/lastDate combination")
 	endif
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist"}}
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}}
 	jsonID = GenerateJSONTemplateForUpload()
 
 	numEntries = DimSize(files, ROWS)
@@ -7367,7 +7367,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	JSON_Release(jsonID)
 
 	if(verbose)
-		printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+		printf "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 	endif
 End
 
