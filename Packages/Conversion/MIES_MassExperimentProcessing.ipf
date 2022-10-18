@@ -1,4 +1,10 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method.
+#pragma rtFunctionErrors=1
+
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_MEP
+#endif
 
 /// @file MIES_MassExperimentProcessing.ipf
 /// @brief __MEP__ Process multiple MIES pxps to convert data into NWBv2
