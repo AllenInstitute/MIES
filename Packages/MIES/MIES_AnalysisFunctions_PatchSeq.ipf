@@ -49,6 +49,7 @@
 ///  PSQ_FMT_LBN_RMS_LONG_THRESHOLD           Long RMS baseline threshold                                 V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
 ///  PSQ_FMT_LBN_TARGETV                      Target voltage baseline                                     Volt     Numerical    DA, RB, RA, CR                       Yes          Yes
 ///  PSQ_FMT_LBN_TARGETV_PASS                 Target voltage baseline QC result                           On/Off   Numerical    DA, RB, RA, CR                       Yes          Yes
+///  PSQ_FMT_LBN_TARGETV_THRESHOLD            Target voltage threshold                                    V        Numerical    DA, RB, RA, CR                       No           Yes
 ///  PSQ_FMT_LBN_LEAKCUR                      Leak current                                                Amperes  Numerical    PB, VM, AR                           Yes          Yes
 ///  PSQ_FMT_LBN_LEAKCUR_PASS                 Leak current QC result                                      On/Off   Numerical    PB, VM, AR                           Yes          Yes
 ///  PSQ_FMT_LBN_AVERAGEV                     Average voltage                                             Volt     Numerical    VM                                   Yes          Yes
@@ -283,16 +284,17 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 	return durations
 End
 
-/// @brief Return the baseline RMS short/long thresholds in mV
-static Function [variable rmsShortThreshold, variable rmsLongThreshold] PSQ_GetBaselineRMSThresholds(string params)
+/// @brief Return the baseline RMS short/long and target V thresholds in mV
+static Function [variable rmsShortThreshold, variable rmsLongThreshold, variable targetVThreshold] PSQ_GetBaselineThresholds(string params)
 
 	rmsShortThreshold = AFH_GetAnalysisParamNumerical("BaselineRMSShortThreshold", params, defValue = PSQ_RMS_SHORT_THRESHOLD)
 	rmsLongThreshold  = AFH_GetAnalysisParamNumerical("BaselineRMSLongThreshold", params, defValue = PSQ_RMS_LONG_THRESHOLD)
+	targetVThreshold  = AFH_GetAnalysisParamNumerical("BaselineTargetVThreshold", params, defValue = PSQ_TARGETV_THRESHOLD)
 
-	return [rmsShortThreshold, rmsLongThreshold]
+	return [rmsShortThreshold, rmsLongThreshold, targetVThreshold]
 End
 
-static Function PSQ_StoreRMSThresholdsInLabnotebook(string device, variable type, variable sweepNo, variable headstage, variable rmsShortThreshold, variable rmsLongThreshold)
+static Function PSQ_StoreThresholdsInLabnotebook(string device, variable type, variable sweepNo, variable headstage, variable rmsShortThreshold, variable rmsLongThreshold, variable targetVThreshold)
 	string key
 
 	WAVE values = LBN_GetNumericWave()
@@ -305,6 +307,11 @@ static Function PSQ_StoreRMSThresholdsInLabnotebook(string device, variable type
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	// mV -> V
 	values[headstage] = rmsLongThreshold * MILLI_TO_ONE
+	ED_AddEntryToLabnotebook(device, key, values, unit = "V", overrideSweepNo = sweepNo)
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	// mV -> V
+	values[headstage] = targetVThreshold * MILLI_TO_ONE
 	ED_AddEntryToLabnotebook(device, key, values, unit = "V", overrideSweepNo = sweepNo)
 End
 
@@ -415,7 +422,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
-	variable leakCurPassedAll, maxLeakCurrent
+	variable leakCurPassedAll, maxLeakCurrent, targetVThreshold
 	variable rmsShortThreshold, rmsLongThreshold
 	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
@@ -488,7 +495,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		return !chunkPassed
 	endif
 
-	[rmsShortThreshold, rmsLongThreshold] = PSQ_GetBaselineRMSThresholds(s.params)
+	[rmsShortThreshold, rmsLongThreshold, targetVThreshold] = PSQ_GetBaselineThresholds(s.params)
 
 	// Rows: baseline types
 	// - 0: pre pulse
@@ -581,8 +588,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
 
 		if(chunk == 0)
-			// store baseline RMS short/long analysis parameters in labnotebook on first use
-			PSQ_StoreRMSThresholdsInLabnotebook(device, type, s.sweepNo, i, rmsShortThreshold, rmsLongThreshold)
+			// store baseline RMS short/long tartget V analysis parameters in labnotebook on first use
+			PSQ_StoreThresholdsInLabnotebook(device, type, s.sweepNo, i, rmsShortThreshold, rmsLongThreshold, targetVThreshold)
 		endif
 
 		switch(baselineType)
@@ -675,7 +682,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			if(TestOverrideActive())
 				targetVPassed[i] = chunkPassedTargetVOverride
 			else
-				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
+				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= targetVThreshold
 			endif
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
@@ -1708,6 +1715,8 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "BaselineRMSShortThreshold":
 			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "BaselineTargetVThreshold":
+			return "Threshold value in mV for the target V baseline QC check (defaults to " + num2str(PSQ_TARGETV_THRESHOLD) + ")"
 		case "FailedLevel":
 			return "Absolute level for spike search"
 		case "MaxLeakCurrent":
@@ -1729,14 +1738,14 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 	endswitch
 End
 
-static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct &s, [variable maxRMSThreshold])
+static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct &s, [variable maxThreshold])
 	variable val
 	string str
 
-	if(ParamIsDefault(maxRMSThreshold))
-		maxRMSThreshold = 20
+	if(ParamIsDefault(maxThreshold))
+		maxThreshold = 20
 	else
-		ASSERT(IsFinite(maxRMSThreshold), "Invalid value")
+		ASSERT(IsFinite(maxThreshold), "Invalid value")
 	endif
 
 	strswitch(name)
@@ -1761,8 +1770,9 @@ static Function/S PSQ_CheckParamCommon(string name, struct CheckParametersStruct
 			break
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= maxRMSThreshold))
+			if(!(val > 0 && val <= maxThreshold))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -1832,6 +1842,7 @@ Function/S PSQ_DAScale_GetParams()
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[BaselineTargetVThreshold:variable],"  + \
 	       "[DAScaleModifier:variable],"           + \
 	       "DAScales:wave,"                        + \
 	       "[FinalSlopePercent:variable],"         + \
@@ -1850,6 +1861,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
@@ -1888,6 +1900,7 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "DAScaleModifier":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
@@ -2703,6 +2716,7 @@ Function/S PSQ_Rheobase_GetParams()
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[BaselineTargetVThreshold:variable],"  + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable"
 End
@@ -2713,6 +2727,7 @@ Function/S PSQ_Rheobase_GetHelp(string name)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
@@ -2727,6 +2742,7 @@ Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
@@ -3131,6 +3147,7 @@ Function/S PSQ_Ramp_GetParams()
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
+	       "[BaselineTargetVThreshold:variable],"  + \
 	       "NumberOfSpikes:variable,"              + \
 	       "[SamplingFrequency:variable],"         + \
 	       "SamplingMultiplier:variable"
@@ -3142,6 +3159,7 @@ Function/S PSQ_Ramp_GetHelp(string name)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_RAMP, name)
@@ -3161,6 +3179,7 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
@@ -3946,6 +3965,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "FailedLevel":
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
@@ -3994,6 +4014,7 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 		case "AsyncQCChannels":
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
+		case "BaselineTargetVThreshold":
 		case "DAScaleOperator":
 		case "DAScaleModifier":
 		case "FailedLevel":
@@ -4070,6 +4091,7 @@ Function/S PSQ_Chirp_GetParams()
 	       "[AutobiasTargetVAtSetEnd:variable],"               + \
 	       "[BaselineRMSLongThreshold:variable],"              + \
 	       "[BaselineRMSShortThreshold:variable],"             + \
+	       "[BaselineTargetVThreshold:variable],"              + \
 	       "BoundsEvaluationMode:string,"                      + \
 	       "[DAScaleModifier:variable],"                       + \
 	       "[DAScaleOperator:string],"                         + \
@@ -5185,7 +5207,7 @@ Function/S PSQ_SealEvaluation_CheckParam(string name, struct CheckParametersStru
 		case "NumberOfFailedSweeps":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			return PSQ_CheckParamCommon(name, s, maxRMSThreshold = 100)
+			return PSQ_CheckParamCommon(name, s, maxThreshold = 100)
 		case "SealThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))

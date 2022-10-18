@@ -78,6 +78,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 			break
 		case PSQ_FMT_LBN_RMS_SHORT_THRESHOLD:
 		case PSQ_FMT_LBN_RMS_LONG_THRESHOLD:
+		case PSQ_FMT_LBN_TARGETV_THRESHOLD:
 			WAVE/Z values = GetLastSettingSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			if(!WaveExists(values))
 				return $""
@@ -148,6 +149,9 @@ static Function PS_DS_Sub1_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -296,6 +300,9 @@ static Function PS_DS_Sub2_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -495,6 +502,9 @@ static Function PS_DS_Sub3_REENTRY([str])
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
 	// chunk 0
@@ -667,6 +677,9 @@ static Function PS_DS_Sub4_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -884,6 +897,9 @@ static Function PS_DS_Sub5_REENTRY([str])
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
 	// chunk 0
@@ -1033,6 +1049,9 @@ static Function PS_DS_Sub5a_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -1185,6 +1204,9 @@ static Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -1404,6 +1426,9 @@ static Function PS_DS_Sub7_REENTRY([str])
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
 	// chunk 0
@@ -1591,6 +1616,9 @@ static Function PS_DS_Sub8_REENTRY([str])
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
 	// chunk 0
@@ -1721,6 +1749,7 @@ static Function PS_DS_Sub9_preAcq(device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSShortThreshold", var = 0.150)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSLongThreshold", var = 0.250)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "baselineTargetVThreshold", var = 0.350)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1728,7 +1757,7 @@ static Function PS_DS_Sub9_preAcq(device)
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End
 
-// Same as PS_DS_Sub1 but with custom RMS short/long thresholds
+// Same as PS_DS_Sub1 but with custom RMS short/long and target V thresholds
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function PS_DS_Sub9([str])
 	string str
@@ -1772,6 +1801,9 @@ static Function PS_DS_Sub9_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {0.250 * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {0.350 * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
@@ -1926,6 +1958,9 @@ static Function PS_DS_Sub10_REENTRY([str])
 
 	WAVE/Z baselineLongThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
 	CHECK_EQUAL_WAVES(baselineLongThreshold, {PSQ_RMS_LONG_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
+
+	WAVE/Z baselineTargetVThreshold = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_THRESHOLD)
+	CHECK_EQUAL_WAVES(baselineTargetVThreshold, {PSQ_TARGETV_THRESHOLD * 1e-3}, mode = WAVE_DATA, tol = 1e-6)
 
 	// we only test-override chunk passed, so for the others we can just check if they exist or not
 
