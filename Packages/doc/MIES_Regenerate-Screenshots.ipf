@@ -1,7 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access
 #pragma rtFunctionErrors=1
-#pragma DefaultTab={3,20,4}		// Set default tab width in Igor Pro 9 and later
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_RS
