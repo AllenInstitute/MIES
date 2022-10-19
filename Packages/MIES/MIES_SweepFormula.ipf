@@ -1140,6 +1140,47 @@ static Function [string traceName, variable traceCnt] SF_CreateTraceName(variabl
 	return [traceName, traceCnt]
 End
 
+/// Reduces a multi line legend to a single line if only the sweep number changes.
+/// Returns the original annotation if more changes or the legend text does not follow the exected format
+static Function/S SF_ShrinkLegend(string annotation)
+
+	string str, tracePrefix, opPrefix, sweepNum, suffix
+	string opPrefixOld, suffixOld
+	string sweepList = ""
+	variable firstRun = 1
+
+	string expr="(\\\\s\\([\\s\\S]+\\)) ([\\s\\S]*Sweep) (\\d+) ([\\s\\S]*)"
+
+	WAVE/T lines = ListToTextWave(annotation, "\r")
+	if(DimSize(lines, ROWS) < 2)
+		return annotation
+	endif
+
+	SplitString/E=expr lines[0], tracePrefix, opPrefixOld, sweepNum, suffixOld
+	if(V_flag != 4)
+		return annotation
+	endif
+	sweepList = AddListItem(sweepNum, sweepList, ",")
+
+	for(line : lines)
+		if(firstRun)
+			firstRun = 0
+			continue
+		endif
+
+		SplitString/E=expr line, str, opPrefix, sweepNum, suffix
+		if(V_flag != 4 || CmpStr(opPrefixOld, opPrefix, 2) || CmpStr(suffixOld, suffix, 2))
+			return annotation
+		endif
+
+		sweepList = AddListItem(sweepNum, sweepList, ",", Inf)
+	endfor
+
+	sweepList = CompressNumericalList(sweepList, ",")
+
+	return tracePrefix + opPrefixOld + "s " + sweepList + " " + suffixOld
+End
+
 static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
 
 	variable i, guidePos
@@ -1435,6 +1476,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		endfor
 
 		if(!IsEmpty(annotation))
+			annotation = SF_ShrinkLegend(annotation)
 			annotation = RemoveEnding(annotation, "\r")
 			Legend/W=$win/C/N=metadata/F=2 annotation
 		endif
