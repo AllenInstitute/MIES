@@ -6,7 +6,6 @@
 #include "::UTF_HardwareHelperFunctions"
 
 // keep sorted
-#include "UTF_AutoTestpulse"
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqSpikeControl"
@@ -91,7 +90,6 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
-	list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
