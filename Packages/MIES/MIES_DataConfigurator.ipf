@@ -1444,24 +1444,28 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 				j += 1
 			endif
 		endfor
-		Redimension/N=(j) reducedStimSet, reducedSetColumn
 
-		STRUCT OOdDAQParams params
-		InitOOdDAQParams(params, reducedStimSet, reducedSetColumn, s.distributedDAQOptPre, s.distributedDAQOptPost)
-		WAVE/WAVE reducedStimSet = OOD_GetResultWaves(device, params)
-		WAVE reducedOffsets = params.offsets
-		WAVE/T reducedRegions = params.regions
+		if(j > 0)
+			// we have at least one DAQ_CHANNEL_TYPE_DAQ channel
+			Redimension/N=(j) reducedStimSet, reducedSetColumn
 
-		Make/FREE/N=(s.numDACEntries) s.offsets = 0
-		Make/FREE/T/N=(s.numDACEntries) s.regions
+			STRUCT OOdDAQParams params
+			InitOOdDAQParams(params, reducedStimSet, reducedSetColumn, s.distributedDAQOptPre, s.distributedDAQOptPost)
+			WAVE/WAVE reducedStimSet = OOD_GetResultWaves(device, params)
+			WAVE reducedOffsets = params.offsets
+			WAVE/T reducedRegions = params.regions
 
-		j = DimSize(reducedStimSet, ROWS)
-		for(i = 0; i < j; i += 1)
-			s.stimSet[iTemp[i]] = reducedStimSet[i]
-			s.setColumn[iTemp[i]] = reducedSetColumn[i]
-			s.offsets[iTemp[i]] = reducedOffsets[i]
-			s.regions[iTemp[i]] = reducedRegions[i]
-		endfor
+			Make/FREE/N=(s.numDACEntries) s.offsets = 0
+			Make/FREE/T/N=(s.numDACEntries) s.regions
+
+			j = DimSize(reducedStimSet, ROWS)
+			for(i = 0; i < j; i += 1)
+				s.stimSet[iTemp[i]] = reducedStimSet[i]
+				s.setColumn[iTemp[i]] = reducedSetColumn[i]
+				s.offsets[iTemp[i]] = reducedOffsets[i]
+				s.regions[iTemp[i]] = reducedRegions[i]
+			endfor
+		endif
 	endif
 
 	if(!WaveExists(s.offsets))
