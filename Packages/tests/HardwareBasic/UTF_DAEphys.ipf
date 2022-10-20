@@ -290,3 +290,62 @@ Function AllChannelControlsWork([string str])
 		PGC_SetAndActivateControl(str, ctrl, val = CHECKBOX_SELECTED)
 	endfor
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+Function CheckIfConfigurationRestoresMCCFilterGain([str])
+	string str
+
+	string unlockedDevice, ctrl, fName
+	variable val, gain, filterFreq, headStage
+	string fPath = PS_GetSettingsFolder(PACKAGE_MIES)
+
+	fName = fPath + "CheckIfConfigurationRestoresMCCFilterGain.json"
+
+	unlockedDevice = DAP_CreateDAEphysPanel()
+
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	REQUIRE(WindowExists(str))
+
+	PGC_SetAndActivateControl(str, "button_Settings_UpdateAmpStatus")
+	PGC_SetAndActivateControl(str, "popup_Settings_Amplifier", val=1)
+	PGC_SetAndActivateControl(str, "Check_DataAcqHS_00", val=1)
+
+	PGC_SetAndActivateControl(str, "Popup_Settings_HeadStage", str="1")
+	PGC_SetAndActivateControl(str, "popup_Settings_Amplifier", val=2)
+	PGC_SetAndActivateControl(str, "Check_DataAcqHS_01", val=1)
+	PGC_SetAndActivateControl(str, "Radio_ClampMode_3", val=1)
+
+	gain = 5
+	filterFreq = 6
+	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+
+	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val=1)
+
+	CONF_SaveWindow(fName)
+
+	gain = 1
+	filterFreq = 2
+	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+
+	KillWindow $str
+
+	CONF_RestoreWindow(fName, usePanelTypeFromFile=1)
+
+	gain = 5
+	filterFreq = 6
+	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	CHECK_EQUAL_VAR(val, filterFreq)
+	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	CHECK_EQUAL_VAR(val, gain)
+	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	CHECK_EQUAL_VAR(val, filterFreq)
+	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	CHECK_EQUAL_VAR(val, gain)
+End
