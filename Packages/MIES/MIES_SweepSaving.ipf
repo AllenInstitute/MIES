@@ -96,31 +96,17 @@ End
 /// @brief General hook function which gets always executed after sweep data was added or removed
 ///
 /// @param device device name
-static Function SWS_AfterSweepDataChangeHook(device)
-	string device
+static Function SWS_AfterSweepDataChangeHook(string device)
 
-	string databrowser, scPanel
+	WAVE/T/Z allDBs = DB_FindAllDataBrowser(device)
 
-	databrowser = DB_FindDataBrowser(device)
-
-	if(IsEmpty(databrowser))
+	if(!WaveExists(allDBs))
 		return NaN
 	endif
 
-	scPanel = BSP_GetSweepControlsPanel(databrowser)
-
-	if(!GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
-		return NaN
-	endif
-
-	// catch all error conditions, asserts and aborts
-	// and silently ignore them
-	AssertOnAndClearRTError()
-	try
-		DB_UpdateToLastSweep(databrowser); AbortOnRTE
-	catch
-		ClearRTError()
-	endtry
+	for(win : allDBs)
+		DB_UpdateToLastSweep(win)
+	endfor
 End
 
 /// @brief Return a free wave with all channel gains

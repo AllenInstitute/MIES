@@ -7,15 +7,11 @@
 Function CheckIfAllControlsReferStateWv([str])
 	string str
 
-	string unlockedDevice, list, ctrl, stri, expected, lbl, uniqueControls
+	string list, ctrl, stri, expected, lbl, uniqueControls
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 	variable err, inputModified
 
-	unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(str))
+	CreateLockedDAEphys(str)
 
 	list  = ControlNameList(str, ";")
 
@@ -168,9 +164,7 @@ Function CheckStartupSettings([str])
 
 	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(str))
+	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
 	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumRef
 	Duplicate/O GetDA_EphysGuiStateTxT(str), guiStateTxTRef
@@ -223,9 +217,7 @@ Function CheckStartupSettings([str])
 	SCOPE_OpenScopeWindow(unlockedDevice)
 	AddVersionToPanel(unlockedDevice, DA_EPHYS_PANEL_VERSION)
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(str))
+	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
 	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumNew
 	Duplicate/O GetDA_EphysGuiStateTxT(str), guiStateTxTNew
@@ -241,10 +233,7 @@ Function CheckStimsetPopupMetadata([str])
 	string controls, stimsetlist, ctrl, menuExp
 	variable i, numControls, channelIndex, channelType, controlType
 
-	string unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
+	CreateLockedDAEphys(str)
 
 	controls = ControlNameList(str)
 	numControls = ItemsInList(controls)
@@ -273,14 +262,10 @@ End
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 Function AllChannelControlsWork([string str])
 
-	string unlockedDevice, ctrl
+	string ctrl
 	variable channelType
 
-	unlockedDevice = DAP_CreateDAEphysPanel()
-
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(str))
+	CreateLockedDAEphys(str)
 
 	Make/FREE channelTypes = {CHANNEL_TYPE_ADC, CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 

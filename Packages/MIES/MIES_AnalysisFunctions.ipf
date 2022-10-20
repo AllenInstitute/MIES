@@ -1285,7 +1285,7 @@ Function SetControlInEvent(device, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	string guiElements, guiElem, type, valueStr, event, msg, win, windowsWithGUIElement, databrowser, str
-	variable numEntries, i, controlType, j, numTuples, numMatches
+	variable numEntries, i, controlType, j, numTuples, numMatches, numWindows, k
 
 	if(s.eventType == MID_SWEEP_EVENT)
 		return NaN
@@ -1310,7 +1310,7 @@ Function SetControlInEvent(device, s)
 		numMatches = ItemsInList(windowsWithGUIElement)
 
 		if(numMatches == 1)
-			win = StringFromList(0, windowsWithGUIElement)
+			// do nothing
 		elseif(numMatches > 1)
 			printf "(%s): The analysis parameter %s is a control which is present in multiple panels or graphs.\r", device, guiElem
 			ControlWindowToFront()
@@ -1321,22 +1321,7 @@ Function SetControlInEvent(device, s)
 			windowsWithGUIElement = FindNotebook(guiElem)
 			numMatches = ItemsInList(windowsWithGUIElement)
 
-			if(numMatches == 1)
-				win = StringFromList(0, windowsWithGUIElement)
-			elseif(numMatches > 1)
-				databrowser = DB_FindDataBrowser(device)
-				str = GrepList(windowsWithGUIElement, "^\\Q" + databrowser + "\\E")
-				if(!IsEmpty(str))
-					// the notebook belongs to the databrowser associated to the DAEphys panel
-					win = StringFromList(0, str)
-				else
-					printf "(%s): The analysis parameter %s is a notebook which is present in multiple panels or graphs.\r", device, guiElem
-					ControlWindowToFront()
-					continue
-				endif
-			else
-				ASSERT(numMatches == 0, "invalid code")
-
+			if(numMatches == 0)
 				printf "(%s): The analysis parameter %s does not exist as control or notebook in one of the open panels and graphs.\r", device, guiElem
 				ControlWindowToFront()
 				continue
@@ -1397,39 +1382,44 @@ Function SetControlInEvent(device, s)
 			sprintf msg, "%s: Setting control %s to %s in event %s\r", GetRTStackInfo(1), guiElem, valueStr, event
 			DEBUGPRINT(msg)
 
-			switch(WinType(win))
-				case WINTYPE_GRAPH:
-				case WINTYPE_PANEL:
-					if(IsControlDisabled(win, guiElem))
-						printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
-						ControlWindowToFront()
-						return 1
-					endif
+			numWindows = ItemsInList(windowsWithGUIElement)
+			for(k = 0; k < numWindows; k +=1)
+				win = StringFromList(k, windowsWithGUIElement)
 
-					controlType = GetControlType(win, guiElem)
-					switch(controlType)
-						case CONTROL_TYPE_SETVARIABLE:
-						case CONTROL_TYPE_POPUPMENU:
-							PGC_SetAndActivateControl(win, guiElem, str = valueStr)
-							break
-						case CONTROL_TYPE_VALDISPLAY:
-						case CONTROL_TYPE_CHART:
-						case CONTROL_TYPE_GROUPBOX:
-						case CONTROL_TYPE_TITLEBOX:
-							printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
+				switch(WinType(win))
+					case WINTYPE_GRAPH:
+					case WINTYPE_PANEL:
+						if(IsControlDisabled(win, guiElem))
+							printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
 							ControlWindowToFront()
-							break
-						default:
-							PGC_SetAndActivateControl(win, guiElem, val = str2numSafe(valueStr))
-							break
-					endswitch
-					break
-				case WINTYPE_NOTEBOOK:
-					ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
-					break
-				default:
-					ASSERT(0, "Unexpected window type")
-			endswitch
+							return 1
+						endif
+
+						controlType = GetControlType(win, guiElem)
+						switch(controlType)
+							case CONTROL_TYPE_SETVARIABLE:
+							case CONTROL_TYPE_POPUPMENU:
+								PGC_SetAndActivateControl(win, guiElem, str = valueStr)
+								break
+							case CONTROL_TYPE_VALDISPLAY:
+							case CONTROL_TYPE_CHART:
+							case CONTROL_TYPE_GROUPBOX:
+							case CONTROL_TYPE_TITLEBOX:
+								printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
+								ControlWindowToFront()
+								break
+							default:
+								PGC_SetAndActivateControl(win, guiElem, val = str2numSafe(valueStr))
+								break
+						endswitch
+						break
+					case WINTYPE_NOTEBOOK:
+						ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
+						break
+					default:
+						ASSERT(0, "Unexpected window type")
+				endswitch
+			endfor
 		endfor
 	endfor
 End

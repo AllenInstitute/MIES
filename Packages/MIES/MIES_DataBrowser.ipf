@@ -485,8 +485,28 @@ Function/WAVE DB_GetLBNWave(string win, variable type)
 	return GetLogbookWaves(LBT_LABNOTEBOOK, type, device = device)
 End
 
-Function DB_UpdateToLastSweep(win)
-	string win
+/// @brief Update the databrowser to the last sweep
+///
+/// `force` is off by default and in this case respects the autoupdate checkbox setting.
+Function DB_UpdateToLastSweep(string databrowser, [variable force])
+
+	if(ParamIsDefault(force))
+		force = 0
+	else
+		force = !!force
+	endif
+
+	// catch all error conditions, asserts and aborts
+	// and silently ignore them
+	AssertOnAndClearRTError()
+	try
+		DB_UpdateToLastSweepWrapper(databrowser, force); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
+End
+
+static Function DB_UpdateToLastSweepWrapper(string win, variable force)
 
 	variable first, last
 	string bsPanel, scPanel
@@ -501,6 +521,10 @@ Function DB_UpdateToLastSweep(win)
 	endif
 
 	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
+	if(!force && !GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
 		return NaN
 	endif
 
@@ -702,13 +726,27 @@ End
 Function/S DB_FindDataBrowser(device)
 	string device
 
+	WAVE/T/Z matches = DB_FindAllDataBrowser(device)
+
+	if(!WaveExists(matches))
+		return ""
+	endif
+
+	return matches[0]
+End
+
+/// @brief Find all Databrowser which are locked to the given DAEphys panel
+Function/WAVE DB_FindAllDataBrowser(string device)
+
 	string panelList
 	string panel
-	variable numPanels, i
+	variable numPanels, i, idx
 
 	panelList = WinList("DB_*", ";", "WIN:1")
-
 	numPanels = ItemsInList(panelList)
+
+	Make/FREE/N=(numPanels)/T matches
+
 	for(i = 0; i < numPanels; i += 1)
 		panel = StringFromList(i, panelList)
 
@@ -716,12 +754,20 @@ Function/S DB_FindDataBrowser(device)
 			continue
 		endif
 
-		if(!cmpstr(device, BSP_GetDevice(panel)))
-			return panel
+		if(cmpstr(device, BSP_GetDevice(panel)))
+			continue
 		endif
+
+		matches[idx++] = panel
 	endfor
 
-	return ""
+	if(idx == 0)
+		return $""
+	endif
+
+	Redimension/N=(idx) matches
+
+	return matches
 End
 
 /// @brief Returns a databrowser bound to the given `device`

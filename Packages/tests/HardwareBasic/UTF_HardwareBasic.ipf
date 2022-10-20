@@ -11,6 +11,7 @@
 #include "UTF_BasicHardwareTests"
 #include "UTF_DAEphys"
 #include "UTF_Dashboard"
+#include "UTF_Databrowser"
 #include "UTF_Epochs"
 #include "UTF_HardwareTestsWithBUG"
 #include "UTF_SweepFormulaHardware"
@@ -83,6 +84,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", inf)
 	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)
 	list = AddListItem("UTF_Dashboard.ipf", list, ";", inf)
+	list = AddListItem("UTF_Databrowser.ipf", list, ";", inf)
 	list = AddListItem("UTF_Epochs.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", inf)

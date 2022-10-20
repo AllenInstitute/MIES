@@ -1086,7 +1086,7 @@ static Function AD_SelectResult(win, [index])
 		// update databrowser if required and not already done
 		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
 		if(!WaveExists(indizes))
-			DB_UpdateToLastSweep(win)
+			DB_UpdateToLastSweep(win, force = 1)
 		endif
 	endif
 
