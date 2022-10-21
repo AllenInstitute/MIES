@@ -1310,17 +1310,19 @@ End
 ///   and "Generic", and the second element the value to set
 /// - For PopupMenus the passed value is the menu item and *not* its index
 /// - The controls are searched in all open panels and graphs. The notebook can
-///   be a toplevel or subwindow notebook. For multiple matching panels or
-///   graphs we prefer the corresponding DAEphys panel and Databrowser.
+///   be a toplevel or subwindow notebook.
 ///
 /// Examples:
 ///
 /// \rst
-/// .. code-block:: none
 ///
-/// 	setvar_DataAcq_OnsetDelayUser -> Pre DAQ|20|
-/// 	Popup_Settings_FixedFreq -> Pre Sweep|100|Post Sweep|Maximum|
-/// 	sweepFormula_formula -> Pre Set|data(cursors(A,B), select(channels(AD), sweeps()))
+/// =============================== ============================================================
+///  Name                            Value
+/// =============================== ============================================================
+///  setvar_DataAcq_OnsetDelayUser   Pre DAQ;20
+///  Popup_Settings_FixedFreq        Pre Sweep;100;Post Sweep;Maximum
+///  sweepFormula_formula            Pre Set;data(cursors(A,B), select(channels(AD), sweeps()))
+/// =============================== ============================================================
 ///
 /// \endrst
 ///
