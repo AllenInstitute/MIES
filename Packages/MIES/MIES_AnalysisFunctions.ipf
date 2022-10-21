@@ -98,8 +98,9 @@
 /// parameters. In case of a valid parameter it must return an emtpy string and
 /// an error message in case of failure. Parameters which don't pass can
 /// neither be added to stimsets nor can they be used for data acquisition.
-/// Optional parameters are only checked if they are present in the stimulus
-/// set so you don't need to handle that case special.
+/// All required, optional and present parameters are passed into the check
+/// function. Passing in the present parameters as well allows for dynamic
+/// parameter names not known beforehand.
 ///
 /// The optional function `_GetHelp` allows you to create per parameter help
 /// text which is shown in the Wavebuilder.

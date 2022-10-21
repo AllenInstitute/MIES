@@ -583,6 +583,29 @@ Function Params6_V3(device, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
+Function/S Params7_V3_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
+	variable var
+
+	strswitch(name)
+		case "MyVar":
+			return "Encountered expected check"
+		default:
+			FAIL()
+	endswitch
+
+	return ""
+End
+
+// Params7_V3_GetParams is not present
+
+Function Params7_V3(device, s)
+	string device
+	STRUCT AnalysisFunction_V3& s
+
+	return NaN
+End
+
 Function ChangeToOtherDeviceDAQAF(device, eventType, DAQDataWave, headStage, realDataLength)
 	string device
 	variable eventType

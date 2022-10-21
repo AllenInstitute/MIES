@@ -2980,10 +2980,9 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		endif
 
 		// check that all required user parameters are supplied
+		// an empty list of required names is okay, this is the case when the
+		// names are not known beforehand (i.e. dynamic)
 		reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
-		if(IsEmpty(reqNamesAndTypesFromFunc))
-			continue
-		endif
 
 		reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 		suppParams = ExtractAnalysisFunctionParams(stimSet)

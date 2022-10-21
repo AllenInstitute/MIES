@@ -815,7 +815,7 @@ End
 ///
 /// @return multiline error messages, an empty string on success
 Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParametersStruct &s)
-	string suggNames, presentNames, message, name
+	string allNames, presentNames, message, name
 	string reqNamesAndTypesFromFunc, reqNames
 	string optNamesAndTypesFromFunc, optNames
 	variable index, numParams, i, valid_f1, valid_f2
@@ -837,15 +837,15 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	optNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, OPTIONAL_PARAMS)
 	optNames = AFH_GetListOfAnalysisParamNames(optNamesAndTypesFromFunc)
 
-	suggNames = optNames + reqNames
-
 	presentNames = AFH_GetListOfAnalysisParamNames(s.params)
 
-	numParams = ItemsInList(suggNames)
+	allNames = GetUniqueTextEntriesFromList(optNames + reqNames + presentNames)
+
+	numParams = ItemsInList(allNames)
 	Make/FREE/T/N=(numParams) errorMessages
 
 	for(i = 0; i < numParams; i += 1)
-		name = StringFromList(i, suggNames)
+		name = StringFromList(i, allNames)
 
 		if(WhichListItem(name, presentNames) == -1)
 			if(WhichListItem(name, optNames) != -1)
@@ -854,8 +854,10 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 			endif
 
 			// non present required parameters are an error
-			errorMessages[index++] = name + ": is required but missing"
-			continue
+			if(WhichListItem(name, reqNames) != -1)
+				errorMessages[index++] = name + ": is required but missing"
+				continue
+			endif
 		endif
 
 		AssertOnAndClearRTError()
