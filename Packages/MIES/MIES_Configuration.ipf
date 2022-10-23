@@ -180,6 +180,7 @@ static StrConstant EXPCONFIG_JSON_AMP_HOLD_VC = "Holding"
 static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC = "Holding Enable"
 
 static StrConstant EXPCONFIG_JSON_AMP_LPF = "LPF primary output"
+static StrConstant EXPCONFIG_JSON_AMP_GAIN = "Gain primary output"
 
 static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC = "Pipette Offset"
 
@@ -2085,6 +2086,7 @@ static Function CONF_GetAmplifierSettings(device)
 
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
 			JSON_AddTreeObject(jsonID, jsonPath)
@@ -2114,6 +2116,7 @@ static Function CONF_GetAmplifierSettings(device)
 
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
 
 			if(clampMode != I_CLAMP_MODE)
 				DAP_ChangeHeadStageMode(device, clampMode, i, DO_MCC_MIES_SYNCING)
@@ -2192,6 +2195,12 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 		ASSERT(ret == 0, "Could not set LPF primary output")
 	endif
 
+	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_GAIN, ignoreErr = 1)
+	if(!IsNaN(val))
+		ret = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, val)
+		ASSERT(ret == 0, "Could not set primary output gain")
+	endif
+
 	// set IC settings
 	DAP_ChangeHeadStageMode(device, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 
@@ -2217,6 +2226,12 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
 	if(!IsNaN(val))
 		ret = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, val)
+		ASSERT(ret == 0, "Could not set LPF primary output")
+	endif
+
+	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_GAIN, ignoreErr = 1)
+	if(!IsNaN(val))
+		ret = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, val)
 		ASSERT(ret == 0, "Could not set LPF primary output")
 	endif
 
