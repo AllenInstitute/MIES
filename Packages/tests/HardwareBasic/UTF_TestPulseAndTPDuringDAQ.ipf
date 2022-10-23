@@ -885,6 +885,61 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQOnlyWithoodDAQ([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"            + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+								 "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([str])
+	string str
+
+	variable sweepNo, col, oodDAQ
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+
+	col = FindDimLabel(configWave, COLS, "DAQChannelType")
+	Duplicate/FREE/R=[][col] configWave, channelTypes
+	Redimension/N=-1 channelTypes
+
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP}, mode = WAVE_DATA)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	oodDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(oodDAQ, 1)
+
+	WAVE/Z oodDAQMembers = GetLastSetting(numericalValues, sweepNo, "oodDAQ member", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(oodDAQMembers, {0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "TestPulse", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
+End
+
 static Function TPDuringDAQTPStoreCheck_PreAcq(device)
 	string device
 
