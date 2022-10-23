@@ -2453,10 +2453,8 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
-	return "AsyncQCChannels:wave,"                 + \
-	       "[BaselineRMSLongThreshold:variable],"  + \
-	       "[BaselineRMSShortThreshold:variable]," + \
-	       "[SamplingFrequency:variable],"         + \
+	return "AsyncQCChannels:wave,"         + \
+	       "[SamplingFrequency:variable]," + \
 	       "SamplingMultiplier:variable"
 End
 
@@ -2464,8 +2462,6 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
 		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
@@ -2480,8 +2476,6 @@ Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct 
 
 	strswitch(name)
 		case "AsyncQCChannels":
-		case "BaselineRMSLongThreshold":
-		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
