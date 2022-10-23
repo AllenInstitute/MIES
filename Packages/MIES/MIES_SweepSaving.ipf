@@ -98,7 +98,7 @@ End
 /// @param device device name
 static Function SWS_AfterSweepDataChangeHook(string device)
 
-	WAVE/T/Z allDBs = DB_FindAllDataBrowser(device)
+	WAVE/T/Z allDBs = DB_FindAllDataBrowser(device, mode = BROWSER_MODE_ALL)
 
 	if(!WaveExists(allDBs))
 		return NaN

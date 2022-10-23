@@ -9,8 +9,14 @@
 /// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
-Function/S DB_OpenDataBrowser()
+Function/S DB_OpenDataBrowser([variable mode])
 	string win, winBSP, device, devicesWithData, bsPanel
+
+	if(ParamIsDefault(mode))
+		mode = BROWSER_MODE_USER
+	else
+		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
+	endif
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
@@ -21,7 +27,7 @@ Function/S DB_OpenDataBrowser()
 	SetWindow $winBSP, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
 
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
-	BSP_SetDataBrowser(win)
+	BSP_SetDataBrowser(win, mode)
 	BSP_InitPanel(win)
 
 	// immediately lock if we have only data from one device
@@ -723,10 +729,15 @@ Function DB_SplitSweepsIfReq(string win, variable sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
-Function/S DB_FindDataBrowser(device)
-	string device
+Function/S DB_FindDataBrowser(string device, [variable mode])
 
-	WAVE/T/Z matches = DB_FindAllDataBrowser(device)
+	if(ParamIsDefault(mode))
+		mode = BROWSER_MODE_USER
+	else
+		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
+	endif
+
+	WAVE/T/Z matches = DB_FindAllDataBrowser(device, mode = mode)
 
 	if(!WaveExists(matches))
 		return ""
@@ -736,11 +747,17 @@ Function/S DB_FindDataBrowser(device)
 End
 
 /// @brief Find all Databrowser which are locked to the given DAEphys panel
-Function/WAVE DB_FindAllDataBrowser(string device)
+Function/WAVE DB_FindAllDataBrowser(string device, [variable mode])
 
 	string panelList
 	string panel
 	variable numPanels, i, idx
+
+	if(ParamIsDefault(mode))
+		mode = BROWSER_MODE_USER
+	else
+		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
+	endif
 
 	panelList = WinList("DB_*", ";", "WIN:1")
 	numPanels = ItemsInList(panelList)
@@ -751,6 +768,10 @@ Function/WAVE DB_FindAllDataBrowser(string device)
 		panel = StringFromList(i, panelList)
 
 		if(!BSP_IsDataBrowser(panel))
+			continue
+		endif
+
+		if(!BSP_HasMode(panel, mode))
 			continue
 		endif
 
@@ -772,13 +793,22 @@ End
 
 /// @brief Returns a databrowser bound to the given `device`
 ///
-/// Creates a new one, if none is found or bound.
-Function/S DB_GetBoundDataBrowser(string device)
+/// @param device locked device
+/// @param mode   [defaults to #BROWSER_MODE_USER] mode of the databrowser to search. One of @ref BrowserModes.
+///
+/// Creates a new one, if none is found nor bound.
+Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 	string databrowser, bsPanel
 
-	databrowser = DB_FindDataBrowser(device)
+	if(ParamIsDefault(mode))
+		mode = BROWSER_MODE_USER
+	else
+		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
+	endif
+
+	databrowser = DB_FindDataBrowser(device, mode = mode)
 	if(IsEmpty(databrowser)) // not yet open
-		databrowser = DB_OpenDataBrowser()
+		databrowser = DB_OpenDataBrowser(mode = mode)
 	endif
 
 	if(BSP_HasBoundDevice(databrowser))

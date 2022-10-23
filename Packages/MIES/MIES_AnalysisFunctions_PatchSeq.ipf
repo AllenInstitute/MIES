@@ -4700,17 +4700,19 @@ static Function PSQ_ForceSetEvent(device, headstage)
 End
 
 /// @brief Execute `code` in the SweepFormula notebook
-static Function PSQ_ExecuteSweepFormula(string device, string code)
+static Function/S PSQ_ExecuteSweepFormula(string device, string code)
 	string databrowser, bsPanel, sfNotebook
 
-	databrowser = DB_GetBoundDataBrowser(device)
-
-	bsPanel = BSP_GetPanel(databrowser)
+	databrowser = DB_GetBoundDataBrowser(device, mode = BROWSER_MODE_AUTOMATION)
 
 	SF_SetFormula(databrowser, code)
 
+	bsPanel = BSP_GetPanel(databrowser)
+
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
+
+	return databrowser
 End
 
 static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multiplier)
@@ -4925,12 +4927,10 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
 			sprintf formula, "store(\"Steady state resistance\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
-			PSQ_ExecuteSweepFormula(device, formula)
+			databrowser = PSQ_ExecuteSweepFormula(device, formula)
 
 			minPipetteResistance = AFH_GetAnalysisParamNumerical("MinPipetteResistance", s.params)
 			maxPipetteResistance = AFH_GetAnalysisParamNumerical("MaxPipetteResistance", s.params)
-
-			databrowser = DB_FindDataBrowser(device)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
@@ -5382,7 +5382,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
 			endswitch
 
-			PSQ_ExecuteSweepFormula(device, formula)
+			databrowser = PSQ_ExecuteSweepFormula(device, formula)
 
 			[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_SEAL_EVALUATION, s)
 
@@ -5425,8 +5425,6 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 
 			sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), chunk, ret
 			DEBUGPRINT(msg)
-
-			databrowser = DB_FindDataBrowser(device)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
@@ -6116,9 +6114,7 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 		sprintf str, "store(\"Average U_BLS1\", avg(data(U_BLS1, select(channels(AD), [%d], all))))\r", sweepNo
 		formula += str
 
-		PSQ_ExecuteSweepFormula(device, formula)
-
-		databrowser = DB_GetBoundDataBrowser(device)
+		databrowser = PSQ_ExecuteSweepFormula(device, formula)
 
 		WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
@@ -6504,9 +6500,7 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 				sprintf str, "store(\"Peak resistance\", tp(inst, select(channels(AD), [%d], all), [0]))", s.sweepNo
 				cmd += str
 
-				PSQ_ExecuteSweepFormula(device, cmd)
-
-				databrowser = DB_GetBoundDataBrowser(device)
+				databrowser = PSQ_ExecuteSweepFormula(device, cmd)
 
 				WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 

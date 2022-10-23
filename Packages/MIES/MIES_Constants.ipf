@@ -19,7 +19,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 57
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 43
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 44
 Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -488,6 +488,7 @@ Constant MIES_BSP_DS  = 7
 /// @name values for  UserData in BrowserSettings and derived windows
 /// @{
 strConstant MIES_BSP_BROWSER = "BROWSER"
+strConstant MIES_BSP_BROWSER_MODE = "BROWSERMODE"
 strConstant MIES_BSP_DEVICE = "DEVICE"
 strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
@@ -1943,4 +1944,12 @@ StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 /// @anchor FFTWinFunctions
 /// @{
 StrConstant FFT_WINF = "Bartlet;Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;Parzen;Poisson2;Poisson3;Poisson4;Riemann;SFT3F;SFT3M;FTNI;SFT4F;SFT5F;SFT4M;FTHP;HFT70;FTSRS;SFT5M;HFT90D;HFT95;HFT116D;HFT144D;HFT169D;HFT196D;HFT223D;HFT248D;"
+/// @}
+
+/// @name Types for DB_GetBoundDataBrowser
+/// @anchor BrowserModes
+/// @{
+Constant BROWSER_MODE_USER       = 0x01
+Constant BROWSER_MODE_AUTOMATION = 0x02
+Constant BROWSER_MODE_ALL        = 0xFF
 /// @}
