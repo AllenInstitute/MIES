@@ -15,7 +15,6 @@
 /// dedicated formula language
 
 static Constant SF_STATE_UNINITIALIZED = -1
-static Constant SF_STATE_DEFAULT = 0
 static Constant SF_STATE_COLLECT = 1
 static Constant SF_STATE_ADDITION = 2
 static Constant SF_STATE_SUBTRACTION = 3
@@ -172,8 +171,6 @@ End
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
-		case SF_STATE_DEFAULT:
-			return "SF_STATE_DEFAULT"
 		case SF_STATE_COLLECT:
 			return "SF_STATE_COLLECT"
 		case SF_STATE_ADDITION:
@@ -347,7 +344,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					state = SF_STATE_FUNCTION
 					break
 				endif
-				state = SF_STATE_DEFAULT
+				state = SF_STATE_COLLECT
 				break
 			case "[":
 				arrayLevel += 1
@@ -379,7 +376,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 		if(level > 0 || arrayLevel > 0)
 			// transfer sub level "as is" to buffer
-			state = SF_STATE_DEFAULT
+			state = SF_STATE_COLLECT
 		endif
 
 #ifdef DEBUGGING_ENABLED
@@ -452,7 +449,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					action = SF_ACTION_SKIP
 					break
 				case SF_STATE_COLLECT:
-				case SF_STATE_DEFAULT:
 					action = SF_ACTION_COLLECT
 					break
 				case SF_STATE_STRINGTERMINATOR:
