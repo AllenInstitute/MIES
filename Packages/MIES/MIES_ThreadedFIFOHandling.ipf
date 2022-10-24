@@ -99,7 +99,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 
 	variable flags, moreData, fifoPos
 
-	flags = HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP
+	flags = HARDWARE_ABORT_ON_ERROR
 
 	do
 		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)

@@ -2311,7 +2311,7 @@ Function DAP_CheckSettings(device, mode)
 		hardwareType = GetHardwareType(device)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+		if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", device
 			ControlWindowToFront()
 			return 1
@@ -5180,7 +5180,7 @@ static Function DAP_UnlockDevice(device)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
 	TFH_StopFIFODaemon(hardwareType, deviceID)
 
-	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_ABORT_ON_ERROR
+	flags = HARDWARE_ABORT_ON_ERROR
 	HW_CloseDevice(hardwareType, deviceID, flags=flags)
 	HW_ResetDevice(hardwareType, deviceID, flags=flags)
 	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)

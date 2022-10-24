@@ -359,7 +359,7 @@ static Function TPM_StopTPMDWrapper(device, [fast])
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
 
-	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
+	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE) \
 	   && HW_IsRunning(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1)
 		TPM_RemoveDevice(device)

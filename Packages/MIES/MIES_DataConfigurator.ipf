@@ -65,7 +65,7 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave
 	NVAR deviceID = $GetDAQDeviceID(device)
 	variable hardwareType = GetHardwareType(device)
-	ASSERT(!HW_IsRunning(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
+	ASSERT(!HW_IsRunning(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR), "Hardware is still running and it shouldn't. Please report that as a bug.")
 
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(device))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(device))
@@ -1522,7 +1522,7 @@ static Function DC_DocumentHardwareProperties(device, hardwareType)
 	WAVE/Z devInfo = CA_TryFetchingEntryFromCache(key)
 
 	if(!WaveExists(devInfo))
-		WAVE devInfo = HW_GetDeviceInfo(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)
+		WAVE devInfo = HW_GetDeviceInfo(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 		CA_StoreEntryIntoCache(key, devInfo)
 	endif
 

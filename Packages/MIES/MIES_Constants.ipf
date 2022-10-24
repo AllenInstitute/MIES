@@ -740,7 +740,6 @@ Constant HARDWARE_ITC_TTL_1600_RACK_ONE  = 3
 /// @anchor HardwareInteractionFlags
 /// @{
 Constant HARDWARE_ABORT_ON_ERROR        = 0x01
-Constant HARDWARE_PREVENT_ERROR_POPUP   = 0x02
 Constant HARDWARE_PREVENT_ERROR_MESSAGE = 0x04
 /// @}
 

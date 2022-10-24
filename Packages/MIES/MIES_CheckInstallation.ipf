@@ -71,7 +71,7 @@ static Function CHI_CheckITCXOPVersion(state)
 
 	string version
 
-	WAVE/T/Z versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE)
+	WAVE/T/Z versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 
 	if(!WaveExists(versionInfo) || FindDimLabel(versionInfo, ROWS, "XOP") < 0)
 		version = "error querying version"

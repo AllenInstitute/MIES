@@ -54,7 +54,7 @@ Function TPS_TestPulseFunc(s)
 
 	do
 		// nothing
-	while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)))
+	while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR)))
 
 	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
 
@@ -160,7 +160,7 @@ Function TPS_StartTestPulseForeground(device, [elapsedTime])
 
 		do
 			// nothing
-		while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)))
+		while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR)))
 
 		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
 		SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)
