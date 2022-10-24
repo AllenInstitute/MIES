@@ -280,11 +280,10 @@ End
 Function CheckIfConfigurationRestoresMCCFilterGain([str])
 	string str
 
-	string fName
-	variable val, gain, filterFreq, headStage
-	string fPath = PS_GetSettingsFolder(PACKAGE_MIES)
+	string rewrittenConfig, fName
+	variable val, gain, filterFreq, headStage, jsonID
 
-	fName = fPath + "CheckIfConfigurationRestoresMCCFilterGain.json"
+	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                 + \
@@ -304,6 +303,9 @@ Function CheckIfConfigurationRestoresMCCFilterGain([str])
 
 	CONF_SaveWindow(fName)
 
+	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
 	gain = 1
 	filterFreq = 2
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
@@ -313,7 +315,7 @@ Function CheckIfConfigurationRestoresMCCFilterGain([str])
 
 	KillWindow $str
 
-	CONF_RestoreWindow(fName, usePanelTypeFromFile=1)
+	CONF_RestoreWindow(rewrittenConfig, usePanelTypeFromFile=1)
 
 	gain = 5
 	filterFreq = 6
