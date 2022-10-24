@@ -19,7 +19,6 @@ static Constant SF_STATE_COLLECT = 1
 static Constant SF_STATE_ADDITION = 2
 static Constant SF_STATE_SUBTRACTION = 3
 static Constant SF_STATE_MULTIPLICATION = 4
-static Constant SF_STATE_DIVISION = 5
 static Constant SF_STATE_PARENTHESIS = 6
 static Constant SF_STATE_FUNCTION = 7
 static Constant SF_STATE_ARRAY = 8
@@ -179,8 +178,6 @@ static Function/S SF_StringifyState(variable state)
 			return "SF_STATE_SUBTRACTION"
 		case SF_STATE_MULTIPLICATION:
 			return "SF_STATE_MULTIPLICATION"
-		case SF_STATE_DIVISION:
-			return "SF_STATE_DIVISION"
 		case SF_STATE_PARENTHESIS:
 			return "SF_STATE_PARENTHESIS"
 		case SF_STATE_FUNCTION:
@@ -317,7 +314,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		// state
 		strswitch(token)
 			case "/":
-				state = SF_STATE_DIVISION
+				state = SF_STATE_OPERATION
 				break
 			case "*":
 				state = SF_STATE_MULTIPLICATION
@@ -401,11 +398,10 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						break
 					endif
 				case SF_STATE_MULTIPLICATION:
-					if(lastCalculation == SF_STATE_DIVISION)
+					if(lastCalculation == SF_STATE_OPERATION)
 						action = SF_ACTION_HIGHERORDER
 						break
 					endif
-				case SF_STATE_DIVISION:
 				case SF_STATE_OPERATION:
 					if(IsEmpty(buffer))
 						if(lastCalculation == SF_STATE_UNINITIALIZED)
