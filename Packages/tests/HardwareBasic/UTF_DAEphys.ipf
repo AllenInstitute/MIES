@@ -280,26 +280,18 @@ End
 Function CheckIfConfigurationRestoresMCCFilterGain([str])
 	string str
 
-	string unlockedDevice, ctrl, fName
+	string fName
 	variable val, gain, filterFreq, headStage
 	string fPath = PS_GetSettingsFolder(PACKAGE_MIES)
 
 	fName = fPath + "CheckIfConfigurationRestoresMCCFilterGain.json"
 
-	unlockedDevice = DAP_CreateDAEphysPanel()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                 + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(str))
-
-	PGC_SetAndActivateControl(str, "button_Settings_UpdateAmpStatus")
-	PGC_SetAndActivateControl(str, "popup_Settings_Amplifier", val=1)
-	PGC_SetAndActivateControl(str, "Check_DataAcqHS_00", val=1)
-
-	PGC_SetAndActivateControl(str, "Popup_Settings_HeadStage", str="1")
-	PGC_SetAndActivateControl(str, "popup_Settings_Amplifier", val=2)
-	PGC_SetAndActivateControl(str, "Check_DataAcqHS_01", val=1)
-	PGC_SetAndActivateControl(str, "Radio_ClampMode_3", val=1)
+	AcquireData_NG(s, str)
 
 	gain = 5
 	filterFreq = 6
