@@ -1104,7 +1104,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1213,7 +1213,19 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.td = ParseNumber(str, "_TD", defValue = 0)
 
-	s.tp = ParseNumber(str, "_TP", defValue = 0)
+	s.daq = ParseNumber(str, "_DAQ", defValue = NaN)
+
+	s.tp = ParseNumber(str, "_TP", defValue = NaN)
+
+	// default to DAQ if nothing is choosen
+	if(IsNaN(s.daq) && IsNaN(s.tp))
+		s.daq = 1
+		s.tp  = 0
+	elseif(IsNaN(s.daq))
+		s.daq = 0
+	elseif(IsNaN(s.tp))
+		s.tp = 0
+	endif
 
 	s.amp = ParseNumber(str, "_AMP", defValue = 1)
 
@@ -1328,6 +1340,8 @@ End
 /// - Onset user delay (OD: > 0)
 /// - Termination delay (TD: > 0)
 /// - Run testpulse instead (TP: 1/0)
+/// - Run data acquisition (DAQ: 1/0). Running data acquisition is the default. Setting `_TP0_DAQ0`
+///   allows to not start anything.
 /// - Set the ITI (ITI: > 0)
 /// - Get/Set ITI checkbox (GSI: 1/0)
 /// - TP during ITI checkbox (TPI: 1/0)
@@ -1516,9 +1530,9 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 		OpenDatabrowser()
 	endif
 
-	if(s.TP)
+	if(s.TP && !s.DAQ)
 		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-	else
+	elseif(!s.TP && s.DAQ)
 		PGC_SetAndActivateControl(device, "DataAcquireButton")
 	endif
 End
