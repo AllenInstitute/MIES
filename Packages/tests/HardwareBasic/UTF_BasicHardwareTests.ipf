@@ -1178,38 +1178,12 @@ End
 static Function RestoreDAEphysPanel([str])
 	string str
 
-	variable jsonID, serialNum
-	string stimSetPath, jPath, data, fName, rewrittenConfigPath, serialNumStr
+	string fName, rewrittenConfigPath
+	variable jsonID
 
 	fName = PrependExperimentFolder_IGNORE(REF_DAEPHYS_CONFIG_FILE)
 
-	[data, fName] = LoadTextFile(fname)
-
-	jsonID = JSON_Parse(data)
-	PathInfo home
-	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
-	JSON_SetString(jsonID, jPath + "/StrValue", str)
-	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
-	stimSetPath = S_path + ":_2017_09_01_192934-compressed.nwb"
-	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
-
-	// replace stored serial number with present serial number
-	AI_FindConnectedAmps()
-	WAVE ampMCC = GetAmplifierMultiClamps()
-
-	CHECK_GT_VAR(DimSize(ampMCC, ROWS), 0)
-	serialNumStr = GetDimLabel(ampMCC, ROWS, 0)
-	if(!cmpstr(serialNumStr, "Demo"))
-		serialNum = 0
-	else
-		serialNum = str2num(serialNumStr)
-	endif
-
-	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/0/Amplifier/Serial", serialNum)
-	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/1/Amplifier/Serial", serialNum)
-
-	rewrittenConfigPath = S_Path + "rewritten_config.json"
-	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
+	[jsonID, rewrittenConfigPath] = FixupJSONConfig_IGNORE(fName, str)
 
 	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath)
 	MIES_CONF#CONF_SaveDAEphys(fname)
