@@ -98,8 +98,9 @@
 /// parameters. In case of a valid parameter it must return an emtpy string and
 /// an error message in case of failure. Parameters which don't pass can
 /// neither be added to stimsets nor can they be used for data acquisition.
-/// Optional parameters are only checked if they are present in the stimulus
-/// set so you don't need to handle that case special.
+/// All required, optional and present parameters are passed into the check
+/// function. Passing in the present parameters as well allows for dynamic
+/// parameter names not known beforehand.
 ///
 /// The optional function `_GetHelp` allows you to create per parameter help
 /// text which is shown in the Wavebuilder.
@@ -1256,6 +1257,49 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 	endswitch
 End
 
+Function/S SetControlInEvent_CheckParam(string name, struct CheckParametersStruct &s)
+
+	string type, event
+	variable i, numTuples
+
+	type = AFH_GetAnalysisParamType(name, s.params, typeCheck = 0)
+
+	if(CmpStr(type, "textwave"))
+		return "Must be of type \"text wave\""
+	endif
+
+	WAVE/T/Z data = AFH_GetAnalysisParamTextWave(name, s.params)
+
+	if(!WaveExists(data))
+		return "Does not hold anything."
+	endif
+
+	if(DimSize(data, ROWS) == 0 || !IsEven(DimSize(data, ROWS)) || DimSize(data, COLS) != 0)
+		return "Does not hold valid entries as the text wave must have an even number of rows (2, 4, 6, ...)."
+	endif
+
+	numTuples = DimSize(data, ROWS)
+	for(i = 0; i < numTuples; i += 2)
+
+		// check given event type
+		event = data[i]
+
+		// backwards compatibility
+		if(!cmpstr(event, "Pre Sweep"))
+			printf "The event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+			event = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+		endif
+
+		if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
+			return "The event \"" + event + "\" is invalid."
+		endif
+
+		if(WhichListItem(name, CONTROLS_DISABLE_DURING_DAQ, ";", 0, 0) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ", ";", 0, 0) == -1)
+			return  "The control " + name + "can only be changed in Pre/Post DAQ."
+		endif
+	endfor
+End
+
 /// @brief Analysis function to set GUI controls or notebooks in the events
 ///
 /// Usage:
@@ -1266,17 +1310,19 @@ End
 ///   and "Generic", and the second element the value to set
 /// - For PopupMenus the passed value is the menu item and *not* its index
 /// - The controls are searched in all open panels and graphs. The notebook can
-///   be a toplevel or subwindow notebook. For multiple matching panels or
-///   graphs we prefer the corresponding DAEphys panel and Databrowser.
+///   be a toplevel or subwindow notebook.
 ///
 /// Examples:
 ///
 /// \rst
-/// .. code-block:: none
 ///
-/// 	setvar_DataAcq_OnsetDelayUser -> Pre DAQ|20|
-/// 	Popup_Settings_FixedFreq -> Pre Sweep|100|Post Sweep|Maximum|
-/// 	sweepFormula_formula -> Pre Set|data(cursors(A,B), select(channels(AD), sweeps()))
+/// =============================== ============================================================
+///  Name                            Value
+/// =============================== ============================================================
+///  setvar_DataAcq_OnsetDelayUser   Pre DAQ;20
+///  Popup_Settings_FixedFreq        Pre Sweep;100;Post Sweep;Maximum
+///  sweepFormula_formula            Pre Set;data(cursors(A,B), select(channels(AD), sweeps()))
+/// =============================== ============================================================
 ///
 /// \endrst
 ///
@@ -1328,26 +1374,8 @@ Function SetControlInEvent(device, s)
 			endif
 		endif
 
-		// check payload type and format
-		type = AFH_GetAnalysisParamType(guiElem, s.params)
-
-		if(cmpstr(type, "textwave"))
-			printf "(%s): The analysis parameter's %s type is not \"textwave\".\r", device, guiElem
-			ControlWindowToFront()
-			return 1
-		endif
-
 		WAVE/T/Z data = AFH_GetAnalysisParamTextWave(guiElem, s.params)
-
-		if(!WaveExists(data))
-			printf "(%s): The analysis parameter's %s payload is empty.\r", device, guiElem
-			ControlWindowToFront()
-			return 1
-		elseif(DimSize(data, ROWS) == 0 || !IsEven(DimSize(data, ROWS)) || DimSize(data, COLS) != 0)
-			printf "(%s): The analysis parameter's %s payload has not a multiple of two rows.\r", device, guiElem
-			ControlWindowToFront()
-			return 1
-		endif
+		ASSERT(WaveExists(data), "No payload")
 
 		numTuples = DimSize(data, ROWS)
 		for(j = 0; j < numTuples; j += 2)
@@ -1357,18 +1385,7 @@ Function SetControlInEvent(device, s)
 
 			// backwards compatibility
 			if(!cmpstr(event, "Pre Sweep"))
-				printf "(%s): The analysis parameter's %s event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", device, guiElem, event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
 				event = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
-			endif
-
-			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
-				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", device, guiElem, event
-				ControlWindowToFront()
-				return 1
-			elseif(WhichListItem(guiElem, CONTROLS_DISABLE_DURING_DAQ, ";", 0, 0) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ", ";", 0, 0) == -1)
-				printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", device, guiElem
-				ControlWindowToFront()
-				return 1
 			endif
 
 			// now we can finally check if it is our turn

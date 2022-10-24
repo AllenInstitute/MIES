@@ -22,6 +22,8 @@ End
 
 static Function GlobalPreInit(string device)
 
+	ST_SetStimsetParameter("PSQ_QC_Stimsets_DA_0", "Analysis function (generic)", str = "PSQ_PipetteInBath")
+
 	AdjustAnalysisParamsForPSQ(device, "PSQ_QC_stimsets_DA_0")
 	PrepareForPublishTest()
 End

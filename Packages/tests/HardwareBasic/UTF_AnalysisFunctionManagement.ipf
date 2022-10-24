@@ -1643,6 +1643,30 @@ static Function AFT14h_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
+static Function AFT14i_PreInit(device)
+	string device
+
+	string stimSet = "AnaFuncParams7_DA_0"
+	AFH_AddAnalysisParameter(stimSet, "MyVar", var = 1)
+End
+
+// parameter MyVar is neither required nor optional as no _GetParams is present but still checked
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function AFT14i([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
+
+	try
+		AcquireData_NG(s, str)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function AFT15_PreAcq(device)
 	string device
 
