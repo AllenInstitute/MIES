@@ -378,7 +378,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, SF_StringifyState(state),  SF_StringifyState(lastCalculation)
+			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, PadString(SF_StringifyState(state), 25, 0x20),  PadString(SF_StringifyState(lastCalculation), 25, 0x20)
 		endif
 #endif
 
@@ -387,6 +387,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			action = SF_ACTION_COLLECT
 		elseif(state != lastState)
 			switch(state)
+				// priority ladder of calculations: +, -, *, /
 				case SF_STATE_ADDITION:
 					if(lastCalculation == SF_STATE_SUBTRACTION)
 						action = SF_ACTION_HIGHERORDER
@@ -419,6 +420,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						action = SF_ACTION_COLLECT
 					endif
 					break
+
 				case SF_STATE_PARENTHESIS:
 					action = SF_ACTION_PARENTHESIS
 					if(lastCalculation == SF_STATE_ARRAYELEMENT)
@@ -461,7 +463,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "action %s, lastState %s\r", SF_StringifyAction(action), SF_StringifyState(lastState)
+			printf "action %s, lastState %s\r", PadString(SF_StringifyAction(action), 25, 0x20), PadString(SF_StringifyState(lastState), 25, 0x20)
 		endif
 #endif
 
@@ -559,10 +561,13 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
 		elseif(!cmpstr(buffer, "\"\"")) // dummy check
+			// empty string with explicit quotation marks
 			JSON_AddString(jsonID, jsonPath, "")
 		elseif(GrepString(buffer, "^\".*\"$"))
+			// non-empty string with quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
 		else
+			// string without quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
 	elseif(!IsEmpty(buffer))
