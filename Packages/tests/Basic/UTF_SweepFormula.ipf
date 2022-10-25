@@ -500,6 +500,11 @@ static Function TestOperationMinMax()
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]},1]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}", "max(1,2)-max(1,2)", max(1, 2) - max(1, 2))
 
+	// Explicit array in function
+	TestOperationMinMaxHelper(win, "{\"min\":[[1]]}", "min([1])", 1)
+	// note: TestOperationMinMaxHelper calls GetSingleResult that verifies that [1,2] is evaluated as single argument
+	TestOperationMinMaxHelper(win, "{\"min\":[[1,2]]}", "min([1,2])", 1)
+
 	// check limit to 2d waves for min, max, avg
 	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
 	wavePath = GetWavesDataFolder(input, 2)

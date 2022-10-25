@@ -508,12 +508,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				tempPath += "/"
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
 				tempPath += SF_EscapeJsonPath(buffer[0, parenthesisStart - 1])
-				jsonIDdummy = SF_FormulaParser(buffer[parenthesisStart + 1, inf])
-				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
-					JSON_AddTreeArray(jsonID, tempPath)
-				endif
-				JSON_AddJSON(jsonID, tempPath, jsonIDdummy)
-				JSON_Release(jsonIDdummy)
+				subId = SF_FormulaParser(buffer[parenthesisStart + 1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
+				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_PARENTHESIS:
 				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
