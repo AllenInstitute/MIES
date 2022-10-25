@@ -384,6 +384,13 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 		// state transition
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
+			// collect between quotation marks
+			action = SF_ACTION_COLLECT
+		elseif(lastState == SF_STATE_SUBTRACTION && state == SF_STATE_SUBTRACTION)
+			// if we just did a substraction and the next char is another - then it must be a sign
+			action = SF_ACTION_COLLECT
+		elseif(lastState == SF_STATE_ADDITION && state == SF_STATE_ADDITION)
+			// if we just did a addition and the next char is another + then it must be a sign
 			action = SF_ACTION_COLLECT
 		elseif(state != lastState)
 			switch(state)
@@ -394,6 +401,12 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						break
 					endif
 				case SF_STATE_SUBTRACTION:
+					// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
+					// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
+					if(lastState == SF_STATE_UNINITIALIZED || !(lastState == SF_STATE_COLLECT || lastState == SF_STATE_PARENTHESIS|| lastState == SF_STATE_FUNCTION || lastState == SF_STATE_ARRAY))
+						action = SF_ACTION_COLLECT
+						break
+					endif
 					if(lastCalculation == SF_STATE_MULTIPLICATION)
 						action = SF_ACTION_HIGHERORDER
 						break
@@ -558,7 +571,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 	// last element (recursion)
 	if(!cmpstr(buffer, formula))
-		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
+		if(GrepString(buffer, "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
+			// optionally signed Number
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
 		elseif(!cmpstr(buffer, "\"\"")) // dummy check
 			// empty string with explicit quotation marks

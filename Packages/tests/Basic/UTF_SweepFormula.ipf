@@ -98,16 +98,11 @@ static Function primitiveOperations()
 	TestOperationMinMaxHelper(win, "{\"*\":[1,2]}", "1*2", 1 * 2)
 	TestOperationMinMaxHelper(win, "{\"-\":[1,2]}", "1-2", 1 - 2)
 	TestOperationMinMaxHelper(win, "{\"/\":[1,2]}", "1/2", 1 / 2)
-	TestOperationMinMaxHelper(win, "{\"-\":[1]}", "-1", -1)
-	TestOperationMinMaxHelper(win, "{\"+\":[1]}", "+1", +1)
-
-	try
-		// creates a top argument with zero size
-		WAVE output = GetSingleResult("-", win)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	TestOperationMinMaxHelper(win, "-1", "-1", -1)
+	TestOperationMinMaxHelper(win, "1", "+1", +1)
+	TestOperationMinMaxHelper(win, "{\"-\":[-1,1]}", "-1-1", -1 - 1)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,-1]}", "1--1", 1 - -1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,1]}", "1++1", 1 + +1)
 End
 
 static Function stringHandling()
@@ -140,6 +135,15 @@ static Function stringHandling()
 
 	jsonID0 = JSON_Parse("\"\"")
 	jsonID1 = DirectToFormulaParser("\"\"")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	// evil strings
+	jsonID0 = JSON_Parse("\"-\"")
+	jsonID1 = DirectToFormulaParser("-")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("\"+\"")
+	jsonID1 = DirectToFormulaParser("+")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
@@ -311,10 +315,10 @@ static Function orderOfCalculation()
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]}]},4,{\"*\":[5,20]}]}", "5*1+2*3+4+5*20", 5 * 1 + 2 * 3 + 4 + 5 * 20)
 
 	// using - as sign
-	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"-\":[1]}]}", "1+-1", 0)
-	TestOperationMinMaxHelper(win, "{\"+\":[{\"-\":[1]},2]}", "-1+2", 1)
-	TestOperationMinMaxHelper(win, "{\"-\":[{\"*\":[1,2]}]}", "-1*2", -2)
-	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[{\"-\":[1]},3]}]}", "2+-1*3", -1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,-1]}", "1+-1", 0)
+	TestOperationMinMaxHelper(win, "{\"+\":[-1,2]}", "-1+2", 1)
+	TestOperationMinMaxHelper(win, "{\"*\":[-1,2]}", "-1*2", -2)
+	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[-1,3]}]}", "2+-1*3", -1)
 End
 
 // UTF_EXPECTED_FAILURE
@@ -340,7 +344,7 @@ static Function brackets()
 	TestOperationMinMaxHelper(win, "{\"+\":[1,2]}", "(1+2)", 1 + 2)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}", "(1+2)+(3+4)", (1 + 2) + (3 + 4))
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}", "(4+3)+(2+1)", (4 + 3) + (2 + 1))
-	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,3]},{\"+\": [4]}]}", "1+(2+3)+4", 1 + (2 + 3) + 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,3]},4]}", "1+(2+3)+4", 1 + (2 + 3) + 4)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"*\":[3,2]},1]}", "(3*2)+1", (3 * 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"*\":[2,3]}]}", "1+(2*3)", 1 + (2 * 3))
 	TestOperationMinMaxHelper(win, "{\"*\":[{\"+\":[1,2]},3]}", "(1+2)*3", (1 + 2) * 3)
@@ -481,7 +485,7 @@ static Function TestOperationMinMax()
 
 	TestOperationMinMaxHelper(win, "{\"min\":[1]}", "min(1)", 1)
 	TestOperationMinMaxHelper(win, "{\"min\":[1,2]}", "min(1,2)", min(1, 2))
-	TestOperationMinMaxHelper(win, "{\"min\":[1,{\"-\":[1]}]}", "min(1,-1)", min(1, -1))
+	TestOperationMinMaxHelper(win, "{\"min\":[1,-1]}", "min(1,-1)", min(1, -1))
 	TestOperationMinMaxHelper(win, "{\"max\":[1,2]}", "max(1,2)", max(1, 2))
 	TestOperationMinMaxHelper(win, "{\"min\":[1,2,3]}", "min(1,2,3)", min(1, 2, 3))
 	TestOperationMinMaxHelper(win, "{\"max\":[1,{\"+\":[2,3]}]}", "max(1,(2+3))", max(1, (2 + 3)))
@@ -493,7 +497,7 @@ static Function TestOperationMinMax()
 	TestOperationMinMaxHelper(win, "{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}", "max(max(1,(2+3)/7,4),min(3,4))", max(max(1, (2 + 3) / 7, 4), min(3, 4)))
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"max\":[1,2]},1]}", "max(1,2)+1", max(1, 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]}]}", "1+max(1,2)", 1 + max(1, 2))
-	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]},{\"+\":[1]}]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]},1]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}", "max(1,2)-max(1,2)", max(1, 2) - max(1, 2))
 
 	// check limit to 2d waves for min, max, avg
