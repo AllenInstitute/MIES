@@ -563,6 +563,17 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		token = ""
 	endfor
 
+	if(!ParamIsDefault(createdArray))
+		if(createdArrayLocal)
+			ASSERT(JSON_GetType(jsonID, "") == JSON_ARRAY, "SF Parser Error: Expected Array")
+		endif
+		createdArray = createdArrayLocal
+	endif
+
+	if(IsEmpty(buffer))
+		return jsonId
+	endif
+
 	// last element (recursion)
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
@@ -578,15 +589,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			// string without quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
-	elseif(!IsEmpty(buffer))
+	else
 		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
-	endif
-
-	if(!ParamIsDefault(createdArray))
-		if(createdArrayLocal)
-			ASSERT(JSON_GetType(jsonID, "") == JSON_ARRAY, "SF Parser Error: Expected Array")
-		endif
-		createdArray = createdArrayLocal
 	endif
 
 	return jsonID
