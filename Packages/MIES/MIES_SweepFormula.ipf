@@ -520,6 +520,9 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
 				// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 				lastCalculation = state
+				if(state == SF_STATE_ARRAYELEMENT)
+					SF_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value")
+				endif
 				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
@@ -550,6 +553,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			case SF_ACTION_ARRAYELEMENT:
 				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 				// The actual content is added in the case fall-through
+				SF_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value")
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			case SF_ACTION_SAMECALCULATION:
@@ -562,6 +566,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		buffer = ""
 		token = ""
 	endfor
+
+	SF_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after ,")
 
 	if(!ParamIsDefault(createdArray))
 		if(createdArrayLocal)

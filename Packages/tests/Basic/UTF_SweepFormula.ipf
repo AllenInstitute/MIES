@@ -345,7 +345,42 @@ static Function TestInvalidInput()
 	endtry
 
 	try
+		DirectToFormulaParser(" ,1")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
 		DirectToFormulaParser("1,,")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		DirectToFormulaParser("1, ,")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		DirectToFormulaParser("(1), ,")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		DirectToFormulaParser("1,")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		DirectToFormulaParser("(1),")
 		FAIL()
 	catch
 		PASS()
