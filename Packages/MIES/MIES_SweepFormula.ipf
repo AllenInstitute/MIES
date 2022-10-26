@@ -382,6 +382,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endif
 #endif
 
+		SF_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,")
 		// state transition
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
 			// collect between quotation marks
@@ -447,6 +448,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					endif
 					break
 				case SF_STATE_ARRAYELEMENT:
+					SF_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,")
 					action = SF_ACTION_ARRAYELEMENT
 					if(lastCalculation != SF_STATE_ARRAYELEMENT)
 						action = SF_ACTION_HIGHERORDER

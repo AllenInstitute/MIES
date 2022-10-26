@@ -335,6 +335,23 @@ static Function openParserBugs()
 	CHECK_EQUAL_VAR(data[0], -2)
 End
 
+static Function TestInvalidInput()
+
+	try
+		DirectToFormulaParser(",1")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		DirectToFormulaParser("1,,")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function brackets()
 
 	string win, device
