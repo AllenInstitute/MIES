@@ -275,7 +275,7 @@ End
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
 	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
-	variable formulaLength
+	variable formulaLength, bufferOffset
 	string tempPath
 	string indentation = ""
 	variable action = SF_ACTION_UNINITIALIZED
@@ -333,7 +333,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				break
 			case ")":
 				level -= 1
-				if(!cmpstr(buffer[0], "("))
+				if(GrepString(buffer, "^(?i)[+-]?\\([\s\S]*$"))
 					state = SF_STATE_PARENTHESIS
 					break
 				endif
@@ -510,7 +510,16 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_PARENTHESIS:
-				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
+				if(!CmpStr(buffer[0], "-"))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser("*-1", indentLevel = indentLevel + 1))
+					if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+						jsonPath += "/1/*"
+					else
+						jsonPath += "/*"
+					endif
+				endif
+				bufferOffset = !CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-") ? 2 : 1
+				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[bufferOffset, inf], indentLevel = indentLevel + 1))
 				break
 			case SF_ACTION_HIGHERORDER:
 				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
