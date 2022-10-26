@@ -53,6 +53,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts "\bbutton_SettingsPlus_LockDevice\b" '*/UTF_*.ipf' ':^*/UTF_HardwareHelperFunctions.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The hardware tests should never manually lock a device. Prefer AcquireData_NG(...) or CreateLockedDAEphys(...)."
+  echo "$matches"
+  ret=1
+fi
+
 # 1: all types of 10, 100 and 1e3, 1e-6, 1E09 etc. but not tol = 1e3 or 10^. Has to be prefixed with * or / or *=
 # 2: not in constants
 # 3: not in test assertions

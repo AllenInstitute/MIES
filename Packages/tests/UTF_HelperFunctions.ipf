@@ -22,6 +22,49 @@ Function/S PrependExperimentFolder_IGNORE(filename)
 	return S_path + filename
 End
 
+/// Adapts JSON configuration files for test execution specialities
+///
+/// Returns the full path to the rewritten JSON configuration file the corresponding jsonID.
+Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
+
+	string data, fName, jPath, stimSetPath, serialNumStr, rewrittenConfigPath
+	variable serialNum
+
+	[data, fName] = LoadTextFile(path)
+	CHECK_PROPER_STR(data)
+	CHECK_PROPER_STR(fName)
+
+	jsonID = JSON_Parse(data)
+	PathInfo home
+	CHECK_PROPER_STR(S_path)
+
+	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
+	JSON_SetString(jsonID, jPath + "/StrValue", device)
+	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
+	stimSetPath = S_path + ":_2017_09_01_192934-compressed.nwb"
+	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
+
+	// replace stored serial number with present serial number
+	AI_FindConnectedAmps()
+	WAVE ampMCC = GetAmplifierMultiClamps()
+
+	CHECK_GT_VAR(DimSize(ampMCC, ROWS), 0)
+	serialNumStr = GetDimLabel(ampMCC, ROWS, 0)
+	if(!cmpstr(serialNumStr, "Demo"))
+		serialNum = 0
+	else
+		serialNum = str2num(serialNumStr)
+	endif
+
+	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/0/Amplifier/Serial", serialNum)
+	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/1/Amplifier/Serial", serialNum)
+
+	rewrittenConfigPath = S_Path + "rewritten_config.json"
+	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
+
+	return [jsonID, rewrittenConfigPath]
+End
+
 /// Kill all left-over windows and remove the trash
 Function AdditionalExperimentCleanup()
 
