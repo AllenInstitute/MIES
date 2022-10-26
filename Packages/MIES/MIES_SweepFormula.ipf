@@ -419,11 +419,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					endif
 				case SF_STATE_OPERATION:
 					if(IsEmpty(buffer))
-						if(lastCalculation == SF_STATE_UNINITIALIZED)
-							action = SF_ACTION_HIGHERORDER
-						else
-							action = SF_ACTION_COLLECT
-						endif
+						action = SF_ACTION_HIGHERORDER
 						break
 					endif
 					action = SF_ACTION_CALCULATION

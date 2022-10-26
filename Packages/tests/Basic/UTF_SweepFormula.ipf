@@ -396,14 +396,19 @@ static Function brackets()
 	TestOperationMinMaxHelper(win, "{\"+\":[1,2]}", "(1+2)", 1 + 2)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}", "(1+2)+(3+4)", (1 + 2) + (3 + 4))
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}", "(4+3)+(2+1)", (4 + 3) + (2 + 1))
-	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,3]},4]}", "1+(2+3)+4", 1 + (2 + 3) + 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,{\"+\":[2,3]}]},4]}", "1+(2+3)+4", 1 + (2 + 3) + 4)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"*\":[3,2]},1]}", "(3*2)+1", (3 * 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"*\":[2,3]}]}", "1+(2*3)", 1 + (2 * 3))
 	TestOperationMinMaxHelper(win, "{\"*\":[{\"+\":[1,2]},3]}", "(1+2)*3", (1 + 2) * 3)
 	TestOperationMinMaxHelper(win, "{\"*\":[3,{\"+\":[2,1]}]}", "3*(2+1)", 3 * (2 + 1))
 	TestOperationMinMaxHelper(win, "{\"*\":[{\"/\":[2,{\"+\":[3,4]}]},5]}", "2/(3+4)*5", 2 / (3 + 4) * 5)
-	TestOperationMinMaxHelper(win, "{\"*\":[5,{\"+\": [1,2]},{\"/\":[{\"*\":[3]},{\"+\":[4,{\"*\":[5,20]}]}]}]}", "5*(1+2)*3/(4+5*20)", 5 * (1 + 2) * 3 / (4 + 5 * 20))
+	TestOperationMinMaxHelper(win, "{\"*\":[{\"*\":[5,{\"+\":[1,2]}]},{\"/\":[3,{\"+\":[4,{\"*\":[5,20]}]}]}]}", "5*(1+2)*3/(4+5*20)", 5 * (1 + 2) * 3 / (4 + 5 * 20))
+	TestOperationMinMaxHelper(win, "{\"-\": [{\"-\": [{\"-\": [2,2]},2]},2]}", "(2)-(2)-(2)-(2)", (2) - (2) - (2) - (2))
+	TestOperationMinMaxHelper(win, "{\"+\": [{\"+\": [{\"+\": [2,2]},2]},2]}", "(2)+(2)+(2)+(2)", (2) + (2) + (2) + (2))
+	TestOperationMinMaxHelper(win, "{\"*\": [{\"*\": [{\"*\": [2,2]},2]},2]}", "(2)*(2)*(2)*(2)", (2) * (2) * (2) * (2))
+	TestOperationMinMaxHelper(win, "{\"/\": [{\"/\": [{\"/\": [2,2]},2]},2]}", "(2)/(2)/(2)/(2)", (2) / (2) / (2) / (2))
 End
+
 
 static Function array()
 	Variable jsonID0, jsonID1
@@ -549,7 +554,7 @@ static Function TestOperationMinMax()
 	TestOperationMinMaxHelper(win, "{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}", "max(max(1,(2+3)/7,4),min(3,4))", max(max(1, (2 + 3) / 7, 4), min(3, 4)))
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"max\":[1,2]},1]}", "max(1,2)+1", max(1, 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]}]}", "1+max(1,2)", 1 + max(1, 2))
-	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"max\":[1,2]},1]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,{\"max\":[1,2]}]},1]}", "1+max(1,2)+1", 1 + max(1, 2) + 1)
 	TestOperationMinMaxHelper(win, "{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}", "max(1,2)-max(1,2)", max(1, 2) - max(1, 2))
 
 	// Explicit array in function
