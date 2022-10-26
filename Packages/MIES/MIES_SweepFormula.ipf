@@ -537,10 +537,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// to return an array.
 				SF_Assert(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
 				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
-				if(wasArrayCreated)
-					ASSERT(JSON_GetType(subId, "") == JSON_ARRAY, "Expected Array")
-				endif
-
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_CALCULATION:
@@ -585,6 +581,9 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 
 	if(!ParamIsDefault(createdArray))
+		if(createdArrayLocal)
+			ASSERT(JSON_GetType(jsonID, "") == JSON_ARRAY, "SF Parser Error: Expected Array")
+		endif
 		createdArray = createdArrayLocal
 	endif
 
