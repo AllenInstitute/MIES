@@ -156,21 +156,6 @@ static Function stringHandling()
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
-// UTF_EXPECTED_FAILURE
-static Function StringHandlingPending()
-	variable jsonID0, jsonID1
-
-	// note: only Assertion can be expected failures.
-	try
-		// allow # inside strings
-		jsonID0 = JSON_Parse("\"#\"")
-		jsonID1 = DirectToFormulaParser("\"#\"")
-		CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	catch
-		FAIL()
-	endtry
-End
-
 static Function arrayOperations(string win, string array2d, variable numeric)
 
 	string str
@@ -328,20 +313,6 @@ static Function orderOfCalculation()
 	TestOperationMinMaxHelper(win, "{\"+\":[-1,2]}", "-1+2", 1)
 	TestOperationMinMaxHelper(win, "{\"*\":[-1,2]}", "-1*2", -2)
 	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[-1,3]}]}", "2+-1*3", -1)
-End
-
-// UTF_EXPECTED_FAILURE
-static Function openParserBugs()
-
-	string str
-	string win, device
-
-	[win, device] = CreateFakeDataBrowserWindow()
-
-	str = "-1-1"
-	WAVE data = GetSingleResult(str, win)
-	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_EQUAL_VAR(data[0], -2)
 End
 
 Function/WAVE InvalidInputs()
