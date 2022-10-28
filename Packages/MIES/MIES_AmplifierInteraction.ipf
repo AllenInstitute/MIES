@@ -966,9 +966,7 @@ static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
 	variable channel    = AI_GetAmpChannel(device, headStage)
 
-	STRUCT AxonTelegraph_DataStruct tds
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
 
 	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
 
@@ -1420,9 +1418,8 @@ Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
 		endif
 	endif
 
-	STRUCT AxonTelegraph_DataStruct tds
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(serial, channel)
+
 	storedMode = DAG_GetHeadstageMode(device, headStage)
 	setMode    = tds.operatingMode
 
@@ -1477,9 +1474,8 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		clampMode = DAG_GetHeadstageMode(device, i)
 		AI_AssertOnInvalidClampMode(clampMode)
 
-		STRUCT AxonTelegraph_DataStruct tds
-		AI_InitAxonTelegraphStruct(tds)
-		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+		[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
+
 		ASSERT(clampMode == tds.OperatingMode, "A clamp mode mismatch was detected. Please describe the events leading up to that assertion. Thanks!")
 
 		if(clampMode == V_CLAMP_MODE)
@@ -1635,6 +1631,14 @@ Function AI_FindConnectedAmps()
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 End
 
+Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+
+	AI_InitAxonTelegraphStruct(tds)
+	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+
+	return [tds]
+End
+
 #else // AMPLIFIER_XOPS_PRESENT
 
 Function AI_GetHoldingCommand(device, headstage)
@@ -1711,6 +1715,11 @@ Function AI_QueryGainsFromMCC(device)
 End
 
 Function AI_FindConnectedAmps()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	DEBUGPRINT("Unimplemented")
 End
