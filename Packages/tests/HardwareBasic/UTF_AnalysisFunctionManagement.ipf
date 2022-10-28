@@ -130,7 +130,7 @@ End
 static Function/WAVE GetAnalysisFunctions()
 	string funcs
 
-	funcs = WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
+	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
 
 	// remove our test help functions which do nasty things
 	funcs = GrepList(funcs, "Params[[:digit:]]*_V3", 1)
