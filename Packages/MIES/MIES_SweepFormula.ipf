@@ -572,7 +572,15 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		token = ""
 	endfor
 
-	SF_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after ,")
+	if(lastAction != SF_ACTION_UNINITIALIZED)
+		SF_ASSERT(state != SF_STATE_ADDITION && \
+		state != SF_STATE_SUBTRACTION && \
+		state != SF_STATE_MULTIPLICATION && \
+		state != SF_STATE_OPERATION \
+		, "Expected value after +, -, * or /")
+	endif
+
+	SF_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"")
 
 	if(!ParamIsDefault(createdArray))
 		if(createdArrayLocal)

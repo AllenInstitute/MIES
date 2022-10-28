@@ -144,6 +144,15 @@ static Function stringHandling()
 
 	jsonID0 = JSON_Parse("\"+\"")
 	jsonID1 = DirectToFormulaParser("+")
+
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	jsonID0 = JSON_Parse("\"-a\"")
+	jsonID1 = DirectToFormulaParser("-a")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	jsonID0 = JSON_Parse("\"+a\"")
+	jsonID1 = DirectToFormulaParser("+a")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
@@ -337,7 +346,7 @@ End
 
 Function/WAVE InvalidInputs()
 
-	Make/FREE/T wt = {",1", " ,1", "1,,", "1, ,", "(1), ,", "1,", "(1),", "1+", "1-", "1*", "1/", "1…"}
+	Make/FREE/T wt = {",1", " ,1", "1,,", "1, ,", "(1), ,", "1,", "(1),", "1+", "1-", "1*", "1/", "1…", "(1-)", "(1+)", "(1*)", "(1/)"}
 
 	return wt
 End
