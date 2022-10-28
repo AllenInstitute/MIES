@@ -16,6 +16,8 @@ static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_
 static Constant MAX_PIPETTEOFFSET = 150 // mV
 static Constant MIN_PIPETTEOFFSET = -150
 
+static Constant NUM_TRIES_AXON_TELEGRAPH = 10
+
 #if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
 #define AMPLIFIER_XOPS_PRESENT
 #endif
@@ -1676,10 +1678,31 @@ End
 
 Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
 
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+	variable i, err
+	string errMsg
 
-	return [tds]
+	AI_InitAxonTelegraphStruct(tds)
+
+	for(i = 0; i < NUM_TRIES_AXON_TELEGRAPH; i += 1)
+
+		try
+			AssertOnAndClearRTError()
+			AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds); AbortOnRTE
+
+			return [tds]
+		catch
+			errMsg = GetRTErrMessage()
+			err    = GetRTError(1)
+
+			LOG_AddEntry(PACKAGE_MIES, "querying amplifier failed",            \
+			                           keys = {"error code", "error message"}, \
+			                           values = {num2str(err), errMsg})
+
+			Sleep/S 0.1
+		endtry
+	endfor
+
+	ASSERT(0, "Could not query amplifier")
 End
 
 #else // AMPLIFIER_XOPS_PRESENT
