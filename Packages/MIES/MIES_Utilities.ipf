@@ -6109,3 +6109,14 @@ Function/S CompressNumericalList(string list, string sepChar)
 
 	return RemoveEnding(resultList, sepChar)
 End
+
+/// @brief Give the free wave `wv` the name `name`
+Function ChangeFreeWaveName(WAVE wv, string name)
+
+	ASSERT(IsFreeWave(wv), "Only works with free waves")
+	ASSERT(IsValidObjectName(name), "name is not a valid object name")
+
+	DFREF dfr = NewFreeDataFolder()
+
+	MoveWave wv, dfr:$name
+End
