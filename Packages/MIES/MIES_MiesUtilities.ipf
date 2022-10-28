@@ -7018,6 +7018,39 @@ Function StoreWindowCoordinatesHook(s)
 	return 0
 End
 
+/// @brief Return the short/abbreviated analysis function name used in the tables
+Function/S GetAbbreviationForAnalysisFunction(string anaFunc)
+
+	strswitch(anaFunc)
+		case "PSQ_Ramp":
+			return "RA"
+		case "PSQ_Chirp":
+			return "CR"
+		case "PSQ_DaScale":
+			return "DA"
+		case "PSQ_PipetteInBath":
+			return "PB"
+		case "PSQ_SealEvaluation":
+			return "SE"
+		case "PSQ_TrueRestingMembranePotential":
+			return "VM"
+		case "PSQ_AccessResistanceSmoke":
+			return "AR"
+		case "PSQ_Rheobase":
+			return "RB"
+		case "PSQ_SquarePulse":
+			return "SP"
+		case "MSQ_FastRheoEst":
+			return "FR"
+		case "MSQ_DAScale":
+			return "DS"
+		case "SC_SpikeControl":
+			return "SC"
+		default:
+			ASSERT(0, "Unknown")
+	endswitch
+End
+
 /// @brief Map from analysis function name to numeric constant
 ///
 /// @return One of @ref SpecialAnalysisFunctionTypes which includes

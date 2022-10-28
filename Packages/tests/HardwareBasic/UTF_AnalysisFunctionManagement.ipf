@@ -160,6 +160,15 @@ Function CheckHelpStringsOfAllAnalysisFunctions()
 	endfor
 End
 
+/// UTF_TD_GENERATOR GetAnalysisFunctions
+static Function CheckAbbrevName([string func])
+
+	string abbrev
+
+	abbrev = GetAbbreviationForAnalysisFunction(func)
+	CHECK_PROPER_STR(func)
+End
+
 static Function AnalysisParamsMustHaveSameOptionality()
 	variable numFuncs
 	WAVE/T funcs = GetAnalysisFunctions()
