@@ -169,11 +169,11 @@ static Function CheckAbbrevName([string func])
 	CHECK_PROPER_STR(func)
 End
 
-static Function AnalysisParamsMustHaveSameOptionality()
+static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisParameters_IGNORE(WAVE/T funcs)
 	variable numFuncs
-	WAVE/T funcs = GetAnalysisFunctions()
 
 	numFuncs = DimSize(funcs, ROWS)
+	CHECK_GT_VAR(numFuncs, 0)
 
 	Make/N=(numFuncs)/WAVE requiredParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], REQUIRED_PARAMS)), ";")
 	Make/N=(numFuncs)/WAVE optParams      = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
@@ -182,16 +182,33 @@ static Function AnalysisParamsMustHaveSameOptionality()
 	Concatenate/NP/FREE {optParams}, allOptParams
 
 	WAVE/Z allRequiredParamsUnique = GetUniqueEntries(allRequiredParams)
-	WAVE/Z allOptParamsUnique      = GetUniqueEntries(allOptParams)
+	CHECK_WAVE(allRequiredParamsUnique, TEXT_WAVE)
 
-	WAVE/Z duplicates = GetSetIntersection(allRequiredParamsUnique, allOptParamsUnique)
+	WAVE/Z allOptParamsUnique = GetUniqueEntries(allOptParams)
+	CHECK_WAVE(allOptParamsUnique, TEXT_WAVE)
+
+	WAVE/Z mixedRequiredAndOptional = GetSetIntersection(allRequiredParamsUnique, allOptParamsUnique)
+	CHECK_WAVE(mixedRequiredAndOptional, TEXT_WAVE)
+
+	ChangeFreeWaveName(allRequiredParamsUnique, "required")
+	ChangeFreeWaveName(allOptParamsUnique, "optional")
+	ChangeFreeWaveName(mixedRequiredAndOptional, "mixed")
+
+	return [allRequiredParamsUnique, allOptParamsUnique, mixedRequiredAndOptional]
+End
+
+static Function AnalysisParamsMustHaveSameOptionality()
+
+	WAVE/T funcs = GetAnalysisFunctions()
+
+	[WAVE/T required, WAVE/T optional, WAVE/T mixed] = GetAllAnalysisParameters_IGNORE(funcs)
 
 	// these parameters are expected to have different optionality
-	CHECK(!RemoveTextWaveEntry1D(duplicates, "DAScaleModifier"))
-	CHECK(!RemoveTextWaveEntry1D(duplicates, "DAScaleOperator"))
-	CHECK(!RemoveTextWaveEntry1D(duplicates, "FailedLevel"))
+	CHECK(!RemoveTextWaveEntry1D(mixed, "DAScaleModifier"))
+	CHECK(!RemoveTextWaveEntry1D(mixed, "DAScaleOperator"))
+	CHECK(!RemoveTextWaveEntry1D(mixed, "FailedLevel"))
 
-	CHECK_EQUAL_VAR(DimSize(duplicates, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(mixed, ROWS), 0)
 End
 
 // invalid analysis functions
