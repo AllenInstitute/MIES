@@ -130,12 +130,17 @@ End
 static Function/WAVE GetAnalysisFunctions()
 	string funcs
 
-	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
+	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3, includeUserFunctions = 0)
 
 	// remove our test help functions which do nasty things
-	funcs = GrepList(funcs, "Params[[:digit:]]*_V3", 1)
+	funcs = GrepList(funcs, ".*_V3", 1)
+	funcs = GrepList(funcs, ".*_.*")
 
-	return ListToTextWave(funcs, ";")
+	WAVE/T wv = ListToTextWave(funcs, ";")
+
+	SetDimensionLabels(wv, funcs, ROWS)
+
+	return wv
 End
 
 Function CheckHelpStringsOfAllAnalysisFunctions()
