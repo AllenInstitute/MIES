@@ -6054,3 +6054,58 @@ threadsafe Function/WAVE DoFFT(WAVE input[, string winFunc])
 
 	return result
 End
+
+/// @brief Convert a numerical integer list seperated by sepChar to a list including a range sign ("-")
+/// e. g. 1,2,3,4 -> 1-4
+/// 1,2,4,5,6 -> 1-2,4-6
+/// 1,1,1,2 -> 1-2
+/// the input list does not have to be sorted
+Function/S CompressNumericalList(string list, string sepChar)
+
+	variable i, nextEntry, entry, nextEntryMinusOne, numItems
+	variable firstConsecutiveEntry = NaN
+	string resultList = ""
+
+	ASSERT(!IsEmpty(sepChar), "Seperation character is empty.")
+
+	if(IsEmpty(list))
+		return ""
+	endif
+
+	list = SortList(list, sepChar, 2)
+	numItems = ItemsInList(list, sepChar)
+
+	for(i = 0; i < numItems; i += 1)
+
+		entry = str2numSafe(StringFromList(i, list, sepChar))
+		ASSERT(IsInteger(entry), "Number from list item must be integer")
+		nextEntry = str2numSafe(StringFromList(i + 1, list, sepChar))
+
+		if(entry == nextEntry)
+			continue
+		endif
+
+		nextEntryMinusOne = str2numSafe(StringFromList(i + 1, list, sepChar)) - 1
+
+		if(IsNaN(entry))
+			continue
+		endif
+
+		// different entries and no range in progress
+		if(entry != nextEntryMinusOne && IsNaN(firstConsecutiveEntry))
+			resultList = AddListItem(num2istr(entry), resultList, sepChar, inf)
+			// different entries but we have to finalize the last range
+		elseif(entry != nextEntryMinusOne && !IsNaN(firstConsecutiveEntry))
+			resultList	+= "-" + num2istr(entry) + sepChar
+			firstConsecutiveEntry = NaN
+			// same entries and we have to start a range
+		elseif(entry == nextEntryMinusOne && IsNaN(firstConsecutiveEntry))
+			resultList += num2istr(entry)
+			firstConsecutiveEntry = entry
+		// else
+		// same entries and a range is in progress
+		endif
+	endfor
+
+	return RemoveEnding(resultList, sepChar)
+End

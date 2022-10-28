@@ -6201,3 +6201,62 @@ Function CO_Works()
 	CHECK_EQUAL_VAR(AlreadyCalledOnce("efgh"), 0)
 	CHECK_EQUAL_VAR(AlreadyCalledOnce("efgh"), 1)
 End
+
+static Function CompressNumericalList()
+
+	string list, ref
+
+	list = "1,2"
+	ref = "1-2"
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = "-1,0,1"
+	ref = "-1-1"
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = "1,2,3,5,6,7"
+	ref = "1-3,5-7"
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = ""
+	ref = ""
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = "1,2,2,3,3,4,6"
+	ref = "1-4,6"
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = "6,4,3,3,2,2,1"
+	ref = "1-4,6"
+	list = MIES_UTILS#CompressNumericalList(list, ",")
+	CHECK_EQUAL_STR(list, ref)
+
+	list = "string"
+	try
+		list = MIES_UTILS#CompressNumericalList(list, ",")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	list = "1,1.5,2"
+	try
+		list = MIES_UTILS#CompressNumericalList(list, ",")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	list = "1,2"
+	try
+		list = MIES_UTILS#CompressNumericalList(list, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
