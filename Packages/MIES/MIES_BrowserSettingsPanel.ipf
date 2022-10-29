@@ -95,6 +95,7 @@ Function BSP_UnHidePanel(mainPanel)
 
 	BSP_UnHideSweepControls(mainPanel)
 	BSP_UnHideSettingsPanel(mainPanel)
+	BSP_UnHideSettingsHistory(mainPanel)
 
 	BSP_MainPanelButtonToggle(mainPanel, 0)
 End
@@ -1547,7 +1548,7 @@ Function BSP_UnsetDynamicSettingsHistory(win)
 	SetWindow $shPanel, hook(resetScaling)=$""
 End
 
-Function BSP_UnHideSettingsHistory(win)
+static Function BSP_UnHideSettingsHistory(win)
 	string win
 
 	string settingsHistoryPanel

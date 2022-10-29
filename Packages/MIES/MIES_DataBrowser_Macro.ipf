@@ -12,7 +12,7 @@
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(739.5,170,1279.5,715.25)/K=1  as "DataBrowser"
-	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
+	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=BSP_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"

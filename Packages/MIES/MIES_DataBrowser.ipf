@@ -551,23 +551,6 @@ static Function DB_UpdateToLastSweepWrapper(string win, variable force)
 	LBV_UpdateTagsForTextualLBNEntries(win, last)
 End
 
-/// @brief procedure for the open button of the side panel
-Function DB_ButtonProc_Panel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string win
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			win = GetMainWindow(ba.win)
-			BSP_UnHideSettingsHistory(win)
-			break
-	endswitch
-
-	BSP_ButtonProc_Panel(ba)
-	return 0
-End
-
 Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
