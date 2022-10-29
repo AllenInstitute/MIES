@@ -162,7 +162,11 @@ End
 /// @brief Add default window hooks
 static Function BSP_AddWindowHooks(string win)
 
-	string scPanel, bsPanel, shPanel
+	string scPanel, bsPanel, shPanel, mainPanel
+
+	mainPanel = GetMainWindow(win)
+
+	SetWindow $mainPanel, hook(cleanup)=BSP_WindowHook
 
 	scPanel = BSP_GetSweepControlsPanel(win)
 	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
@@ -180,7 +184,11 @@ End
 /// @brief Remove all window hooks from the window and its subwindows
 Function BSP_RemoveWindowHooks(string win)
 
-	string scPanel, bsPanel, shPanel
+	string scPanel, bsPanel, shPanel, mainPanel
+
+	mainPanel = GetMainWindow(win)
+
+	SetWindow $mainPanel, hook(cleanup)=$""
 
 	scPanel = BSP_GetSweepControlsPanel(win)
 	SetWindow $scPanel, hook(main)=$""
@@ -1896,4 +1904,39 @@ static Function/S BSP_RetrieveSFHelpTextImpl(string win, string hlpStart, string
 	Notebook $win, getData=4
 
 	return Trimstring(S_value)
+End
+
+Function BSP_WindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_KILL:
+
+			win = s.winName
+
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, win)
+
+			if(!BSP_HasBoundDevice(win))
+				break
+			endif
+
+			AssertOnAndClearRTError()
+			try
+				// catch all error conditions, asserts and aborts
+				// and silently ignore them
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
+
+				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
+			catch
+				ClearRTError()
+			endtry
+
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
 End

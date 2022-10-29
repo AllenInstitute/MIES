@@ -368,25 +368,6 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
 
-Function SB_SweepBrowserWindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string graph, scPanel, ctrl
-
-	switch(s.eventCode)
-		case EVENT_WINDOW_HOOK_KILL:
-			graph = GetMainWindow(s.winName)
-
-			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-
-			KillOrMoveToTrash(dfr = sweepBrowserDFR)
-			break
-	endswitch
-
-	// return zero so that other hooks are called as well
-	return 0
-End
-
 Function/DF SB_OpenSweepBrowser([variable mode])
 
 	string mainWin, renameWin
@@ -404,7 +385,6 @@ Function/DF SB_OpenSweepBrowser([variable mode])
 	AddVersionToPanel(mainWin, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetSweepBrowser(mainWin, mode)
 
-	SetWindow $mainWin, hook(cleanup)=SB_SweepBrowserWindowHook
 	SB_SetUserData(mainWin)
 
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)

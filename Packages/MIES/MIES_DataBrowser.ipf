@@ -21,7 +21,6 @@ Function/S DB_OpenDataBrowser([variable mode])
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
 
-	SetWindow $win, hook(cleanup)=DB_WindowHook
 	winBSP = BSP_GetPanel(win)
 	SetWindow $winBSP, hook(nbinteract)=BSP_SFHelpWindowHook
 	SetWindow $winBSP, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
@@ -799,41 +798,6 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
 	return DB_FindDataBrowser(device)
-End
-
-Function DB_WindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string win
-
-	switch(s.eventCode)
-		case EVENT_WINDOW_HOOK_KILL:
-
-			win = s.winName
-
-			NVAR JSONid = $GetSettingsJSONid()
-			PS_StoreWindowCoordinate(JSONid, win)
-
-			if(!BSP_HasBoundDevice(win))
-				break
-			endif
-
-			AssertOnAndClearRTError()
-			try
-				// catch all error conditions, asserts and aborts
-				// and silently ignore them
-				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
-
-				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
-			catch
-				ClearRTError()
-			endtry
-
-			break
-	endswitch
-
-	// return zero so that other hooks are called as well
-	return 0
 End
 
 /// @brief Jumps in the SweepFormula help notebook of the current data/sweepbrowser to the first location
