@@ -93,10 +93,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 
 	BSP_InitPanel(device)
+	BSP_RemoveWindowHooks(device)
 
-	BSP_UnsetDynamicSweepControlOfDataBrowser(device)
-	BSP_UnsetDynamicStartupSettingsOfDataBrowser(device)
-	BSP_UnsetDynamicSettingsHistory(device)
+	BSP_UnsetDynamicStartupSettings(device)
 
 	// store current positions as reference
 	StoreCurrentPanelsResizeInfo(bsPanel)
@@ -300,8 +299,7 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = DATABROWSER_WINDOW_TITLE
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
-		BSP_UnsetDynamicStartupSettingsOfDataBrowser(win)
-		BSP_UnsetDynamicSettingsHistory(win)
+		BSP_UnsetDynamicStartupSettings(win)
 	else
 		newWindow = "DB_" + device
 	endif
@@ -317,7 +315,6 @@ static Function/S DB_LockToDevice(win, device)
 	DB_SetUserData(newWindow, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
-		BSP_DynamicSettingsHistory(newWindow)
 		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
