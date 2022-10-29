@@ -1586,6 +1586,9 @@ static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
 
+	// remove header
+	DeletePoints/M=(ROWS) 0, 1, wv
+
 	MatrixTranspose wv
 
 	SetLBKeysRowDimensionLabels(wv)
@@ -1598,7 +1601,7 @@ static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 	return wv
 End
 
-static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
+static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 2
 
 Function SaveLBNumericalDescription()
 	SaveLBDescription_Impl("labnotebook_numerical_description", LBN_NUMERICAL_DESCRIPTION_VERSION)
@@ -1613,11 +1616,16 @@ static Function SaveLBDescription_Impl(string name, variable version)
 	RemoveAllDimLabels(wv)
 	Note/K wv
 
-	Duplicate/FREE wv, dup
+	Duplicate/FREE/T wv, dup
 
 	MatrixTranspose dup
 
 	SetWaveVersion(dup, version)
+
+	InsertPoints/M=(ROWS) 0, 1, dup
+
+	// Add header
+	dup[0][] = {{"Name"}, {"Unit"},{"Tolerance"},{"Description"},{"Headstage Contingency"}, {"ClampMode"}}
 
 	StoreWaveOnDisk(dup, name)
 End
