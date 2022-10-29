@@ -90,7 +90,7 @@ End
 /// @brief UnHides BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnHidePanel(mainPanel)
+static Function BSP_UnHidePanel(mainPanel)
 	string mainPanel
 
 	BSP_UnHideSweepControls(mainPanel)
@@ -100,7 +100,7 @@ Function BSP_UnHidePanel(mainPanel)
 	BSP_MainPanelButtonToggle(mainPanel, 0)
 End
 
-Function BSP_UnHideSettingsPanel(mainPanel)
+static Function BSP_UnHideSettingsPanel(mainPanel)
 	string mainPanel
 
 	string bsPanel
@@ -117,7 +117,7 @@ End
 /// @brief open bottom Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnHideSweepControls(mainPanel)
+static Function BSP_UnHideSweepControls(mainPanel)
 	string mainPanel
 
 	string scPanel
