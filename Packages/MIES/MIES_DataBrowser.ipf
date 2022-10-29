@@ -10,7 +10,7 @@
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
 Function/S DB_OpenDataBrowser([variable mode])
-	string win, winBSP, device, devicesWithData, bsPanel
+	string win, device, devicesWithData, bsPanel
 
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
@@ -20,10 +20,6 @@ Function/S DB_OpenDataBrowser([variable mode])
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
-
-	winBSP = BSP_GetPanel(win)
-	SetWindow $winBSP, hook(nbinteract)=BSP_SFHelpWindowHook
-	SetWindow $winBSP, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
 
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win, mode)

@@ -174,6 +174,8 @@ static Function BSP_AddWindowHooks(string win)
 	bsPanel = BSP_GetPanel(win)
 	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
 	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
+	SetWindow $bsPanel, hook(nbinteract)=BSP_SFHelpWindowHook
+	SetWindow $bsPanel, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
 
 	shPanel = LBV_GetSettingsHistoryPanel(win)
 	SetWindow $shPanel, hook(main)=BSP_ClosePanelHook
@@ -196,6 +198,8 @@ Function BSP_RemoveWindowHooks(string win)
 	bsPanel = BSP_GetPanel(win)
 	SetWindow $bsPanel, hook(main)=$""
 	SetWindow $bsPanel, hook(sweepFormula)=$""
+	SetWindow $bsPanel, hook(nbinteract)=$""
+	SetWindow $bsPanel, tooltipHook(nbinteract)=$""
 
 	shPanel = LBV_GetSettingsHistoryPanel(win)
 	SetWindow $shPanel, hook(main)=$""
