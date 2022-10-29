@@ -1529,7 +1529,7 @@ Function BSP_DynamicSettingsHistory(string win)
 
 	shPanel = LBV_GetSettingsHistoryPanel(win)
 
-	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
+	SetWindow $shPanel, hook(main)=BSP_ClosePanelHook
 	SetWindow $shPanel, hook(description)=LBV_EntryDescription
 	SetWindow $shPanel, hook(resetScaling)=IH_ResetScaling
 End
