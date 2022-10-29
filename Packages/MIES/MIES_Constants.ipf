@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 6
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 66
+Constant LABNOTEBOOK_VERSION = 67
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -46,11 +46,11 @@ Constant RESULTS_VERSION     = 2
 /// @{
 Constant PSQ_PIPETTE_BATH_VERSION    = 3
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 1
-Constant PSQ_CHIRP_VERSION           = 12
-Constant PSQ_DA_SCALE_VERSION        = 4
-Constant PSQ_RAMP_VERSION            = 5
-Constant PSQ_RHEOBASE_VERSION        = 4
-Constant PSQ_SQUARE_PULSE_VERSION    = 3
+Constant PSQ_CHIRP_VERSION           = 13
+Constant PSQ_DA_SCALE_VERSION        = 5
+Constant PSQ_RAMP_VERSION            = 6
+Constant PSQ_RHEOBASE_VERSION        = 5
+Constant PSQ_SQUARE_PULSE_VERSION    = 4
 Constant PSQ_SEAL_EVALUATION_VERSION = 3
 Constant PSQ_TRUE_REST_VM_VERSION    = 1
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
@@ -1085,6 +1085,7 @@ StrConstant PSQ_FMT_LBN_RMS_SHORT_THRESHOLD        = "%s S-RMS Threshold"
 StrConstant PSQ_FMT_LBN_RMS_LONG_PASS              = "%s Chk%d L-RMS QC"
 StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD         = "%s L-RMS Threshold"
 StrConstant PSQ_FMT_LBN_TARGETV                    = "%s Chk%d T-V BL"
+StrConstant PSQ_FMT_LBN_TARGETV_THRESHOLD          = "%s T-V Threshold"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS               = "%s Chk%d T-V BL QC"
 StrConstant PSQ_FMT_LBN_LEAKCUR                    = "%s Chk%d Leak Current BL"
 StrConstant PSQ_FMT_LBN_LEAKCUR_PASS               = "%s Chk%d Leak Current BL QC"
