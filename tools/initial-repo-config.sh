@@ -15,6 +15,7 @@ git checkout :/
 # fetch submodules
 git submodule init
 git submodule update --checkout
+git submodule foreach "git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'"
 
 # recursive submodule checkout can be done with
 # git submodule update --checkout --init --recursive
