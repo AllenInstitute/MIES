@@ -1,0 +1,20 @@
+IGOR
+WAVES/T/N=(13,2)	analysis_function_abrev_legend
+BEGIN
+	"Abbreviation"	"Name"
+	"AR"	":cpp:func:`PSQ_AccessResistanceSmoke`"
+	"CR"	":cpp:func:`PSQ_Chirp`"
+	"DA"	":cpp:func:`PSQ_DAScale`"
+	"DS"	":cpp:func:`MSQ_DAScale`"
+	"FR"	":cpp:func:`MSQ_FastRheoEst`"
+	"PB"	":cpp:func:`PSQ_PipetteInBath`"
+	"RA"	":cpp:func:`PSQ_Ramp`"
+	"RB"	":cpp:func:`PSQ_Rheobase`"
+	"SC"	":cpp:func:`SC_SpikeControl`"
+	"SE"	":cpp:func:`PSQ_SealEvaluation`"
+	"SP"	":cpp:func:`PSQ_SquarePulse`"
+	"VM"	":cpp:func:`PSQ_TrueRestingMembranePotential`"
+END
+X SetScale/P x 0,1,"", analysis_function_abrev_legend; SetScale/P y 0,1,"", analysis_function_abrev_legend; SetScale d 0,0,"", analysis_function_abrev_legend
+X SetDimLabel 1, 0, Abbreviation, analysis_function_abrev_legend
+X SetDimLabel 1, 1, Name, analysis_function_abrev_legend

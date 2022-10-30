@@ -84,7 +84,7 @@ git clean -fx ../doc/csv/*.csv
 # ...
 #
 # the sed calls extracts the correct block, remove the leading tab, and translates \" to "" and \\r to \n.
-for i in $(ls *_description.itx)
+for i in $(ls *_description.itx analysis_function_parameters.itx analysis_function_abrev_legend.itx)
 do
   output=../doc/csv/$(basename "$i" .itx).csv
   begin=$(grep -n "^BEGIN$" $i | cut -f 1 -d ":")
