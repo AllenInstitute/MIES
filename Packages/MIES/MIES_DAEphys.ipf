@@ -5027,7 +5027,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
 
-		if(forceEnable || i < deviceInfo[%TTL])
+		if(forceEnable || i < deviceInfo[%AD])
 			EnableControls(device, controls)
 		else
 			DisableControls(device, controls)
