@@ -74,6 +74,8 @@ cd "$top_level/Packages/MIES"
 
 echo "Start creating documentation CSV files"
 
+git clean -fx ../doc/csv/*.csv
+
 # The Igor Text file looks like
 # ...
 # BEGIN
@@ -82,11 +84,9 @@ echo "Start creating documentation CSV files"
 # ...
 #
 # the sed calls extracts the correct block, remove the leading tab, and translates \" to "" and \\r to \n.
-for i in $(ls *_description.itx)
+for i in $(ls *_description.itx analysis_function_parameters.itx analysis_function_abrev_legend.itx)
 do
   output=../doc/csv/$(basename "$i" .itx).csv
-  # Add header
-  echo '"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"' > ${output}
   begin=$(grep -n "^BEGIN$" $i | cut -f 1 -d ":")
   end=$(grep -n "^END$" $i | cut -f 1 -d ":")
   sed -n "$((${begin} + 1)),$((${end} - 1))p" $i | sed -e 's/^\t//' -e 's/\\"/""/g' -e 's/\\r/\n/g' >> ${output}

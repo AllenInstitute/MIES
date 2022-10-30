@@ -12,6 +12,7 @@ User documentation
   daephys
   auto_testpulse_tuning
   labnotebook-descriptions
+  analysis-function-parameters
 
 MIES is a sweep based data acquisition tool written in Igor Pro.
 

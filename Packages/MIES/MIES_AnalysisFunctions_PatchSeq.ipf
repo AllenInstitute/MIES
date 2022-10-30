@@ -23,6 +23,8 @@
 /// - PSQ_Ramp `RA`
 /// - PSQ_Chirp `CR`
 ///
+/// See GetAbbreviationForAnalysisFunction() for a generating the abbreviation of each analysis function.
+///
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
 /// For orientation the following table shows their relation. All labnotebook

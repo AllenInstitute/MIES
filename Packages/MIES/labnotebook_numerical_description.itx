@@ -1,6 +1,7 @@
 IGOR
-WAVES/T/N=(192,6)	labnotebook_numerical_description
+WAVES/T/N=(193,6)	labnotebook_numerical_description
 BEGIN
+	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
 	"TimeStampSinceIgorEpochUTC"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in coordinated universal time zone (UTC) with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -195,4 +196,4 @@ BEGIN
 	"Skip Sweeps source"	""	"0.1"	"Stores who is responsible for sweep skipping. Current values are 0x1 for the user and 0x2 for automatic/internal reasons."	"INDEP"	"IC;VC;I=0"
 END
 X SetScale/P x 0,1,"", labnotebook_numerical_description; SetScale/P y 0,1,"", labnotebook_numerical_description; SetScale d 0,0,"", labnotebook_numerical_description
-X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:1;"
+X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:2;"

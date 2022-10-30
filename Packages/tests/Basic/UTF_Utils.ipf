@@ -6260,3 +6260,54 @@ static Function CompressNumericalList()
 		PASS()
 	endtry
 End
+
+/// ChangeFreeWaveName
+/// @{
+
+Function CFW_ChecksParameters()
+
+	Make perm
+
+	try
+		ChangeFreeWaveName(perm, "abcd"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE free
+
+	try
+		ChangeFreeWaveName(free, ""); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		ChangeFreeWaveName(free, "123"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function CFW_Works1()
+
+	string str, expected
+
+	Make/FREE=1 wv
+	CHECK_WAVE(wv, FREE_WAVE)
+
+	expected = "wv"
+	str = NameOfWave(wv)
+	CHECK_EQUAL_STR(str, expected)
+
+	ChangeFreeWaveName(wv, "abcd")
+
+	expected = "abcd"
+	str = NameOfWave(wv)
+	CHECK_EQUAL_STR(str, expected)
+End
+
+/// @}

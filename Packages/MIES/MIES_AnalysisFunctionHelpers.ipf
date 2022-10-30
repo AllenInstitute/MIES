@@ -423,16 +423,26 @@ End
 
 /// @brief Get list of possible analysis functions
 ///
-/// @param versionBitMask bitmask of different analysis function versions which should be returned, one
-///                       of @ref AnalysisFunctionVersions
-Function/S AFH_GetAnalysisFunctions(versionBitMask)
-	variable versionBitMask
+/// @param versionBitMask       bitmask of different analysis function versions which should be returned, one
+///                             of @ref AnalysisFunctionVersions
+/// @param includeUserFunctions include analysis functions defined in "UserAnalysisFunctions.ipf"
+Function/S AFH_GetAnalysisFunctions(variable versionBitMask, [variable includeUserFunctions])
 
 	string funcList, func, list, procWin
 	string funcListClean = ""
 	variable numEntries, i, valid_f1, valid_f2, valid_f3
 
-	funcList = FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
+	if(ParamIsDefault(includeUserFunctions))
+		includeUserFunctions = 1
+	else
+		includeUserFunctions = !!includeUserFunctions
+	endif
+
+	if(includeUserFunctions)
+		funcList = FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
+	else
+		funcList = ""
+	endif
 
 	// gather all analysis functions from these files
 	list = WinList("MIES_AnalysisFunctions*.ipf", ";", "WIN:128")
