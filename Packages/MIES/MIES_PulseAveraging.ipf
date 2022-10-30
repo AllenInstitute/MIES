@@ -2768,7 +2768,13 @@ End
 /// \endrst
 static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 
-	variable i, j, numActive, jsonID, numEntries
+	variable i, j, numActive, jsonID, numEntries, oldSetMode
+
+	MultiThreadingControl getMode
+	oldSetMode = V_AutoMultiThread
+
+	// require serial execution for WaveStats in PA_GetFeaturePosition
+	MultiThreadingControl setMode = 0
 
 	WAVE properties = pasi.properties
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
@@ -2806,6 +2812,8 @@ static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSE], propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
 		endfor
 	endfor
+
+	MultiThreadingControl setMode = oldSetMode
 
 	JSON_Release(jsonID)
 End

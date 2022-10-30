@@ -959,6 +959,7 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 #endif
 
 	refPoint = tpStartPoint + evalOffsetPointsCorrected
+	// as data is always too small for threaded execution, the values of V_minRowLoc/V_maxRowLoc are reproducible
 	WaveStats/P/Q/M=1/R=[refPoint, refPoint + 0.25 / sampleInt] data
 	instPoint = (clampAmp < 0) ? V_minRowLoc : V_maxRowLoc
 	instVal = data[instPoint]
