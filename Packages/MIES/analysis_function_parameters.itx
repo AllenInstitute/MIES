@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(66,5)	analysis_function_parameters
+WAVES/T/N=(60,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsoluteVoltageDiff"	"variable"	"required"	"VM"	"Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
@@ -15,18 +15,12 @@ BEGIN
 	"BaselineTargetVThreshold"	"variable"	"optional"	"CR, DA, RA, RB"	"Threshold value in mV for the target V baseline QC check (defaults to 1)"
 	"BoundsEvaluationMode"	"string"	"required"	"CR"	"Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 	"DAScaleModifier"	"variable"	"mixed"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages for too few spikes\r[Optional] Percentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\".\rModifier value to the DA Scale of headstages with spikes during chirp"
-	"DAScaleModifier"	"variable"	"optional"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages for too few spikes\r[Optional] Percentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\".\rModifier value to the DA Scale of headstages with spikes during chirp"
-	"DAScaleModifier"	"variable"	"required"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages for too few spikes\r[Optional] Percentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\".\rModifier value to the DA Scale of headstages with spikes during chirp"
-	"DAScaleOperator"	"string"	"optional"	"CR, SC"	"Set the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
-	"DAScaleOperator"	"string"	"required"	"CR, SC"	"Set the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DAScaleOperator"	"string"	"mixed"	"CR, SC"	"Set the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DAScales"	"wave"	"required"	"DA, DS"	"DA Scale Factors in pA"
 	"DAScaleSpikePositionModifier"	"variable"	"required"	"SC"	"Modifier value to the DA Scale of headstages with failing spike positions."
 	"DAScaleSpikePositionOperator"	"string"	"required"	"SC"	"Set the math operator to use for combining the DAScale and the spike position modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DaScaleTooManySpikesModifier"	"variable"	"required"	"SC"	"Modifier value to the DA Scale of headstages for too many spikes"
 	"DaScaleTooManySpikesOperator"	"string"	"required"	"SC"	"Set the math operator to use for combining the DAScale and the too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
-	"FailedLevel"	"variable"	"required"	"CR, VM"	"Absolute level for spike search"
-	"FailedLevel"	"variable"	"optional"	"CR, VM"	"Absolute level for spike search"
 	"FailedLevel"	"variable"	"mixed"	"CR, VM"	"Absolute level for spike search"
 	"FailedPulseLevel"	"variable"	"optional"	"SC"	"[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
 	"FinalSlopePercent"	"variable"	"optional"	"DA"	"[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. Note: The slope is used in percent. Ignored for \"Sub\"."

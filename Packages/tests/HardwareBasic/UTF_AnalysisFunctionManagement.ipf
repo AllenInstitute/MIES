@@ -190,11 +190,17 @@ static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisP
 	WAVE/Z mixedRequiredAndOptional = GetSetIntersection(allRequiredParamsUnique, allOptParamsUnique)
 	CHECK_WAVE(mixedRequiredAndOptional, TEXT_WAVE)
 
-	ChangeFreeWaveName(allRequiredParamsUnique, "required")
-	ChangeFreeWaveName(allOptParamsUnique, "optional")
+	WAVE/T/Z allRequiredParamsUniqueNoMixed = GetSetDifference(allRequiredParamsUnique, mixedRequiredAndOptional)
+	CHECK_WAVE(allRequiredParamsUniqueNoMixed, TEXT_WAVE)
+
+	WAVE/T/Z allOptParamsUniqueNoMixed = GetSetDifference(allOptParamsUnique, mixedRequiredAndOptional)
+	CHECK_WAVE(allOptParamsUniqueNoMixed, TEXT_WAVE)
+
+	ChangeFreeWaveName(allRequiredParamsUniqueNoMixed, "required")
+	ChangeFreeWaveName(allOptParamsUniqueNoMixed, "optional")
 	ChangeFreeWaveName(mixedRequiredAndOptional, "mixed")
 
-	return [allRequiredParamsUnique, allOptParamsUnique, mixedRequiredAndOptional]
+	return [allRequiredParamsUniqueNoMixed, allOptParamsUniqueNoMixed, mixedRequiredAndOptional]
 End
 
 static Function AnalysisParamsMustHaveSameOptionality()
@@ -298,7 +304,7 @@ static Function GenerateAnalysisFunctionTable()
 	// if this test fails and the CRC changes
 	// commit the file `Packages/MIES/analysis_function_parameters.itx`
 	// and check that the changes therein are intentional
-	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 4074123754)
+	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 844628669)
 	StoreWaveOnDisk(output, "analysis_function_parameters")
 End
 
