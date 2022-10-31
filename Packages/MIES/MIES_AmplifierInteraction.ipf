@@ -16,6 +16,8 @@ static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_
 static Constant MAX_PIPETTEOFFSET = 150 // mV
 static Constant MIN_PIPETTEOFFSET = -150
 
+static Constant NUM_TRIES_AXON_TELEGRAPH = 10
+
 #if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
 #define AMPLIFIER_XOPS_PRESENT
 #endif
@@ -967,9 +969,7 @@ static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
 	variable channel    = AI_GetAmpChannel(device, headStage)
 
-	STRUCT AxonTelegraph_DataStruct tds
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
 
 	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
 
@@ -1466,9 +1466,8 @@ Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
 		endif
 	endif
 
-	STRUCT AxonTelegraph_DataStruct tds
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(serial, channel)
+
 	storedMode = DAG_GetHeadstageMode(device, headStage)
 	setMode    = tds.operatingMode
 
@@ -1521,9 +1520,8 @@ Function AI_FillAndSendAmpliferSettings(device, sweepNo)
 		clampMode = DAG_GetHeadstageMode(device, i)
 		AI_AssertOnInvalidClampMode(clampMode)
 
-		STRUCT AxonTelegraph_DataStruct tds
-		AI_InitAxonTelegraphStruct(tds)
-		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+		[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
+
 		ASSERT(clampMode == tds.OperatingMode, "A clamp mode mismatch was detected. Please describe the events leading up to that assertion. Thanks!")
 
 		if(clampMode == V_CLAMP_MODE)
@@ -1678,6 +1676,35 @@ Function AI_FindConnectedAmps()
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 End
 
+Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+
+	variable i, err
+	string errMsg
+
+	AI_InitAxonTelegraphStruct(tds)
+
+	for(i = 0; i < NUM_TRIES_AXON_TELEGRAPH; i += 1)
+
+		try
+			AssertOnAndClearRTError()
+			AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds); AbortOnRTE
+
+			return [tds]
+		catch
+			errMsg = GetRTErrMessage()
+			err    = GetRTError(1)
+
+			LOG_AddEntry(PACKAGE_MIES, "querying amplifier failed",            \
+			                           keys = {"error code", "error message"}, \
+			                           values = {num2str(err), errMsg})
+
+			Sleep/S 0.1
+		endtry
+	endfor
+
+	ASSERT(0, "Could not query amplifier")
+End
+
 #else // AMPLIFIER_XOPS_PRESENT
 
 Function AI_GetHoldingCommand(device, headstage)
@@ -1754,6 +1781,11 @@ Function AI_QueryGainsFromMCC(device)
 End
 
 Function AI_FindConnectedAmps()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	DEBUGPRINT("Unimplemented")
 End
