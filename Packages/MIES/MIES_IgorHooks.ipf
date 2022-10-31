@@ -314,6 +314,8 @@ static Function AfterCompiledHook()
 
 	ShowTraceInfoTags()
 
+	MultiThreadingControl setmode=4
+
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
