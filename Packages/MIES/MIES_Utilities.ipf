@@ -6036,7 +6036,7 @@ threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
 	Duplicate/FREE/RMD=[*][col] input, slice
 	Redimension/N=(numRows) slice
 
-	WAVE powerSpectrum = DoFFT(slice)
+	WAVE powerSpectrum = DoFFT(slice, winFunc = FFT_WINF_DEFAULT)
 
 	output[][col] = magsqr(powerSpectrum[p])
 End
