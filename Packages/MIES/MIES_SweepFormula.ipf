@@ -266,6 +266,16 @@ static Function/S SF_FormulaPreParser(string formula)
 	return formula
 End
 
+static Function SF_IsStateGathering(variable state)
+
+	return state == SF_STATE_COLLECT || state == SF_STATE_WHITESPACE || state == SF_STATE_NEWLINE
+End
+
+static Function SF_IsActionComplex(variable action)
+
+	return action == SF_ACTION_PARENTHESIS|| action == SF_ACTION_FUNCTION || action == SF_ACTION_ARRAY
+End
+
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -404,7 +414,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				case SF_STATE_SUBTRACTION:
 					// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
 					// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
-					if(lastState == SF_STATE_UNINITIALIZED || !(lastState == SF_STATE_COLLECT || lastState == SF_STATE_PARENTHESIS|| lastState == SF_STATE_FUNCTION || lastState == SF_STATE_ARRAY))
+					if(lastState == SF_STATE_UNINITIALIZED || !(SF_IsStateGathering(lastState) || SF_IsActionComplex(lastAction)))
 						action = SF_ACTION_COLLECT
 						break
 					endif

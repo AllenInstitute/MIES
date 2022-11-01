@@ -105,6 +105,81 @@ static Function primitiveOperations()
 	TestOperationMinMaxHelper(win, "{\"+\":[1,1]}", "1++1", 1 + +1)
 End
 
+static Function Transitions()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// number calculation function
+	TestOperationMinMaxHelper(win, "{\"+\": [1,{\"max\": [1]}]}", "1+max(1)", 2)
+	TestOperationMinMaxHelper(win, "{\"+\": [1,{\"max\": [1]}]}", "1 + max ( 1 )", 2)
+	TestOperationMinMaxHelper(win, "{\"+\": [1,{\"max\": [1]}]}", "1  +  max  (  1  )", 2)
+
+	TestOperationMinMaxHelper(win, "{\"-\": [1,{\"max\": [1]}]}", "1-max(1)", 0)
+	TestOperationMinMaxHelper(win, "{\"-\": [1,{\"max\": [1]}]}", "1 - max ( 1 )", 0)
+	TestOperationMinMaxHelper(win, "{\"-\": [1,{\"max\": [1]}]}", "1  -  max  (  1  )", 0)
+
+	TestOperationMinMaxHelper(win, "{\"*\": [1,{\"max\": [1]}]}", "1*max(1)", 1)
+	TestOperationMinMaxHelper(win, "{\"*\": [1,{\"max\": [1]}]}", "1 * max ( 1 )", 1)
+	TestOperationMinMaxHelper(win, "{\"*\": [1,{\"max\": [1]}]}", "1  *  max  (  1  )", 1)
+
+	TestOperationMinMaxHelper(win, "{\"/\": [1,{\"max\": [1]}]}", "1/max(1)", 1)
+	TestOperationMinMaxHelper(win, "{\"/\": [1,{\"max\": [1]}]}", "1 / max ( 1 )", 1)
+	TestOperationMinMaxHelper(win, "{\"/\": [1,{\"max\": [1]}]}", "1  /  max  (  1  )", 1)
+
+	// function calculation number
+	TestOperationMinMaxHelper(win, "{\"+\": [{\"max\": [1]},1]}", "max(1)+1", 2)
+	TestOperationMinMaxHelper(win, "{\"+\": [{\"max\": [1]},1]}", "max( 1 ) + 1", 2)
+	TestOperationMinMaxHelper(win, "{\"+\": [{\"max\": [1]},1]}", "max(  1  )  +  1", 2)
+
+	TestOperationMinMaxHelper(win, "{\"-\": [{\"max\": [1]},1]}", "max(1)-1", 0)
+	TestOperationMinMaxHelper(win, "{\"-\": [{\"max\": [1]},1]}", "max( 1 ) - 1", 0)
+	TestOperationMinMaxHelper(win, "{\"-\": [{\"max\": [1]},1]}", "max(  1  )  -  1", 0)
+
+	TestOperationMinMaxHelper(win, "{\"*\": [{\"max\": [1]},1]}", "max(1)*1", 1)
+	TestOperationMinMaxHelper(win, "{\"*\": [{\"max\": [1]},1]}", "max( 1 ) * 1", 1)
+	TestOperationMinMaxHelper(win, "{\"*\": [{\"max\": [1]},1]}", "max(  1  )  *  1", 1)
+
+	TestOperationMinMaxHelper(win, "{\"/\": [{\"max\": [1]},1]}", "max(1)/1", 1)
+	TestOperationMinMaxHelper(win, "{\"/\": [{\"max\": [1]},1]}", "max( 1 ) / 1", 1)
+	TestOperationMinMaxHelper(win, "{\"/\": [{\"max\": [1]},1]}", "max(  1  )  /  1", 1)
+
+	// array calculation number
+	CheckEqualFormulas("{\"+\": [[1,2,3],1]}", "[1,2,3]+1")
+	CheckEqualFormulas("{\"+\": [[1,2,3],1]}", "[1,2,3] + 1")
+	CheckEqualFormulas("{\"+\": [[1,2,3],1]}", "[1,2,3]  +  1")
+
+	CheckEqualFormulas("{\"-\": [[1,2,3],1]}", "[1,2,3]-1")
+	CheckEqualFormulas("{\"-\": [[1,2,3],1]}", "[1,2,3] - 1")
+	CheckEqualFormulas("{\"-\": [[1,2,3],1]}", "[1,2,3]  -  1")
+
+	CheckEqualFormulas("{\"*\": [[1,2,3],1]}", "[1,2,3]*1")
+	CheckEqualFormulas("{\"*\": [[1,2,3],1]}", "[1,2,3] * 1")
+	CheckEqualFormulas("{\"*\": [[1,2,3],1]}", "[1,2,3]  *  1")
+
+	CheckEqualFormulas("{\"/\": [[1,2,3],1]}", "[1,2,3]/1")
+	CheckEqualFormulas("{\"/\": [[1,2,3],1]}", "[1,2,3] / 1")
+	CheckEqualFormulas("{\"/\": [[1,2,3],1]}", "[1,2,3]  /  1")
+
+	// number calculation array
+	CheckEqualFormulas("{\"+\": [1,[1,2,3]]}", "1+[1,2,3]")
+	CheckEqualFormulas("{\"+\": [1,[1,2,3]]}", "1 + [1,2,3]")
+	CheckEqualFormulas("{\"+\": [1,[1,2,3]]}", "1  +  [1,2,3]")
+
+	CheckEqualFormulas("{\"-\": [1,[1,2,3]]}", "1-[1,2,3]")
+	CheckEqualFormulas("{\"-\": [1,[1,2,3]]}", "1 - [1,2,3]")
+	CheckEqualFormulas("{\"-\": [1,[1,2,3]]}", "1  -  [1,2,3]")
+
+	CheckEqualFormulas("{\"*\": [1,[1,2,3]]}", "1*[1,2,3]")
+	CheckEqualFormulas("{\"*\": [1,[1,2,3]]}", "1 * [1,2,3]")
+	CheckEqualFormulas("{\"*\": [1,[1,2,3]]}", "1  *  [1,2,3]")
+
+	CheckEqualFormulas("{\"/\": [1,[1,2,3]]}", "1/[1,2,3]")
+	CheckEqualFormulas("{\"/\": [1,[1,2,3]]}", "1 / [1,2,3]")
+	CheckEqualFormulas("{\"/\": [1,[1,2,3]]}", "1  /  [1,2,3]")
+End
+
 static Function stringHandling()
 	Variable jsonID0, jsonID1
 
@@ -470,13 +545,18 @@ static Function whiteSpace()
 	CHECK_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
 End
 
-static Function TestOperationMinMaxHelper(string win, string jsonRefText, string formula, variable refResult)
+static Function CheckEqualFormulas(string ref, string formula)
 
 	variable jsonID0, jsonID1
 
-	jsonID0 = JSON_Parse(jsonRefText)
+	jsonID0 = JSON_Parse(ref)
 	jsonID1 = DirectToFormulaParser(formula)
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+End
+
+static Function TestOperationMinMaxHelper(string win, string jsonRefText, string formula, variable refResult)
+
+	CheckEqualFormulas(jsonRefText, formula)
 	WAVE data = GetSingleResult(formula, win)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], refResult)
