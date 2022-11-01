@@ -436,7 +436,7 @@ Function CreateDownsamplePanel()
 	PopupMenu popup_decimationmethod_id,help={"Different methods on how to resample the data. See the section about \"Resample\" in the Igor Pro manual."}
 
 	PopupMenu popup_windowfunction_id,pos={42,152},size={194,21},bodyWidth=111,disable=2,title="Window function"
-	PopupMenu popup_windowfunction_id,mode=11,popvalue="Hanning",value= #"FFT_WINF"
+	PopupMenu popup_windowfunction_id,mode=11,popvalue=FFT_WINF_DEFAULT,value= #"FFT_WINF"
 	PopupMenu popup_windowfunction_id,help={"Window functions for the Smooting-Method of resampling."}
 
 	CheckBox checkbox_equalize_id,pos={21,55},size={58,14},proc=CheckBoxEqualizeDown,title="Equalize"
