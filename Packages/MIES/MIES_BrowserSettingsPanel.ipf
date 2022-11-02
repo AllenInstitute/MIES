@@ -673,7 +673,7 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	endif
 End
 
-Function BSP_HidePanel(string win)
+static Function BSP_HidePanel(string win)
 
 	string mainPanel
 
