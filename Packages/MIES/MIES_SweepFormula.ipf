@@ -15,12 +15,10 @@
 /// dedicated formula language
 
 static Constant SF_STATE_UNINITIALIZED = -1
-static Constant SF_STATE_DEFAULT = 0
 static Constant SF_STATE_COLLECT = 1
 static Constant SF_STATE_ADDITION = 2
 static Constant SF_STATE_SUBTRACTION = 3
 static Constant SF_STATE_MULTIPLICATION = 4
-static Constant SF_STATE_DIVISION = 5
 static Constant SF_STATE_PARENTHESIS = 6
 static Constant SF_STATE_FUNCTION = 7
 static Constant SF_STATE_ARRAY = 8
@@ -172,8 +170,6 @@ End
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
-		case SF_STATE_DEFAULT:
-			return "SF_STATE_DEFAULT"
 		case SF_STATE_COLLECT:
 			return "SF_STATE_COLLECT"
 		case SF_STATE_ADDITION:
@@ -182,8 +178,6 @@ static Function/S SF_StringifyState(variable state)
 			return "SF_STATE_SUBTRACTION"
 		case SF_STATE_MULTIPLICATION:
 			return "SF_STATE_MULTIPLICATION"
-		case SF_STATE_DIVISION:
-			return "SF_STATE_DIVISION"
 		case SF_STATE_PARENTHESIS:
 			return "SF_STATE_PARENTHESIS"
 		case SF_STATE_FUNCTION:
@@ -272,6 +266,16 @@ static Function/S SF_FormulaPreParser(string formula)
 	return formula
 End
 
+static Function SF_IsStateGathering(variable state)
+
+	return state == SF_STATE_COLLECT || state == SF_STATE_WHITESPACE || state == SF_STATE_NEWLINE
+End
+
+static Function SF_IsActionComplex(variable action)
+
+	return action == SF_ACTION_PARENTHESIS|| action == SF_ACTION_FUNCTION || action == SF_ACTION_ARRAY
+End
+
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -281,7 +285,7 @@ End
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
 	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
-	variable formulaLength
+	variable formulaLength, bufferOffset
 	string tempPath
 	string indentation = ""
 	variable action = SF_ACTION_UNINITIALIZED
@@ -320,7 +324,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		// state
 		strswitch(token)
 			case "/":
-				state = SF_STATE_DIVISION
+				state = SF_STATE_OPERATION
 				break
 			case "*":
 				state = SF_STATE_MULTIPLICATION
@@ -339,7 +343,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				break
 			case ")":
 				level -= 1
-				if(!cmpstr(buffer[0], "("))
+				if(GrepString(buffer, "^(?i)[+-]?\\([\s\S]*$"))
 					state = SF_STATE_PARENTHESIS
 					break
 				endif
@@ -347,7 +351,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					state = SF_STATE_FUNCTION
 					break
 				endif
-				state = SF_STATE_DEFAULT
+				state = SF_STATE_COLLECT
 				break
 			case "[":
 				arrayLevel += 1
@@ -379,43 +383,53 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 		if(level > 0 || arrayLevel > 0)
 			// transfer sub level "as is" to buffer
-			state = SF_STATE_DEFAULT
+			state = SF_STATE_COLLECT
 		endif
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, SF_StringifyState(state),  SF_StringifyState(lastCalculation)
+			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, PadString(SF_StringifyState(state), 25, 0x20),  PadString(SF_StringifyState(lastCalculation), 25, 0x20)
 		endif
 #endif
 
+		SF_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,")
 		// state transition
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
+			// collect between quotation marks
+			action = SF_ACTION_COLLECT
+		elseif(lastState == SF_STATE_SUBTRACTION && state == SF_STATE_SUBTRACTION)
+			// if we just did a substraction and the next char is another - then it must be a sign
+			action = SF_ACTION_COLLECT
+		elseif(lastState == SF_STATE_ADDITION && state == SF_STATE_ADDITION)
+			// if we just did a addition and the next char is another + then it must be a sign
 			action = SF_ACTION_COLLECT
 		elseif(state != lastState)
 			switch(state)
+				// priority ladder of calculations: +, -, *, /
 				case SF_STATE_ADDITION:
 					if(lastCalculation == SF_STATE_SUBTRACTION)
 						action = SF_ACTION_HIGHERORDER
 						break
 					endif
 				case SF_STATE_SUBTRACTION:
+					// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
+					// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
+					if(lastState == SF_STATE_UNINITIALIZED || !(SF_IsStateGathering(lastState) || SF_IsActionComplex(lastAction)))
+						action = SF_ACTION_COLLECT
+						break
+					endif
 					if(lastCalculation == SF_STATE_MULTIPLICATION)
 						action = SF_ACTION_HIGHERORDER
 						break
 					endif
 				case SF_STATE_MULTIPLICATION:
-					if(lastCalculation == SF_STATE_DIVISION)
+					if(lastCalculation == SF_STATE_OPERATION)
 						action = SF_ACTION_HIGHERORDER
 						break
 					endif
-				case SF_STATE_DIVISION:
 				case SF_STATE_OPERATION:
 					if(IsEmpty(buffer))
-						if(lastCalculation == SF_STATE_UNINITIALIZED)
-							action = SF_ACTION_HIGHERORDER
-						else
-							action = SF_ACTION_COLLECT
-						endif
+						action = SF_ACTION_HIGHERORDER
 						break
 					endif
 					action = SF_ACTION_CALCULATION
@@ -426,6 +440,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						action = SF_ACTION_COLLECT
 					endif
 					break
+
 				case SF_STATE_PARENTHESIS:
 					action = SF_ACTION_PARENTHESIS
 					if(lastCalculation == SF_STATE_ARRAYELEMENT)
@@ -439,6 +454,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					endif
 					break
 				case SF_STATE_ARRAYELEMENT:
+					SF_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,")
 					action = SF_ACTION_ARRAYELEMENT
 					if(lastCalculation != SF_STATE_ARRAYELEMENT)
 						action = SF_ACTION_HIGHERORDER
@@ -452,7 +468,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					action = SF_ACTION_SKIP
 					break
 				case SF_STATE_COLLECT:
-				case SF_STATE_DEFAULT:
 					action = SF_ACTION_COLLECT
 					break
 				case SF_STATE_STRINGTERMINATOR:
@@ -469,7 +484,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "action %s, lastState %s\r", SF_StringifyAction(action), SF_StringifyState(lastState)
+			printf "action %s, lastState %s\r", PadString(SF_StringifyAction(action), 25, 0x20), PadString(SF_StringifyState(lastState), 25, 0x20)
 		endif
 #endif
 
@@ -501,20 +516,28 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				tempPath += "/"
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
 				tempPath += SF_EscapeJsonPath(buffer[0, parenthesisStart - 1])
-				jsonIDdummy = SF_FormulaParser(buffer[parenthesisStart + 1, inf])
-				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
-					JSON_AddTreeArray(jsonID, tempPath)
-				endif
-				JSON_AddJSON(jsonID, tempPath, jsonIDdummy)
-				JSON_Release(jsonIDdummy)
+				subId = SF_FormulaParser(buffer[parenthesisStart + 1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
+				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_PARENTHESIS:
-				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
+				if(!CmpStr(buffer[0], "-"))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser("*-1", indentLevel = indentLevel + 1))
+					if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+						jsonPath += "/1/*"
+					else
+						jsonPath += "/*"
+					endif
+				endif
+				bufferOffset = !CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-") ? 2 : 1
+				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[bufferOffset, inf], indentLevel = indentLevel + 1))
 				break
 			case SF_ACTION_HIGHERORDER:
 				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
 				// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 				lastCalculation = state
+				if(state == SF_STATE_ARRAYELEMENT)
+					SF_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value")
+				endif
 				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
@@ -534,10 +557,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// to return an array.
 				SF_Assert(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
 				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
-				if(wasArrayCreated)
-					ASSERT(JSON_GetType(subId, "") == JSON_ARRAY, "Expected Array")
-				endif
-
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_CALCULATION:
@@ -549,6 +568,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			case SF_ACTION_ARRAYELEMENT:
 				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 				// The actual content is added in the case fall-through
+				SF_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value")
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			case SF_ACTION_SAMECALCULATION:
@@ -562,23 +582,44 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		token = ""
 	endfor
 
-	// last element (recursion)
-	if(!cmpstr(buffer, formula))
-		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
-			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
-		elseif(!cmpstr(buffer, "\"\"")) // dummy check
-			JSON_AddString(jsonID, jsonPath, "")
-		elseif(GrepString(buffer, "^\".*\"$"))
-			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
-		else
-			JSON_AddString(jsonID, jsonPath, buffer)
-		endif
-	elseif(!IsEmpty(buffer))
-		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
+	if(lastAction != SF_ACTION_UNINITIALIZED)
+		SF_ASSERT(state != SF_STATE_ADDITION && \
+		state != SF_STATE_SUBTRACTION && \
+		state != SF_STATE_MULTIPLICATION && \
+		state != SF_STATE_OPERATION \
+		, "Expected value after +, -, * or /")
 	endif
 
+	SF_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"")
+
 	if(!ParamIsDefault(createdArray))
+		if(createdArrayLocal)
+			ASSERT(JSON_GetType(jsonID, "") == JSON_ARRAY, "SF Parser Error: Expected Array")
+		endif
 		createdArray = createdArrayLocal
+	endif
+
+	if(IsEmpty(buffer))
+		return jsonId
+	endif
+
+	// last element (recursion)
+	if(!cmpstr(buffer, formula))
+		if(GrepString(buffer, "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
+			// optionally signed Number
+			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
+		elseif(!cmpstr(buffer, "\"\"")) // dummy check
+			// empty string with explicit quotation marks
+			JSON_AddString(jsonID, jsonPath, "")
+		elseif(GrepString(buffer, "^\".*\"$"))
+			// non-empty string with quotation marks
+			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
+		else
+			// string without quotation marks
+			JSON_AddString(jsonID, jsonPath, buffer)
+		endif
+	else
+		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 	endif
 
 	return jsonID
