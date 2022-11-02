@@ -675,10 +675,14 @@ End
 
 static Function BSP_HidePanel(string win)
 
-	string mainPanel
+	string mainPanel, currentWindow
+
+	currentWindow = GetMainWindow(GetCurrentWindow())
 
 	mainPanel = GetMainWindow(win)
 	SetWindow $win hide=1
+
+	DoWindow/F $currentWindow
 
 	BSP_MainPanelButtonToggle(mainPanel, 1)
 End
