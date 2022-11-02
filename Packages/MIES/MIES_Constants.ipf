@@ -190,7 +190,6 @@ Constant USERDATA_MODIFYGRAPH_APPEND  = 1
 Constant DECIMATION_BY_OMISSION  = 1
 Constant DECIMATION_BY_SMOOTHING = 2
 Constant DECIMATION_BY_AVERAGING = 4
-StrConstant ALL_WINDOW_FUNCTIONS = "Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;None;Parzen;Poisson2;Poisson3;Poisson4;Riemann"
 /// @}
 
 Constant DEFAULT_DECIMATION_FACTOR = -1
@@ -1947,6 +1946,7 @@ StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 /// @anchor FFTWinFunctions
 /// @{
 StrConstant FFT_WINF = "Bartlet;Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;Parzen;Poisson2;Poisson3;Poisson4;Riemann;SFT3F;SFT3M;FTNI;SFT4F;SFT5F;SFT4M;FTHP;HFT70;FTSRS;SFT5M;HFT90D;HFT95;HFT116D;HFT144D;HFT169D;HFT196D;HFT223D;HFT248D;"
+StrConstant FFT_WINF_DEFAULT = "Hanning"
 /// @}
 
 /// @name Types for DB_GetBoundDataBrowser

@@ -738,7 +738,7 @@ End
 ///							@ref DECIMATION_BY_AVERAGING
 ///                         or @ref DECIMATION_BY_SMOOTHING.
 /// @param winFunction 		Windowing function for @ref DECIMATION_BY_SMOOTHING mode,
-///                    		must be one of @ref ALL_WINDOW_FUNCTIONS.
+///                    		must be one of @ref FFT_WINF.
 /// @returns One on error, zero otherwise
 Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 	Wave/Z wv
@@ -772,7 +772,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 		print "Invalid combination of a window function and mode."
 		ControlWindowToFront()
 		return 1
-	elseif(!ParamIsDefault(winFunction) && FindListItem(winFunction, ALL_WINDOW_FUNCTIONS) == -1)
+	elseif(!ParamIsDefault(winFunction) && FindListItem(winFunction, FFT_WINF) == -1)
 		print "Unknown windowing function: " + winFunction
 		ControlWindowToFront()
 		return 1
@@ -6036,7 +6036,7 @@ threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
 	Duplicate/FREE/RMD=[*][col] input, slice
 	Redimension/N=(numRows) slice
 
-	WAVE powerSpectrum = DoFFT(slice)
+	WAVE powerSpectrum = DoFFT(slice, winFunc = FFT_WINF_DEFAULT)
 
 	output[][col] = magsqr(powerSpectrum[p])
 End

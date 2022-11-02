@@ -3453,7 +3453,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	string errMsg
 	string avg = SF_POWERSPECTRUM_AVG_OFF
 	string unit = SF_POWERSPECTRUM_UNIT_DEFAULT
-	string winFunc = "Hanning"
+	string winFunc = FFT_WINF_DEFAULT
 	variable cutoff = 1000
 	variable ratioFreq
 
