@@ -70,7 +70,7 @@ Function DQS_DataAcq(device)
 	do
 		DoXOPIdle
 
-		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos)
+		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
 		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 		if(gotTPChannels)

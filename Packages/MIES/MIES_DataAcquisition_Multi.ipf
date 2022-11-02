@@ -17,13 +17,20 @@
 ///
 /// @ingroup BackgroundFunctions
 Function DQM_FIFOMonitor(s)
-	STRUCT WMBackgroundStruct &s
+	STRUCT BackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
 	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels
 	variable bufferSize
 	string device, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
+
+	if(s.wmbs.started)
+		s.wmbs.started    = 0
+		s.threadDeadCount = 0
+		s.ticksLastReceivedFifoPos = ticks
+		s.lastReceivedFifoPos = HARDWARE_ITC_FIFO_ERROR
+	endif
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
 		deviceID   = ActiveDeviceList[i][%DeviceID]
@@ -75,7 +82,45 @@ Function DQM_FIFOMonitor(s)
 				break
 			case HARDWARE_ITC_DAC:
 				NVAR tgID = $GetThreadGroupIDFIFO(device)
-				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_default = HARDWARE_ITC_FIFO_ERROR, timeout_tries = THREAD_QUEUE_TRIES)
+
+				if(fifoLatest != s.lastReceivedFifoPos)
+					s.ticksLastReceivedFifoPos = ticks
+					s.lastReceivedFifoPos = fifoLatest
+				endif
+
+				if(fifoLatest == HARDWARE_ITC_FIFO_ERROR)
+					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_FIFO_TIMEOUT, startTPAfterDAQ = 0)
+
+					if(s.threadDeadCount < DAQ_MD_THREAD_DEAD_MAX_RETRIES)
+						s.threadDeadCount += 1
+						printf "Trying to restart data acquisition to cope with FIFO timeout issues, keep fingers crossed (%d/%d)\r", s.threadDeadCount, DAQ_MD_THREAD_DEAD_MAX_RETRIES
+						ControlWindowToFront()
+
+						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+						DQ_RestartDAQ(device, DAQ_BG_MULTI_DEVICE)
+						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+					endif
+
+					continue
+				elseif((ticks - s.ticksLastReceivedFifoPos) > HARDWARE_ITC_STUCK_FIFO_TICKS)
+					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_STUCK_FIFO, startTPAfterDAQ = 0)
+
+					if(s.threadDeadCount < DAQ_MD_THREAD_DEAD_MAX_RETRIES)
+						s.threadDeadCount += 1
+						printf "Trying to restart data acquisition to cope with stuck FIFO, keep fingers crossed (%d/%d)\r", s.threadDeadCount, DAQ_MD_THREAD_DEAD_MAX_RETRIES
+						ControlWindowToFront()
+
+						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", keys = {"device", "reason"}, values = {device, "stuck FIFO"})
+						DQ_RestartDAQ(device, DAQ_BG_MULTI_DEVICE)
+						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", keys = {"device", "reason"}, values = {device, "stuck FIFO"})
+					endif
+
+					continue
+				endif
+
+				// once TFH_FifoLoop is finished the thread is done as well and
+				// therefore we get NaN from TS_GetNewestFromThreadQueue
 				isFinished = IsNaN(fifoLatest)
 
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode
@@ -129,6 +174,8 @@ End
 Function DQM_TerminateOngoingDAQHelper(device)
 	String device
 
+	variable returnedHardwareType
+
 	NVAR deviceID = $GetDAQDeviceID(device)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
@@ -136,7 +183,19 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
-	HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+
+	try
+		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	catch
+		if(hardwareType == HARDWARE_ITC_DAC)
+			print "Stopping data acquisition was not successfull, trying to close and reopen the device"
+			LOG_AddEntry(PACKAGE_MIES, "begin closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+			HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
+			HW_OpenDevice(device, returnedHardwareType)
+			ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Error opening the device again")
+			LOG_AddEntry(PACKAGE_MIES, "end closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+		endif
+	endtry
 
 	// remove device passed in from active device lists
 	DQM_RemoveDevice(device, deviceID)

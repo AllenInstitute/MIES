@@ -740,7 +740,6 @@ Constant HARDWARE_ITC_TTL_1600_RACK_ONE  = 3
 /// @anchor HardwareInteractionFlags
 /// @{
 Constant HARDWARE_ABORT_ON_ERROR        = 0x01
-Constant HARDWARE_PREVENT_ERROR_POPUP   = 0x02
 Constant HARDWARE_PREVENT_ERROR_MESSAGE = 0x04
 /// @}
 
@@ -1317,7 +1316,8 @@ StrConstant MSQ_FMT_LBN_RERUN_TRIAL          = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC      = "%s Rerun Trials exceeded"
 /// @}
 
-Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
+Constant TP_MD_THREAD_DEAD_MAX_RETRIES  = 10
+Constant DAQ_MD_THREAD_DEAD_MAX_RETRIES = 10
 
 /// @todo: IP8 convert all call sites to use MultiThread/T=
 Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
@@ -1667,6 +1667,8 @@ Constant DQ_STOP_REASON_TP_STARTED        = 0x0040
 Constant DQ_STOP_REASON_STIMSET_SELECTION = 0x0080
 Constant DQ_STOP_REASON_UNLOCKED_DEVICE   = 0x0100
 Constant DQ_STOP_REASON_OUT_OF_MEMORY     = 0x0200
+Constant DQ_STOP_REASON_FIFO_TIMEOUT      = 0x0400
+Constant DQ_STOP_REASON_STUCK_FIFO        = 0x0800
 Constant DQ_STOP_REASON_INVALID           = 0xFFFF
 /// @}
 
@@ -1954,3 +1956,7 @@ Constant BROWSER_MODE_USER       = 0x01
 Constant BROWSER_MODE_AUTOMATION = 0x02
 Constant BROWSER_MODE_ALL        = 0xFF
 /// @}
+
+Constant THREAD_QUEUE_TRIES            = 1000
+Constant HARDWARE_ITC_FIFO_ERROR       = -1
+Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s

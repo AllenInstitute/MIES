@@ -40,3 +40,29 @@ End
 static Function CheckThatZeroMQMessagingWorks()
 	PrepareForPublishTest()
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckNumberOfRacksAndTTLs([string str])
+
+	variable numRacksRef, numTTLsRef
+
+	WAVE deviceInfo = GetDeviceInfoWave(str)
+
+#ifdef TESTS_WITH_ITC18USB_HARDWARE
+	numRacksRef = 1
+	numTTlsRef  = 4
+#endif
+
+#ifdef TESTS_WITH_ITC1600_HARDWARE
+	numRacksRef = 2
+	numTTlsRef  = 8
+#endif
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	numRacksRef = NaN
+	numTTlsRef  = 32
+#endif
+
+	CHECK_EQUAL_VAR(numRacksRef, deviceInfo[%RACK])
+	CHECK_EQUAL_VAR(numTTLsRef, deviceInfo[%TTL])
+End

@@ -55,3 +55,7 @@ Packages/tests/**/*.nwb
 
 # intermediate test files
 rewritten_config.json
+CheckIfConfigurationRestoresMCCFilterGain.json
+
+# Renamed experiments during tests
+Packages/tests/**/20*.pxp

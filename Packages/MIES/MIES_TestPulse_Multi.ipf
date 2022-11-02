@@ -269,7 +269,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 			NVAR tgID = $GetThreadGroupIDFIFO(device)
 			if(DeviceHasFollower(device))
-				WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+				WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"}, timeout_tries = THREAD_QUEUE_TRIES)
 
 				if(WaveExists(result))
 					fifoPos = result[%fifoPos]
@@ -281,7 +281,7 @@ Function TPM_BkrdTPFuncMD(s)
 					fifoPos = NaN
 				endif
 			else
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
 			endif
 
 			// should never be hit
@@ -359,7 +359,7 @@ static Function TPM_StopTPMDWrapper(device, [fast])
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
 
-	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
+	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE) \
 	   && HW_IsRunning(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1)
 		TPM_RemoveDevice(device)

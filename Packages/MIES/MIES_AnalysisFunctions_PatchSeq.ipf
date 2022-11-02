@@ -5631,7 +5631,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			ASSERT(amplitude == 0, "Invalid amplitude")
 
 			if(duration < chunkLength)
-				printf "The length of epoch %d is %g s but that is smaller than the required %g s by \"BaselineChunkLength\".", i, duration, chunkLength
+				printf "The length of epoch %d is %g s but that is smaller than the required %g s by \"BaselineChunkLength\".\r", i, duration, chunkLength
 				ControlWindowToFront()
 				return 1
 			endif

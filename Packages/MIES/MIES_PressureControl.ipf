@@ -581,7 +581,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	deviceID = PressureDataWv[refHeadstage][%DAC_DevID]
 	hwType   = pressureDataWv[refHeadstage][%HW_DAC_Type]
 
-	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
+	flags = HARDWARE_PREVENT_ERROR_MESSAGE
 
 	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags = flags))
 		HW_ResetDevice(hwType, deviceID)
@@ -1171,7 +1171,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
-	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT, flags=HARDWARE_ABORT_ON_ERROR)
+	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT, flags=HARDWARE_ABORT_ON_ERROR )
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)
@@ -2506,7 +2506,7 @@ Function P_ButtonProc_UserPressure(ba) : ButtonControl
 					// the device is the same for all headstages
 					deviceID = pressureDataWv[0][%UserPressureDeviceID]
 					hardwareType = pressureDataWv[0][%UserPressureDeviceHWType]
-					HW_CloseDevice(deviceID, hardwareType, flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE)
+					HW_CloseDevice(deviceID, hardwareType, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 					HW_DeRegisterDevice(deviceID, hardwareType)
 				endif
 

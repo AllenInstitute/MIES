@@ -1612,3 +1612,74 @@ Function CreateLockedDatabrowser(string device)
 	bsPanel = BSP_GetPanel(win)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 End
+
+Function StartFakeThreadMonitor_IGNORE(string device, variable fixedFifoPos)
+
+	variable deviceID
+
+	deviceID = ROVar(GetDAQDeviceID(device))
+	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
+	NVAR tgID = $GetThreadGroupIDFifo(device)
+	tgID = ThreadGroupCreate(1)
+
+#ifdef THREADING_DISABLED
+	BUG("Fake thread monitor and no threading is not supported.")
+#else
+	ThreadStart tgID, 0, FakeThreadMonitor_IGNORE(fixedFifoPos)
+#endif
+End
+
+threadsafe static Function FakeThreadMonitor_IGNORE(variable fixedFifoPos)
+
+	do
+		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, 100)
+
+		if(DataFolderExistsDFR(dfr))
+			break
+		endif
+
+		TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fixedFifoPos)
+	while(1)
+End
+
+Function UseFakeFIFOThreadWithTimeout_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	variable fifoPos
+
+	SVAR devices = $GetLockedDevices()
+	string device = StringFromList(0, devices)
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	fifoPos = ROVar(GetFifoPosition(device))
+
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && fifoPos > 10000)
+		StartFakeThreadMonitor_IGNORE(device, HARDWARE_ITC_FIFO_ERROR)
+
+		return 1
+	endif
+
+	return 0
+End
+
+Function UseFakeFIFOThreadBeingStuck_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	variable fifoPos
+
+	SVAR devices = $GetLockedDevices()
+	string device = StringFromList(0, devices)
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	fifoPos = ROVar(GetFifoPosition(device))
+
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && fifoPos > 10000)
+		StartFakeThreadMonitor_IGNORE(device, 12345)
+
+		return 1
+	endif
+
+	return 0
+End

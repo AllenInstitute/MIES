@@ -4891,7 +4891,7 @@ threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string nam
 		endif
 
 		if(WaveExists(ttlEntryRackOne))
-			entries += StringFromList(p, ttlEntryRackOne[index])
+			entries[NUM_ITC_TTL_BITS_PER_RACK, inf] += StringFromList(p - NUM_ITC_TTL_BITS_PER_RACK, ttlEntryRackOne[index])
 		endif
 
 		return entries
@@ -7320,7 +7320,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		ASSERT(0, "Invalid firstDate/lastDate combination")
 	endif
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist"}}
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}}
 	jsonID = GenerateJSONTemplateForUpload()
 
 	numEntries = DimSize(files, ROWS)
@@ -7367,7 +7367,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	JSON_Release(jsonID)
 
 	if(verbose)
-		printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+		printf "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 	endif
 End
 
@@ -7457,17 +7457,23 @@ static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, va
 	return [keys, values]
 End
 
-/// @brief Update the logging template used by the ZeroMQ-XOP
-Function UpdateZeroMQXOPLoggingTemplate()
+/// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2
+Function UpdateXOPLoggingTemplate()
 	variable JSONid
 	string str
 
 	JSONid = LOG_GenerateEntryTemplate("XOP")
 
 	str = JSON_Dump(JSONid)
-	JSON_Release(JSONid)
-
 	zeromq_set_logging_template(str)
+
+	// ITCXOP2 adds a timestamp itself, this is better see
+	// https://github.com/AllenInstitute/MIES/issues/1182
+	JSON_Remove(JSONid, "/ts")
+	str = JSON_Dump(JSONid)
+	HW_ITC_SetLoggingTemplate(str)
+
+	JSON_Release(JSONid)
 End
 
 /// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile
@@ -7475,6 +7481,13 @@ Function/S GetZeroMQXOPLogfile()
 
 	// one down and up to "ZeroMQ"
 	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ZeroMQ:Log.jsonl"
+End
+
+/// @brief Return the disc location of the (possibly non-existing) ITCXOP2 logfile
+Function/S GetITCXOP2Logfile()
+
+	// one down and up to "ITCXOP2"
+	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ITCXOP2:Log.jsonl"
 End
 
 /// @brief Tries to find deleted sweep and config waves which are still present due to 1D waves from databrowser backups or

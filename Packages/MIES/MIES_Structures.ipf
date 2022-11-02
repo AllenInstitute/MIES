@@ -14,7 +14,9 @@
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
 	int32 count           ///< Number of invocations of background function
-	int32 threadDeadCount ///< TP-MD only: Number of successive tries to get data from the thread
+	int32 threadDeadCount ///< DAQ/TP-MD with ITC hardware only: Number of successive tries to get data from the thread
+	variable tickslastReceivedFifoPos ///< DAQ-MD with ITC hardware only: ticks count when the fifo position was last updated
+	variable lastReceivedFifoPos ///< DAQ-MD with ITC hardware only: last received fifo position
 EndStructure
 
 Structure PostPlotSettings

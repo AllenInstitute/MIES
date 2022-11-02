@@ -99,10 +99,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 
 	variable flags, moreData, fifoPos
 
-	variable enableDebug = 0 // = 1 for debugging
-
-	flags = HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP
-	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
+	flags = HARDWARE_ABORT_ON_ERROR
 
 	do
 		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)
@@ -111,12 +108,10 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 			break
 		endif
 
-		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos)
+		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos, flags = flags)
 		fifoPos = limit(fifoPos, 0, stopCollectionPoint)
 
-		if(fifoPos > 0)
-			TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
-		endif
+		TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
 
 		if(!moreData)
 			switch(mode)

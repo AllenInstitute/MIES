@@ -167,3 +167,13 @@ Function/WAVE GenerateBaselineValues()
 
 	return wv
 End
+
+Function/WAVE GetITCDevices()
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	Make/FREE/T/N=0 wv
+	return wv
+#endif
+
+	return DeviceNameGeneratorMD1()
+End
