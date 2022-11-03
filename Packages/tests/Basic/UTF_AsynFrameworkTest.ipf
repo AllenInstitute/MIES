@@ -739,7 +739,7 @@ static Function TASYNC_RunOrderless()
 		// There are chances the result is still in Order, so we give only a Warning
 		for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
 			if(returnOrder[i] != i)
-				WARN(1)
+				WARN(0)
 				break
 			endif
 		endfor
@@ -970,7 +970,7 @@ static Function TASYNC_OrderlessDirectStop()
 		// There are chances the result is still in Order, so we give only a Warning
 		for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
 			if(returnOrder[i] != i)
-				WARN(1)
+				WARN(0)
 				break
 			endif
 		endfor
