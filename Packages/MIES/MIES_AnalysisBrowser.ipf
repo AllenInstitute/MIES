@@ -2034,7 +2034,7 @@ static Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device
 		return ""
 	endif
 
-	Wave sweepWave = $sweepWaveName
+	Wave sweepWave = newDFR:$sweepWaveName
 
 	if(numWavesLoaded == 2)
 		ReplaceWaveWithBackup(sweepWave)
