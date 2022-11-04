@@ -1327,6 +1327,40 @@ static Function WB_NoiseSegment(pa)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
+static Function [variable lowerBound, variable upperBound] WB_TrigGetBoundsForInflectionPoints(struct SegmentParameters &pa, variable offset)
+
+	variable d, f, fs, fe, phi, phii
+
+	if(pa.logChirp)
+		d = pa.duration
+		fs = pa.frequency / 1000 // NOLINT
+		fe = pa.endFrequency / 1000 // NOLINT
+
+		phi  = fs / ln(fe/fs)
+		phii = fe / ln(fe/fs)
+
+		lowerBound = 2 * trunc(d * phi) - offset
+		upperBound = 2 * d * phii - 2 * mod(d * phi,1) - offset
+
+		ASSERT(IsFinite(lowerBound), "lowerBound must be finite")
+		ASSERT(IsFinite(upperBound), "upperBound must be finite")
+
+		// we don't require that lowerBound < upperBound, because for the cosine case
+		// we can actually have no solutions at all
+	else
+		d = pa.duration
+		f = pa.frequency / 1000 // NOLINT
+
+		lowerBound = 0 - offset
+		upperBound = 2 * d * f - offset
+	endif
+
+	lowerBound = ceil(lowerBound)
+	upperBound = floor(upperBound)
+
+	return [lowerBound, upperBound]
+End
+
 /// @brief Calculate the x values where the trigonometric epoch has inflection points
 ///
 /// For zero offset, the inflection points coincide with the zero crossings/roots.
@@ -1366,7 +1400,7 @@ End
 ///
 /// \endrst
 static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3, WAVE inflectionPoints)
-	variable i, idx, xzero, offset
+	variable i, idx, xzero, offset, lowerBound, upperBound
 
 	ASSERT(WaveType(inflectionPoints) == IGOR_TYPE_64BIT_FLOAT, "Expected double wave")
 
@@ -1377,6 +1411,11 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 		return NaN
 	elseif(pa.frequency <= 0)
 		print "Can't calculate inflection points with frequency zero"
+		ControlWindowToFront()
+		inflectionPoints = {NaN}
+		return NaN
+	elseif(pa.logChirp && pa.frequency == pa.endFrequency)
+		print "Can't calculate inflection points with both frequencies being equal"
 		ControlWindowToFront()
 		inflectionPoints = {NaN}
 		return NaN
@@ -1398,26 +1437,18 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 			ASSERT(0, "Unknown trigFuncType")
 	endswitch
 
-	for(i = 0;;i += 1)
+	[lowerBound, upperBound] = WB_TrigGetBoundsForInflectionPoints(pa, offset)
+
+	for(i = lowerBound; i<= upperBound;i += 1)
 		if(pa.logChirp)
 			xzero = 1 / k1 * ln(((i + offset) * pi + k3) / k2)
 		else
 			xzero = (i + offset) * pi / k0
 		endif
 
-		if(!IsFinite(xzero))
-			BUG("xzero must be finite")
-			continue
-		elseif(xzero < 0)
-			continue
-		elseif(xzero > pa.duration)
-			break
-		endif
-
-		if(i > 10e5)
-			BUG("Encountered too many inflection points, please open an issue and attach your stimset.")
-			break
-		endif
+		ASSERT(IsFinite(xzero), "xzero must be finite")
+		ASSERT(xzero >= 0, "xzero must >= 0")
+		ASSERT(xzero <= pa.duration, "xzero must <= pa.duration")
 
 		EnsureLargeEnoughWave(inflectionPoints, minimumSize = idx, dimension = ROWS, initialValue = NaN)
 		inflectionPoints[idx++] = xzero
