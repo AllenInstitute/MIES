@@ -1418,7 +1418,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
 			SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 
-			if(IsTextWave(wvY) && WaveExists(wvX))
+			if(IsTextWave(wvY))
 				SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
 				ModifyGraph/W=$win swapXY = 1
 				WAVE dummy = wvY
