@@ -89,6 +89,10 @@ static StrConstant SF_OP_TP = "tp"
 static StrConstant SF_OP_STORE = "store"
 static StrConstant SF_OP_SELECT = "select"
 static StrConstant SF_OP_POWERSPECTRUM = "powerspectrum"
+static StrConstant SF_OP_TPSS = "tpss"
+static StrConstant SF_OP_TPINST = "tpinst"
+static StrConstant SF_OP_TPBASE = "tpbase"
+static StrConstant SF_OP_TPFIT = "tpfit"
 
 static StrConstant SF_OPSHORT_MINUS = "minus"
 static StrConstant SF_OPSHORT_PLUS = "plus"
@@ -109,6 +113,12 @@ static Constant SF_OP_SELECT_CLAMPCODE_ALL = -1
 static Constant SF_OP_TP_TYPE_BASELINE_NUM = 0
 static Constant SF_OP_TP_TYPE_INSTANT_NUM = 1
 static Constant SF_OP_TP_TYPE_STATIC_NUM = 2
+
+static StrConstant SF_OP_TPFIT_FUNC_EXP = "exp"
+static StrConstant SF_OP_TPFIT_FUNC_DEXP = "doubleexp"
+static StrConstant SF_OP_TPFIT_RET_TAULARGE = "tau"
+static StrConstant SF_OP_TPFIT_RET_TAUSMALL = "tausmall"
+static StrConstant SF_OP_TPFIT_RET_AMP = "amp"
 
 static Constant EPOCHS_TYPE_INVALID = -1
 static Constant EPOCHS_TYPE_RANGE = 0
@@ -186,7 +196,7 @@ Function/WAVE SF_GetNamedOperations()
 					  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_TEXT, SF_OP_LOG, \
 					  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 					  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP, \
-					  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM}
+					  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT}
 
 	return wt
 End
@@ -1014,6 +1024,18 @@ Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath
 			break
 		case SF_OP_POWERSPECTRUM:
 			WAVE out = SF_OperationPowerSpectrum(jsonId, jsonPath, graph)
+			break
+		case SF_OP_TPSS:
+			WAVE out = SF_OperationTPSS(jsonId, jsonPath, graph)
+			break
+		case SF_OP_TPINST:
+			WAVE out = SF_OperationTPInst(jsonId, jsonPath, graph)
+			break
+		case SF_OP_TPBASE:
+			WAVE out = SF_OperationTPBase(jsonId, jsonPath, graph)
+			break
+		case SF_OP_TPFIT:
+			WAVE out = SF_OperationTPFit(jsonId, jsonPath, graph)
 			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
@@ -2529,6 +2551,83 @@ static Function/WAVE SF_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)
 	endif
 
 	return epochs
+End
+
+// tpss()
+static Function/WAVE SF_OperationTPSS(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, outType
+	string opShort = SF_OP_TPSS
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 0, "tpss has no arguments")
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPSS)
+
+	return SF_GetOutputForExecutor(output, graph, opShort)
+End
+
+// tpinst()
+static Function/WAVE SF_OperationTPInst(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, outType
+	string opShort = SF_OP_TPINST
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 0, "tpinst has no arguments")
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPINST)
+
+	return SF_GetOutputForExecutor(output, graph, opShort)
+End
+
+// tpbase()
+static Function/WAVE SF_OperationTPBase(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, outType
+	string opShort = SF_OP_TPBASE
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 0, "tpbase has no arguments")
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPBASE)
+
+	return SF_GetOutputForExecutor(output, graph, opShort)
+End
+
+// tpfit()
+static Function/WAVE SF_OperationTPFit(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, outType
+	string func, retVal
+	string opShort = SF_OP_TPFIT
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	SF_ASSERT(numArgs == 2, "tpfit has two arguments")
+
+	WAVE/T wFitType = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TPFIT, 0, checkExist=1)
+	SF_ASSERT(IsTextWave(wFitType), "TPFit function argument must be textual.")
+	SF_ASSERT(DimSize(wFitType, ROWS) == 1, "TPFit function argument must be a single string.")
+	func = wFitType[0]
+	SF_ASSERT(!CmpStr(func, SF_OP_TPFIT_FUNC_EXP) || !CmpStr(func, SF_OP_TPFIT_FUNC_DEXP), "Fit function must be exp or doubleexp")
+
+	WAVE/T wReturn = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TPFIT, 1, checkExist=1)
+	SF_ASSERT(IsTextWave(wReturn), "TPFit return what argument must be textual.")
+	SF_ASSERT(DimSize(wReturn, ROWS) == 1, "TPFit return what argument must be a single string.")
+	retVal = wReturn[0]
+	SF_ASSERT(!CmpStr(retVal, SF_OP_TPFIT_RET_TAULARGE) || !CmpStr(retVal, SF_OP_TPFIT_RET_TAUSMALL) || !CmpStr(retVal, SF_OP_TPFIT_RET_AMP), "Fit function must be tau, tausmall or amp")
+
+	Make/FREE/T fitSettings = {func, retVal}
+
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 1)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TPFIT)
+
+	output[0] = fitSettings
+
+	return SF_GetOutputForExecutor(output, graph, opShort)
 End
 
 // tp(string type[, array selectData[, array ignoreTPs]])

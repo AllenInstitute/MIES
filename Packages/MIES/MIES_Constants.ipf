@@ -1925,6 +1925,10 @@ StrConstant SF_DATATYPE_MIN = "Min"
 StrConstant SF_DATATYPE_RANGE = "Range"
 StrConstant SF_DATATYPE_EPOCHS = "Epochs"
 StrConstant SF_DATATYPE_TP = "TestPulse"
+StrConstant SF_DATATYPE_TPSS = "TestPulseMode_SteadyState"
+StrConstant SF_DATATYPE_TPINST = "TestPulseMode_Instantaneous"
+StrConstant SF_DATATYPE_TPBASE = "TestPulseMode_Baseline"
+StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
 /// @}
 
