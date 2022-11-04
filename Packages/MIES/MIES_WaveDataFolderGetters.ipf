@@ -1213,6 +1213,18 @@ static Function UpgradeLabNotebook(device)
 	ASSERT(DimSize(numericalKeys, COLS) == DimSize(numericalValues, COLS), "Non matching number of rows for numeric labnotebook")
 	ASSERT(DimSize(textualKeys, COLS) == DimSize(textualValues, COLS), "Non matching number of rows for textual labnotebook")
 
+	// BEGIN IP9 dimension labels
+	if(WaveVersionIsSmaller(numericalKeys, 49))
+		numericalKeys[%Parameter][] = FixInvalidLabnotebookKey(numericalKeys[%Parameter][q])
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 49))
+		textualKeys[%Parameter][] = FixInvalidLabnotebookKey(textualKeys[%Parameter][q])
+		LBN_SetDimensionLabels(textualKeys, textualValues)
+	endif
+	// END IP9 dimension labels
+
 	// BEGIN UTC timestamps
 	if(cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
@@ -1374,18 +1386,6 @@ static Function UpgradeLabNotebook(device)
 		DEBUGPRINT("Upgraded textual labnotebook to hold acquisition state column")
 	endif
 	// END acquisition state
-
-	// BEGIN IP9 dimension labels
-	if(WaveVersionIsSmaller(numericalKeys, 49))
-		numericalKeys[%Parameter][] = FixInvalidLabnotebookKey(numericalKeys[%Parameter][q])
-		LBN_SetDimensionLabels(numericalKeys, numericalValues)
-	endif
-
-	if(WaveVersionIsSmaller(textualKeys, 49))
-		textualKeys[%Parameter][] = FixInvalidLabnotebookKey(textualKeys[%Parameter][q])
-		LBN_SetDimensionLabels(textualKeys, textualValues)
-	endif
-	// END IP9 dimension labels
 
 	// BEGIN extending rows
 	if(WaveVersionIsSmaller(numericalKeys, 55))
