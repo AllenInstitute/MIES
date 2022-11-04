@@ -1497,6 +1497,13 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	win = winBase + "_#" + winBase + "_2"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+
+	try
+		MIES_SF#SF_FormulaPlotter(sweepBrowser, "[abc,def]")
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function TestOperationSelect()
