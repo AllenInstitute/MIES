@@ -1230,17 +1230,22 @@ static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
 	KillWindow/Z $win
 	NewPanel/N=$win
 	panelName = S_name
-	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panelName, "sweepformula_" + panelName)
 	for(i = 0; i < numGraphs + 1; i += 1)
 		guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 		guidePos = i / numGraphs
 		DefineGuide $guideName1={FT, guidePos, FB}
 	endfor
 
-	SetWindow $panelName hook(resetScaling)=IH_ResetScaling
+	SF_CommonWindowSetup(panelName)
 
 	return panelName
+End
+
+static Function SF_CommonWindowSetup(string win)
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
+
+	SetWindow $win hook(resetScaling)=IH_ResetScaling
 End
 
 static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
@@ -1346,9 +1351,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!WindowExists(win))
 				Display/N=$win as win
 				win = S_name
-				NVAR JSONid = $GetSettingsJSONid()
-				PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
-				SetWindow $win hook(resetScaling)=IH_ResetScaling
+				SF_CommonWindowSetup(win)
 			endif
 			wList = AddListItem(win, wList)
 		elseif(winDisplayMode == SF_DM_SUBWINDOWS)
