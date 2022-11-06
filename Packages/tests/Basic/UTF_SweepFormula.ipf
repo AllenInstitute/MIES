@@ -1719,10 +1719,8 @@ static Function TestOperationSelect()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(device, sweepNo=sweepNo)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
 
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
@@ -1993,8 +1991,8 @@ static Function TestOperationData()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(device, sweepNo=sweepNo)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
 	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
@@ -2221,8 +2219,8 @@ static Function TestOperationPowerSpectrum()
 	sweepNo = 0
 	FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorPS
 
-	CreateFakeSweepData(device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
 
 	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)))"
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
