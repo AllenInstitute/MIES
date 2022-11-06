@@ -45,6 +45,7 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 	BSP_SetDataBrowser(win, BROWSER_MODE_USER)
 	BSP_SetDevice(win, device)
 	MIES_DB#DB_SetUserData(win, device)
+	TUD_Clear(win)
 End
 
 static Function/WAVE GetMultipleResults(string formula, string win)
@@ -2370,7 +2371,6 @@ static Function TestOperationLabNotebook()
 	string win, device
 
 	[win, device] = CreateFakeDataBrowserWindow()
-	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2472,7 +2472,6 @@ static Function TestOperationEpochs()
 	string channelTypeC = channelType + "C"
 
 	[win, device] = CreateFakeDataBrowserWindow()
-	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
