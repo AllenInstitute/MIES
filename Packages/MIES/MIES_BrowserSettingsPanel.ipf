@@ -1075,6 +1075,13 @@ Function/S BSP_GetFormulaGraph(win)
 	return CleanupName(SF_PLOT_NAME_TEMPLATE + GetDataFolder(0, dfr), 0)
 End
 
+Function/S BSP_GetFormulaGraphTitle(string win)
+
+	GetWindow $win wtitle
+
+	return SF_PLOT_NAME_TEMPLATE + " from <" + S_Value + ">"
+End
+
 /// @brief Parse a control name for the "Channel Selection Panel" and return
 ///        its channel type and number. The number will be NaN for the ALL control.
 Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
