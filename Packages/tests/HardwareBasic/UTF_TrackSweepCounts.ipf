@@ -1422,7 +1422,7 @@ static Function RepeatSets_8_REENTRY([str])
 	t.setCycleCount_HS0         = {0, 0, 0, 0}
 	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
 
-	t.acquiredStimSets_HS1      = "Testpulse"
+	t.acquiredStimSets_HS1      = "TestPulse"
 	t.sweepCount_HS1            = {0, 0, 0, 0}
 	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1
@@ -1469,7 +1469,7 @@ static Function RepeatSets_9_REENTRY([str])
 	t.setCycleCount_HS0         = {0, 0, 0, 0}
 	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
 
-	t.acquiredStimSets_HS1      = "Testpulse"
+	t.acquiredStimSets_HS1      = "TestPulse"
 	t.sweepCount_HS1            = {0, 0, 0, 0}
 	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1

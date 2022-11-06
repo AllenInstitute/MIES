@@ -2048,7 +2048,7 @@ Function SNWN_WorksWithNaN()
 
 	Make/FREE wv
 	SetNumberInWaveNote(wv, "key", NaN)
-	expected = "key:nan;"
+	expected = "key:NaN;"
 	actual   = note(wv)
 	CHECK_EQUAL_STR(expected, actual)
 End
