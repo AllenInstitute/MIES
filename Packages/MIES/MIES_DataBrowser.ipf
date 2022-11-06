@@ -10,7 +10,7 @@
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
 Function/S DB_OpenDataBrowser([variable mode])
-	string win, winBSP, device, devicesWithData, bsPanel
+	string win, device, devicesWithData, bsPanel
 
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
@@ -20,11 +20,6 @@ Function/S DB_OpenDataBrowser([variable mode])
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
-
-	SetWindow $win, hook(cleanup)=DB_WindowHook
-	winBSP = BSP_GetPanel(win)
-	SetWindow $winBSP, hook(nbinteract)=BSP_SFHelpWindowHook
-	SetWindow $winBSP, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
 
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win, mode)
@@ -93,10 +88,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 
 	BSP_InitPanel(device)
+	BSP_RemoveWindowHooks(device)
 
-	BSP_UnsetDynamicSweepControlOfDataBrowser(device)
-	BSP_UnsetDynamicStartupSettingsOfDataBrowser(device)
-	BSP_UnsetDynamicSettingsHistory(device)
+	BSP_UnsetDynamicStartupSettings(device)
 
 	// store current positions as reference
 	StoreCurrentPanelsResizeInfo(bsPanel)
@@ -300,8 +294,7 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = DATABROWSER_WINDOW_TITLE
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
-		BSP_UnsetDynamicStartupSettingsOfDataBrowser(win)
-		BSP_UnsetDynamicSettingsHistory(win)
+		BSP_UnsetDynamicStartupSettings(win)
 	else
 		newWindow = "DB_" + device
 	endif
@@ -317,7 +310,6 @@ static Function/S DB_LockToDevice(win, device)
 	DB_SetUserData(newWindow, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
-		BSP_DynamicSettingsHistory(newWindow)
 		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
@@ -549,23 +541,6 @@ static Function DB_UpdateToLastSweepWrapper(string win, variable force)
 	endif
 
 	LBV_UpdateTagsForTextualLBNEntries(win, last)
-End
-
-/// @brief procedure for the open button of the side panel
-Function DB_ButtonProc_Panel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string win
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			win = GetMainWindow(ba.win)
-			BSP_UnHideSettingsHistory(win)
-			break
-	endswitch
-
-	BSP_ButtonProc_Panel(ba)
-	return 0
 End
 
 Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
@@ -819,41 +794,6 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
 	return DB_FindDataBrowser(device)
-End
-
-Function DB_WindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string win
-
-	switch(s.eventCode)
-		case EVENT_WINDOW_HOOK_KILL:
-
-			win = s.winName
-
-			NVAR JSONid = $GetSettingsJSONid()
-			PS_StoreWindowCoordinate(JSONid, win)
-
-			if(!BSP_HasBoundDevice(win))
-				break
-			endif
-
-			AssertOnAndClearRTError()
-			try
-				// catch all error conditions, asserts and aborts
-				// and silently ignore them
-				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
-
-				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
-			catch
-				ClearRTError()
-			endtry
-
-			break
-	endswitch
-
-	// return zero so that other hooks are called as well
-	return 0
 End
 
 /// @brief Jumps in the SweepFormula help notebook of the current data/sweepbrowser to the first location

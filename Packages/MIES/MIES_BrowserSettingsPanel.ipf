@@ -81,7 +81,8 @@ Function BSP_InitPanel(mainPanel)
 
 	BSP_DynamicSweepControls(mainPanel)
 	BSP_DynamicStartupSettings(mainPanel)
-	BSP_DynamicSettingsHistory(mainPanel)
+
+	BSP_AddWindowHooks(mainPanel)
 
 	graph = LBV_GetLabNoteBookGraph(mainPanel)
 	TUD_Init(graph)
@@ -90,16 +91,17 @@ End
 /// @brief UnHides BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnHidePanel(mainPanel)
+static Function BSP_UnHidePanel(mainPanel)
 	string mainPanel
 
 	BSP_UnHideSweepControls(mainPanel)
 	BSP_UnHideSettingsPanel(mainPanel)
+	BSP_UnHideSettingsHistory(mainPanel)
 
 	BSP_MainPanelButtonToggle(mainPanel, 0)
 End
 
-Function BSP_UnHideSettingsPanel(mainPanel)
+static Function BSP_UnHideSettingsPanel(mainPanel)
 	string mainPanel
 
 	string bsPanel
@@ -116,7 +118,7 @@ End
 /// @brief open bottom Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnHideSweepControls(mainPanel)
+static Function BSP_UnHideSweepControls(mainPanel)
 	string mainPanel
 
 	string scPanel
@@ -140,8 +142,6 @@ static Function BSP_DynamicSweepControls(mainPanel)
 	scPanel = BSP_GetSweepControlsPanel(mainPanel)
 	ASSERT(WindowExists(scPanel), "external SweepControl Panel not found")
 
-	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
-
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
 	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
 	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=NaN)
@@ -159,18 +159,52 @@ static Function BSP_DynamicSweepControls(mainPanel)
 	endif
 End
 
-/// @brief Unsets all control properties that are set in BSP_DynamicSweepControls for DataBrowser type
-///
-/// @param mainPanel 	mainWindow panel name
-Function BSP_UnsetDynamicSweepControlOfDataBrowser(mainPanel)
-	string mainPanel
+/// @brief Add default window hooks
+static Function BSP_AddWindowHooks(string win)
 
-	string scPanel
+	string scPanel, bsPanel, shPanel, mainPanel
 
-	ASSERT(BSP_IsDataBrowser(mainPanel), "Browser window is not of type DataBrowser")
-	scPanel = BSP_GetSweepControlsPanel(mainPanel)
-	ASSERT(WindowExists(scPanel), "external SweepControl panel not found")
+	mainPanel = GetMainWindow(win)
+
+	SetWindow $mainPanel, hook(cleanup)=BSP_WindowHook
+
+	scPanel = BSP_GetSweepControlsPanel(win)
+	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
+
+	bsPanel = BSP_GetPanel(win)
+	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
+	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
+	SetWindow $bsPanel, hook(nbinteract)=BSP_SFHelpWindowHook
+	SetWindow $bsPanel, tooltipHook(nbinteract)=BSP_TTHookSFFormulaNB
+
+	shPanel = LBV_GetSettingsHistoryPanel(win)
+	SetWindow $shPanel, hook(main)=BSP_ClosePanelHook
+	SetWindow $shPanel, hook(description)=LBV_EntryDescription
+	SetWindow $shPanel, hook(resetScaling)=IH_ResetScaling
+End
+
+/// @brief Remove all window hooks from the window and its subwindows
+Function BSP_RemoveWindowHooks(string win)
+
+	string scPanel, bsPanel, shPanel, mainPanel
+
+	mainPanel = GetMainWindow(win)
+
+	SetWindow $mainPanel, hook(cleanup)=$""
+
+	scPanel = BSP_GetSweepControlsPanel(win)
 	SetWindow $scPanel, hook(main)=$""
+
+	bsPanel = BSP_GetPanel(win)
+	SetWindow $bsPanel, hook(main)=$""
+	SetWindow $bsPanel, hook(sweepFormula)=$""
+	SetWindow $bsPanel, hook(nbinteract)=$""
+	SetWindow $bsPanel, tooltipHook(nbinteract)=$""
+
+	shPanel = LBV_GetSettingsHistoryPanel(win)
+	SetWindow $shPanel, hook(main)=$""
+	SetWindow $shPanel, hook(description)=$""
+	SetWindow $shPanel, hook(resetScaling)=$""
 End
 
 /// @brief dynamic settings for panel initialization
@@ -184,7 +218,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 
 	bsPanel = BSP_GetPanel(mainPanel)
 
-	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
@@ -206,8 +239,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_InitMainCheckboxes(bsPanel)
 
 	BSP_UpdateHelpNotebook(mainPanel)
-
-	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
 
 	shPanel = LBV_GetSettingsHistoryPanel(mainPanel)
 
@@ -252,7 +283,7 @@ End
 /// @brief Unsets all control properties that are set in BSP_DynamicStartupSettings for DataBrowser type
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
+Function BSP_UnsetDynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	string bsPanel, shPanel
@@ -260,7 +291,6 @@ Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	ASSERT(BSP_IsDataBrowser(mainPanel), "Browser window is not of type DataBrowser")
 	bsPanel = BSP_GetPanel(mainPanel)
 	ASSERT(WindowExists(bsPanel), "external BrowserSettings panel not found")
-	SetWindow $bsPanel, hook(main)=$""
 	SetWindow $bsPanel, userData(panelVersion) = ""
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=""
 	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = ""
@@ -643,12 +673,16 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	endif
 End
 
-Function BSP_HidePanel(string win)
+static Function BSP_HidePanel(string win)
 
-	string mainPanel
+	string mainPanel, currentWindow
+
+	currentWindow = GetMainWindow(GetCurrentWindow())
 
 	mainPanel = GetMainWindow(win)
 	SetWindow $win hide=1
+
+	DoWindow/F $currentWindow
 
 	BSP_MainPanelButtonToggle(mainPanel, 1)
 End
@@ -1524,30 +1558,7 @@ Function BSP_UpdateSweepNote(win)
 	ReplaceNotebookText(lbPanel, sweepNote)
 End
 
-Function BSP_DynamicSettingsHistory(string win)
-	string shPanel
-
-	shPanel = LBV_GetSettingsHistoryPanel(win)
-
-	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
-	SetWindow $shPanel, hook(description)=LBV_EntryDescription
-	SetWindow $shPanel, hook(resetScaling)=IH_ResetScaling
-End
-
-/// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
-Function BSP_UnsetDynamicSettingsHistory(win)
-	string win
-
-	string shPanel
-
-	shPanel = LBV_GetSettingsHistoryPanel(win)
-	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
-	SetWindow $shPanel, hook(main)=$""
-	SetWindow $shPanel, hook(description)=$""
-	SetWindow $shPanel, hook(resetScaling)=$""
-End
-
-Function BSP_UnHideSettingsHistory(win)
+static Function BSP_UnHideSettingsHistory(win)
 	string win
 
 	string settingsHistoryPanel
@@ -1901,4 +1912,39 @@ static Function/S BSP_RetrieveSFHelpTextImpl(string win, string hlpStart, string
 	Notebook $win, getData=4
 
 	return Trimstring(S_value)
+End
+
+Function BSP_WindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_KILL:
+
+			win = s.winName
+
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, win)
+
+			if(!BSP_HasBoundDevice(win))
+				break
+			endif
+
+			AssertOnAndClearRTError()
+			try
+				// catch all error conditions, asserts and aborts
+				// and silently ignore them
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
+
+				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
+			catch
+				ClearRTError()
+			endtry
+
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
 End
