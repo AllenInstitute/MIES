@@ -1948,3 +1948,35 @@ Function BSP_WindowHook(s)
 	// return zero so that other hooks are called as well
 	return 0
 End
+
+/// @brief Renames the browser window and sets an informative title
+///
+/// @param win     name of the existing window
+/// @param newName suggested new name, will be adapted to be unique
+Function/S BSP_RenameAndSetTitle(string win, string newName)
+
+	variable numOtherBrowser
+	string newTitle
+	string suffix = ""
+
+	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
+		suffix = " with \"" + BSP_GetDevice(win) + "\""
+	endif
+
+	if(WindowExists(newName))
+		newName = UniqueName(newName, 9, 1)
+	endif
+
+	DoWindow/W=$win/C $newName
+	win = newName
+
+	numOtherBrowser += ItemsInList(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
+	numOtherBrowser += ItemsInList(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
+	numOtherBrowser += ItemsInList(WinList("DB_*", ";", "WIN:1"))
+	numOtherBrowser  = max(0, numOtherBrowser - 1)
+
+	sprintf newTitle, "Browser %s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix
+	DoWindow/T $win, newTitle
+
+	return win
+End

@@ -370,7 +370,7 @@ End
 
 Function/DF SB_OpenSweepBrowser([variable mode])
 
-	string mainWin, renameWin
+	string mainWin
 
 	if(ParamIsDefault(mode))
 		mode = BROWSER_MODE_USER
@@ -390,14 +390,13 @@ Function/DF SB_OpenSweepBrowser([variable mode])
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)
 	GetSweepBrowserMap(sweepBrowserDFR)
 
-	renameWin = UniqueName(SWEEPBROWSER_WINDOW_NAME, 9, 1)
-	DoWindow/W=$mainWin/C $renameWin
-	mainWin = renameWin
+	mainWin = BSP_RenameAndSetTitle(mainWin, SWEEPBROWSER_WINDOW_NAME)
 
 	string/G sweepBrowserDFR:graph = mainWin
 
 	BSP_InitPanel(mainWin)
 	BSP_ScaleAxes(mainWin)
+
 	return sweepBrowserDFR
 End
 

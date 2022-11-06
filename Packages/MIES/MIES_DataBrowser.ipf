@@ -299,24 +299,18 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = "DB_" + device
 	endif
 
-	if(CmpStr(win, newWindow))
-		if(windowExists(newWindow))
-			newWindow = UniqueName(newWindow, 9, 1)
-		endif
-		DoWindow/W=$win/C $newWindow
-		win = newWindow
+	win = BSP_RenameAndSetTitle(win, newWindow)
+
+	DB_SetUserData(win, device)
+	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
+		BSP_DynamicStartupSettings(win)
+		[first, last] = BSP_FirstAndLastSweepAcquired(win)
+		DB_UpdateLastSweepControls(win, first, last)
 	endif
 
-	DB_SetUserData(newWindow, device)
-	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
-		BSP_DynamicStartupSettings(newWindow)
-		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
-		DB_UpdateLastSweepControls(newWindow, first, last)
-	endif
+	UpdateSweepPlot(win)
 
-	UpdateSweepPlot(newWindow)
-
-	return newWindow
+	return win
 End
 
 static Function DB_SetUserData(win, device)
