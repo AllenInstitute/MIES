@@ -2689,15 +2689,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 		WAVE/Z ignoreTPs
 	endif
 
-	if(numArgs >= 2)
-		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TP, 1)
-	else
-		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	endif
-	if(WaveExists(selectData))
-		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-	endif
+	WAVE/Z selectData = SF_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_TP, 1)
 
 	WAVE/WAVE wMode = SF_GetArgument(jsonID, jsonPath, graph, SF_OP_TP, 0)
 	dataType = JWN_GetStringFromWaveNote(wMode, SF_META_DATATYPE)
@@ -3104,15 +3096,7 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		epType = EPOCHS_TYPE_RANGE
 	endif
 
-	if(numArgs >= 2)
-		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
-	else
-		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	endif
-	if(WaveExists(selectData))
-		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-	endif
+	WAVE/Z selectData = SF_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
 
 	WAVE/T epochPatterns = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
 	SF_ASSERT(IsTextWave(epochPatterns), "Epoch pattern argument must be textual")
@@ -4281,15 +4265,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
 	endif
 
-	if(numArgs == 2)
-		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 1)
-	else
-		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	endif
-	if(WaveExists(selectData))
-		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-	endif
+	WAVE/Z selectData = SF_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
 	WAVE/WAVE output = SF_GetSweepsForFormula(graph, range, selectData, SF_OP_DATA)
 	if(!DimSize(output, ROWS))
@@ -4338,15 +4314,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 		mode = DATA_ACQUISITION_MODE
 	endif
 
-	if(numArgs >= 2)
-		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
-	else
-		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	endif
-	if(WaveExists(selectData))
-		SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
-		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
-	endif
+	WAVE/Z selectData = SF_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 
 	WAVE/T wLbnKey = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist=1)
 	SF_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
@@ -5215,4 +5183,28 @@ static Function/WAVE SF_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAV
 	WAVE uniqueEntries = GetUniqueEntries(allIndices, dontDuplicate=1)
 
 	return uniqueEntries
+End
+
+Function/WAVE SF_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+
+	variable numArgs
+	string msg
+
+	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum)
+	else
+		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	endif
+
+	if(WaveExists(selectData))
+		sprintf msg, "Argument #%d of operation %s: input must have three columns", argNum, opShort
+		SF_ASSERT(DimSize(selectData, COLS) == 3, msg)
+
+		sprintf msg, "Argument #%d of operation %s: Must be numeric ", argNum, opShort
+		SF_ASSERT(IsNumericWave(selectData), msg)
+	endif
+
+	return selectData
 End
