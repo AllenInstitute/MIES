@@ -51,8 +51,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 		ControlWindowToFront()
 		return NaN
 	endif
-	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
-		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_TITLE
+	if(CmpStr(device, DATABROWSER_WINDOW_NAME))
+		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_NAME
 		return NaN
 	endif
 
@@ -70,8 +70,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = NONE)
 	device = GetMainWindow(GetCurrentWindow())
 
-	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
-		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_TITLE
+	if(CmpStr(device, DATABROWSER_WINDOW_NAME))
+		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_NAME
 		return NaN
 	endif
 
@@ -245,7 +245,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SearchForInvalidControlProcs(device)
 	print "Do not forget to increase DATA_SWEEP_BROWSER_PANEL_VERSION."
 
-	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_TITLE
+	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
@@ -291,7 +291,7 @@ static Function/S DB_LockToDevice(win, device)
 	variable first, last
 
 	if(!cmpstr(device, NONE))
-		newWindow = DATABROWSER_WINDOW_TITLE
+		newWindow = DATABROWSER_WINDOW_NAME
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
 		BSP_UnsetDynamicStartupSettings(win)

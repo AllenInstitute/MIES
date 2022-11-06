@@ -86,9 +86,9 @@ StrConstant DEVICE_TYPES_ITC = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
 StrConstant ITC1600_FIRST_DEVICE = "ITC1600_Dev_0"
-StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
-StrConstant DATABROWSER_WINDOW_TITLE = "DataBrowser"
-StrConstant SWEEPBROWSER_WINDOW_TITLE = "SweepBrowser"
+StrConstant BASE_WINDOW_NAME    = "DA_Ephys"
+StrConstant DATABROWSER_WINDOW_NAME = "DataBrowser"
+StrConstant SWEEPBROWSER_WINDOW_NAME = "SweepBrowser"
 StrConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
 /// @name Task names

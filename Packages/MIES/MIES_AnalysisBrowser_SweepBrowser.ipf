@@ -390,7 +390,7 @@ Function/DF SB_OpenSweepBrowser([variable mode])
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)
 	GetSweepBrowserMap(sweepBrowserDFR)
 
-	renameWin = UniqueName(SWEEPBROWSER_WINDOW_TITLE, 9, 1)
+	renameWin = UniqueName(SWEEPBROWSER_WINDOW_NAME, 9, 1)
 	DoWindow/W=$mainWin/C $renameWin
 	mainWin = renameWin
 

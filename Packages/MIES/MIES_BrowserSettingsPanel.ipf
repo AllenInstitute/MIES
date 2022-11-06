@@ -483,9 +483,9 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE) = BSP_SerializeBrowserMode(mode)
 
 	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
-		title = SWEEPBROWSER_WINDOW_TITLE
+		title = SWEEPBROWSER_WINDOW_NAME
 	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
-		title = DATABROWSER_WINDOW_TITLE
+		title = DATABROWSER_WINDOW_NAME
 	else
 		ASSERT(0, "Invalid type")
 	endif

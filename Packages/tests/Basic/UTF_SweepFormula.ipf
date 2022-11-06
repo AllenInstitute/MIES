@@ -34,7 +34,7 @@ End
 static Function [string win, string device] CreateFakeDataBrowserWindow()
 
 	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
-	win = DATABROWSER_WINDOW_TITLE
+	win = DATABROWSER_WINDOW_NAME
 
 	if(windowExists(win))
 		DoWindow/K $win
