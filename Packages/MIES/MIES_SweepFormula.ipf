@@ -4871,7 +4871,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 End
 
 // returns number of operation arguments
-static Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
+Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
 
 	variable size
 
@@ -4941,7 +4941,7 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 	endfor
 End
 
-static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
+Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
 
 	if(!ParamIsDefault(clear))
 		SF_CleanUpInput(clear)
@@ -4959,7 +4959,7 @@ static Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, st
 	return SF_GetOutputForExecutor(output, graph, opShort)
 End
 
-static Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
+Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
 
 	if(!ParamIsDefault(clear))
 		SF_CleanUpInput(clear)
@@ -4995,7 +4995,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	string opSpec, argStr
 
@@ -5008,7 +5008,7 @@ static Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string gra
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-static Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
+Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
@@ -5028,7 +5028,7 @@ End
 
 /// @brief Transfer wavenote from input data sets to output data sets
 ///        set a label for a x-axis and x-value(s) for data waves
-static Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
+Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
 
 	variable sweepNo, numResults, i, setXLabel
 	string opStack, inDataType, xLabel
