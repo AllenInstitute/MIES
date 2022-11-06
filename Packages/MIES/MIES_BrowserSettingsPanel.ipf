@@ -1067,12 +1067,12 @@ Function/S BSP_GetFormulaGraph(win)
 	string win
 
 	if(!BSP_HasBoundDevice(win))
-		return "FormulaPlot"
+		return CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
 	endif
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
-	return CleanupName("FormulaPlot_" + GetDataFolder(0, dfr), 0)
+	return CleanupName(SF_PLOT_NAME_TEMPLATE + GetDataFolder(0, dfr), 0)
 End
 
 /// @brief Parse a control name for the "Channel Selection Panel" and return

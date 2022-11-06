@@ -1960,3 +1960,5 @@ Constant BROWSER_MODE_ALL        = 0xFF
 Constant THREAD_QUEUE_TRIES            = 1000
 Constant HARDWARE_ITC_FIFO_ERROR       = -1
 Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
+
+StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
