@@ -111,6 +111,9 @@ Function WB_RegressionTest([string stimset])
 					WAVE/Z inflectionPoints = ListToNumericWave(WB_GetWaveNoteEntry(text, EPOCH_ENTRY, key = "Inflection Points", sweep = i, epoch = j), ",")
 					CHECK_WAVE(inflectionPoints, NUMERIC_WAVE)
 
+					// map -0 to 0
+					inflectionPoints[] += 0
+
 					switch(j)
 						case 0:
 							Make/D/FREE refInflectionPoints = {197.458726593435,435.675394434122,588.633714511935,701.526877331138,791.045847308983,865.22891295094,928.57002432697,983.837930372523}
@@ -126,6 +129,12 @@ Function WB_RegressionTest([string stimset])
 							break
 						case 4:
 							Make/D/FREE/N=0 refInflectionPoints
+							break
+						case 5:
+							Make/D/FREE refInflectionPoints = {0,56.8275517074798,134.011125536996,254.863071610038,551.280032534985}
+							break
+						case 6:
+							Make/D/FREE refInflectionPoints = {13.8634120431695,55.5281095180012,197.212830141239}
 							break
 						default:
 							FAIL()
