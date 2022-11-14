@@ -190,6 +190,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 			MoveFile experimentNWBFile as (baseFolder + nwbFile)
 		endif
 	endif
+
+	AdditionalExperimentCleanup()
 End
 
 /// @brief Checks user epochs for consistency
