@@ -2816,6 +2816,12 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 
 			numTPs = DimSize(epochMatches, ROWS)
 			Make/FREE/D/N=(numTPs) fitResults
+
+#ifdef AUTOMATED_TESTING
+			Make/FREE/D/N=(numTPs) beginTrails, endTrails
+			beginTrails = NaN
+			endTrails = NaN
+#endif
 			for(j = 0; j < numTPs; j += 1)
 
 				epBaselineTrail = EP_GetShortName(epochMatches[j][EPOCH_COL_TAGS]) + "_B1"
@@ -2830,6 +2836,11 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 					endTrail = str2numSafe(epochTPBaselineTrail[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 				endif
 				endTrail = min(endTrail, beginTrail + maxTrailLength)
+
+#ifdef AUTOMATED_TESTING
+				beginTrails[j] = beginTrail
+				endTrails[j] = endTrail
+#endif
 
 				if(!CmpStr(retWhat, SF_OP_TPFIT_RET_FITQUALITY))
 					Duplicate/FREE sweepData, residuals
@@ -2905,6 +2916,11 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				endif
 				fitResults[j] = fitResult
 			endfor
+
+#ifdef AUTOMATED_TESTING
+			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
+			JWN_SetWaveInWaveNote(fitResults, "/endtrails", endTrails)
+#endif
 
 			if(!debugMode)
 				WAVE/D out = fitResults
