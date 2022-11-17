@@ -795,7 +795,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 	[s] = DC_GetConfiguration(device, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-	stopCollectionPoint = DC_GetStopCollectionPoint(device, s.dataAcqOrTP, s.setLength)
+	stopCollectionPoint = DC_GetStopCollectionPoint(device, s)
 
 	AssertOnAndClearRTError()
 
@@ -2036,12 +2036,12 @@ static Function DC_ReturnTotalLengthIncrease(device, [onsetDelayUser, onsetDelay
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-static Function DC_GetStopCollectionPoint(string device, variable dataAcqOrTP, WAVE setLengths)
+static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfigurationResult &s)
 	variable DAClength, TTLlength, totalIncrease
 
-	DAClength = DC_CalculateLongestSweep(device, dataAcqOrTP, CHANNEL_TYPE_DAC)
+	DAClength = DC_CalculateLongestSweep(device, s.dataAcqOrTP, CHANNEL_TYPE_DAC)
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+	if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
 
 		// find out if we have only TP channels
 		WAVE config = GetDAQConfigWave(device)
@@ -2050,20 +2050,20 @@ static Function DC_GetStopCollectionPoint(string device, variable dataAcqOrTP, W
 		FindValue/I=(DAQ_CHANNEL_TYPE_DAQ) DACmode
 
 		if(V_Value == -1)
-			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / DAP_GetSampInt(device, dataAcqOrTP)
+			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingInterval
 		else
 			totalIncrease = DC_ReturnTotalLengthIncrease(device)
 			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
-			if(DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
-				DAClength = WaveMax(setLengths)
-			elseif(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq"))
+			if(s.distributedDAQOptOv)
+				DAClength = WaveMax(s.setLength)
+			elseif(s.distributedDAQ)
 				DAClength *= DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
 			endif
 
 			return max(DAClength, TTLlength) + totalIncrease
 		endif
-	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+	elseif(s.dataAcqOrTP == TEST_PULSE_MODE)
 		return DAClength
 	endif
 
