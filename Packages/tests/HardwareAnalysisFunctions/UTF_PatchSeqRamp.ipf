@@ -173,7 +173,7 @@ static Function [variable start, variable stop] GetPostBaseLineInterval(string d
 	struct PSQ_PulseSettings s
 	MIES_PSQ#PSQ_GetPulseSettingsForType(PSQ_RAMP, s)
 
-	totalOnsetDelay = DAG_GetNumericalValue(dev, "setvar_DataAcq_OnsetDelayUser") + GetValDisplayAsNum(dev, "valdisp_DataAcq_OnsetDelayAuto")
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(dev)
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, dev)
 
 	chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + durations[sweepNo]) + chunk * s.postPulseChunkLength
