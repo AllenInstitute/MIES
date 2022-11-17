@@ -223,6 +223,9 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1
 	TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
 
+	// check that we don't have any gaps in treelevel 0
+	TestEpochGaps(startT, endT, isOodDAQ, levels, DAChannel, 0)
+
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
@@ -256,6 +259,37 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_min, 0)
 			CHECK_EQUAL_VAR(V_max, 0)
+		endif
+	endfor
+End
+
+static Function TestEpochGaps(WAVE startTall, WAVE endTall, WAVE isOodDAQ, WAVE levels, WAVE DAChannel, variable level)
+
+	variable epochCnt, i, lastx
+
+	Extract/FREE startTall, startT, isOodDAQ == 0 && levels == level
+	Extract/FREE endTall, endT, isOodDAQ == 0 && levels == level
+	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
+
+	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS) - 1, ROWS) * MILLI_TO_ONE
+	CHECK_GT_VAR(lastx, 0.0)
+
+	epochCnt = DimSize(startT, ROWS)
+	for(i = 0; i < epochCnt; i += 1)
+
+		// first starts at 0.0
+		if(i == 0)
+			CHECK_EQUAL_VAR(startT[i], 0.0)
+		endif
+
+		// last has the x-coordinate as the last point in the DA wave
+		if(i == epochCnt - 1)
+			CHECK_CLOSE_VAR(lastx, endT[i], tol = 1e-10)
+		endif
+
+		// and in between no gaps
+		if(i > 0)
+			CHECK_EQUAL_VAR(startT[i], endT[i - 1])
 		endif
 	endfor
 End
