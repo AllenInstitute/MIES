@@ -1324,7 +1324,7 @@ End
 /// This starts data acquisition with one active headstage (HS0) in current clamp (:IC:) on DA0 and AD0 with stimulus set ABCD.
 /// As a rule of thumb new entries should be added here if we have more than three users of a setting.
 ///
-/// Numeric parmeters are directly passed after the name, string parameters are enclosed in colons (`:`).
+/// Numeric parameters are directly passed after the name, string parameters are enclosed in colons (`:`).
 ///
 /// Required:
 /// - MultiDevice (MD: 1/0)
