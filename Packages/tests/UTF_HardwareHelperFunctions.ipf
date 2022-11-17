@@ -1104,7 +1104,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1208,6 +1208,8 @@ Function InitDAQSettingsFromString(s, str)
 	s.dDAQ = ParseNumber(str, "_dDAQ", defValue = 0)
 
 	s.oodDAQ = ParseNumber(str, "_oodDAQ", defValue = 0)
+
+	s.DDL = ParseNumber(str, "_DDL", defValue = 0)
 
 	s.od = ParseNumber(str, "_OD", defValue = 0)
 
@@ -1339,6 +1341,7 @@ End
 /// - Open Databrowser (DB: 1/0)
 /// - Onset user delay (OD: > 0)
 /// - Termination delay (TD: > 0)
+/// - dDAQ delay (DDL: > 0)
 /// - Run testpulse instead (TP: 1/0)
 /// - Run data acquisition (DAQ: 1/0). Running data acquisition is the default. Setting `_TP0_DAQ0`
 ///   allows to not start anything.
@@ -1493,6 +1496,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = s.od)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = s.td)
+		PGC_SetAndActivateControl(device, "Setvar_DataAcq_dDAQDelay", val = s.ddl)
 
 		PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
 
