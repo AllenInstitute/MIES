@@ -577,6 +577,24 @@ static Function EP_EpochTest4_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest4a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"      + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest4a_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTest5([str])
 	string str
 
