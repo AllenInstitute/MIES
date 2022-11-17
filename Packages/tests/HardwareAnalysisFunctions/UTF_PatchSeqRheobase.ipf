@@ -174,8 +174,7 @@ static Function PS_RB1_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure
-	onsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-				 GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
@@ -1047,8 +1046,7 @@ static Function PS_RB11_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure
-	onsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-				 GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
