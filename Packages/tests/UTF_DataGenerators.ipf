@@ -20,6 +20,14 @@ Function/WAVE IndexingPossibilities()
 	return wv
 End
 
+Function/WAVE InsertedTPPossibilities()
+	Make/FREE wv = {0, 1}
+
+	SetDimensionLabels(wv, "NoInsertedTP;WithInsertedTP", ROWS)
+
+	return wv
+End
+
 Function/WAVE SingleMultiDeviceDAQ()
 
 	WAVE multiDevices = DeviceNameGeneratorMD1()

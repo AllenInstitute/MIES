@@ -2194,3 +2194,48 @@ Function HandlesStuckFIFOProperly_REENTRY([str])
 	stopReason = GetLastSettingIndep(numericalValues, 1, "DAQ stop reason", UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
 End
+
+static Function CheckDelays_PreAcq(string device)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc",  val = 25)
+End
+
+// UTF_TD_GENERATOR v0:InsertedTPPossibilities
+// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function CheckDelays([STRUCT IUTF_MDATA &md])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1_ITP" + num2str(md.v0) + "_TD100_OD50_dDAQ1_DDL10" + \
+				                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"                               + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, md.s0)
+End
+
+static Function CheckDelays_REENTRY([STRUCT IUTF_MDATA &md])
+	variable sweepNo, val
+
+	sweepNo = 0
+	CHECK_EQUAL_VAR(GetSetVariable(md.s0, "SetVar_Sweep"), sweepNo + 1)
+
+	WAVE numericalValues = GetLBNumericalValues(md.s0)
+
+	val = GetLastSettingIndep(numericalValues, sweepNo, "TP insert checkbox", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(val, md.v0)
+
+	val = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(val, 50)
+
+	val = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE)
+
+	if(md.v0)
+		CHECK_EQUAL_VAR(val, 20)
+	else
+		CHECK_EQUAL_VAR(val, 0)
+	endif
+
+	val = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(val, 100)
+
+	val = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(val, 10)
+End
