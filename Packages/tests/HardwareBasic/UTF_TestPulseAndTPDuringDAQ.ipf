@@ -28,7 +28,7 @@ static Function CheckCalculatedTPEntries([string str])
 End
 
 static Function CheckCalculatedTPEntries_REENTRY([string str])
-	variable samplingInterval, samplingIntervalMult, sweepNo
+	variable samplingInterval, samplingIntervalMult, sweepNo, delayOnsetAuto
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -64,6 +64,10 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsDAQ], 10 / 0.008)
 	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.008)
 #endif
+
+	delayOnsetAuto = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=NaN)
+	CHECK_EQUAL_VAR(delayOnsetAuto, 20)
+	CHECK_EQUAL_VAR(TP_CalculateTestPulseLength(10, 0.25), 20)
 End
 
 Function CheckTPBaseline_PreAcq(string device)
