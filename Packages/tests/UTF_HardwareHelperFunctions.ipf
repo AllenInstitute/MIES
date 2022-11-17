@@ -1103,7 +1103,7 @@ Function EnsureMCCIsOpen()
 End
 
 Structure DAQSettings
-	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP
+	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP
 	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL
 
 	WAVE hs, da, ad, cm, ttl, aso
@@ -1237,6 +1237,8 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.tpi = ParseNumber(str, "_TPI", defValue = 1)
 
+	s.itp = ParseNumber(str, "_ITP", defValue = 1)
+
 	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
@@ -1348,6 +1350,7 @@ End
 /// - Set the ITI (ITI: > 0)
 /// - Get/Set ITI checkbox (GSI: 1/0)
 /// - TP during ITI checkbox (TPI: 1/0)
+/// - Inserted TP checkbox (ITP: 1/0)
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1506,6 +1509,8 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 		endif
 
 		PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = s.tpi)
+
+		PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = s.itp)
 
 		if(!s.MD)
 			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
