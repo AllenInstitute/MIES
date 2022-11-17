@@ -976,10 +976,10 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")))
 	DC_DocumentChannelProperty(device, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * MICRO_TO_MILLI)
 
-	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser"))
-	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto"))
-	DC_DocumentChannelProperty(device, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay"))
-	DC_DocumentChannelProperty(device, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay"))
+	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=(s.onsetDelayUser * (s.samplingInterval * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=(s.onsetDelayAuto * (s.samplingInterval * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var=(s.terminationDelay * (s.samplingInterval * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=(s.distributedDAQDelay * (s.samplingInterval * MICRO_TO_MILLI)))
 	DC_DocumentChannelProperty(device, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPre"))
 	DC_DocumentChannelProperty(device, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost"))
 	DC_DocumentChannelProperty(device, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, NaN, var=WAVEBUILDER_MIN_SAMPINT)
@@ -1281,7 +1281,6 @@ End
 
 static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
 	variable channel, headstage, channelMode
-	variable onsetDelayUserLocal, onsetDelayAutoLocal, terminationDelayLocal, distributedDAQDelayLocal
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
 	string ctrl
@@ -1491,12 +1490,14 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		s.insertStart[] = 0
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		DC_ReturnTotalLengthIncrease(device, onsetdelayUser=onsetDelayUserLocal, onsetDelayAuto=onsetDelayAutoLocal, terminationDelay=terminationDelayLocal, distributedDAQDelay=distributedDAQDelayLocal)
 
-		s.onsetDelayUser      = onsetDelayUserLocal
-		s.onsetDelayAuto      = onsetDelayAutoLocal
-		s.terminationDelay    = terminationDelayLocal
-		s.distributedDAQDelay = distributedDAQDelayLocal
+		if(s.globalTPInsert)
+			s.onsetDelayAuto = s.testPulseLength
+		endif
+
+		s.onsetDelayUser = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (s.samplingInterval * MICRO_TO_MILLI))
+		s.terminationDelay = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (s.samplingInterval * MICRO_TO_MILLI))
+		s.distributedDAQDelay = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (s.samplingInterval * MICRO_TO_MILLI))
 
 		s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
 		if(s.distributedDAQ)
@@ -1990,48 +1991,13 @@ End
 /// distributed data aquisition. Does not incorporate adaptations for oodDAQ.
 ///
 /// All returned values are in number of points, *not* in time.
-///
-/// @param[in] device                      panel title
-/// @param[out] onsetDelayUser [optional]      onset delay set by the user
-/// @param[out] onsetDelayAuto [optional]      onset delay required by other settings
-/// @param[out] terminationDelay [optional]    termination delay
-/// @param[out] distributedDAQDelay [optional] distributed DAQ delay
-static Function DC_ReturnTotalLengthIncrease(device, [onsetDelayUser, onsetDelayAuto, terminationDelay, distributedDAQDelay])
-	string device
-	variable &onsetDelayUser, &onsetDelayAuto, &terminationDelay, &distributedDAQDelay
+static Function DC_ReturnTotalLengthIncrease(STRUCT DataConfigurationResult &s)
 
-	variable samplingInterval, onsetDelayUserVal, onsetDelayAutoVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
-	variable distributedDAQ
-
-	numActiveDACs          = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
-	samplingInterval       = DAP_GetSampInt(device, DATA_ACQUISITION_MODE)
-	distributedDAQ         = DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq")
-	onsetDelayUserVal      = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (samplingInterval * MICRO_TO_MILLI))
-	onsetDelayAutoVal      = round(GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto") / (samplingInterval * MICRO_TO_MILLI))
-	terminationDelayVal    = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (samplingInterval * MICRO_TO_MILLI))
-	distributedDAQDelayVal = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (samplingInterval * MICRO_TO_MILLI))
-
-	if(!ParamIsDefault(onsetDelayUser))
-		onsetDelayUser = onsetDelayUserVal
-	endif
-
-	if(!ParamIsDefault(onsetDelayAuto))
-		onsetDelayAuto = onsetDelayAutoVal
-	endif
-
-	if(!ParamIsDefault(terminationDelay))
-		terminationDelay = terminationDelayVal
-	endif
-
-	if(!ParamIsDefault(distributedDAQDelay))
-		distributedDAQDelay = distributedDAQDelayVal
-	endif
-
-	if(distributedDAQ)
-		ASSERT(numActiveDACs > 0, "Number of DACs must be at least one")
-		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
+	if(s.distributedDAQ)
+		ASSERT(s.numDACEntries > 0, "Number of DACs must be at least one")
+		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay + s.distributedDAQDelay * (s.numDACEntries - 1)
 	else
-		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal
+		return s.onsetDelayUser + s.onsetDelayAuto + s.terminationDelay
 	endif
 End
 
@@ -2052,7 +2018,7 @@ static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfiguratio
 		if(V_Value == -1)
 			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingInterval
 		else
-			totalIncrease = DC_ReturnTotalLengthIncrease(device)
+			totalIncrease = DC_ReturnTotalLengthIncrease(s)
 			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
 			if(s.distributedDAQOptOv)

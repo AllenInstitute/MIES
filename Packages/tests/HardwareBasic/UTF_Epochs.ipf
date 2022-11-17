@@ -842,3 +842,26 @@ static Function EP_EpochTest14_REENTRY([str])
 
 	TestEpochsGeneric(str)
 End
+
+static Function EP_EpochTest15_PreAcq(string device)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 43.59)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val =10)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest15([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	       						   "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest15_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End

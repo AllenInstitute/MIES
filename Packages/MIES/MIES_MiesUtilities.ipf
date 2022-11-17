@@ -6164,8 +6164,9 @@ End
 /// @sa GetTotalOnsetDelay
 Function GetTotalOnsetDelayFromDevice(string device)
 
-	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + \
-	       GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+	WAVE TPSettingsCalculated = GetTPSettingsCalculated(device)
+
+	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + TPSettingsCalculated[%totalLengthMS]
 End
 
 /// @brief Check if the given multiplier is a valid sampling interval multiplier

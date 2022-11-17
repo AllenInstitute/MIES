@@ -4101,16 +4101,16 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 End
 
 /// @brief Update the onset delay due to the `Insert TP` setting
-Function DAP_UpdateOnsetDelay(device)
-	string device
+Function DAP_UpdateOnsetDelay(string device)
 
-	variable pulseDuration, baselineFrac
 	variable testPulseDurWithBL
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_InsertTP"))
-		pulseDuration = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPDuration")
-		baselineFrac = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPBaselinePerc") * PERCENT_TO_ONE
-		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
+		TP_UpdateTPSettingsCalculated(device)
+
+		WAVE TPSettingsCalculated = GetTPSettingsCalculated(device)
+
+		testPulseDurWithBL = TPSettingsCalculated[%totalLengthMS]
 	else
 		testPulseDurWithBL = 0
 	endif
@@ -5896,10 +5896,6 @@ static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
 	string lbl, entry
 	variable first, last, TPState, needsTPRestart
 
-	if(!cmpstr(ctrl, "SetVar_DataAcq_TPDuration") || !cmpstr(ctrl, "SetVar_DataAcq_TPBaselinePerc"))
-		DAP_UpdateOnsetDelay(device)
-	endif
-
 	needsTPRestart = WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_NO_RESTART) == -1
 
 	// we only want to restart the testpulse if DAQ is not running
@@ -5930,6 +5926,10 @@ static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
 	if(!cmpstr(lbl, "autoTPEnable"))
 		TP_AutoTPGenerateNewCycleID(device, first = first, last = last)
 		DAP_AdaptAutoTPColorAndDependent(device)
+	endif
+
+	if(!cmpstr(ctrl, "SetVar_DataAcq_TPDuration") || !cmpstr(ctrl, "SetVar_DataAcq_TPBaselinePerc"))
+		DAP_UpdateOnsetDelay(device)
 	endif
 
 	TP_RestartTestPulse(device, TPState)
