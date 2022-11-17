@@ -477,7 +477,6 @@ Structure DataConfigurationResult
 	variable dataAcqOrTP
 
 	/// @sa GetTestpulseBaselineFraction()
-	/// TODO remove
 	variable baselineFrac
 
 	/// @sa DC_GetDecimationFactor()
