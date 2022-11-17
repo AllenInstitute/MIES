@@ -6150,7 +6150,7 @@ Function/S GetNIFIFOName(deviceID)
 	return HARDWARE_NI_ADC_FIFO + num2str(deviceID)
 End
 
-/// @brief Return the total onset delay of the given sweep
+/// @brief Return the total onset delay of the given sweep from the labnotebook
 Function GetTotalOnsetDelay(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
@@ -6159,7 +6159,7 @@ Function GetTotalOnsetDelay(numericalValues, sweepNo)
 			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
 
-/// @brief Return the total onset delay from the given device
+/// @brief Return the total onset delay from the given device during DAQ
 ///
 /// @sa GetTotalOnsetDelay
 Function GetTotalOnsetDelayFromDevice(string device)
