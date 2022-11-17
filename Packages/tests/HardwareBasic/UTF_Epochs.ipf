@@ -153,7 +153,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 		if(!ret)
 			printf "Could not find coverage epochs for %g (desc: %s, level %d)\r", i, description[i], level
 			print matches
-			return 1
+			return NaN
 		endif
 	endfor
 
@@ -173,8 +173,6 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 
 		CHECK_EQUAL_WAVES(sameLevel, disjunct)
 	endfor
-
-	return 0
 End
 
 static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
@@ -223,12 +221,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	endfor
 
 	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1
-	ret = TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
-
-	if(ret != 0)
-		printf "ActiveDAC: %d\r", activeDAChannel
-		Duplicate/O e, root:epochs
-	endif
+	TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
 
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
@@ -342,6 +335,9 @@ static Function TestEpochsGeneric(device)
 
 		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
+
+		// preserve epochs wave in CDF
+		Duplicate epochChannel, $("epochChannel" + num2str(i))
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?
 		endT[] = str2num(epochChannel[p][1])
