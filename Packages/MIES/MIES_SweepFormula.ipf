@@ -2261,7 +2261,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 			// catch Abort from SF_ASSERT
 			try
-				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
+				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr)
 
 				[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
 
