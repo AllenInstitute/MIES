@@ -67,7 +67,7 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 
 	delayOnsetAuto = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=NaN)
 	CHECK_EQUAL_VAR(delayOnsetAuto, 20)
-	CHECK_EQUAL_VAR(TP_CalculateTestPulseLength(10, 0.25), 20)
+	CHECK_EQUAL_VAR(MIES_TP#TP_CalculateTestPulseLength(10, 0.25), 20)
 End
 
 Function CheckTPBaseline_PreAcq(string device)
