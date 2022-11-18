@@ -2263,6 +2263,9 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			try
 				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr)
 
+				SVAR lastCode = $GetLastSweepFormulaCode(dfr)
+				lastCode = preProcCode
+
 				[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
