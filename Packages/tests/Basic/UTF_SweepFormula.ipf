@@ -1340,7 +1340,7 @@ static Function TestPlotting()
 	WAVE globalscale1D = GetSingleresult(strScale1D, sweepBrowser)
 	Duplicate/FREE globalscale1D, scale1D
 
-	win = winBase + "_#" + winBase + "_0"
+	win = winBase + "_#Graph" + "0"
 	dfr = GetDataFolderDFR()
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D)
@@ -1471,7 +1471,7 @@ static Function TestPlotting()
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	win = winBase + "_1"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 
 	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
@@ -1491,11 +1491,11 @@ static Function TestPlotting()
 		refStr = "FB"
 		CHECK_EQUAL_STR(tmpStr, refStr)
 	endfor
-	win = winBase + "_#" + winBase + "_0"
+	win = winBase + "_#Graph" + "0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	win = winBase + "_#" + winBase + "_1"
+	win = winBase + "_#Graph" + "1"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	win = winBase + "_#" + winBase + "_2"
+	win = winBase + "_#Graph" + "2"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 
 	try

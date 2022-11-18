@@ -1252,23 +1252,84 @@ static Function/S SF_ShrinkLegend(string annotation)
 	return tracePrefix + opPrefixOld + "s " + sweepList + " " + suffixOld
 End
 
-static Function/S SF_PreparePlotterSubwindows(string win, string graph, variable numGraphs)
+static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
 
-	variable i, guidePos
-	string panelName, guideName1
+	variable i, guidePos, restoreCursorInfo
+	string panelName, guideName1, guideName2, win
 
-	KillWindow/Z $win
-	NewPanel/N=$win
-	panelName = S_name
-	for(i = 0; i < numGraphs + 1; i += 1)
-		guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
-		guidePos = i / numGraphs
-		DefineGuide $guideName1={FT, guidePos, FB}
+	Make/FREE/T/N=(numGraphs) plotGraphs
+	Make/FREE/WAVE/N=(numGraphs, 2) infos
+	SetDimensionLabels(infos, "axes;cursors", COLS)
+
+	// collect infos
+	for(i = 0; i < numGraphs; i += 1)
+		if(winDisplayMode == SF_DM_NORMAL)
+			win = winNameTemplate + num2istr(i)
+		elseif(winDisplayMode == SF_DM_SUBWINDOWS)
+			win = winNameTemplate + "#" + "Graph" + num2istr(i)
+		endif
+
+		if(WindowExists(win))
+			WAVE/T/Z axes    = GetAxesRanges(win)
+			WAVE/T/Z cursors = GetCursorInfos(win)
+
+			if(WaveExists(cursors) && winDisplayMode == SF_DM_SUBWINDOWS)
+				restoreCursorInfo = 1
+			endif
+
+			infos[i][%axes]    = axes
+			infos[i][%cursors] = cursors
+		endif
 	endfor
 
-	SF_CommonWindowSetup(panelName, graph)
+	if(winDisplayMode == SF_DM_NORMAL)
+		for(i = 0; i < numGraphs; i += 1)
+			win = winNameTemplate + num2istr(i)
 
-	return panelName
+			if(!WindowExists(win))
+				Display/N=$win as win
+				win = S_name
+			endif
+
+			SF_CommonWindowSetup(win, graph)
+
+			plotGraphs[i] = win
+		endfor
+	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
+		KillWindow/Z $winNameTemplate
+		NewPanel/N=$winNameTemplate
+		winNameTemplate = S_name
+
+		SF_CommonWindowSetup(winNameTemplate, graph)
+
+		if(restoreCursorInfo)
+			ShowInfo/W=$winNameTemplate
+		endif
+
+		// create horizontal guides (one more than graphs)
+		for(i = 0; i < numGraphs + 1; i += 1)
+			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
+			guidePos = i / numGraphs
+			DefineGuide $guideName1={FT, guidePos, FB}
+		endfor
+
+		// and now the subwindow graphs
+		for(i = 0; i < numGraphs; i += 1)
+			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
+			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
+			Display/HOST=$winNameTemplate/FG=(FL, $guideName1, FR, $guideName2)/N=$("Graph" + num2str(i))
+			plotGraphs[i] = winNameTemplate + "#" + S_name
+		endfor
+	endif
+
+	// @todo IP9: workaround IP bug as plotGraphs can not be used directly in the range-based for loop
+	WAVE/T localPlotGraphs = plotGraphs
+	for(win : localPlotGraphs)
+		RemoveTracesFromGraph(win)
+		ModifyGraph/W=$win swapXY = 0
+	endfor
+
+	return [plotGraphs, infos]
 End
 
 static Function SF_CommonWindowSetup(string win, string graph)
@@ -1346,7 +1407,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	string trace
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
-	variable xMxN, yMxN, xPoints, yPoints
+	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection
 	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation, yAxisLabel
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
@@ -1365,12 +1426,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	DFREF dfrWork = SF_GetWorkingDF(graph)
 	KillOrMoveToTrash(dfr=dfrWork)
 
+	SVAR lastCode = $GetLastSweepFormulaCode(dfr)
+	keepUserSelection = !cmpstr(lastCode, formula)
+
 	numGraphs = DimSize(formulaPairs, ROWS)
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
-	if(winDisplayMode == SF_DM_SUBWINDOWS)
-		panelName = SF_PreparePlotterSubwindows(winNameTemplate, graph, numGraphs)
-	endif
+
+	[WAVE/T plotGraphs, WAVE/WAVE infos] = SF_PreparePlotter(winNameTemplate, graph, winDisplayMode, numGraphs)
 
 	for(j = 0; j < numGraphs; j += 1)
 
@@ -1382,25 +1445,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
 		yAxisLabel = SF_CombineYUnits(formulaResults)
 
-		win = winNameTemplate + num2istr(j)
-		if(winDisplayMode == SF_DM_NORMAL)
-			if(!WindowExists(win))
-				Display/N=$win as win
-				win = S_name
-				SF_CommonWindowSetup(win, graph)
-			endif
-			wList = AddListItem(win, wList)
-		elseif(winDisplayMode == SF_DM_SUBWINDOWS)
-			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(j)
-			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(j + 1)
-			Display/HOST=$panelName/FG=(FL, $guideName1, FR, $guideName2)/N=$win
-			win = panelName + "#" + S_name
-		endif
-
-		WAVE/T/Z cursorInfos = GetCursorInfos(win)
-		WAVE axesRanges = GetAxesRanges(win)
-		RemoveTracesFromGraph(win)
-		ModifyGraph/W=$win swapXY = 0
+		win = plotGraphs[j]
+		wList = AddListItem(win, wList)
 
 		numData = DimSize(formulaResults, ROWS)
 		for(k = 0; k < numData; k += 1)
@@ -1575,8 +1621,18 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			ModifyGraph/W=$win zapTZ(bottom)=1
 		endif
 
-		RestoreCursors(win, cursorInfos)
-		SetAxesRanges(win, axesRanges)
+		if(keepUserSelection)
+			WAVE/Z cursorInfos = infos[j][%cursors]
+			WAVE/Z axesRanges  = infos[j][%axes]
+
+			if(WaveExists(cursorInfos))
+				RestoreCursors(win, cursorInfos)
+			endif
+
+			if(WaveExists(axesRanges))
+				SetAxesRanges(win, axesRanges)
+			endif
+		endif
 	endfor
 
 	if(winDisplayMode == SF_DM_NORMAL)
