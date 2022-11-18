@@ -15,8 +15,6 @@ static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
 static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
 static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 7
-
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
@@ -217,8 +215,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	string bsPanel, shPanel, experiments, devices
 
 	bsPanel = BSP_GetPanel(mainPanel)
-
-	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook=0)
