@@ -13,7 +13,13 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 	CHECK_WAVE(epochsWave, TEXT_WAVE)
 
 	DAC = 2 // HS 0
+	MIES_EP#EP_AddEpoch(device, DAC, 1, 3, "someDesc", "EP0", 0)
+	MIES_EP#EP_AddEpoch(device, DAC, 4, 5, "someDesc", "EP_0a", 0)
+	MIES_EP#EP_AddEpoch(device, DAC, 10, 20, "someDesc", "EP_0b", 0)
 	MIES_EP#EP_AddEpoch(device, DAC, 1, 2, "someDesc", "EP1", 1)
+	MIES_EP#EP_AddEpoch(device, DAC, 2, 3, "someDesc", "EP_1a", 1)
+	// intentional gap
+	MIES_EP#EP_AddEpoch(device, DAC, 4, 5, "someDesc", "EP_1b", 1)
 	MIES_EP#EP_AddEpoch(device, DAC, 10, 20, "otherDesc", "EP2", 2)
 
 	DAC = 3 // HS 1
@@ -141,17 +147,27 @@ static Function EP_GetEpochsWorks()
 	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 2)
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 
-	// all epochs with treeLevel 1
-	WAVE/T/Z resultAllEpochs = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, ".*", treeLevel = 1)
-	CHECK_WAVE(resultAllEpochs, TEXT_WAVE)
-
-	CHECK_EQUAL_TEXTWAVES(result, resultAllEpochs)
-
 	// can read epoch info from epochsWave
 	WAVE/T/Z resultFromWave = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", epochsWave = epochsWave)
 	CHECK_WAVE(resultFromWave, TEXT_WAVE)
 
 	CHECK_EQUAL_TEXTWAVES(result, resultFromWave)
+
+	// all epochs with treeLevel 1
+	WAVE/T/Z resultAllEpochs = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, ".*", treeLevel = 1)
+	CHECK_WAVE(resultAllEpochs, TEXT_WAVE)
+
+	CHECK_EQUAL_VAR(DimSize(resultAllEpochs, ROWS), 3)
+	Redimension/N=(3, -1) result
+	result[][EPOCH_COL_TREELEVEL] = "1"
+	result[1][EPOCH_COL_STARTTIME] = "0.0000020"
+	result[1][EPOCH_COL_ENDTIME] = "0.0000030"
+	result[1][EPOCH_COL_TAGS] = "someDesc;ShortName=EP_1a;"
+	result[2][EPOCH_COL_STARTTIME] = "0.0000040"
+	result[2][EPOCH_COL_ENDTIME] = "0.0000050"
+	result[2][EPOCH_COL_TAGS] = "someDesc;ShortName=EP_1b;"
+
+	CHECK_EQUAL_TEXTWAVES(result, resultAllEpochs)
 End
 
 static Function EP_GetEpochsDoesNotFallbackWithShortNames()
@@ -192,4 +208,36 @@ static Function EP_GetEpochsWorksWithoutShortNames([WAVE wv])
 	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "STIM.*", epochsWave = wv)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+End
+
+static Function EP_GetNextEpochsHasMatch()
+	string str, expected
+
+	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
+
+	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", 1)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2 * MICRO_TO_ONE)
+	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 3 * MICRO_TO_ONE)
+	str = result[0][%Tags]
+	expected = "someDesc;ShortName=EP_1a;"
+	CHECK_EQUAL_STR(str, expected)
+	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
+End
+
+static Function EP_GetNextEpochsWithGapHasMatch()
+	string str, expected
+
+	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
+
+	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps=1)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 4e-6)
+	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 5e-6)
+	str = result[0][%Tags]
+	expected = "someDesc;ShortName=EP_1b;"
+	CHECK_EQUAL_STR(str, expected)
+	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
 End
