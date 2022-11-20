@@ -18,11 +18,11 @@ static Function GetStimSetListWorks()
 	GetTestPulse()
 
 	list = ST_GetStimsetList()
-	ref  = "Testpulse;"
+	ref  = "TestPulse;"
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
-	ref  = "Testpulse;"
+	ref  = "TestPulse;"
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
@@ -30,7 +30,7 @@ static Function GetStimSetListWorks()
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, searchString = "Test*")
-	ref  = "Testpulse;"
+	ref  = "TestPulse;"
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, searchString = "I_DONT_EXIST*")
@@ -46,7 +46,7 @@ static Function GetStimSetListWorks()
 	Make dfr:setC_DA_0
 
 	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, WBstimSetList = WBstimSetList, thirdPartyStimSetList = thirdPartyStimSetList)
-	ref  = "Testpulse;setA_DA_0;setC_DA_0;"
+	ref  = "TestPulse;setA_DA_0;setC_DA_0;"
 	CHECK_EQUAL_STR(list, ref)
 	ref = "setA_DA_0;"
 	CHECK_EQUAL_STR(WBstimSetList, ref)
