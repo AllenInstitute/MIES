@@ -148,6 +148,36 @@ static Constant SF_POWERSPECTRUM_RATIO_MAXFWHM = 5
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM = 2.35482004503
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS = 4
 
+static StrConstant SF_USER_DATA_BROWSER = "browser"
+
+Menu "GraphPopup"
+	"Bring browser to front", /Q, SF_BringBrowserToFront()
+End
+
+Function SF_BringBrowserToFront()
+	string browser, graph
+
+	graph = GetMainWindow(GetCurrentWindow())
+	browser = SF_GetBrowserForFormulaGraph(graph)
+
+	if(IsEmpty(browser))
+		print "This menu option only applies to SweepFormula plots."
+		return NaN
+	elseif(!WindowExists(browser))
+		printf "The browser %s does not exist anymore.\r", browser
+		return NaN
+	endif
+
+	DoWindow/F $browser
+End
+
+/// @brief Return the SweepBrowser/DataBrowser from which the given
+///        SweepFormula plot window originated from
+static Function/S SF_GetBrowserForFormulaGraph(string win)
+
+	return GetUserData(win, "", SF_USER_DATA_BROWSER)
+End
+
 Function/WAVE SF_GetNamedOperations()
 
 	Make/FREE/T wt = {SF_OP_RANGE, SF_OP_MIN, SF_OP_MAX, SF_OP_AVG, SF_OP_MEAN, SF_OP_RMS, SF_OP_VARIANCE, SF_OP_STDEV, \
@@ -1222,7 +1252,7 @@ static Function/S SF_ShrinkLegend(string annotation)
 	return tracePrefix + opPrefixOld + "s " + sweepList + " " + suffixOld
 End
 
-static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
+static Function/S SF_PreparePlotterSubwindows(string win, string graph, variable numGraphs)
 
 	variable i, guidePos
 	string panelName, guideName1
@@ -1230,17 +1260,28 @@ static Function/S SF_PreparePlotterSubwindows(string win, variable numGraphs)
 	KillWindow/Z $win
 	NewPanel/N=$win
 	panelName = S_name
-	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panelName, "sweepformula_" + panelName)
 	for(i = 0; i < numGraphs + 1; i += 1)
 		guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 		guidePos = i / numGraphs
 		DefineGuide $guideName1={FT, guidePos, FB}
 	endfor
 
-	SetWindow $panelName hook(resetScaling)=IH_ResetScaling
+	SF_CommonWindowSetup(panelName, graph)
 
 	return panelName
+End
+
+static Function SF_CommonWindowSetup(string win, string graph)
+
+	string newTitle
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
+
+	SetWindow $win hook(resetScaling)=IH_ResetScaling, userData(browser)=graph
+
+	newTitle = BSP_GetFormulaGraphTitle(graph)
+	DoWindow/T $win, newTitle
 End
 
 static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
@@ -1328,7 +1369,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 	if(winDisplayMode == SF_DM_SUBWINDOWS)
-		panelName = SF_PreparePlotterSubwindows(winNameTemplate, numGraphs)
+		panelName = SF_PreparePlotterSubwindows(winNameTemplate, graph, numGraphs)
 	endif
 
 	for(j = 0; j < numGraphs; j += 1)
@@ -1346,9 +1387,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!WindowExists(win))
 				Display/N=$win as win
 				win = S_name
-				NVAR JSONid = $GetSettingsJSONid()
-				PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
-				SetWindow $win hook(resetScaling)=IH_ResetScaling
+				SF_CommonWindowSetup(win, graph)
 			endif
 			wList = AddListItem(win, wList)
 		elseif(winDisplayMode == SF_DM_SUBWINDOWS)

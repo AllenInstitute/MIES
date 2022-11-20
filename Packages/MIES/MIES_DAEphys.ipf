@@ -179,8 +179,8 @@ Function DAP_EphysPanelStartUpSettings()
 
 	device = GetMainWindow(GetCurrentWindow())
 
-	if(cmpstr(device, BASE_WINDOW_TITLE))
-		printf "The top window is not named \"%s\"\r", BASE_WINDOW_TITLE
+	if(cmpstr(device, BASE_WINDOW_NAME))
+		printf "The top window is not named \"%s\"\r", BASE_WINDOW_NAME
 		return NaN
 	endif
 
@@ -765,7 +765,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SearchForInvalidControlProcs(device)
 
-	Execute/P/Z "DoWindow/R " + BASE_WINDOW_TITLE
+	Execute/P/Z "DoWindow/R " + BASE_WINDOW_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
@@ -5165,9 +5165,9 @@ static Function DAP_UnlockDevice(device)
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(device))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(device))
 
-	string unlockedDevice = BASE_WINDOW_TITLE
+	string unlockedDevice = BASE_WINDOW_NAME
 	if(CheckName(unlockedDevice,CONTROL_PANEL_TYPE))
-		unlockedDevice = UniqueName(BASE_WINDOW_TITLE + "_",CONTROL_PANEL_TYPE,1)
+		unlockedDevice = UniqueName(BASE_WINDOW_NAME + "_",CONTROL_PANEL_TYPE,1)
 	endif
 	DoWindow/W=$device/C $unlockedDevice
 

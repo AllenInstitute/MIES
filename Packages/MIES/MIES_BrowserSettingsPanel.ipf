@@ -15,8 +15,6 @@ static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
 static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
 static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 7
-
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
@@ -217,8 +215,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	string bsPanel, shPanel, experiments, devices
 
 	bsPanel = BSP_GetPanel(mainPanel)
-
-	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook=0)
@@ -483,9 +479,9 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE) = BSP_SerializeBrowserMode(mode)
 
 	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
-		title = SWEEPBROWSER_WINDOW_TITLE
+		title = SWEEPBROWSER_WINDOW_NAME
 	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
-		title = DATABROWSER_WINDOW_TITLE
+		title = DATABROWSER_WINDOW_NAME
 	else
 		ASSERT(0, "Invalid type")
 	endif
@@ -1067,12 +1063,19 @@ Function/S BSP_GetFormulaGraph(win)
 	string win
 
 	if(!BSP_HasBoundDevice(win))
-		return "FormulaPlot"
+		return CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
 	endif
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
-	return CleanupName("FormulaPlot_" + GetDataFolder(0, dfr), 0)
+	return CleanupName(SF_PLOT_NAME_TEMPLATE + GetDataFolder(0, dfr), 0)
+End
+
+Function/S BSP_GetFormulaGraphTitle(string win)
+
+	GetWindow $win wtitle
+
+	return SF_PLOT_NAME_TEMPLATE + " from <" + S_Value + ">"
 End
 
 /// @brief Parse a control name for the "Channel Selection Panel" and return
@@ -1947,4 +1950,36 @@ Function BSP_WindowHook(s)
 
 	// return zero so that other hooks are called as well
 	return 0
+End
+
+/// @brief Renames the browser window and sets an informative title
+///
+/// @param win     name of the existing window
+/// @param newName suggested new name, will be adapted to be unique
+Function/S BSP_RenameAndSetTitle(string win, string newName)
+
+	variable numOtherBrowser
+	string newTitle
+	string suffix = ""
+
+	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
+		suffix = " with \"" + BSP_GetDevice(win) + "\""
+	endif
+
+	if(WindowExists(newName))
+		newName = UniqueName(newName, 9, 1)
+	endif
+
+	DoWindow/W=$win/C $newName
+	win = newName
+
+	numOtherBrowser += ItemsInList(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
+	numOtherBrowser += ItemsInList(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
+	numOtherBrowser += ItemsInList(WinList("DB_*", ";", "WIN:1"))
+	numOtherBrowser  = max(0, numOtherBrowser - 1)
+
+	sprintf newTitle, "Browser %s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix
+	DoWindow/T $win, newTitle
+
+	return win
 End

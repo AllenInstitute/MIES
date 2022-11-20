@@ -51,8 +51,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 		ControlWindowToFront()
 		return NaN
 	endif
-	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
-		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_TITLE
+	if(CmpStr(device, DATABROWSER_WINDOW_NAME))
+		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_NAME
 		return NaN
 	endif
 
@@ -70,8 +70,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = NONE)
 	device = GetMainWindow(GetCurrentWindow())
 
-	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
-		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_TITLE
+	if(CmpStr(device, DATABROWSER_WINDOW_NAME))
+		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_NAME
 		return NaN
 	endif
 
@@ -245,7 +245,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SearchForInvalidControlProcs(device)
 	print "Do not forget to increase DATA_SWEEP_BROWSER_PANEL_VERSION."
 
-	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_TITLE
+	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
@@ -291,7 +291,7 @@ static Function/S DB_LockToDevice(win, device)
 	variable first, last
 
 	if(!cmpstr(device, NONE))
-		newWindow = DATABROWSER_WINDOW_TITLE
+		newWindow = DATABROWSER_WINDOW_NAME
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
 		BSP_UnsetDynamicStartupSettings(win)
@@ -299,24 +299,18 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = "DB_" + device
 	endif
 
-	if(CmpStr(win, newWindow))
-		if(windowExists(newWindow))
-			newWindow = UniqueName(newWindow, 9, 1)
-		endif
-		DoWindow/W=$win/C $newWindow
-		win = newWindow
+	win = BSP_RenameAndSetTitle(win, newWindow)
+
+	DB_SetUserData(win, device)
+	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
+		BSP_DynamicStartupSettings(win)
+		[first, last] = BSP_FirstAndLastSweepAcquired(win)
+		DB_UpdateLastSweepControls(win, first, last)
 	endif
 
-	DB_SetUserData(newWindow, device)
-	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
-		BSP_DynamicStartupSettings(newWindow)
-		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
-		DB_UpdateLastSweepControls(newWindow, first, last)
-	endif
+	UpdateSweepPlot(win)
 
-	UpdateSweepPlot(newWindow)
-
-	return newWindow
+	return win
 End
 
 static Function DB_SetUserData(win, device)
