@@ -6,8 +6,8 @@
 #pragma ModuleName=MIES_TP_SD
 #endif
 
-/// @file MIES_TestPulse_Multi.ipf
-/// @brief __TPM__ Multi device background test pulse functionality
+/// @file MIES_TestPulse_Single.ipf
+/// @brief __TPS__ Single device background test pulse functionality
 
 Function TPS_StartBackgroundTestPulse(device)
 	string device
