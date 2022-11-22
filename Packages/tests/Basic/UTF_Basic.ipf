@@ -6,6 +6,7 @@
 #include "UTF_HelperFunctions"
 
 // keep sorted
+#include "UTF_AnalysisBrowserTest"
 #include "UTF_AnalysisFunctionHelpers"
 #include "UTF_AnalysisFunctionParameters"
 #include "UTF_AsynFrameworkTest"
@@ -79,6 +80,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
 	// sorted list
+	list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
