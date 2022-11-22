@@ -2969,7 +2969,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		endif
 
 		if(i != GENERIC_EVENT)
-			FUNCREF AF_PROTO_ANALYSIS_FUNC_V3 f3 = $func
+			FUNCREF AFP_ANALYSIS_FUNC_V3 f3 = $func
 			if(FuncRefIsAssigned(FuncRefInfo(f3)))
 				printf "(%s) The analysis function %s for stim set %s is of type V3 but associated with the event type \"%s\", which is not supported.\nPlease reassign the analysis function to the stimset in the wavebuilder.\r", device, func, setName, StringFromList(i, EVENT_NAME_LIST)
 				ControlWindowToFront()

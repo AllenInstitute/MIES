@@ -456,11 +456,11 @@ Function/S AFH_GetAnalysisFunctions(variable versionBitMask, [variable includeUs
 	for(i = 0; i < numEntries; i += 1)
 		func = StringFromList(i, funcList)
 
-		// assign each function to the function reference of type AF_PROTO_ANALYSIS_FUNC_V*
-		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V*
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V3 f3 = $func
+		// assign each function to the function reference of type AFP_ANALYSIS_FUNC_V*
+		// this allows to check if the signature of func is the same as the one of AFP_ANALYSIS_FUNC_V*
+		FUNCREF AFP_ANALYSIS_FUNC_V1 f1 = $func
+		FUNCREF AFP_ANALYSIS_FUNC_V2 f2 = $func
+		FUNCREF AFP_ANALYSIS_FUNC_V3 f3 = $func
 
 		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
@@ -488,7 +488,7 @@ Function/S AFH_GetListOfAnalysisParams(func, mode)
 
 	string params, re
 
-	FUNCREF AF_PROTO_PARAM_GETTER_V3 f = $(func + "_GetParams")
+	FUNCREF AFP_PARAM_GETTER_V3 f = $(func + "_GetParams")
 
 	if(!FuncRefIsAssigned(FuncRefInfo(f))) // no such getter functions
 		return ""
@@ -518,7 +518,7 @@ End
 /// @param name Parameter name
 Function/S AFH_GetHelpForAnalysisParameter(string func, string name)
 
-	FUNCREF AF_PROTO_PARAM_HELP_GETTER_V3 f = $(func + "_GetHelp")
+	FUNCREF AFP_PARAM_HELP_GETTER_V3 f = $(func + "_GetHelp")
 
 	if(!FuncRefIsAssigned(FuncRefInfo(f)))
 		return ""
@@ -831,8 +831,8 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	variable index, numParams, i, valid_f1, valid_f2
 	string header, text
 
-	FUNCREF AF_PROTO_PARAM_CHECK_V1 f1 = $(genericFunc + "_CheckParam")
-	FUNCREF AF_PROTO_PARAM_CHECK_V2 f2 = $(genericFunc + "_CheckParam")
+	FUNCREF AFP_PARAM_CHECK_V1 f1 = $(genericFunc + "_CheckParam")
+	FUNCREF AFP_PARAM_CHECK_V2 f2 = $(genericFunc + "_CheckParam")
 
 	valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 	valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
