@@ -364,9 +364,7 @@ static Function AB_HasCompatibleVersion(discLocation)
 			DFREF targetDFR = GetAnalysisExpFolder(map[%DataFolder])
 			dataFolderPath  = GetMiesPathAsString()
 
-			DFREF saveDFR  = GetDataFolderDFR()
 			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS)
-			SetDataFolder saveDFR
 
 			// no pxpVersion present
 			// we can load the file
@@ -771,7 +769,6 @@ static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
 	dataFolderPath  = GetDeviceTestPulseAsString(device)
 	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
-	DFREF saveDFR   = GetDataFolderDFR()
 
 	// we can not determine how many TPStorage waves are in dataFolderPath
 	// therefore we load all waves and throw the ones we don't need away
@@ -785,7 +782,6 @@ static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
 		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, unwanted)
 	endif
 
-	SetDataFolder saveDFR
 	return numWavesLoaded
 End
 
@@ -856,11 +852,9 @@ static Function AB_LoadResultsFromIgor(string expFilePath, string expFolder)
 
 	DFREF targetDFR = GetAnalysisResultsFolder(expFolder)
 	dataFolderPath  = GetResultsFolderAsString()
-	DFREF saveDFR   = GetDataFolderDFR()
 
 	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
 
-	SetDataFolder saveDFR
 	return numWavesLoaded
 End
 
@@ -912,11 +906,9 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	dataFolderPath  = GetDevicePathAsString(device)
 	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
-	DFREF saveDFR   = GetDataFolderDFR()
 
 	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags=LOAD_DATA_TYPE_STRING)
 
-	SetDataFolder saveDFR
 	return numStringsLoaded
 End
 
@@ -1017,12 +1009,10 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
 	labNotebookWaves += "numericalKeys;textualKeys;numericalValues;textualValues"
 	labNotebookPath = GetLabNotebookFolderAsString()
-	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "igorLoadNote")
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
-		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		return ""
 	endif
@@ -1049,7 +1039,6 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 		endif
 	endfor
 
-	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
@@ -1263,7 +1252,6 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
-	DFREF saveDFR = GetDataFolderDFR()
 
 	step  = 1
 	for(i = 0;; i += 1)
@@ -1280,7 +1268,6 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 		totalNumWavesLoaded += numWavesLoaded
 	endfor
 
-	SetDataFolder saveDFR
 	return totalNumWavesLoaded
 End
 
@@ -2022,26 +2009,23 @@ static Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device
 
 	dataPath = GetDeviceDataPathAsString(device)
 	dataPath = AB_TranslatePath(dataPath, expFolder)
-	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, dataPath, sweepWaveList)
 
 	if(numWavesLoaded <= 0)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, discLocation
-		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)
 		return ""
 	endif
 
-	Wave sweepWave = $sweepWaveName
+	Wave sweepWave = newDFR:$sweepWaveName
 
 	if(numWavesLoaded == 2)
 		ReplaceWaveWithBackup(sweepWave)
 	endif
 
 	MoveWave sweepWave, sweepDFR
-	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return sweepWaveName
@@ -2202,9 +2186,7 @@ static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
 	dataPath = GetDataFolder(1, setDFR)
 	data = AddListItem(stimset, "")
 
-	DFREF saveDFR = GetDataFolderDFR()
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data)
-	SetDataFolder saveDFR
 
 	if(numWavesLoaded != 1)
 		KillOrMoveToTrash(dfr=newDFR)
@@ -2242,9 +2224,7 @@ static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
 
 	dataPath = GetSetParamFolderAsString(channelType)
 
-	DFREF saveDFR = GetDataFolderDFR()
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves)
-	SetDataFolder saveDFR
 
 	if(numWavesLoaded != 3)
 		KillOrMoveToTrash(dfr=newDFR)
@@ -2358,7 +2338,6 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 		return 0
 	endif
 
-	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
 
 	dataFolder = GetFolder(fullPath)
@@ -2369,7 +2348,6 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList)
 
 	if(numWavesLoaded != 1)
-		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)
 		return 1
@@ -2380,7 +2358,6 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	createDFWithAllParents(dataFolder)
 	MoveWave wv, $fullPath
 
-	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return 0
