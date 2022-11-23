@@ -100,9 +100,9 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			return NaN
 		endif
 
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V3 f3 = $func
+		FUNCREF AFP_ANALYSIS_FUNC_V1 f1 = $func
+		FUNCREF AFP_ANALYSIS_FUNC_V2 f2 = $func
+		FUNCREF AFP_ANALYSIS_FUNC_V3 f3 = $func
 
 		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))

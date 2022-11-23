@@ -7,11 +7,11 @@
 #endif
 
 /// @file MIES_AnalysisFunctionPrototypes.ipf
-/// @brief __AF__ Analysis functions prototypes to be called during data acquisition
+/// @brief __AFP__ Analysis functions prototypes to be called during data acquisition
 ///
 /// @sa MIES_AnalysisFunctions.ipf
 
-/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
+/// @deprecated Use AFP_ANALYSIS_FUNC_V3() instead
 ///
 /// @param device  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
@@ -20,14 +20,14 @@
 /// @param headStage   active headstage index
 ///
 /// @return ignored
-Function AF_PROTO_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
+Function AFP_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
 	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
 End
 
-/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
+/// @deprecated Use AFP_ANALYSIS_FUNC_V3() instead
 ///
 /// @param device     device
 /// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
@@ -38,7 +38,7 @@ End
 ///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDataLength)
+Function AFP_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDataLength)
 	string device
 	variable eventType
 	Wave DAQDataWave
@@ -51,7 +51,7 @@ End
 /// @param s          analysis event structure
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V3(device, s)
+Function AFP_ANALYSIS_FUNC_V3(device, s)
 	string device
 	STRUCT AnalysisFunction_V3 &s
 
@@ -60,23 +60,23 @@ End
 
 /// @brief Prototype function for the user supplied parameter getter functions
 ///
-Function/S AF_PROTO_PARAM_GETTER_V3()
+Function/S AFP_PARAM_GETTER_V3()
 
 End
 
 /// @brief Prototype function for the user supplied parameter help functions
 ///
-Function/S AF_PROTO_PARAM_HELP_GETTER_V3(name)
+Function/S AFP_PARAM_HELP_GETTER_V3(name)
 	string name
 
 End
 
 /// @brief Prototype function for the user supplied parameter check function (legacy signature)
 ///
-Function/S AF_PROTO_PARAM_CHECK_V1(string name, string params)
+Function/S AFP_PARAM_CHECK_V1(string name, string params)
 End
 
 /// @brief Prototype function for the user supplied parameter check function
 ///
-Function/S AF_PROTO_PARAM_CHECK_V2(string name, struct CheckParametersStruct &s)
+Function/S AFP_PARAM_CHECK_V2(string name, struct CheckParametersStruct &s)
 End

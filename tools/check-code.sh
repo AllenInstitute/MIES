@@ -170,4 +170,12 @@ then
   ret=1
 fi
 
+matches=$(rg --no-filename '.*@brief[[:space:]]+__([A-Z]{2,})__.*' --replace '$1' ${files} | sort | uniq -d)
+
+if [[ -n "$matches" ]]
+then
+  echo "The list of function prefixes is not unique"
+  echo "$matches"
+fi
+
 exit $ret
