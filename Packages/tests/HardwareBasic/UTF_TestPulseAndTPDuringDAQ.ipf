@@ -168,7 +168,7 @@ End
 static Function CheckTPEntriesFromLBN([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"           + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5"           + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
