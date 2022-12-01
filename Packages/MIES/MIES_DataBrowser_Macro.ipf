@@ -7,7 +7,7 @@
 #endif
 
 /// @file MIES_DataBrowser_Macro.ipf
-/// @brief __DB__ Macro for DataBrowser
+/// @brief __DBM__ Macro for DataBrowser
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
