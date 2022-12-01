@@ -176,6 +176,7 @@ if [[ -n "$matches" ]]
 then
   echo "The list of function prefixes is not unique"
   echo "$matches"
+  ret=1
 fi
 
 exit $ret
