@@ -1087,7 +1087,10 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 		endif
 	endfor
 
-	dataUnits = SelectString(addDataUnitsInAnnotation && !IsNull(dataUnitCheck) && !IsEmpty(dataUnitCheck), "", "(\\U)")
+	dataUnits = ""
+	if(!IsNull(dataUnitCheck))
+		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(" + dataUnitCheck + ")")
+	endif
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
@@ -1347,31 +1350,49 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
+static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T/Z yUnits)
 
-	variable i, numData, index
-	string separator = " / "
-	string result = ""
+	variable i, size, numData
+
+	if(!WaveExists(yUnits))
+		Make/FREE/T/N=0 yUnits
+	endif
+
+	size = DimSize(yUnits, ROWS)
+	if(!isEmpty(explicitLbl))
+		Redimension/N=(size + 1) yUnits
+		yUnits[size] = explicitLbl
+		return yUnits
+	endif
 
 	numData = DimSize(formulaResults, ROWS)
-	Make/FREE/T/N=(numData) yUnits
+	Redimension/N=(size + numData) yUnits
+
 	for(i = 0; i < numData; i += 1)
 		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
 		if(!WaveExists(wvResultY))
 			continue
 		endif
-		yUnits[index] = WaveUnits(wvResultY, COLS)
-		index += 1
+		yUnits[size] = WaveUnits(wvResultY, COLS)
+		size += 1
 	endfor
-	Redimension/N=(index) yUnits
+	Redimension/N=(size) yUnits
 
-	WAVE/T unique = GetUniqueEntries(yUnits, dontDuplicate=1)
-	for(yUnit : unique)
+	return yUnits
+End
+
+static Function/S SF_CombineYUnits(WAVE/T units)
+
+	string separator = " / "
+	string result = ""
+
+	WAVE/T unique = GetUniqueEntries(units, dontDuplicate=1)
+	for(unit : unique)
 		// @todo Remove if part when "null string for empty string wave elment" bug in IP9 is fixed
-		if(IsNull(yUnit))
-			yUnit = ""
+		if(IsNull(unit))
+			unit = ""
 		endif
-		result += yUnit + separator
+		result += unit + separator
 	endfor
 
 	return RemoveEndingRegExp(result, separator)
@@ -1409,7 +1430,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	string trace
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
-	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection
+	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
 	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation, yAxisLabel
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
@@ -1440,16 +1461,21 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 	for(j = 0; j < numGraphs; j += 1)
 
-		annotation = ""
 		traceCnt = 0
-		WAVE/Z wvX
+		numAnnotations = 0
+		WAVE/Z wvX = $""
+		WAVE/T/Z yUnits = $""
 
 		yFormulasRemain = formulaPairs[j][%FORMULA_Y]
 
 		win = plotGraphs[j]
 		wList = AddListItem(win, wList)
 
+		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations
+
 		do
+
+			annotation = ""
 
 			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
 			if(!V_flag)
@@ -1457,7 +1483,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 			WAVE/WAVE/Z formulaResults = $""
 			[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], yFormula, graph)
-			yAxisLabel = SF_CombineYUnits(formulaResults)
+			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
+			WAVE/T yUnits = yUnitsResult
 
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
@@ -1612,10 +1639,21 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				dataCnt += 1
 			endfor
 
+			if(!IsEmpty(annotation))
+				EnsureLargeEnoughWave(wAnnotations, minimumSize=numAnnotations + 1)
+				wAnnotations[numAnnotations] = annotation
+				numAnnotations += 1
+			endif
 		while(1)
 
-		if(!IsEmpty(annotation))
-			annotation = SF_ShrinkLegend(annotation)
+		yAxisLabel = SF_CombineYUnits(yUnits)
+
+		if(numAnnotations)
+			annotation = ""
+			for(k = 0; k < numAnnotations; k += 1)
+				annotation += SF_ShrinkLegend(wAnnotations[k]) + "\r"
+			endfor
+			annotation = RemoveEnding(annotation, "\r")
 			annotation = RemoveEnding(annotation, "\r")
 			Legend/W=$win/C/N=metadata/F=2 annotation
 		endif
@@ -1623,10 +1661,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			Label/W=$win bottom plotMetaData.xAxisLabel
 			ModifyGraph/W=$win tickUnit(bottom)=1
 		endif
-		if(!IsEmpty(plotMetaData.yAxisLabel) && traceCnt > 0)
-			Label/W=$win left plotMetaData.yAxisLabel
-			ModifyGraph/W=$win tickUnit(left)=1
-		elseif(!IsEmpty(yAxisLabel) && traceCnt > 0)
+		if(!IsEmpty(yAxisLabel) && traceCnt > 0)
 			Label/W=$win left yAxisLabel
 			ModifyGraph/W=$win tickUnit(left)=1
 		endif
