@@ -581,6 +581,9 @@ Function SF_InsertedTPVersusTP_preAcq(string device)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val=-150)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StartAcq_IGNORE
+
+	AI_SendToAmp(device, 0, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, 5)
+	AI_SendToAmp(device, 1, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
