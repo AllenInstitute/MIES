@@ -7078,3 +7078,8 @@ Function HasWildcardSyntax(string str)
 
 	return strsearch(str, "*", 0) >= 0 || !cmpstr(str[0], "!")
 End
+
+/// @brief Clear the given datafolder reference
+threadsafe Function DFREFClear(DFREF &dfr)
+	DFREF dfr = $""
+End
