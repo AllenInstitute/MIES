@@ -336,7 +336,7 @@ End
 /// @param name [optional, default = paramXXX] name of the added parameter
 Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 	DFREF dfr
-	WAVE w
+	WAVE &w
 	variable var
 	string str
 	variable move
@@ -376,6 +376,8 @@ Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 	endif
 
 	paramCount += 1
+
+	WaveClear w
 End
 
 /// @brief Fetch a wave from the DFREF in the worker function
