@@ -553,8 +553,10 @@ static Function TASYNC_Execute_InvalidDF()
 	ASYNC_Start(ThreadProcessorCount)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
+	DFREF dfr = root:
+
 	try
-		ASYNC_Execute(root)
+		ASYNC_Execute(dfr)
 		FAIL()
 	catch
 		PASS()

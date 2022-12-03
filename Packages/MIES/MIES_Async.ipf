@@ -615,6 +615,8 @@ Function ASYNC_Execute(DFREF &dfr)
 		track[%$workloadClass][%INPUTCOUNT] += 1
 	endif
 
+	DFREFClear(dfrAsync)
+
 #ifdef THREADING_DISABLED
 	DFREF result = ASYNC_Run_Worker(dfr)
 	WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
