@@ -1570,6 +1570,17 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 	return GetLBDescription_Impl("labnotebook_numerical_description", forceReload)
 End
 
+Function/WAVE GetLBTextualDescription([variable forceReload])
+
+	if(ParamIsDefault(forceReload))
+		forceReload = 0
+	else
+		forceReload = !!forceReload
+	endif
+
+	return GetLBDescription_Impl("labnotebook_textual_description", forceReload)
+End
+
 static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
@@ -1605,6 +1616,12 @@ static Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 2
 
 Function SaveLBNumericalDescription()
 	SaveLBDescription_Impl("labnotebook_numerical_description", LBN_NUMERICAL_DESCRIPTION_VERSION)
+End
+
+static Constant LBN_TEXTUAL_DESCRIPTION_VERSION = 1
+
+Function SaveLBTextualDescription()
+	SaveLBDescription_Impl("labnotebook_textual_description", LBN_TEXTUAL_DESCRIPTION_VERSION)
 End
 
 static Function SaveLBDescription_Impl(string name, variable version)
