@@ -581,8 +581,7 @@ End
 /// @brief Puts a prepared thread data folder to parallel execution in another thread
 ///
 /// @param dfr data folder that is setup for thread and is to be deployed
-Function ASYNC_Execute(dfr)
-	DFREF dfr
+Function ASYNC_Execute(DFREF &dfr)
 
 	variable orderIndex, size, index
 
