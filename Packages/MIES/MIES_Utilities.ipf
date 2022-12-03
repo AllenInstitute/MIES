@@ -6120,3 +6120,8 @@ Function ChangeFreeWaveName(WAVE wv, string name)
 
 	MoveWave wv, dfr:$name
 End
+
+/// @brief Clear the given datafolder reference
+threadsafe Function DFREFClear(DFREF &dfr)
+	DFREF dfr = $""
+End

@@ -6311,3 +6311,11 @@ Function CFW_Works1()
 End
 
 /// @}
+
+Function DC_DFREFClear_Works()
+	NewDataFolder/O test
+	DFREF dfr = :test
+	CHECK(DataFolderExistsDFR(dfr))
+	DFREFClear(dfr)
+	CHECK(!DataFolderExistsDFR(dfr))
+End
