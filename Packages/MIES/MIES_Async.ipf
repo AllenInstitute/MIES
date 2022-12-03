@@ -439,9 +439,12 @@ Function ASYNC_Stop([timeout, fromAssert])
 	NVAR numThreads = $GetNumThreads()
 	for(i = 0; i < numThreads; i += 1)
 		DFREF dfr = NewFreeDataFolder()
+
 		NewDataFolder dfr:async
 		DFREF dfrAsync = dfr:async
 		variable/G dfrAsync:$ASYNC_INORDER_STR = 0
+		DFREFClear(dfrAsync)
+
 		variable/G dfr:$ASYNC_ABORTFLAG_STR
 		variable/G dfr:$ASYNC_THREAD_MARKER_STR
 		NVAR marker = dfr:$ASYNC_THREAD_MARKER_STR
