@@ -193,23 +193,18 @@ threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
 End
 
 /// @brief Push a datafolder to the thread queue
-///
-/// Works on a duplicate of the input DF to remove all references.
-/// dfr can be a free DF
-threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
-	variable tgID
-	DFREF    dfr
+threadsafe Function TS_ThreadGroupPutDFR(variable tgID, DFREF &dfr)
 
 	string dfrName
 
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	DFREF dfrSave = GetDataFolderDFR()
-
 	SetDataFolder NewFreeDataFolder()
-	DuplicateDataFolder/Z dfr, :
-	ASSERT_TS(!V_flag, "Could not duplicate data folder")
+	MoveDataFolder/Z dfr, :
+	ASSERT_TS(!V_flag, "Could not move data folder")
 	dfrName = GetIndexedObjName(":", COUNTOBJECTS_DATAFOLDER, 0)
+	DFREFClear(dfr)
 
 	ThreadGroupPutDF tgID, $dfrName
 
