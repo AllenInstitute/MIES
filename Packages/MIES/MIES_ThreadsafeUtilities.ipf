@@ -195,13 +195,19 @@ End
 /// @brief Push a datafolder to the thread queue
 threadsafe Function TS_ThreadGroupPutDFR(variable tgID, DFREF &dfr)
 
+	string dfrName
+
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	DFREF dfrSave = GetDataFolderDFR()
-	SetDataFolder dfr
-	DFREFClear(dfr)
 
-	ThreadGroupPutDF tgID, :
+	SetDataFolder NewFreeDataFolder()
+	MoveDataFolder/Z dfr, :
+	ASSERT_TS(!V_flag, "Could not duplicate data folder")
+	dfrName = GetIndexedObjName(":", COUNTOBJECTS_DATAFOLDER, 0)
+
+	DFREFClear(dfr)
+	ThreadGroupPutDF tgID, $dfrName
 
 	SetDatafolder dfrSave
 End
