@@ -369,6 +369,8 @@ Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 		else
 			Duplicate w, dfrInp:$paramName
 		endif
+
+		WaveClear w
 	elseif(!ParamIsDefault(var))
 		variable/G dfrInp:$paramName = var
 	elseif(!ParamIsDefault(str))
@@ -376,8 +378,6 @@ Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 	endif
 
 	paramCount += 1
-
-	WaveClear w
 End
 
 /// @brief Fetch a wave from the DFREF in the worker function

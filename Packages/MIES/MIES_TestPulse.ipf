@@ -1507,7 +1507,7 @@ End
 Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
 	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + device, inOrder=0)
-	ASYNC_AddParam(threadDF, w=tpInput.data)
+//	ASYNC_AddParam(threadDF, w=tpInput.data)
 	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
 	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
 	ASYNC_AddParam(threadDF, var=tpInput.duration)

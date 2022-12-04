@@ -576,7 +576,6 @@ static Function TASYNC_Execute_Valid()
 	ASYNC_AddParam(threadDF, var=1)
 	Make/N=10 data
 	ASYNC_AddParam(threadDF, w=data, move=1)
-	WaveClear(data)
 	myDF = GetDataFolder(1)
 	ASYNC_AddParam(threadDF, str=myDF)
 

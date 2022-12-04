@@ -396,18 +396,18 @@ Function NWB_ASYNC_SerializeStruct(STRUCT NWBAsyncParameters &s, DFREF threadDFR
 	ASYNC_AddParam(threadDFR, var = s.locationID, name = "locationID")
 	ASYNC_AddParam(threadDFR, var = s.nwbVersion, name = "nwbVersion")
 
-	ASYNC_AddParam(threadDFR, w = s.DAQDataWave,  name = "DAQDataWave")
-	ASYNC_AddParam(threadDFR, w = s.DAQConfigWave,  name = "DAQConfigWave")
-
-	ASYNC_AddParam(threadDFR, w = s.numericalValues, name = "numericalValues")
-	ASYNC_AddParam(threadDFR, w = s.numericalKeys, name = "numericalKeys")
-	ASYNC_AddParam(threadDFR, w = s.textualValues, name = "textualValues")
-	ASYNC_AddParam(threadDFR, w = s.textualKeys, name = "textualKeys")
-
-	ASYNC_AddParam(threadDFR, w = s.numericalResultsValues, name = "numericalResultsValues")
-	ASYNC_AddParam(threadDFR, w = s.numericalResultsKeys, name = "numericalResultsKeys")
-	ASYNC_AddParam(threadDFR, w = s.textualResultsValues, name = "textualResultsValues")
-	ASYNC_AddParam(threadDFR, w = s.textualResultsKeys, name = "textualResultsKeys")
+//	ASYNC_AddParam(threadDFR, w = s.DAQDataWave,  name = "DAQDataWave")
+//	ASYNC_AddParam(threadDFR, w = s.DAQConfigWave,  name = "DAQConfigWave")
+//
+//	ASYNC_AddParam(threadDFR, w = s.numericalValues, name = "numericalValues")
+//	ASYNC_AddParam(threadDFR, w = s.numericalKeys, name = "numericalKeys")
+//	ASYNC_AddParam(threadDFR, w = s.textualValues, name = "textualValues")
+//	ASYNC_AddParam(threadDFR, w = s.textualKeys, name = "textualKeys")
+//
+//	ASYNC_AddParam(threadDFR, w = s.numericalResultsValues, name = "numericalResultsValues")
+//	ASYNC_AddParam(threadDFR, w = s.numericalResultsKeys, name = "numericalResultsKeys")
+//	ASYNC_AddParam(threadDFR, w = s.textualResultsValues, name = "textualResultsValues")
+//	ASYNC_AddParam(threadDFR, w = s.textualResultsKeys, name = "textualResultsKeys")
 End
 
 threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DFREF threadDFR)
