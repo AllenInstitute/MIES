@@ -233,9 +233,15 @@ Function AcceptsValid10()
 
 	variable now      = DateTimeInUTC()
 	variable expected = now
+#if (IgorVersion() >= 9.00) && (NumberByKey("BUILD", IgorInfo(0)) >= 39493)
+	// DateTime currently returns six digits of precision
+	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, numFracSecondsDigits = 6))
+	CHECK_CLOSE_VAR(actual, expected)
+#else
 	// DateTime currently returns three digits of precision
 	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, numFracSecondsDigits = 3))
 	CHECK_EQUAL_VAR(actual, expected)
+#endif
 End
 
 Function AcceptsValid11()
