@@ -5737,7 +5737,8 @@ Function DAP_UpdateDaEphysStimulusSetPopups([device])
 	string device
 
 	variable i, j, numPanels
-	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
+	string ctrlWave, ctrlIndexEnd, ctrlSearch, DAlist, TTLlist, listOfPanels
+	string filteredDAList, filteredTTLList, searchString
 
 	if(ParamIsDefault(device))
 		listOfPanels = GetListOfLockedDevices()
@@ -5762,26 +5763,56 @@ Function DAP_UpdateDaEphysStimulusSetPopups([device])
 			continue
 		endif
 
+		WAVE/T searchStrings = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
+
 		for(j = CHANNEL_INDEX_ALL_I_CLAMP; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 
-			SetControlUserData(device, ctrlWave, USER_DATA_MENU_EXP, DAlist)
-			DAP_UpdateStimulusSetPopup(device, ctrlWave, DAlist)
+			if(j >= 0)
+				searchString = searchStrings[j]
+			else
+				ctrlSearch   = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
+				searchString = DAG_GetTextualValue(device, ctrlSearch)
+			endif
 
-			SetControlUserData(device, ctrlIndexEnd, USER_DATA_MENU_EXP, DAlist)
-			DAP_UpdateStimulusSetPopup(device, ctrlIndexEnd, DAlist)
+			if(!IsEmpty(searchString))
+				filteredDAList = ListMatch(DAlist, searchString)
+			else
+				filteredDAList = DAlist
+			endif
+
+			SetControlUserData(device, ctrlWave, USER_DATA_MENU_EXP, filteredDAlist)
+			DAP_UpdateStimulusSetPopup(device, ctrlWave, filteredDAlist)
+
+			SetControlUserData(device, ctrlIndexEnd, USER_DATA_MENU_EXP, filteredDAlist)
+			DAP_UpdateStimulusSetPopup(device, ctrlIndexEnd, filteredDAlist)
 		endfor
+
+		WAVE/T searchStrings = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
 
 		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 
-			SetControlUserData(device, ctrlWave, USER_DATA_MENU_EXP, TTLlist)
-			DAP_UpdateStimulusSetPopup(device, ctrlWave, TTLlist)
+			if(j >= 0)
+				searchString = searchStrings[j]
+			else
+				ctrlSearch   = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
+				searchString = DAG_GetTextualValue(device, ctrlSearch)
+			endif
 
-			SetControlUserData(device, ctrlIndexEnd, USER_DATA_MENU_EXP, TTLlist)
-			DAP_UpdateStimulusSetPopup(device, ctrlIndexEnd, TTLlist)
+			if(!IsEmpty(searchString))
+				filteredTTLlist = ListMatch(TTLlist, searchString)
+			else
+				filteredTTLlist = TTLlist
+			endif
+
+			SetControlUserData(device, ctrlWave, USER_DATA_MENU_EXP, filteredTTLlist)
+			DAP_UpdateStimulusSetPopup(device, ctrlWave, filteredTTLlist)
+
+			SetControlUserData(device, ctrlIndexEnd, USER_DATA_MENU_EXP, filteredTTLlist)
+			DAP_UpdateStimulusSetPopup(device, ctrlIndexEnd, filteredTTLlist)
 		endfor
 
 		DAP_UpdateDAQControls(device, REASON_STIMSET_CHANGE)
