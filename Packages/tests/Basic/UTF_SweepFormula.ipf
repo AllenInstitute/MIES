@@ -2182,7 +2182,7 @@ static Function TestOperationLabNotebook()
 	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
-	string textKey = "TEXTKEY"
+	string textKey = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
 	string textValue = "TestText"
 
 	String channelTypeC = channelType + "C"
