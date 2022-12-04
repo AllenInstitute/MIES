@@ -979,7 +979,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
-			PopupMenu $ctrl win=$device, value=#popupValue, userdata(USER_DATA_MENU_EXP)=listOfWaves
+			PopupMenu $ctrl win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
 			sel = GetPopupMenuString(device, ctrl)
 			PopupMenu $ctrl win=$device, popmatch=sel
 
@@ -1001,7 +1001,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 					DAG_Update(device, ctrl, str = str)
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-					PopupMenu $ctrl win=$device, value=#popupValue, userdata(USER_DATA_MENU_EXP)=listOfWaves
+					PopupMenu $ctrl win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
 					sel = GetPopupMenuString(device, ctrl)
 					PopupMenu $ctrl win=$device, popmatch=sel
 
