@@ -657,3 +657,8 @@ End
 Function/S GetTaskDisableStatus()
 	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue=0)
 End
+
+/// @brief Returns the string path to the last successfully executed SweepFormula code
+Function /S GetLastSweepFormulaCode(DFREF dfr)
+	return GetSVARAsString(dfr, "lastSweepFormulaCode", initialValue = "")
+End
