@@ -203,7 +203,7 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 		NWB_AddSpecifications(fileID, nwbVersion)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-		ASSERT(ti.session_start_time == sessionStartTimeReadBack, "Buggy timestamp handling")
+		ASSERT(CheckIfClose(ti.session_start_time, sessionStartTimeReadBack, tol = 1e-6), "Buggy timestamp handling")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
