@@ -1441,7 +1441,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
-	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation, yAxisLabel
+	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
