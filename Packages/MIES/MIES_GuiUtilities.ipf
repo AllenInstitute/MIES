@@ -2087,7 +2087,10 @@ Function ShowTraceInfoTags()
 	DoIgorMenu/C "Graph", "Show Trace Info Tags"
 
 	if(cmpStr(S_value,"Hide Trace Info Tags"))
+		// add graph so that the menu item is available
+		Display
 		DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
+		KillWindow/Z $S_name
 	endif
 End
 
