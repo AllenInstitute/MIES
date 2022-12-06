@@ -1419,6 +1419,16 @@ static Function SF_CheckNumTraces(string graph, variable numTraces)
 	endif
 End
 
+static Function SF_CleanUpPlotWindowsOnFail(WAVE/T plotGraphs)
+
+	for(str : plotGraphs)
+		WAVE/Z wv = WaveRefIndexed(str, 0, 1)
+		if(!WaveExists(wv))
+			KillWindow/Z $str
+		endif
+	endfor
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1482,7 +1492,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				break
 			endif
 			WAVE/WAVE/Z formulaResults = $""
-			[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], yFormula, graph)
+			try
+				[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], yFormula, graph)
+			catch
+				SF_CleanUpPlotWindowsOnFail(plotGraphs)
+				Abort
+			endtry
 			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
 			WAVE/T yUnits = yUnitsResult
 

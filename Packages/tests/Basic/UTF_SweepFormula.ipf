@@ -1472,7 +1472,7 @@ static Function TestPlotting()
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	win = winBase + "_1"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
 
 	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
