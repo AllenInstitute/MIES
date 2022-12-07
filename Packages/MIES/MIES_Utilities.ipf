@@ -3467,13 +3467,10 @@ End
 /// @param src       wave reference wave
 /// @param dimension [optional] copy only a single dimension, requires `index` or
 ///                  `indexWave` as well
-/// @param index     [optional] specifies the index into `dimension`
+/// @param index     [optional] specifies the index into `dimension`, index is not checked
 /// @param indexWave [optional] specifies the indizes into `dimension`, allows for
-///                  differing indizes per `src` entry
-threadsafe Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
-	WAVE/WAVE src
-	variable dimension, index
-	WAVE indexWave
+///                  differing indizes per `src` entry, indices are not checked
+threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension, variable index, WAVE indexWave])
 
 	variable i, numEntries
 
@@ -3494,6 +3491,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 	numEntries = DimSize(src, ROWS)
 
 	if(!ParamIsDefault(indexWave))
+		ASSERT_TS(IsNumericWave(indexWave), "Expected numeric wave")
 		ASSERT_TS(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
 	endif
 
@@ -3522,12 +3520,48 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 					Duplicate/FREE/R=[][][][index] srcWave, dstWave
 					break
 			endswitch
+			ReduceWaveDimensionality(dstWave, minDimension=dimension)
 		endif
 
 		dst[i] = dstWave
 	endfor
 
 	return dst
+End
+
+/// @brief Shrinks a waves dimensionality if higher dimensions have size 1
+///
+/// @param wv           Wave that should be shrinked
+/// @param minDimension [optional, default COLS] shrinks a wave only up to this dimension, e.g. with minDimension = LAYERS
+///                     a wave of size (1,1,1,1) is shrinked to (1,1,1,0).
+threadsafe Function ReduceWaveDimensionality(WAVE/Z wv, [variable minDimension])
+
+	variable i, shrink
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
+	if(!numpnts(wv))
+		return NaN
+	endif
+
+	minDimension = ParamIsDefault(minDimension) ? COLS : minDimension
+	ASSERT_TS(IsInteger(minDimension) && minDimension >= ROWS && minDimension < MAX_DIMENSION_COUNT, "Invalid minDimension")
+	minDimension = limit(minDimension, COLS, MAX_DIMENSION_COUNT - 1)
+	Make/FREE/N=(MAX_DIMENSION_COUNT) waveSize
+	waveSize[] = DimSize(wv, p)
+	for(i = MAX_DIMENSION_COUNT - 1; i >= minDimension; i -= 1)
+		if(waveSize[i] == 1)
+			waveSize[i] = 0
+			shrink = 1
+		elseif(waveSize[i] > 1)
+			break
+		endif
+	endfor
+	if(shrink)
+		Redimension/N=(waveSize[0], waveSize[1], waveSize[2], waveSize[3]) wv
+	endif
 End
 
 /// @brief Return 1 if the wave is a text wave, zero otherwise
