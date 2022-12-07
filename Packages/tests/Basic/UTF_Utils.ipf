@@ -6317,3 +6317,229 @@ Function CFW_Works1()
 End
 
 /// @}
+
+/// ReduceWaveDimensionality
+/// @{
+
+static Function TestReduceWaveDimensionality()
+
+	Make/FREE/N=0 data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(numpnts(data), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
+
+	Make/FREE/N=(1, 1, 1, 2) data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, CHUNKS), 2)
+
+	Make/FREE/N=(1, 1, 2, 1) data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 2)
+	CHECK_EQUAL_VAR(DimSize(data, CHUNKS), 0)
+
+	Make/FREE/N=(1, 2, 1, 1) data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 2)
+	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 0)
+
+	Make/FREE/N=(2, 1, 1, 1) data
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) data
+	ReduceWaveDimensionality(data, minDimension=CHUNKS)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, CHUNKS), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) data
+	ReduceWaveDimensionality(data, minDimension=LAYERS)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) data
+	ReduceWaveDimensionality(data, minDimension=COLS)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
+
+	Make/FREE/N=(1, 1, 1, 1) data
+	ReduceWaveDimensionality(data, minDimension=ROWS)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
+
+	try
+		ReduceWaveDimensionality(data, minDimension=NaN); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		ReduceWaveDimensionality(data, minDimension=-1); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		ReduceWaveDimensionality(data, minDimension=1.5); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		ReduceWaveDimensionality(data, minDimension=Inf); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	WAVE data = $""
+	ReduceWaveDimensionality(data)
+	CHECK_EQUAL_VAR(WaveExists(data), 0)
+End
+
+/// @}
+
+/// DeepCopyWaveRefWave
+/// @{
+
+static Function TestDeepCopyWaveRefWave()
+
+	variable i
+	variable refSize = 3
+	variable dataSize = 2
+
+	Make/FREE/WAVE/N=(refSize) src
+
+	Make/FREE/N=(dataSize, dataSize, dataSize, dataSize) data
+	src[] = data
+
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src)
+	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
+	for(i = 0; i < dataSize; i += 1)
+		CHECK_EQUAL_WAVES(src[i], cpy[i])
+		CHECK_EQUAL_VAR(WaveRefsEqual(src[i], cpy[i]), 0)
+	endfor
+
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=CHUNKS, index=dataSize - 1)
+	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
+	Make/FREE/N=(dataSize, dataSize, dataSize) dataRef
+	for(i = 0; i < dataSize; i += 1)
+		CHECK_EQUAL_WAVES(dataRef, cpy[i])
+	endfor
+
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=LAYERS, index=dataSize - 1)
+	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
+	Make/FREE/N=(dataSize, dataSize, dataSize, dataSize) wv
+	Duplicate/FREE/R=[][][dataSize - 1][] wv, dataRef
+	for(i = 0; i < dataSize; i += 1)
+		CHECK_EQUAL_WAVES(dataRef, cpy[i])
+	endfor
+
+	Make/FREE/N=(refSize) indexWave = p
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=LAYERS, indexWave=indexWave)
+	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
+	Make/FREE/N=(dataSize, dataSize, dataSize, dataSize) wv
+	Duplicate/FREE/R=[][][0][] wv, dataRef0
+	Duplicate/FREE/R=[][][1][] wv, dataRef1
+	Duplicate/FREE/R=[][][2][] wv, dataRef2
+	CHECK_EQUAL_WAVES(dataRef0, cpy[0])
+	CHECK_EQUAL_WAVES(dataRef1, cpy[1])
+	CHECK_EQUAL_WAVES(dataRef2, cpy[2])
+
+	Make/FREE/N=(dataSize) data
+	src[] = data
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, index=dataSize - 1)
+	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
+	Make/FREE/N=(dataSize) wv
+	Duplicate/FREE/R=[dataSize - 1][][][] wv, dataRef
+	for(i = 0; i < dataSize; i += 1)
+		CHECK_EQUAL_WAVES(dataRef, cpy[i])
+	endfor
+
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, index=0, indexWave=indexWave); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=NaN); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, index=0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/N=(refSize + 1) indexWave = p
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, indexWave=indexWave); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/N=(refSize + 1)/T indexWaveT
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, indexWave=indexWaveT); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/N=0 invalidSrc0
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(1,1) invalidSrc1
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc1); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(1) invalidSrc2
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc2); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	WAVE src = $""
+	try
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}
