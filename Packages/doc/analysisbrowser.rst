@@ -4,9 +4,9 @@
 AnalysisBrowser
 ===============
 
-The AnalysisBrowser allows to load acquired data from Igor Experiment files
-(pxp and uxp) and NeuroDataWithoutBorders files (nwb, v1 and v2) into one Igor
-Experiment. The user can then open sweeps from multiple experiments in one
+The AnalysisBrowser allows browsing and loading acquired data from Igor Experiment files
+(pxp and uxp) and NeuroDataWithoutBorders files (NWB, v1 and v2) into one Igor
+Experiment. The user can also combine sweeps from multiple experiments in one
 SweepBrowser, see :ref:`DataBrowser`, inspect the labnotebook entries of these
 sweeps and view the :ref:`TPStorage` data.
 
