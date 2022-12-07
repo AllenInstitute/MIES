@@ -44,6 +44,8 @@ static Constant SF_ACTION_ARRAY = 8
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 /// Regular expression which extracts formulas pairs from `$a vs $b\rand\r$c vs $d\rand\r...`
 static StrConstant SF_SWEEPFORMULA_GRAPHS_REGEXP = "^(.+?)(?:\\r[ \t]*and[ \t]*\\r(.*))?$"
+/// Regular expression which extracts y-formulas from `$a\rwith\r$b\rwith\r$c\r...`
+static StrConstant SF_SWEEPFORMULA_WITH_REGEXP = "^(.+?)(?:\\r[ \t]*with[ \t]*\\r(.*))?$"
 
 static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
 
@@ -192,7 +194,7 @@ End
 Function/WAVE SF_GetFormulaKeywords()
 
 	// see also SF_SWEEPFORMULA_REGEXP and SF_SWEEPFORMULA_GRAPHS_REGEXP
-	Make/FREE/T wt = {"vs", "and"}
+	Make/FREE/T wt = {"vs", "and", "with"}
 
 	return wt
 End
@@ -1085,7 +1087,10 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 		endif
 	endfor
 
-	dataUnits = SelectString(addDataUnitsInAnnotation && !IsNull(dataUnitCheck) && !IsEmpty(dataUnitCheck), "", "(\\U)")
+	dataUnits = ""
+	if(!IsNull(dataUnitCheck))
+		dataUnits = SelectString(addDataUnitsInAnnotation && !IsEmpty(dataUnitCheck), "", "(" + dataUnitCheck + ")")
+	endif
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
@@ -1345,31 +1350,49 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function/S SF_CombineYUnits(WAVE/WAVE formulaResults)
+static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T/Z yUnits)
 
-	variable i, numData, index
-	string separator = " / "
-	string result = ""
+	variable i, size, numData
+
+	if(!WaveExists(yUnits))
+		Make/FREE/T/N=0 yUnits
+	endif
+
+	size = DimSize(yUnits, ROWS)
+	if(!isEmpty(explicitLbl))
+		Redimension/N=(size + 1) yUnits
+		yUnits[size] = explicitLbl
+		return yUnits
+	endif
 
 	numData = DimSize(formulaResults, ROWS)
-	Make/FREE/T/N=(numData) yUnits
+	Redimension/N=(size + numData) yUnits
+
 	for(i = 0; i < numData; i += 1)
 		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
 		if(!WaveExists(wvResultY))
 			continue
 		endif
-		yUnits[index] = WaveUnits(wvResultY, COLS)
-		index += 1
+		yUnits[size] = WaveUnits(wvResultY, COLS)
+		size += 1
 	endfor
-	Redimension/N=(index) yUnits
+	Redimension/N=(size) yUnits
 
-	WAVE/T unique = GetUniqueEntries(yUnits, dontDuplicate=1)
-	for(yUnit : unique)
+	return yUnits
+End
+
+static Function/S SF_CombineYUnits(WAVE/T units)
+
+	string separator = " / "
+	string result = ""
+
+	WAVE/T unique = GetUniqueEntries(units, dontDuplicate=1)
+	for(unit : unique)
 		// @todo Remove if part when "null string for empty string wave elment" bug in IP9 is fixed
-		if(IsNull(yUnit))
-			yUnit = ""
+		if(IsNull(unit))
+			unit = ""
 		endif
-		result += yUnit + separator
+		result += unit + separator
 	endfor
 
 	return RemoveEndingRegExp(result, separator)
@@ -1396,6 +1419,16 @@ static Function SF_CheckNumTraces(string graph, variable numTraces)
 	endif
 End
 
+static Function SF_CleanUpPlotWindowsOnFail(WAVE/T plotGraphs)
+
+	for(str : plotGraphs)
+		WAVE/Z wv = WaveRefIndexed(str, 0, 1)
+		if(!WaveExists(wv))
+			KillWindow/Z $str
+		endif
+	endfor
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1407,8 +1440,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	string trace
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
-	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection
-	string win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName, annotation, yAxisLabel
+	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
+	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel
+	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
 
@@ -1437,172 +1471,204 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 	for(j = 0; j < numGraphs; j += 1)
 
-		annotation = ""
 		traceCnt = 0
-		WAVE/Z wvX
+		numAnnotations = 0
+		WAVE/Z wvX = $""
+		WAVE/T/Z yUnits = $""
 
-		WAVE/WAVE/Z formulaResults
-		[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], formulaPairs[j][%FORMULA_Y], graph)
-		yAxisLabel = SF_CombineYUnits(formulaResults)
+		yFormulasRemain = formulaPairs[j][%FORMULA_Y]
 
 		win = plotGraphs[j]
 		wList = AddListItem(win, wList)
 
-		numData = DimSize(formulaResults, ROWS)
-		for(k = 0; k < numData; k += 1)
+		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations
 
-			WAVE/Z wvResultX = formulaResults[k][%FORMULAX]
-			WAVE/Z wvResultY = formulaResults[k][%FORMULAY]
-			if(!WaveExists(wvResultY))
-				continue
+		do
+
+			annotation = ""
+
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
+			if(!V_flag)
+				break
 			endif
+			WAVE/WAVE/Z formulaResults = $""
+			try
+				[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], yFormula, graph)
+			catch
+				SF_CleanUpPlotWindowsOnFail(plotGraphs)
+				Abort
+			endtry
+			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
+			WAVE/T yUnits = yUnitsResult
 
-			SF_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
+			numData = DimSize(formulaResults, ROWS)
+			for(k = 0; k < numData; k += 1)
 
-			[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
-
-			if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
-				WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
-			endif
-
-			if(WaveExists(wvResultX))
-
-				SF_ASSERT(!(IsTextWave(wvResultX) && WaveDims(wvResultX) > 1), "Plotter got 2d+ text wave as x data.")
-
-				xPoints = DimSize(wvResultX, ROWS)
-				dim1X = max(1, DimSize(wvResultX, COLS))
-				dim2X = max(1, DimSize(wvResultX, LAYERS))
-				xMxN = dim1X * dim2X
-				if(xMxN)
-					Redimension/N=(-1, xMxN)/E=1 wvResultX
+				WAVE/Z wvResultX = formulaResults[k][%FORMULAX]
+				WAVE/Z wvResultY = formulaResults[k][%FORMULAY]
+				if(!WaveExists(wvResultY))
+					continue
 				endif
 
-				WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
-				if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
-					Duplicate/O wvResultX $GetWavesDataFolder(wvX, 2)
-				else
-					MoveWaveWithOverWrite(wvX, wvResultX)
+				SF_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
+
+				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
+
+				if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
+					WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
 				endif
-				WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
-			endif
 
-			yPoints = DimSize(wvResultY, ROWS)
-			dim1Y = max(1, DimSize(wvResultY, COLS))
-			dim2Y = max(1, DimSize(wvResultY, LAYERS))
-			yMxN = dim1Y * dim2Y
-			if(yMxN)
-				Redimension/N=(-1, yMxN)/E=1 wvResultY
-			endif
+				if(WaveExists(wvResultX))
 
-			WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
-			if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
-				Duplicate/O wvResultY $GetWavesDataFolder(wvY, 2)
-			else
-				MoveWaveWithOverWrite(wvY, wvResultY)
-			endif
-			WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
-			SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+					SF_ASSERT(!(IsTextWave(wvResultX) && WaveDims(wvResultX) > 1), "Plotter got 2d+ text wave as x data.")
 
-			if(IsTextWave(wvY))
-				SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
-				ModifyGraph/W=$win swapXY = 1
-				WAVE dummy = wvY
-				WAVE wvY = wvX
-				WAVE wvX = dummy
-			endif
-
-			if(!WaveExists(wvX))
-				numTraces = yMxN
-				SF_CheckNumTraces(graph, numTraces)
-				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-				endfor
-			elseif((xMxN == 1) && (yMxN == 1)) // 1D
-				if(yPoints == 1) // 0D vs 1D
-					numTraces = xPoints
-					SF_CheckNumTraces(graph, numTraces)
-					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-					endfor
-				elseif(xPoints == 1) // 1D vs 0D
-					numTraces = yPoints
-					SF_CheckNumTraces(graph, numTraces)
-					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-					endfor
-				else // 1D vs 1D
-					splitTraces = min(yPoints, xPoints)
-					numTraces = floor(max(yPoints, xPoints) / splitTraces)
-					SF_CheckNumTraces(graph, numTraces)
-					if(mod(max(yPoints, xPoints), splitTraces) == 0)
-						DebugPrint("Unmatched Data Alignment in ROWS.")
+					xPoints = DimSize(wvResultX, ROWS)
+					dim1X = max(1, DimSize(wvResultX, COLS))
+					dim2X = max(1, DimSize(wvResultX, LAYERS))
+					xMxN = dim1X * dim2X
+					if(xMxN)
+						Redimension/N=(-1, xMxN)/E=1 wvResultX
 					endif
-					for(i = 0; i < numTraces; i += 1)
-						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-						splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
-						splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
-						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
-						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-					endfor
-				endif
-			elseif(yMxN == 1) // 1D vs 2D
-				numTraces = xMxN
-				SF_CheckNumTraces(graph, numTraces)
-				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-				endfor
-			elseif(xMxN == 1) // 2D vs 1D or 0D
-				if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
-					Redimension/N=(yPoints) wvX
-					xPoints = yPoints
-					wvX = wvX[0]
-				endif
-				numTraces = yMxN
-				SF_CheckNumTraces(graph, numTraces)
-				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-					AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-				endfor
-			else // 2D vs 2D
-				numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
-				SF_CheckNumTraces(graph, numTraces)
-				if(yPoints != xPoints)
-					DebugPrint("Size mismatch in data rows for plotting waves.")
-				endif
-				if(DimSize(wvY, COLS) != DimSize(wvX, COLS))
-					DebugPrint("Size mismatch in entity columns for plotting waves.")
-				endif
-				for(i = 0; i < numTraces; i += 1)
-					[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
-					if(WaveExists(wvX))
-						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
+
+					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
+					if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
+						Duplicate/O wvResultX $GetWavesDataFolder(wvX, 2)
 					else
-						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
+						MoveWaveWithOverWrite(wvX, wvResultX)
 					endif
-					annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
-				endfor
+					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
+				endif
+
+				yPoints = DimSize(wvResultY, ROWS)
+				dim1Y = max(1, DimSize(wvResultY, COLS))
+				dim2Y = max(1, DimSize(wvResultY, LAYERS))
+				yMxN = dim1Y * dim2Y
+				if(yMxN)
+					Redimension/N=(-1, yMxN)/E=1 wvResultY
+				endif
+
+				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
+				if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
+					Duplicate/O wvResultY $GetWavesDataFolder(wvY, 2)
+				else
+					MoveWaveWithOverWrite(wvY, wvResultY)
+				endif
+				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
+				SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+
+				if(IsTextWave(wvY))
+					SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
+					ModifyGraph/W=$win swapXY = 1
+					WAVE dummy = wvY
+					WAVE wvY = wvX
+					WAVE wvX = dummy
+				endif
+
+				if(!WaveExists(wvX))
+					numTraces = yMxN
+					SF_CheckNumTraces(graph, numTraces)
+					for(i = 0; i < numTraces; i += 1)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+					endfor
+				elseif((xMxN == 1) && (yMxN == 1)) // 1D
+					if(yPoints == 1) // 0D vs 1D
+						numTraces = xPoints
+						SF_CheckNumTraces(graph, numTraces)
+						for(i = 0; i < numTraces; i += 1)
+							[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[i][]
+							annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+						endfor
+					elseif(xPoints == 1) // 1D vs 0D
+						numTraces = yPoints
+						SF_CheckNumTraces(graph, numTraces)
+						for(i = 0; i < numTraces; i += 1)
+							[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$trace vs wvX[][0]
+							annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+						endfor
+					else // 1D vs 1D
+						splitTraces = min(yPoints, xPoints)
+						numTraces = floor(max(yPoints, xPoints) / splitTraces)
+						SF_CheckNumTraces(graph, numTraces)
+						if(mod(max(yPoints, xPoints), splitTraces) == 0)
+							DebugPrint("Unmatched Data Alignment in ROWS.")
+						endif
+						for(i = 0; i < numTraces; i += 1)
+							[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+							splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
+							splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
+							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
+							annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+						endfor
+					endif
+				elseif(yMxN == 1) // 1D vs 2D
+					numTraces = xMxN
+					SF_CheckNumTraces(graph, numTraces)
+					for(i = 0; i < numTraces; i += 1)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$trace vs wvX[][i]
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+					endfor
+				elseif(xMxN == 1) // 2D vs 1D or 0D
+					if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
+						Redimension/N=(yPoints) wvX
+						xPoints = yPoints
+						wvX = wvX[0]
+					endif
+					numTraces = yMxN
+					SF_CheckNumTraces(graph, numTraces)
+					for(i = 0; i < numTraces; i += 1)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace vs wvX
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+					endfor
+				else // 2D vs 2D
+					numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
+					SF_CheckNumTraces(graph, numTraces)
+					if(yPoints != xPoints)
+						DebugPrint("Size mismatch in data rows for plotting waves.")
+					endif
+					if(DimSize(wvY, COLS) != DimSize(wvX, COLS))
+						DebugPrint("Size mismatch in entity columns for plotting waves.")
+					endif
+					for(i = 0; i < numTraces; i += 1)
+						[trace, traceCnt] = SF_CreateTraceName(k, plotMetaData, wvResultY)
+						if(WaveExists(wvX))
+							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
+						else
+							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$trace
+						endif
+						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, trace)
+					endfor
+				endif
+
+				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
+					&& (!WaveExists(wvX) \
+					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+					ModifyGraph/W=$win mode=3,marker=19
+				endif
+
+				dataCnt += 1
+			endfor
+
+			if(!IsEmpty(annotation))
+				EnsureLargeEnoughWave(wAnnotations, minimumSize=numAnnotations + 1)
+				wAnnotations[numAnnotations] = annotation
+				numAnnotations += 1
 			endif
+		while(1)
 
-			if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
-				&& (!WaveExists(wvX) \
-				|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-				ModifyGraph/W=$win mode=3,marker=19
-			endif
+		yAxisLabel = SF_CombineYUnits(yUnits)
 
-			dataCnt += 1
-		endfor
-
-		if(!IsEmpty(annotation))
-			annotation = SF_ShrinkLegend(annotation)
+		if(numAnnotations)
+			annotation = ""
+			for(k = 0; k < numAnnotations; k += 1)
+				annotation += SF_ShrinkLegend(wAnnotations[k]) + "\r"
+			endfor
+			annotation = RemoveEnding(annotation, "\r")
 			annotation = RemoveEnding(annotation, "\r")
 			Legend/W=$win/C/N=metadata/F=2 annotation
 		endif
@@ -1610,10 +1676,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			Label/W=$win bottom plotMetaData.xAxisLabel
 			ModifyGraph/W=$win tickUnit(bottom)=1
 		endif
-		if(!IsEmpty(plotMetaData.yAxisLabel) && traceCnt > 0)
-			Label/W=$win left plotMetaData.yAxisLabel
-			ModifyGraph/W=$win tickUnit(left)=1
-		elseif(!IsEmpty(yAxisLabel) && traceCnt > 0)
+		if(!IsEmpty(yAxisLabel) && traceCnt > 0)
 			Label/W=$win left yAxisLabel
 			ModifyGraph/W=$win tickUnit(left)=1
 		endif

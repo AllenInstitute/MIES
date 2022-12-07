@@ -1171,6 +1171,28 @@ The above code creates a panel with three separate graphs arranged vertically ev
 .. figure:: ScreenShots/sweepFormulaPlot4.png
    :align: center
 
+Multiple Y-Formulas
+"""""""""""""""""""
+
+Several y-formulas can be plotted with the keyword `with`. The `with` must be on an own line between the y-formulas.
+If the y-data contains different data units the y-axis will show all data units separated by `/`.
+
+.. code-block:: bash
+
+   0...10
+   with
+   20...30
+    vs range(10, 100, 10)
+   and
+   10...20
+   with
+   30...40
+   with
+   40...50
+    vs range(10, 100, 10)
+   and
+   20...30
+
 Getting Quick Help
 ^^^^^^^^^^^^^^^^^^
 

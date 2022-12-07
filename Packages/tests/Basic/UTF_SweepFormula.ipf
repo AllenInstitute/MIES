@@ -1328,6 +1328,7 @@ static Function TestPlotting()
 	String strArray0D = "1"
 	String strCombined = "[1, 2] vs [3, 4]\rand\r[5, 6] vs [7, 8]\rand\r[9, 10]\rand\r"
 	String strCombinedPartial = "[1, 2] vs [1, 2]\rand\r[1?=*, 2] vs [1, 2]"
+	string strWith = "[1, 2]\rwith\r[2, 3] vs [3, 4]\rand\r[5, 6]\rwith\r[2, 3]\rwith\r[4, 5] vs [7, 8]\rand\r[9, 10]\rwith\r\rand\r"
 
 	// Reference data waves must be moved out of the working DF for the further tests as
 	// calling the FormulaPlotter later kills the working DF
@@ -1471,7 +1472,7 @@ static Function TestPlotting()
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	win = winBase + "_1"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
 
 	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
@@ -1504,6 +1505,66 @@ static Function TestPlotting()
 	catch
 		PASS()
 	endtry
+
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strWith)
+	win = winBase + "_#Graph" + "0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	WAVE wvWin0Y0 = WaveRefIndexed(win, 0, 1)
+	WAVE wvWin0Y1 = WaveRefIndexed(win, 1, 1)
+	WAVE wvWin0X0 = WaveRefIndexed(win, 0, 2)
+	WAVE wvWin0X1 = WaveRefIndexed(win, 1, 2)
+	win = winBase + "_#Graph" + "1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	WAVE wvWin1Y0 = WaveRefIndexed(win, 0, 1)
+	WAVE wvWin1Y1 = WaveRefIndexed(win, 1, 1)
+	WAVE wvWin1Y2 = WaveRefIndexed(win, 2, 1)
+	WAVE wvWin1X0 = WaveRefIndexed(win, 0, 2)
+	WAVE wvWin1X1 = WaveRefIndexed(win, 1, 2)
+	WAVE wvWin1X2 = WaveRefIndexed(win, 2, 2)
+	win = winBase + "_#Graph" + "2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	WAVE wvWin2Y0 = WaveRefIndexed(win, 0, 1)
+	WAVE wvY0 = GetSweepFormulaY(dfr, 0)
+	WAVE wvX0 = GetSweepFormulaX(dfr, 0)
+	WAVE wvY1 = GetSweepFormulaY(dfr, 1)
+	WAVE wvX1 = GetSweepFormulaX(dfr, 1)
+	WAVE wvY2 = GetSweepFormulaY(dfr, 2)
+	WAVE wvX2 = GetSweepFormulaX(dfr, 2)
+	WAVE wvY3 = GetSweepFormulaY(dfr, 3)
+	WAVE wvX3 = GetSweepFormulaX(dfr, 3)
+	WAVE wvY4 = GetSweepFormulaY(dfr, 4)
+	WAVE wvX4 = GetSweepFormulaX(dfr, 4)
+	WAVE wvY5 = GetSweepFormulaY(dfr, 5)
+	Make/FREE/D wvXref = {{3, 4}}
+	CHECK_EQUAL_WAVES(wvX0, wvXref)
+	CHECK_EQUAL_WAVES(wvX1, wvXref)
+	CHECK_EQUAL_WAVES(wvWin0X0, wvX0)
+	CHECK_EQUAL_WAVES(wvWin0X1, wvX1)
+	Make/FREE/D wvXref = {{7, 8}}
+	CHECK_EQUAL_WAVES(wvX2, wvXref)
+	CHECK_EQUAL_WAVES(wvX3, wvXref)
+	CHECK_EQUAL_WAVES(wvX4, wvXref)
+	CHECK_EQUAL_WAVES(wvWin1X0, wvX2)
+	CHECK_EQUAL_WAVES(wvWin1X1, wvX3)
+	CHECK_EQUAL_WAVES(wvWin1X2, wvX4)
+	Make/FREE/D wvYref = {{1, 2}}
+	CHECK_EQUAL_WAVES(wvY0, wvYref)
+	CHECK_EQUAL_WAVES(wvWin0Y0, wvY0)
+	Make/FREE/D wvYref = {{2, 3}}
+	CHECK_EQUAL_WAVES(wvY1, wvYref)
+	CHECK_EQUAL_WAVES(wvWin0Y1, wvY1)
+	Make/FREE/D wvYref = {{5, 6}}
+	CHECK_EQUAL_WAVES(wvY2, wvYref)
+	CHECK_EQUAL_WAVES(wvWin1Y0, wvY2)
+	Make/FREE/D wvYref = {{2, 3}}
+	CHECK_EQUAL_WAVES(wvY3, wvYref)
+	CHECK_EQUAL_WAVES(wvWin1Y1, wvY3)
+	Make/FREE/D wvYref = {{4, 5}}
+	CHECK_EQUAL_WAVES(wvY4, wvYref)
+	CHECK_EQUAL_WAVES(wvWin1Y2, wvY4)
+	Make/FREE/D wvYref = {{9, 10}}
+	CHECK_EQUAL_WAVES(wvY5, wvYref)
+	CHECK_EQUAL_WAVES(wvWin2Y0, wvY5)
 End
 
 static Function TestOperationSelect()
