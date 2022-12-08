@@ -916,10 +916,10 @@ The epochs operation returns information from epochs.
 
 .. code-block:: bash
 
-   epochs(string name[, array selectData[, string type]])
+   epochs(array names[, array selectData[, string type]])
 
 name
-  the name of the epoch.
+  the name(s) of the epoch. The names can contain wildcard `*` and `!`.
 
 selectData
   the second argument is a selection of sweeps and channels where the epoch information is retrieved from. It must be specified through the `select` operation. When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
@@ -927,7 +927,7 @@ selectData
 type
   sets what information is returned. Valid types are: `range`, `name` or `treelevel`. If type is not specified then `range` is used as default.
 
-The operation returns for each selected sweep a data wave. The sweep meta data is transferred to the output data waves.
+The operation returns for each selected sweep times matching epoch a data wave. The sweep meta data is transferred to the output data waves.
 If there was nothing selected the number of returned data waves is zero.
 If the selection contains channels that do not have epoch information stored, e.g. `AD`, these selections are skipped in the evaluation.
 For example if `select()` is used for the selectData argument then all channels are selected, but only for `DA` channels epoch information is stored in the labnotebook.
@@ -940,13 +940,13 @@ range:
 Each output data wave is numeric and contains two elements with the start and end time of the epoch in [ms].
 
 name:
-Each output data wave is textual and contains one elements with the full name of the epoch.
+Each output data wave is textual and contains one elements with the name of the epoch.
 
 treelevel:
 Each output data wave is numeric with one element with the tree level of the epoch.
 
 The returned data type is `SF_DATATYPE_EPOCHS`.
-The default suggested x-axis values for the formula plotter are sweep numbers. The suggested y-axis label is the type requested (`name`, `tree level`, `range`).
+The default suggested x-axis values for the formula plotter are sweep numbers. The suggested y-axis label is the combination of the requested type (`name`, `tree level`, `range`) and the epoch name wildcards.
 
 .. code-block:: bash
 
@@ -955,6 +955,12 @@ The default suggested x-axis values for the formula plotter are sweep numbers. T
 
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
    epochs(ST, select(channels(AD), sweeps()), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+
+   // get stimset range from epochs starting with TP_ and epochs starting with E from all displayed sweeps and channels
+   epochs(["TP_*", "E*"], select(channels(AD), sweeps()))
+
+   // get stimset range from specified epochs from all displayed sweeps and channels
+   epochs(["TP_B?", "E?_*"], select(channels(AD), sweeps()))
 
 tp
 ""
