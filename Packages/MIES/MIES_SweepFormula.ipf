@@ -419,7 +419,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					continue
 				endif
 				state = SF_STATE_COLLECT
-				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
+				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=!]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
