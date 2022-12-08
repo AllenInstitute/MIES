@@ -2307,7 +2307,9 @@ static Function TestOperationEpochs()
 
 	Make/FREE/T/N=(1, 1) keysEpochs = {{EPOCHS_ENTRY_KEY}}
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/T wEpochStr
-	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,"
+	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:"
+	wEpochStr += "0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,:"
+	wEpochStr += "0.6000000,0.7000000,NoShortName,3,:"
 
 	DFREF dfr = GetDeviceDataPath(device)
 	for(i = 0; i < numSweeps; i += 1)
@@ -2389,13 +2391,18 @@ static Function TestOperationEpochs()
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 9), name)"
 	WAVE/T dataT = GetSingleResult(str, win)
-	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
+	Make/FREE/T refDataT = {"E0_PT_P48_B"}
+	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
+
+	str = "epochs(\"NoShortName\", select(channels(DA4), 9), name)"
+	WAVE/T dataT = GetSingleResult(str, win)
+	Make/FREE/T refDataT = {"NoShortName"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	// works case-insensitive
 	str = "epochs(\"e0_pt_p48_B\", select(channels(DA4), 9), name)"
 	WAVE/T dataT = GetSingleResult(str, win)
-	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
+	Make/FREE/T refDataT = {"E0_PT_P48_B"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
