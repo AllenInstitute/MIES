@@ -15,7 +15,7 @@ static StrConstant CHI_NIDAQ_XOP_64_HASH = "92427feeec9d330d410452b15ff1b6da90fe
 static StrConstant CHI_NIDAQ_XOP_HASH    = "ed7f5bc51553608bcf7850b06d472dc739952a32939c1b196b80d131a87f2527"
 static StrConstant CHI_JSON_XOP_VERSION  = "version-817-g0ceb12c"
 static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
-static StrConstant CHI_ITC_XOP_VERSION   = "latest-161-gb460985"
+static StrConstant CHI_ITC_XOP_VERSION   = "unknown"
 
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
