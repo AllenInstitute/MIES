@@ -1617,17 +1617,19 @@ End
 Function/WAVE HW_ITC_GetVersionInfo([variable flags])
 	variable ret, tries
 
-	do
-		ITCGetVersions2/FREE/Z=1 versionInfo
-	while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
+	return $""
 
-	ret = HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
-
-	if(ret)
-		return $""
-	endif
-
-	return versionInfo
+	// do
+	// 	ITCGetVersions2/FREE/Z=1 versionInfo
+	// while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
+    //
+	// ret = HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+    //
+	// if(ret)
+	// 	return $""
+	// endif
+    //
+	// return versionInfo
 End
 
 Function HW_ITC_SetLoggingTemplate(string template, [variable flags])

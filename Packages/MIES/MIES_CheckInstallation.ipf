@@ -69,17 +69,18 @@ End
 static Function CHI_CheckITCXOPVersion(state)
 	STRUCT CHI_InstallationState &state
 
-	string version
-
-	WAVE/T/Z versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_MESSAGE)
-
-	if(!WaveExists(versionInfo) || FindDimLabel(versionInfo, ROWS, "XOP") < 0)
-		version = "error querying version"
-	else
-		version = RemovePrefix(versionInfo[%XOP][%Description], start = "ITCXOP2: ")
-	endif
-
-	CHI_OutputVersionCheckResult(state, "ITC2", CHI_ITC_XOP_VERSION, version)
+	// TODO test without using the previously unused ITCXOP operation ITCGetVersions2
+	// string version
+    //
+	// WAVE/T/Z versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+    //
+	// if(!WaveExists(versionInfo) || FindDimLabel(versionInfo, ROWS, "XOP") < 0)
+	// 	version = "error querying version"
+	// else
+	// 	version = RemovePrefix(versionInfo[%XOP][%Description], start = "ITCXOP2: ")
+	// endif
+    //
+	// CHI_OutputVersionCheckResult(state, "ITC2", CHI_ITC_XOP_VERSION, version)
 End
 
 /// @brief Search list for matches of item and print the results
