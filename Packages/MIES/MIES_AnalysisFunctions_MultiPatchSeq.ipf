@@ -703,8 +703,6 @@ Function MSQ_FastRheoEst(device, s)
 
 			minRheoOffset = AFH_GetAnalysisParamNumerical("PostDAQDAScaleMinOffset", s.params)
 
-			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
-
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 				if(!statusHSIC[i])
