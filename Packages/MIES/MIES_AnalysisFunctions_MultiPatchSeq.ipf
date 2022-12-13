@@ -670,7 +670,9 @@ Function MSQ_FastRheoEst(device, s)
 				return 1
 			endif
 
-			if(Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE)) == 0)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+
+			if(Sum(statusHSIC) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", device
 				ControlWindowToFront()
 				return 1
@@ -681,8 +683,6 @@ Function MSQ_FastRheoEst(device, s)
 			PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
