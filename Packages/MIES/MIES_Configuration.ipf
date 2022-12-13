@@ -528,6 +528,31 @@ static Function CONF_SaveDAEphys(fName)
 	endtry
 End
 
+Function CONF_PrimeDeviceLists(string device)
+
+	variable hardwareType
+
+	hardwareType = GetHardwareType(device)
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			SVAR globalDeviceList = $GetITCDeviceList()
+			SVAR globalOtherDeviceList = $GetNIDeviceList()
+			break
+		case HARDWARE_NI_DAC:
+			SVAR globalDeviceList = $GetNIDeviceList()
+			SVAR globalOtherDeviceList = $GetITCDeviceList()
+			break
+		default:
+			ASSERT(0, "Unknown hardwareType")
+	endswitch
+
+	if(IsEmpty(globalDeviceList))
+		globalDeviceList      = device + ";"
+		globalOtherDeviceList = NONE
+	endif
+End
+
 /// @brief Restores the GUI state of a DA_Ephys panel from a configuration file
 ///
 /// @param jsonID json ID of json object to restore DA_Ephys panel from
@@ -554,10 +579,15 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		middleOfExperiment = ParamIsDefault(middleOfExperiment) ? 0 : !!middleOfExperiment
 		forceNewPanel = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
 
+		deviceToRecreate = CONF_GetStringFromSavedControl(jsonID, "popup_MoreSettings_Devices")
+
+		if(!middleOfExperiment)
+			CONF_PrimeDeviceLists(deviceToRecreate)
+		endif
+
 		if(forceNewPanel)
 			device = DAP_CreateDAEphysPanel()
 		else
-			deviceToRecreate = CONF_GetStringFromSavedControl(jsonID, "popup_MoreSettings_Devices")
 			device = ""
 			if(WindowExists(deviceToRecreate))
 				device = deviceToRecreate
