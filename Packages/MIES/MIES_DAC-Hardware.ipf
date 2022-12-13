@@ -736,6 +736,12 @@ Function/S HW_ITC_ListDevices()
 
 	DEBUGPRINTSTACKINFO()
 
+#ifndef EVIL_KITTEN_EATING_MODE
+#ifdef TESTS_WITH_NI_HARDWARE
+	return ""
+#endif
+#endif
+
 	for(i=0; i < ItemsInList(DEVICE_TYPES_ITC); i+=1)
 		type = StringFromList(i, DEVICE_TYPES_ITC)
 
@@ -2573,6 +2579,14 @@ Function/S HW_NI_ListDevices([flags])
 	variable flags
 
 	DEBUGPRINTSTACKINFO()
+
+#ifndef EVIL_KITTEN_EATING_MODE
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	return ""
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	return ""
+#endif
+#endif
 
 	return fDAQmx_DeviceNames()
 End
