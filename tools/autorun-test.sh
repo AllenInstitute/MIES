@@ -39,6 +39,8 @@ then
   exit 1
 fi
 
+source ${ScriptDir}/cleanup-logfiles.sh
+
 StateFile=$(dirname ${experiment})/DO_AUTORUN.txt
 touch $StateFile
 
