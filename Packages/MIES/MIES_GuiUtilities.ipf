@@ -1154,9 +1154,9 @@ End
 Function GraphHasCursors(graph)
 	string graph
 
-	Make/FREE/N=(ItemsInList(CURSOR_NAMES)) info = WaveExists(CsrWaveRef($StringFromList(p, CURSOR_NAMES), graph))
+	Make/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = WaveExists(CsrWaveRef($StringFromList(p, CURSOR_NAMES), graph))
 
-	return WaveMax(info) > 0
+	return WaveMax(wv) > 0
 End
 
 /// @brief Return a 1D text wave with all infos about the cursors
@@ -1172,9 +1172,9 @@ Function/WAVE GetCursorInfos(graph)
 		return $""
 	endif
 
-	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) info = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
+	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
-	return info
+	return wv
 End
 
 /// @brief Restore the cursors from the info of GetCursorInfos().
