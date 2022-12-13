@@ -1190,7 +1190,9 @@ Function MSQ_DAScale(device, s)
 				endif
 			endfor
 
-			if(Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE)) == 0)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+
+			if(Sum(statusHSIC) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", device
 				ControlWindowToFront()
 				return 1
