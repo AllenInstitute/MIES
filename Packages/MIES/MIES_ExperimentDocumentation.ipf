@@ -524,10 +524,12 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		endif
 
 		if(logbookType == LBT_LABNOTEBOOK)
-			if(!WaveExists(desc) && IsNumericWave(values))
-				WAVE/T desc = GetLBNumericalDescription()
-			else
-				// @todo not yet done for text waves
+			if(!WaveExists(desc))
+				if(IsNumericWave(values))
+					WAVE/T desc = GetLBNumericalDescription()
+				else
+					WAVE/T desc = GetLBTextualDescription()
+				endif
 			endif
 		endif
 
