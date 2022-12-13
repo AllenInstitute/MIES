@@ -37,7 +37,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	variable debugMode
 	string traceOptions = ""
 	string list = ""
-	string name = "MIES with Hardware"
+	string name = GetTestName()
 
 	// speeds up testing to start with a fresh copy
 	KillWindow/Z HistoryCarbonCopy
