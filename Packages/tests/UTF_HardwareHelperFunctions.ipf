@@ -191,7 +191,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 		endif
 	endif
 
+	ASYNC_Stop()
 	AdditionalExperimentCleanup()
+	ASYNC_Start(ThreadProcessorCount, disableTask = 1)
 End
 
 /// @brief Checks user epochs for consistency
