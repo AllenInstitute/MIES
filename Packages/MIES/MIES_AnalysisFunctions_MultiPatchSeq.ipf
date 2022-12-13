@@ -788,7 +788,8 @@ Function MSQ_FastRheoEst(device, s)
 					continue
 				endif
 
-				spikeDetection[i] = MSQ_SearchForSpikes(device, MSQ_FAST_RHEO_EST, sweepWave, i, totalOnsetDelay)[i]
+				WAVE spikeDetectionAll = MSQ_SearchForSpikes(device, MSQ_FAST_RHEO_EST, sweepWave, i, totalOnsetDelay)
+				spikeDetection[i] = spikeDetectionAll[i]
 
 				ASSERT(IsFinite(stepSize[i]), "Unexpected step size value")
 				ASSERT(IsFinite(DaScale[i]), "Unexpected DAScale value")
