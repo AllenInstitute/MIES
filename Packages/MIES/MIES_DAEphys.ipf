@@ -51,7 +51,7 @@ Function/WAVE DAP_GetRadioButtonCoupling()
 End
 
 /// @brief Returns a list of DAC devices for NI devices
-/// @return list of NI DAC devices
+/// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
 	variable i, j, numPattern
 	string DAQmxDevice, DAQmxDevName
@@ -92,17 +92,21 @@ Function/S DAP_GetNIDeviceList()
 #endif
 	endfor
 
-	globalNIDevList = devList
-
 	// we want to have device infos for all NI devices
 	// devList holds only the ones suitable for DAQ but
 	// skips the ones used for pressure
 	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices(), HARDWARE_NI_DAC)
 
-	return devList
+	if(!IsEmpty(devList))
+		globalNIDevList = devList
+	else
+		globalNIDevList = NONE
+	endif
+
+	return globalNIDevList
 End
 
-/// @brief Returns a list of ITC devices for DAC
+/// @brief Returns a list of ITC devices for DAC, #NONE if there are none
 Function/S DAP_GetITCDeviceList()
 
 	string devList
@@ -114,9 +118,15 @@ Function/S DAP_GetITCDeviceList()
 		return devList
 	endif
 
-	globalITCDevList = HW_ITC_ListDevices()
+	devList = HW_ITC_ListDevices()
 
-	DAP_UpdateDeviceInfoWaves(globalITCDevList, HARDWARE_ITC_DAC)
+	DAP_UpdateDeviceInfoWaves(devList, HARDWARE_ITC_DAC)
+
+	if(!IsEmpty(devList))
+		globalITCDevList = devList
+	else
+		globalITCDevList = NONE
+	endif
 
 	return globalITCDevList
 End
@@ -131,13 +141,13 @@ Function/S DAP_GetDACDeviceList()
 
 	devices = DAP_GetITCDeviceList()
 
-	if(!IsEmpty(devices))
+	if(CmpStr(devices, NONE))
 		list = AddListItem(devices, list, ";", inf)
 	endif
 
 	devices = DAP_GetNIDeviceList()
 
-	if(!IsEmpty(devices))
+	if(CmpStr(devices, NONE))
 		list = AddListItem(devices, list, ";", inf)
 	endif
 
