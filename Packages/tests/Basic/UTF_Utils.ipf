@@ -1204,6 +1204,22 @@ Function FI_NumSearchWithColAndProp5()
 	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
 End
 
+Function FI_NumSearchWithColAndProp6()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6*", prop = PROP_WILDCARD)
+	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
+End
+
+Function FI_NumSearchWithColAndProp6a()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "!*2.00000", prop = PROP_WILDCARD)
+	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
+End
+
 Function FI_NumSearchWithRestRows()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -1313,6 +1329,14 @@ Function FI_TextSearchWithColAndProp5()
 	WAVE/SDFR=dfr text
 
 	WAVE/Z indizes = FindIndizes(text, col = 1, str = "^1.*$", prop = PROP_GREP, startLayer = 1, endLayer = 1)
+	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
+End
+
+Function FI_TextSearchWithColAndProp6()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr text
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "1*", prop = PROP_WILDCARD, startLayer = 1, endLayer = 1)
 	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
 End
 
