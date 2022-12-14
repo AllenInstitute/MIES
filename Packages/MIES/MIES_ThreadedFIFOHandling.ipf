@@ -103,7 +103,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 	flags = HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP
 	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
 
-	LOG_AddEntry_TS(PACKAGE_MIES, "fifo loop", "TFH_FifoLoop", {"stopCollectionPoint"}, {num2str(stopCollectionPoint)})
+	LOG_AddEntry_TS(PACKAGE_MIES, "fifo loop", "TFH_FifoLoop", keys = {"stopCollectionPoint"}, values = {num2str(stopCollectionPoint)})
 
 	do
 		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)
@@ -112,7 +112,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 			break
 		endif
 
-		LOG_AddEntry_TS(PACKAGE_MIES, "fifo loop", "TFH_FifoLoop", {"fifoPos"}, {num2str(fifoPos)})
+		LOG_AddEntry_TS(PACKAGE_MIES, "fifo loop", "TFH_FifoLoop", keys = {"fifoPos"}, values = {num2str(fifoPos)})
 
 		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos)
 		fifoPos = limit(fifoPos, 0, stopCollectionPoint)
