@@ -1891,7 +1891,7 @@ Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
 			Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
 			WAVE selWave    = WBP_GetAnalysisParamGUISelWave()
 
-			WAVE/Z indizes = FindIndizes(selWave, var = LISTBOX_SELECTED, col = 0, prop = PROP_MATCHES_VAR_BIT_MASK)
+			WAVE/Z indizes = FindIndizes(selWave, var = LISTBOX_SELECTED, prop = PROP_MATCHES_VAR_BIT_MASK)
 			if(!WaveExists(indizes))
 				break
 			endif

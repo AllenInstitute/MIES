@@ -737,7 +737,7 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 	for(i = 0; i < numChannels; i += 1)
 		channelString = StringFromList(i, channelList)
 		if(nwbVersion == 2)
-			WAVE indices = FindIndizes(SweepTableSeries, col = 0, str = channelString)
+			WAVE indices = FindIndizes(SweepTableSeries, str = channelString)
 			ASSERT(DimSize(indices, ROWS) == 1, "Invalid Amount of Sweep Number Associated in " + channelString)
 			sweepNo = SweepTableNumber[indices[0]]
 		else
@@ -1445,7 +1445,7 @@ static Function/WAVE AB_GetExpandedIndices()
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	// Our mode for the listbox stores the selection bit only in the first column
-	WAVE/Z wv = FindIndizes(expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+	WAVE/Z wv = FindIndizes(expBrowserSel, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
 	if(!WaveExists(wv))
 		Make/FREE/N=0 wv
 		return wv
@@ -1459,12 +1459,12 @@ static Function/WAVE AB_GetExpandedIndices()
 
 		// we have to refetch the selected entries
 		if(!AB_ExpandIfCollapsed(row, EXPERIMENT_TREEVIEW_COLUMN))
-			WAVE wv = FindIndizes(expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+			WAVE wv = FindIndizes(expBrowserSel, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
 			i = 0
 		endif
 
 		if(!AB_ExpandIfCollapsed(row, DEVICE_TREEVIEW_COLUMN))
-			WAVE wv = FindIndizes(expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+			WAVE wv = FindIndizes(expBrowserSel, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
 			i = 0
 		endif
 	endfor
@@ -2728,7 +2728,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 
-			WAVE/Z indizes = FindIndizes(expBrowserSel, col=0, var=1)
+			WAVE/Z indizes = FindIndizes(expBrowserSel, var=1)
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select exactly one row to use this feature"
@@ -2819,7 +2819,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 			WAVE/T map = GetAnalysisBrowserMap()
 
-			WAVE/Z indizes = FindIndizes(expBrowserSel, col=0, var=1)
+			WAVE/Z indizes = FindIndizes(expBrowserSel, var=1)
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select a sweep belonging to a device to use this feature"

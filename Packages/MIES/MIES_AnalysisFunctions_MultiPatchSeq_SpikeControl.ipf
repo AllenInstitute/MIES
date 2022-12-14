@@ -763,7 +763,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 				WAVE/T/Z spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
 				ASSERT(WaveExists(spikeCountsRAC), "Expected at least one sweep")
-				WAVE/Z indizes = FindIndizes(spikeCountsRAC, col = 0, str = SC_SPIKE_COUNT_STATE_STR_MIXED)
+				WAVE/Z indizes = FindIndizes(spikeCountsRAC, str = SC_SPIKE_COUNT_STATE_STR_MIXED)
 				ASSERT(WaveExists(indizes), "Could not find at least one mixed entry")
 				if(DimSize(indizes, ROWS) == 1)
 					// push to front on first time

@@ -2713,7 +2713,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
 			// The regions from the second active headstage are duplicated into the
 			// first region in case we had more than two active headstages taking part in oodDAQ.
-			WAVE/Z indizes = FindIndizes(oodDAQRegions, col=0, prop=PROP_NON_EMPTY)
+			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop=PROP_NON_EMPTY)
 			if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
 				oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
 			endif

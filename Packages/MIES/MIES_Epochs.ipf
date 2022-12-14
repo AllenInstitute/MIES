@@ -841,7 +841,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
 
 	regexp = "(?i)" + shortname
-	WAVE/Z indizesName = FindIndizes(shortnames, col = 0, str = regexp, prop = PROP_GREP)
+	WAVE/Z indizesName = FindIndizes(shortnames, str = regexp, prop = PROP_GREP)
 
 	if(!WaveExists(indizesName))
 		if(HasOneValidEntry(shortnames))

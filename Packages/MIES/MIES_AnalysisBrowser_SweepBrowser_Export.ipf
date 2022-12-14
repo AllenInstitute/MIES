@@ -521,7 +521,7 @@ static Function SBE_ExportSweepBrowser(sett)
 		if(GrepString(line, "^Label.*"))
 			SplitString/E="(?i)^Label ([^[:space:]]+) .*(\(.*\))\"$" line, axis, unit
 			if(V_Flag == 2)
-				WAVE indizes = FindIndizes(yAxesStimSetMapping, col=0, str=axis)
+				WAVE indizes = FindIndizes(yAxesStimSetMapping, str=axis)
 				ASSERT(DimSize(indizes, ROWS) == 1, "Invalid yAxesStimSetMapping wave")
 				sprintf line, "Label %s \"\\Z12%s\\r%s\"", axis, yAxesStimSetMapping[indizes[0]][1], unit
 			endif
