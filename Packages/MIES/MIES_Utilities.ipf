@@ -1205,7 +1205,8 @@ End
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
 threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive])
-	variable numEntries = numpnts(wv)
+
+	variable numEntries
 
 	if(ParamIsDefault(recursive))
 		recursive = 0
@@ -1218,6 +1219,7 @@ threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variab
 
 	Note/K wv, ReplaceStringByKey(key, note(wv), str)
 
+	numEntries = numpnts(wv)
 	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)
 		return NaN
 	endif
