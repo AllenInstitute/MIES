@@ -6530,7 +6530,7 @@ End
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
 /// @param numericOrTextWave   wave to search in
-/// @param col [optional]      column to search in only
+/// @param col [optional, default=0] column to search in only
 /// @param colLabel [optional] column label to search in only
 /// @param var [optional]      numeric value to search
 /// @param str [optional]      string value to search
@@ -6552,7 +6552,6 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	variable numCols, numRows, numLayers
 	string key
 
-	ASSERT_TS(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                 \
 	          || (!ParamIsDefault(prop)                                                             \
 	              && (((prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
@@ -6573,9 +6572,14 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	numLayers = DimSize(numericOrTextWave, LAYERS)
 	ASSERT_TS(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
 
-	if(!ParamIsDefault(colLabel))
+	ASSERT_TS(!ParamIsDefault(col) + !ParamIsDefault(colLabel) < 2, "Ambiguous input. Col and ColLabel is set.")
+	if(!ParamIsDefault(col))
+		// do nothing
+	elseif(!ParamIsDefault(colLabel))
 		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
 		ASSERT_TS(col >= 0, "invalid column label")
+	else
+		col = 0
 	endif
 
 	ASSERT_TS(col == 0 || (col > 0 && col < numCols), "Invalid column")
