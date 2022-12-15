@@ -7275,7 +7275,7 @@ End
 /// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
 Function/WAVE GetTPSettingsCalculated(string device)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	DFREF dfr = GetDeviceTestPulse(device)
 
@@ -7284,13 +7284,13 @@ Function/WAVE GetTPSettingsCalculated(string device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// do upgrade
+		Redimension/N=(10) wv
 	else
-		Make/N=(7)/D dfr:settingsCalculated/WAVE=wv
+		Make/N=(10)/D dfr:settingsCalculated/WAVE=wv
 		wv = NaN
 	endif
 
-	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ", ROWS)
+	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ", ROWS)
 
 	return wv
 End

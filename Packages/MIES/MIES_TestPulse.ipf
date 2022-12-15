@@ -42,9 +42,11 @@ End
 
 /// @brief Return the total length of a single testpulse with baseline
 ///
+/// Static on purpose as all users during DAQ/TP should prefer GetTPSettingsCalculated()
+///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
 /// @param baselineFrac  fraction, *not* percentage, of the baseline
-Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
+static Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	variable pulseDuration, baselineFrac
 
 	ASSERT(TP_IsValidBaselineFraction(baselineFrac), "baselineFrac is out of range")
@@ -52,6 +54,8 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 End
 
 /// @brief Inverse function of TP_CalculateTestPulseLength
+///
+/// Can be used when reconstructing the baseline fraction from epoch information.
 Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
 	return (pulseDuration / totalLength - 1) / -2
 End
@@ -1484,19 +1488,19 @@ Function TP_CreateTestPulseWave(device, dataAcqOrTP)
 	string device
 	variable dataAcqOrTP
 
-	variable length, baselineFrac
+	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
 	WAVE TestPulse = GetTestPulse()
 	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
-	length = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
+	totalLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
+	pulseStartPoints  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP] : TPSettingsCalc[%pulseStartPointsDAQ]
+	pulseLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP] : TPSettingsCalc[%pulseLengthPointsDAQ]
 
-	Redimension/N=(length) TestPulse
+	Redimension/N=(totalLengthPoints) TestPulse
 	FastOp TestPulse = 0
 
-	baselineFrac = TPSettingsCalc[%baselineFrac]
-
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
+	TestPulse[pulseStartPoints, pulseStartPoints + pulseLengthPoints] = 1
 End
 
 /// @brief Prepares a TP data set data folder to the asynchroneous analysis function TP_TSAnalysis
@@ -1548,6 +1552,10 @@ Function TP_UpdateTPSettingsCalculated(string device)
 	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
 	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))
 	calculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsDAQ], calculated[%baselineFrac]))
+
+	calculated[%pulseStartMS]        = calculated[%baselineFrac] * calculated[%totalLengthMS]
+	calculated[%pulseStartPointsTP]  = trunc(calculated[%baselineFrac] * calculated[%totalLengthPointsTP])
+	calculated[%pulseStartPointsDAQ] = trunc(calculated[%baselineFrac] * calculated[%totalLengthPointsDAQ])
 End
 
 /// @brief Convert from row names of GetTPSettings()/GetTPSettingsCalculated() to GetTPSettingsLBN() column names.

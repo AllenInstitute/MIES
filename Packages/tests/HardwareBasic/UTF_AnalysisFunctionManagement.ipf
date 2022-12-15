@@ -1821,19 +1821,13 @@ static Function AFT14i([str])
 	endtry
 End
 
-static Function AFT15_PreAcq(device)
-	string device
-
-	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 0)
-End
-
 // MD: mid sweep event is also called for very short stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_ITP0"                           + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	AcquireData_NG(s, str)
@@ -1862,19 +1856,13 @@ static Function AFT15_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT16_PreAcq(device)
-	string device
-
-	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 0)
-End
-
 // SD: mid sweep event is also called for very short stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
 static Function AFT16([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1"                           + \
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_ITP0"                    + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	AcquireData_NG(s, str)

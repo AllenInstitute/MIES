@@ -42,7 +42,7 @@ End
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_Configuration.ipf")
 // - RunWithOpts(testcase = "TestFindLevel")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder])
 
 	variable debugMode
 	string traceOptions = ""
@@ -71,6 +71,12 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	if(ParamIsDefault(traceWinList))
 		traceWinList = "MIES_.*\.ipf"
+	endif
+
+	if(ParamIsDefault(keepDataFolder))
+		keepDataFolder = 0
+	else
+		keepDataFolder = !!keepDataFolder
 	endif
 
 	if(!instru)
@@ -111,9 +117,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
 	else
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
 	endif
 End
 

@@ -477,7 +477,6 @@ Structure DataConfigurationResult
 	variable dataAcqOrTP
 
 	/// @sa GetTestpulseBaselineFraction()
-	/// TODO remove
 	variable baselineFrac
 
 	/// @sa DC_GetDecimationFactor()
@@ -501,8 +500,7 @@ Structure DataConfigurationResult
 	/// @sa DAP_GetSampInt()
 	variable samplingInterval
 
-	/// @name Various delays
-	/// Either from the GUI or derived from DC_ReturnTotalLengthIncrease()
+	/// @name Various delays in points
 	/// @{
 	variable onsetDelayUser
 	variable onsetDelayAuto

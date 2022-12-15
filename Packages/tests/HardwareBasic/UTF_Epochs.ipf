@@ -153,7 +153,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 		if(!ret)
 			printf "Could not find coverage epochs for %g (desc: %s, level %d)\r", i, description[i], level
 			print matches
-			return 1
+			return NaN
 		endif
 	endfor
 
@@ -173,8 +173,6 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 
 		CHECK_EQUAL_WAVES(sameLevel, disjunct)
 	endfor
-
-	return 0
 End
 
 static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
@@ -223,12 +221,10 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	endfor
 
 	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1
-	ret = TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
+	TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
 
-	if(ret != 0)
-		printf "ActiveDAC: %d\r", activeDAChannel
-		Duplicate/O e, root:epochs
-	endif
+	// check that we don't have any gaps in treelevel 0
+	TestEpochGaps(startT, endT, isOodDAQ, levels, DAChannel, 0)
 
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
@@ -267,6 +263,37 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	endfor
 End
 
+static Function TestEpochGaps(WAVE startTall, WAVE endTall, WAVE isOodDAQ, WAVE levels, WAVE DAChannel, variable level)
+
+	variable epochCnt, i, lastx
+
+	Extract/FREE startTall, startT, isOodDAQ == 0 && levels == level
+	Extract/FREE endTall, endT, isOodDAQ == 0 && levels == level
+	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
+
+	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS) - 1, ROWS) * MILLI_TO_ONE
+	CHECK_GT_VAR(lastx, 0.0)
+
+	epochCnt = DimSize(startT, ROWS)
+	for(i = 0; i < epochCnt; i += 1)
+
+		// first starts at 0.0
+		if(i == 0)
+			CHECK_EQUAL_VAR(startT[i], 0.0)
+		endif
+
+		// last has the x-coordinate as the last point in the DA wave
+		if(i == epochCnt - 1)
+			CHECK_CLOSE_VAR(lastx, endT[i], tol = 1e-10)
+		endif
+
+		// and in between no gaps
+		if(i > 0)
+			CHECK_EQUAL_VAR(startT[i], endT[i - 1])
+		endif
+	endfor
+End
+
 static Function TestEpochsGeneric(device)
 	string device
 
@@ -293,9 +320,8 @@ static Function TestEpochsGeneric(device)
 	WAVE/Z config = $StringFromList(0, configs)
 	CHECK_WAVE(config, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
-	CHECK_EQUAL_VAR(DimSize(config, ROWS), 4)
 	WAVE DACs = GetDACListFromConfig(config)
-	CHECK_EQUAL_WAVES(DACs, {0, 1}, mode = WAVE_DATA)
+	CHECK_GT_VAR(DimSize(DACs, ROWS), 0)
 
 	WAVE/T textualValues   = GetLBTextualValues(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
@@ -305,7 +331,7 @@ static Function TestEpochsGeneric(device)
 	CHECK_EQUAL_VAR(DimSize(epochs, COLS), 4)
 	CHECK_EQUAL_VAR(DimSize(epochs, LAYERS), NUM_DA_TTL_CHANNELS)
 	numEntries = DimSize(DACs, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
+	CHECK_GT_VAR(numEntries, 0)
 	for(i = 0; i < numEntries; i += 1)
 		Duplicate/FREE/T/RMD=[][][DACs[i]] epochs, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
@@ -343,6 +369,9 @@ static Function TestEpochsGeneric(device)
 
 		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
+
+		// preserve epochs wave in CDF
+		Duplicate epochChannel, $("epochChannel" + num2str(i))
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?
 		endT[] = str2num(epochChannel[p][1])
@@ -542,6 +571,24 @@ static Function EP_EpochTest4([str])
 End
 
 static Function EP_EpochTest4_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest4a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"      + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest4a_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
@@ -791,6 +838,29 @@ static Function EP_EpochTest14([str])
 End
 
 static Function EP_EpochTest14_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+static Function EP_EpochTest15_PreAcq(string device)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 43.59)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val =10)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest15([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	       						   "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest15_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)

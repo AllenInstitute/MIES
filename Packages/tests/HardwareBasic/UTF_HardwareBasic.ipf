@@ -32,7 +32,7 @@ End
 // - RunWithOpts(testsuite = "UTF_Epochs.ipf")
 // - RunWithOpts(testcase = "EP_EpochTest7")
 // - RunWithOpts(testcase = "EP_EpochTest7", instru = 1, traceWinList = "MIES_Epochs.ipf")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder])
 
 	variable debugMode
 	string traceOptions = ""
@@ -57,6 +57,12 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		instru = 0
 	else
 		instru = !!instru
+	endif
+
+	if(ParamIsDefault(keepDataFolder))
+		keepDataFolder = 0
+	else
+		keepDataFolder = !!keepDataFolder
 	endif
 
 	if(ParamIsDefault(traceWinList))
@@ -101,8 +107,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder=keepDataFolder)
 	else
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder=keepDataFolder)
 	endif
 End
