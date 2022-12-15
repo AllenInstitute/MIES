@@ -1930,7 +1930,7 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
 
-			EnsureLargeEnoughWave(output, minimumSize=index + 1)
+			EnsureLargeEnoughWave(output, minimumSize=index)
 			output[index] = rangedSweepData
 			index += 1
 		endfor

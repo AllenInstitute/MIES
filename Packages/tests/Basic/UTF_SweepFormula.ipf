@@ -1996,7 +1996,9 @@ static Function TestOperationData()
 	CreateFakeSweepData(device, sweepNo=sweepNo)
 	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
 
-	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0"
+	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
+	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
+	epochStr += "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd1) + ",NoShortName,0,:"
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNo, device, mode)
 	epochStr = "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd1) + ",ShortName=TestEpoch,0"
@@ -2029,6 +2031,52 @@ static Function TestOperationData()
 	ranges[][0] = rangeStart0
 	ranges[][1] = rangeEnd0
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
+
+	sweepCnt = 1
+	str = "data(\"Test*\",select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs starting with Test...
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = rangeStart1
+	ranges[0][1] = rangeEnd0
+	ranges[1][0] = rangeStart0
+	ranges[1][1] = rangeEnd0
+	ranges[2][0] = rangeStart1
+	ranges[2][1] = rangeEnd0
+	ranges[3][0] = rangeStart0
+	ranges[3][1] = rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {3, 1, 3, 1}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
+
+	sweepCnt = 1
+	str = "data([\"TestEpoch\",\"TestEpoch1\"],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs in array
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = rangeStart0
+	ranges[0][1] = rangeEnd0
+	ranges[1][0] = rangeStart1
+	ranges[1][1] = rangeEnd0
+	ranges[2][0] = rangeStart0
+	ranges[2][1] = rangeEnd0
+	ranges[3][0] = rangeStart1
+	ranges[3][1] = rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {3, 1, 3, 1}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
+
+	// Finds the NoShortName epoch
+	sweepCnt = 1
+	str = "data(\"!TestEpoch*\",select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	numResultsRef = sweepCnt * numChannels / 2
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = rangeStart0
+	ranges[][1] = rangeEnd1
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {3, 1}, ranges=ranges)
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
