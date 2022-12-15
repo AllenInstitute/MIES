@@ -655,9 +655,10 @@ The range can be either supplied explicitly using `[100, 300]` which would
 select `100 ms` to `300 ms` or by using `cursors` that also returns a range specification. In case `cursors()` is
 used but there are no cursors on the graph, the full x-range is used. A numerical range applies to all sweeps.
 
-Instead of a numerical range also the short name of an epoch can be given. Then the range
-is determined from the epoch information of each sweep/channel data iterates over. If a specified epoch does not exist in a sweep
-that sweep data is not included in the sweep data returned.
+Instead of a numerical range also the short names of epochs can be given including wildcard expressions. Then the range
+is determined from the epoch information of each sweep/channel/epoch data iterates over. If a specified epoch does not exist in a sweep
+that sweep data is not included in the sweep data returned. If the same epoch is resolved multiple times from wildcard expressions or
+multiple epoch names then it is included only once per sweep.
 
 selectData is retrieved through the `select` operation. It selects for which sweeps and channels sweep data is returned.
 `select` also allows to choose currently displayed sweeps or all existing sweeps as data source.
@@ -674,6 +675,18 @@ The returned data type is `SF_DATATYPE_SWEEP`.
 
    // Shows epoch "E1" range of the AD channels of all displayed sweeps
    data("E1", select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs starting with "E" of the AD channels of all displayed sweeps
+   data("E*", select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs starting with "E"  and "TP" of the AD channels of all displayed sweeps
+   data(["E*","TP*"], select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs that do not start with "E"  and that do start with "TP" of the AD channels of all displayed sweeps
+   data(["!E*","TP*"], select(channels(AD), sweeps()))
+
+   // No double resolve of the same epoch name: Shows sweep data from epoch "TP" of the AD channels of all displayed sweeps.
+   data(["TP","TP"], select(channels(AD), sweeps()))
 
 labnotebook
 """""""""""
