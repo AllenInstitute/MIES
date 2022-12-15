@@ -47,6 +47,8 @@ static StrConstant EPOCH_SN_TRIG_CYCLE_INCOMPLETE = "I"
 static StrConstant EPOCH_SN_TRIG_HALF_CYCLE = "H"
 static StrConstant EPOCH_SN_UNACQUIRED = "UA"
 
+static Constant EPOCH_GAPS_WORKAROUND = 0
+
 /// @brief Clear the list of epochs
 Function EP_ClearEpochs(string device)
 
@@ -930,4 +932,88 @@ Function EP_AppendLBNEpochs(string device, variable sweepNo)
 
 		epochWave[0, epochChannelCnt - 1][][i] = epochChannel[p][q]
 	endfor
+End
+
+/// @brief Helper function that returns (unintended) gaps between epochs
+static Function/WAVE EP_GetGaps(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber)
+
+	variable i, numEpochs, index
+
+	WAVE/Z/T zeroEpochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, channelType, channelNumber, ".*", treelevel=0)
+	if(!WaveExists(zeroEpochs))
+		return $""
+	endif
+
+	numEpochs = DimSize(zeroEpochs, ROWS)
+
+	Make/FREE/D/N=(numEpochs, 2) gaps
+	SetDimLabel COLS, 0, GAPBEGIN, gaps
+	SetDimLabel COLS, 1, GAPEND, gaps
+
+	for(i = 0; i < numEpochs - 1; i += 1)
+
+		if(i == 0 && str2numSafe(zeroEpochs[i][EPOCH_COL_STARTTIME]) > 0)
+			gaps[index][%GAPBEGIN] = 0
+			gaps[index][%GAPEND] = str2numSafe(zeroEpochs[i][EPOCH_COL_STARTTIME])
+			index += 1
+		endif
+
+		if(str2numSafe(zeroEpochs[i][EPOCH_COL_ENDTIME]) != str2numSafe(zeroEpochs[i + 1][EPOCH_COL_STARTTIME]))
+			gaps[index][%GAPBEGIN] = str2numSafe(zeroEpochs[i][EPOCH_COL_ENDTIME])
+			gaps[index][%GAPEND] = str2numSafe(zeroEpochs[i + 1][EPOCH_COL_STARTTIME])
+			index += 1
+		endif
+	endfor
+
+	if(!index)
+		return $""
+	endif
+
+	Redimension/N=(index, -1) gaps
+
+	return gaps
+End
+
+/// @brief Returns the following epoch of a given epoch name in a specified tree level
+Function/WAVE EP_GetNextEpoch(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, variable treelevel[, variable ignoreGaps])
+
+	variable currentEnd, dim
+
+	ignoreGaps = ParamIsDefault(ignoreGaps) ? EPOCH_GAPS_WORKAROUND : !!ignoreGaps
+
+	WAVE/Z/T currentEpoch = EP_GetEpochs(numericalValues, textualValues, sweepNo, channelType, channelNumber, shortname)
+	ASSERT(WaveExists(currentEpoch) && DimSize(currentEpoch, ROWS) == 1, "Found multiple candidates for current epoch.")
+	currentEnd = str2numSafe(currentEpoch[0][EPOCH_COL_ENDTIME])
+	WAVE/Z/T levelEpochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, channelType, channelNumber, ".*", treelevel=treelevel)
+	if(!WaveExists(levelEpochs))
+		return $""
+	endif
+
+	if(ignoreGaps)
+		WAVE/Z gaps = EP_GetGaps(numericalValues, textualValues, sweepNo, channelType, channelNumber)
+		if(WaveExists(gaps))
+			dim = FindDimlabel(gaps, COLS, "GAPBEGIN")
+			FindValue/Z/RMD=[][dim]/V=(currentEnd) gaps
+			if(V_Value >= 0)
+				currentEnd = gaps[V_row][%GAPEND]
+			endif
+		endif
+	endif
+
+	Make/FREE/D/N=(DimSize(levelEpochs, ROWS)) startTimes
+	startTimes = str2numSafe(levelEpochs[p][EPOCH_COL_STARTTIME])
+	WAVE/Z nextEpochCandidates = FindIndizes(startTimes, col=0, var=currentEnd)
+	if(!WaveExists(nextEpochCandidates))
+		return $""
+	endif
+	ASSERT(DimSize(nextEpochCandidates, ROWS) == 1, "Found multiple candidates for possible next epoch.")
+	Duplicate/FREE/RMD=[nextEpochCandidates[0]][] levelEpochs, result
+
+	return result
+End
+
+/// @brief returns the Amplitude value from the epoch tag data
+Function EP_GetEpochAmplitude(string epochTag)
+
+	return NumberByKey(EPOCH_AMPLITUDE_KEY, epochTag, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 End
