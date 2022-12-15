@@ -29,10 +29,3 @@ Distributed DAQ (dDAQ)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 TODO fill me
-
-.. _TPStorage:
-
-TPStorage
-~~~~~~~~~
-
-TODO fill me
