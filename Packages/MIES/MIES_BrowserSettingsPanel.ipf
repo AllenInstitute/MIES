@@ -1654,6 +1654,7 @@ Function BSP_AddTracesForEpochs(string win)
 		endif
 
 		WAVE/T epochs = EP_EpochStrToWave(epochInfoStr)
+		SetEpochsDimensionLabels(epochs)
 
 		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
 
