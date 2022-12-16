@@ -528,12 +528,13 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
 		WAVE ADCs = GetADCListFromConfig(config)
+		WAVE DACs = GetDACListFromConfig(config)
 		WAVE hsProp = GetHSProperties(device)
 
 		WAVE scaledDataWave = GetScaledDataWave(device)
 		sampleInt = DimDelta(scaledDataWave, ROWS)
 		osciUnits = WaveUnits(scaledDataWave, ROWS)
-		numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+		numDACs = DimSize(DACs, ROWS)
 		numADCs = DimSize(ADCs, ROWS)
 
 		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
