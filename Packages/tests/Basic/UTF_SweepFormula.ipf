@@ -1244,6 +1244,140 @@ static Function TestOperationWave()
 	CHECK(!WaveExists(wave1))
 End
 
+static Function/WAVE TestOperationTPBase_TPSS_TPInst_FormulaGetter()
+
+	Make/FREE/T data = {"tpbase;" + SF_DATATYPE_TPBASE, "tpss;" + SF_DATATYPE_TPSS, "tpinst;" + SF_DATATYPE_TPINST}
+
+	return data
+End
+
+// UTF_TD_GENERATOR TestOperationTPBase_TPSS_TPInst_FormulaGetter
+static Function TestOperationTPBase_TPSS_TPInst([str])
+	string str
+
+	string func, formula, strRef, dataType, dataTypeRef
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	func = StringFromList(0, str)
+	dataTypeRef = StringFromList(1, str)
+
+	formula = func + "()"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+	dataType = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(dataTypeRef, dataType)
+
+	try
+		formula = func + "(1)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function CheckTPFitResult(WAVE/WAVE wv, string fit, string result, variable maxLength)
+
+	string dataType, strRef
+	variable trailLength
+
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 2)
+	dataType = JWN_GetStringFromWaveNote(wv, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_TPFIT
+	CHECK_EQUAL_STR(strRef, dataType)
+
+	WAVE/T part1 = wv[0]
+	CHECK_EQUAL_VAR(DimSize(part1, ROWS), 2)
+
+	strRef = part1[%FITFUNCTION]
+	CHECK_EQUAL_STR(strRef, fit)
+	strRef = part1[%RETURNWHAT]
+	CHECK_EQUAL_STR(strRef, result)
+
+	WAVE part2 = wv[1]
+	CHECK_EQUAL_VAR(DimSize(part2, ROWS), 1)
+	trailLength = part2[%MAXTRAILLENGTH]
+	CHECK_EQUAL_VAR(trailLength, maxlength)
+End
+
+static Function TestOperationTPfit()
+
+	string formula, strRef, dataType, dataTypeRef
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	formula = "tpfit(exp,tau)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "tau", 250)
+
+	formula = "tpfit(doubleexp,tau)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "doubleexp", "tau", 250)
+
+	formula = "tpfit(exp,tausmall)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "tausmall", 250)
+
+	formula = "tpfit(exp,amp)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "amp", 250)
+
+	formula = "tpfit(exp,minabsamp)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "minabsamp", 250)
+
+	formula = "tpfit(exp,fitq)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "fitq", 250)
+
+	formula = "tpfit(exp,tau,20)"
+	WAVE/WAVE output = GetMultipleResults(formula, win)
+	CheckTPFitResult(output, "exp", "tau", 20)
+
+	try
+		formula = "tpfit(exp)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		formula = "tpfit(exp,tau,250,1)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		formula = "tpfit(1,tau,250)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		formula = "tpfit(exp,1,250)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		formula = "tpfit(exp,tau,tau)"
+		WAVE/WAVE output = GetMultipleResults(formula, win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function/WAVE FuncCommandGetter()
 
 	variable i, numEntries
