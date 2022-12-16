@@ -66,3 +66,27 @@ static Function CheckNumberOfRacksAndTTLs([string str])
 	CHECK_EQUAL_VAR(numRacksRef, deviceInfo[%RACK])
 	CHECK_EQUAL_VAR(numTTLsRef, deviceInfo[%TTL])
 End
+
+static Function CheckDeviceLists()
+
+	string ITCdevices, NIdevices, ref
+
+	ITCDevices = DAP_GetITCDeviceList()
+	NIDevices  = DAP_GetNIDeviceList()
+
+	ref = NONE
+
+#if defined(TESTS_WITH_NI_HARDWARE)
+	CHECK_NEQ_STR(NIDevices, ref)
+	CHECK_EQUAL_STR(ITCDevices, ref)
+#elif defined(TESTS_WITH_ITC18USB_HARDWARE)
+	CHECK_NEQ_STR(ITCDevices, ref)
+	CHECK_EQUAL_STR(NIDevices, ref)
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	CHECK_NEQ_STR(ITCDevices, ref)
+	CHECK_EQUAL_STR(NIDevices, ref)
+#else
+	FAIL()
+#endif
+
+End

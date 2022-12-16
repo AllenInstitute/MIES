@@ -53,9 +53,9 @@ End
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
-	variable i, j, numPattern
-	string DAQmxDevice, DAQmxDevName
-	string devList, pattern
+	variable i, j, numPattern, numDevices
+	string propList
+	string devList, pattern, allDevices, device
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
@@ -66,26 +66,23 @@ Function/S DAP_GetNIDeviceList()
 
 	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
-	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
-		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
+	allDevices = HW_NI_ListDevices()
+	numDevices = ItemsInList(allDevices)
 
-		if(IsEmpty(DAQmxDevice))
-			break
-		endif
+	for(i = 0;i < numDevices;i += 1)
+		device = StringFromList(i, allDevices)
+		propList = HW_NI_GetPropertyListOfDevices(device)
 
 #ifdef EVIL_KITTEN_EATING_MODE
-		devList += StringByKey("NAME", DAQmxDevice) + ";"
+		devList = AddListItem(device, devList, ";", inf)
 #else
 		for(j = 0; j < numPattern; j += 1)
 			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")
-			if(!(strsearch(DAQmxDevice, pattern, 0) == -1))
-				DAQmxDevName = StringByKey("NAME", DAQmxDevice)
-				if(!isEmpty(DAQmxDevName))
-					if(!IsValidObjectName(DAQmxDevName))
-						Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
-					else
-						devList += DAQmxDevName + ";"
-					endif
+			if(strsearch(propList, pattern, 0) >= 0)
+				if(!IsValidObjectName(device))
+					Print "NI device " + device + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
+				else
+					devList = AddListItem(device, devList, ";", inf)
 				endif
 			endif
 		endfor
@@ -95,7 +92,7 @@ Function/S DAP_GetNIDeviceList()
 	// we want to have device infos for all NI devices
 	// devList holds only the ones suitable for DAQ but
 	// skips the ones used for pressure
-	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices(), HARDWARE_NI_DAC)
+	DAP_UpdateDeviceInfoWaves(allDevices, HARDWARE_NI_DAC)
 
 	if(!IsEmpty(devList))
 		globalNIDevList = devList
