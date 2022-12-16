@@ -100,7 +100,8 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 	DC_UpdateHSProperties(device, ADCs)
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
-	ADChannelToMonitor = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	ADChannelToMonitor = DimSize(DACs, ROWS)
 
 	KillOrMoveToTrash(wv = GetTPResultsBuffer(device))
 
