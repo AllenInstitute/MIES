@@ -17,7 +17,7 @@ DAQ details
 
 .. _Figure dDAQ Delays:
 
-.. figure:: svg/ddaq-delay.svg
+.. figure:: svg/dDAQ-delay.svg
    :align: center
 
    Ddaq delay
