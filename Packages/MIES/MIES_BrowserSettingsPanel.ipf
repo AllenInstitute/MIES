@@ -1758,10 +1758,10 @@ Function BSP_EpochGraphToolTip(s)
 			ASSERT(WaveExists(epochs), "Missing epoch info")
 			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx = w[s.row][s.column][1]
-			first = num2strHighPrec(str2num(epochs[idx][0]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
-			last  = num2strHighPrec(str2num(epochs[idx][1]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
+			first = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
+			last  = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
 
-			s.tooltip = first + " <-> " + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
+			s.tooltip = first + " <-> " + last + "\n" + epochs[idx][EPOCH_COL_TAGS] + "TreeLevel=" + epochs[idx][EPOCH_COL_TREELEVEL]
 		endif
 	endif
 
