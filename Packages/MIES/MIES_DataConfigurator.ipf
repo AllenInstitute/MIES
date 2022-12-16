@@ -150,7 +150,9 @@ static Function DC_NoOfChannelsSelected(device, type)
 	string device
 	variable type
 
-	return sum(DAG_GetChannelState(device, type))
+	WAVE channelState = DAG_GetChannelState(device, type)
+
+	return sum(channelState)
 End
 
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
