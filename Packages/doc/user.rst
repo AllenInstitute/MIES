@@ -10,6 +10,7 @@ User documentation
   databrowser
   wavebuilder
   daephys
+  testpulse
   auto_testpulse_tuning
   labnotebook-descriptions
   analysis-function-parameters
