@@ -1241,21 +1241,38 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
+static Constant HW_ITC_MEMORY_ERROR = 0x80421000
+static Constant HW_ITC_MAX_RETRIES = 10
+
 /// @see HW_StartAcq (threadsafe variant)
 threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 	variable deviceID, triggerMode, flags
+
+	variable retries
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/EXT=256/Z=(HW_ITC_GetZValue(flags))
-			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+			while(retries < HW_ITC_MAX_RETRIES                                        \
+			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
+					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
+
+			if(retries > 1)
+				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
+			endif
 
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+			while(retries < HW_ITC_MAX_RETRIES                                        \
+			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
+					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
+
+			if(retries > 1)
+				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
+			endif
 
 			break
 		default:
@@ -1270,19 +1287,35 @@ End
 Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 	variable deviceID, triggerMode, flags
 
+	variable retries
+
 	DEBUGPRINTSTACKINFO()
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/EXT=256/Z=(HW_ITC_GetZValue(flags))
-			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+				retries += 1
+			while(retries < HW_ITC_MAX_RETRIES                                        \
+			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
+					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
+
+			if(retries > 1)
+				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
+			endif
 
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+				retries += 1
+			while(retries < HW_ITC_MAX_RETRIES                                        \
+			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
+					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
+
+			if(retries > 1)
+				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
+			endif
 
 			break
 		default:
