@@ -334,7 +334,8 @@ Function/WAVE MSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case MSQ_FAST_RHEO_EST:
 			numRows = IDX_NumberOfSweepsInSet(stimset)
-			numCols = Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE))
+			WAVE activeHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+			numCols = Sum(activeHS)
 			numLayers = 0
 			numChunks = 0
 			typeOfWave = IGOR_TYPE_64BIT_FLOAT
