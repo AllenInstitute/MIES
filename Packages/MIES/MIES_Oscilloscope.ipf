@@ -222,8 +222,9 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
-	numActiveDACs = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	numActiveDACs = DimSize(DACs, ROWS)
 	graph = SCOPE_GetGraph(device)
 	Yoffset = 40 / numADChannels
 	YaxisSpacing = 0.95 / numADChannels
