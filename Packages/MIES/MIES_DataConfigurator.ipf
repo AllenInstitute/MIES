@@ -406,9 +406,12 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 
 	hardwareType = GetHardwareType(device)
 
-	numADCs = DimSize(GetADCListFromConfig(config), ROWS)
-	numDACs = DimSize(GetDACListFromConfig(config), ROWS)
-	numTTLs = DimSize(GetTTLListFromConfig(config), ROWS)
+	WAVE ADCs = GetADCListFromConfig(config)
+	numADCs = DimSize(ADCs, ROWS)
+	WAVE DACs = GetDACListFromConfig(config)
+	numDACs = DimSize(DACs, ROWS)
+	WAVE TTLs = GetTTLListFromConfig(config)
+	numTTLs = DimSize(TTLs, ROWS)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
