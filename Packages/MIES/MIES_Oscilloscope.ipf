@@ -698,7 +698,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 	WAVE DAQDataWave       = GetDAQDataWave(device, dataAcqOrTP)
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	startOfADColumns = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	startOfADColumns = DimSize(DACs, ROWS)
 	numEntries = DimSize(ADCs, ROWS)
 
 	WAVE allGain = SWS_GETChannelGains(device, timing = GAIN_AFTER_DAQ)
