@@ -3818,7 +3818,8 @@ Function TimeAlignHandleCursorDisplay(win)
 
 	// set cursor to trace
 	if(isEmpty(csrA) || isEmpty(csrB))
-		length = DimSize(TraceNameToWaveRef(graph, trace), ROWS)
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		length = DimSize(wv, ROWS)
 		posA = length / 3
 		posB = length * 2 / 3
 	else
