@@ -6139,3 +6139,42 @@ Function StoreWaveOnDisk(WAVE wv, string name)
 	KillOrMoveToTrash(wv = storedWave)
 	RemoveEmptyDataFolder(dfr)
 End
+
+threadsafe static Function/S GetWavePointer_Impl(wv)
+	WAVE wv
+
+	variable err
+	string str
+
+	Make/FREE/WAVE refWave = {wv}
+
+	WAVE ref = refWave
+
+#if IgorVersion() >= 7.0
+	sprintf str, "%#08X", ref[0]; err = GetRTError(1)
+#else
+	sprintf str, "%#08X", ref[0]
+#endif
+
+	return str
+End
+
+/// @brief Return the memory address of the passed wave
+///
+/// Works on all Igor Pro versions without clearing lingering runtime errors.
+/// The idea is that clearing RTE's in preemptive threads does not modify the
+/// main thread's one.
+threadsafe Function/S GetWavePointer(wv)
+	WAVE wv
+
+#if IgorVersion() >= 7.0
+
+	Make/FREE/T/N=2 address
+	MultiThread address = GetWavePointer_Impl(wv)
+
+	return address[0]
+#else
+	return GetWavePointer_Impl(wv)
+#endif
+
+End
