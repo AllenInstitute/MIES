@@ -2778,7 +2778,7 @@ static Function TPWithModelCell()
 
 	win = DB_GetBoundDataBrowser(device)
 
-	CHECK(ExecuteSweepFormulaInDB("store(\"inst\",tp(inst))\n and \nstore(\"ss\",tp(ss))", win))
+	CHECK(ExecuteSweepFormulaInDB("store(\"inst\",tp(tpinst()))\n and \nstore(\"ss\",tp(tpss()))", win))
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 

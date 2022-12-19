@@ -4948,7 +4948,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
 			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
-			sprintf formula, "store(\"Steady state resistance\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+			sprintf formula, "store(\"Steady state resistance\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
 			databrowser = PSQ_ExecuteSweepFormula(device, formula)
 
 			minPipetteResistance = AFH_GetAnalysisParamNumerical("MinPipetteResistance", s.params)
@@ -5388,17 +5388,17 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			switch(testpulseGroupSel)
 				case PSQ_SE_TGS_BOTH:
 					formula = ""
-					sprintf str, "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), [%d], all), [0, 4, 5, 6]))\r", s.sweepNo
+					sprintf str, "store(\"Steady state resistance (group A)\", tp(tpss(), select(channels(AD), [%d], all), [0, 4, 5, 6]))\r", s.sweepNo
 					formula += str
 					formula += "and\r"
-					sprintf str, "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), [%d], all), [0, 1, 2, 3]))", s.sweepNo
+					sprintf str, "store(\"Steady state resistance (group B)\", tp(tpss(), select(channels(AD), [%d], all), [0, 1, 2, 3]))", s.sweepNo
 					formula += str
 					break
 				case PSQ_SE_TGS_FIRST:
-					sprintf formula, "store(\"Steady state resistance (group A)\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+					sprintf formula, "store(\"Steady state resistance (group A)\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
 					break
 				case PSQ_SE_TGS_SECOND:
-					sprintf formula, "store(\"Steady state resistance (group B)\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+					sprintf formula, "store(\"Steady state resistance (group B)\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
 					break
 				default:
 					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
@@ -6516,10 +6516,10 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 
 			if(baselinePassed)
 				cmd = ""
-				sprintf str, "store(\"Steady state resistance\", tp(ss, select(channels(AD), [%d], all), [0]))", s.sweepNo
+				sprintf str, "store(\"Steady state resistance\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
 				cmd += str
 				cmd += "\r and \r"
-				sprintf str, "store(\"Peak resistance\", tp(inst, select(channels(AD), [%d], all), [0]))", s.sweepNo
+				sprintf str, "store(\"Peak resistance\", tp(tpinst(), select(channels(AD), [%d], all), [0]))", s.sweepNo
 				cmd += str
 
 				databrowser = PSQ_ExecuteSweepFormula(device, cmd)
