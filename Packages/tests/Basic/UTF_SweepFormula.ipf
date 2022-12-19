@@ -2415,7 +2415,7 @@ End
 static Function TestOperationEpochs()
 
 	variable i, j, sweepNumber, channelNumber, numResultsRef
-	string str, trace, key, name, win, device
+	string str, trace, key, name, win, device, epoch2
 
 	variable numSweeps = 10
 	variable numChannels = 5
@@ -2444,6 +2444,8 @@ static Function TestOperationEpochs()
 	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:"
 	wEpochStr += "0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,:"
 	wEpochStr += "0.6000000,0.7000000,NoShortName,3,:"
+	epoch2 = "Epoch=0;Type=Pulse Train;Pulse=49;Baseline;"
+	wEpochStr += "0.5100000,0.5200000," + epoch2 + ",2,"
 
 	DFREF dfr = GetDeviceDataPath(device)
 	for(i = 0; i < numSweeps; i += 1)
@@ -2552,6 +2554,41 @@ static Function TestOperationEpochs()
 	channelNumbers = mod(p, activeChannelsDA) * 2
 	sweepNumbers = trunc(p / activeChannelsDA)
 	CheckSweepsMetaData(dataWref, channelTypes, channelNumbers, sweepNumbers, SF_DATATYPE_EPOCHS)
+
+	str = "epochs(\"E0_PT_P48_*\", select(channels(DA), 0))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
+	Make/FREE/D refData = {503, 510}
+	for(data : dataWref)
+		 CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+	endfor
+
+	// find epoch without shortname
+	str = "epochs(\"" + epoch2 + "\", select(channels(DA), 0))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
+
+	// finds only epoch without shortname from test epochs
+	str = "epochs(\"!E0_PT_P48*\", select(channels(DA), 0))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA * 2)
+
+	// the first wildcard matches both setup epochs, the second only the first setup epoch
+	// only unique epochs are returned, thus two
+	str = "epochs([\"E0_PT_*\",\"E0_PT_P48*\"], select(channels(DA), 0))"
+	WAVE/WAVE dataWref = GetMultipleResults(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 8)
+	Make/FREE/D refData1 = {500, 510}
+	Make/FREE/D refData2 = {503, 510}
+	i = 0
+	for(data : dataWref)
+		if(!i)
+			CHECK_EQUAL_WAVES(data, refData1, mode = WAVE_DATA)
+		else
+			CHECK_EQUAL_WAVES(data, refData2, mode = WAVE_DATA)
+		endif
+		i = 1 - i
+	endfor
 
 	// channel(s) with no epochs
 	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), 0..." + num2istr(numSweeps) + "))"
