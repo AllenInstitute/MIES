@@ -3162,7 +3162,7 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 		epIndex = V_Row
 
 		if(epType == EPOCHS_TYPE_NAME)
-			Make/FREE/T wt = {epochInfo[epIndex][EPOCH_COL_TAGS]}
+			Make/FREE/T wt = {epNames[epIndex]}
 			WAVE out = wt
 		elseif(epType == EPOCHS_TYPE_TREELEVEL)
 			Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
