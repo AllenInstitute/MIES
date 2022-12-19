@@ -963,16 +963,20 @@ The `tp` operation returns analysis values for test pulses that are part of sele
 
 .. code-block:: bash
 
-   tp(variant type[, array selectData[, array ignoreTPs]])
+   tp(operation mode[, array selectData[, array ignoreTPs]])
 
-The type argument sets what test pulse analysis value is returned.
-The following types are supported:
+The mode argument sets what test pulse analysis is run.
+The following tp analysis modes are supported:
 
-``base`` or ``0``: Returns the baseline level in pA or mV depending on the clamp mode.
+``tpbase()`` Returns the baseline level in pA or mV depending on the clamp mode.
 
-``inst`` or ``1``: Returns the instantaneous resistance values in MΩ.
+``tpinst()`` Returns the instantaneous resistance values in MΩ.
 
-``ss`` or ``2``: Returns the steady state resistance values in MΩ.
+``tpss()`` Returns the steady state resistance values in MΩ.
+
+``tpfit(string fitFunc, string retValue[, variable maxTrail])`` Returns results from fitting the test pulse range.
+
+See specific subsections for more details.
 
 The second argument is a selection of sweeps and channels where the test pulse information is retrieved from.
 It must be specified through the `select` operation.
@@ -982,7 +986,7 @@ The optional argument ``ignoreTPs`` allows to ignore some of the found test-puls
 test-pulses by ascending starting time.
 
 If a single sweep contains multiple test pulses then the data from the test
-pulses is averaged before analysis. The test pulses in one sweep must have the same duration.
+pulses is averaged before analysis. The included test pulses in a single sweep must have the same duration.
 
 The operation returns multiple data waves. There is one data wave returned for each sweep/channel selected through selectData.
 The sweep and channel meta data is included in each data wave.
@@ -997,16 +1001,70 @@ If a selected sweep does not contain any test pulse then for that data wave a nu
 .. code-block:: bash
 
    // Get steady state resistance from all displayed sweeps and channels
-   tp(ss)
+   tp(tpss())
 
    // Get steady state resistance from all displayed sweeps and AD channels
-   tp(ss, select(channels(AD), sweeps()))
+   tp(tpss(), select(channels(AD), sweeps()))
 
    // Get base line level from all displayed sweeps and DA1 channel
-   tp(base, select(channels(DA1), sweeps()))
+   tp(tpbase(), select(channels(DA1), sweeps()))
 
    // Get base line level from all displayed sweeps and channels ignoring test pulse 0 and 1
-   tp(base, select(), [0, 1])
+   tp(tpbase(), select(), [0, 1])
+
+   // Fit the test pulse from all displayed sweeps and channels exponentially and show the amplitude.
+   tp(tpfit(exp, amp))
+
+   // Fit the test pulse from all displayed sweeps and channels double-exponentially and show the smaller tau from the two exponentials.
+   // The fitting range is changed from the default maximum of 250 ms to 500 ms if the next epoch is sufficiently long.
+   tp(tpfit(doubleexp, tausmall, 500))
+
+tpbase
+======
+
+The tpbase operation specifies an operation mode for the tp operation.
+In that mode the tp operation returns the baseline level in pA or mV depending on the clamp mode.
+tpbase uses a fixed algorithm and takes no arguments.
+
+tpss
+====
+
+The tpss operation specifies an operation mode for the tp operation.
+In that mode the tp operation returns the steady state resistance values in MΩ.
+tpss uses a fixed algorithm and takes no arguments.
+
+tpinst
+======
+
+The tpinst operation specifies an operation mode for the tp operation.
+In that mode the tp operation returns the instantaneous resistance values in MΩ.
+tpinst uses a fixed algorithm and takes no arguments.
+
+tpfit
+=====
+
+The tpfit operation specifies an operation mode for the tp operation.
+In that mode the tp operation fits data from test pulses with the specified fit function template and returns the specified fit result value.
+By default the fit range includes the epoch that follows after the test pulse limited up to 250 ms. Whichever ends first. The default time limit can be overwritten with
+the third argument.
+
+.. code-block:: bash
+
+   tpfit(string fitFunc, string retValue[, variable maxTrail])
+
+The first argument is the name of a fit function, valid fit functions are ``exp`` and ``doubleexp``.
+The fit function ``exp`` applies the fit: :math:`y = K_0+K_1*e^{-\frac{x-x_0}{K_2}}`.
+The fit function ``doubleexp`` applies the fit: :math:`y = K_0+K_1*e^{-\frac{x-x_0}{K_2}}+K_3*e^{-\frac{x-x_0}{K_4}}`.
+
+The second argument specifies the value returned from the fit function. Options are ``tau``, ``tausmall``, ``amp``, ``minabsamp`` and ``fitq``.
+The option ``tau`` returns for the fit function ``exp`` the coefficient :math:`K_2`, for ``doubleexp`` it returns :math:`max(K_2, K_4)`.
+The option ``tausmall`` returns for the fit function ``exp`` the coefficient :math:`K_2`, for ``doubleexp`` it returns :math:`min(K_2, K_4)`.
+The option ``amp`` returns for the fit function ``exp`` the coefficient :math:`K_1`, for ``doubleexp`` it returns :math:`K_1` if :math:`max(|K_1|, |K_3|) = |K_1|`, :math:`K_3` otherwise.
+The option ``minabsamp`` returns for the fit function ``exp`` the coefficient :math:`K_1`, for ``doubleexp`` it returns :math:`K_1` if :math:`min(|K_1|, |K_3|) = |K_1|`, :math:`K_3` otherwise.
+The option ``fitq`` returns the fit quality defined as :math:`\sum_0^n{(y_i-y_{fit})^2}/(x_n-x_0)`.
+
+The optional third argument specifies the time in [ms] after the test pulse that is maximal included in the input data for the fit, typically from the next epoch.
+By default if the next epoch on tree level 1 is sufficiently long 250 ms of sweep data is included in the fit.
 
 log
 """
