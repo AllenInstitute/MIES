@@ -7812,3 +7812,260 @@ threadsafe Function/WAVE GetActiveChannelMapTTLHWToGUI()
 
 	return channelMapHWToGUI
 End
+
+/// @name SweepFormula PSX
+/// @{
+
+/// @brief Return the analysis results wave for the EP_Operation
+///
+/// ROWS:
+/// - One entry for every analyzed sweep/channel
+///
+/// COLS:
+/// - 0: Sweep Number
+/// - 1: Baseline/Offset
+/// - 2: Sigma of the gauss fit of the histogram of the deconvoluted data
+/// - 3: Number of crossings
+/// - 4: Average amplitude of the events
+/// - 5: Average time between event peaks
+Function/WAVE GetPSXAnalysisWaveAsFree()
+
+	Make/D/FREE=1/N=(MINIMUM_WAVE_SIZE,6) psxAnalysis = NaN
+	WAVE wv = psxAnalysis
+
+	SetDimLabel 1, 0, sweep, wv
+	SetDimLabel 1, 1, baseline, wv
+	SetDimLabel 1, 2, sigma, wv
+	SetDimLabel 1, 3, crossing, wv
+	SetDimLabel 1, 4, avgAmp, wv
+	SetDimLabel 1, 5, avgIsi, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+end
+
+static Constant PSX_WAVE_VERSION       = 1
+static Constant PSX_EVENT_WAVE_COLUMNS = 13
+
+Function UpgradePSXEventWave(WAVE psxEvent)
+
+	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
+		// latest version
+		return NaN
+	endif
+
+	ASSERT(0, "Missing upgrade path")
+End
+
+/// @brief Return a 2D events wave as free wave
+///
+/// Rows:
+/// - count
+///
+/// Cols:
+/// -   0: Event index
+/// -   1: Event time [ms]
+/// -   2: Event amplitude [y unit of data]
+/// -   3: Minimum of filtered and offsetted data in the range [time, time + 2ms]
+/// -   4: X location of [2]
+/// -   5: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
+/// -   6: X location of [5]
+/// -   7: Relative amplitude: [2] - [4]
+/// -   8: Time difference to previous event [ms]
+/// -   9: Decay constant tau of exponential fit
+/// -  10: Fit manual QC call, One of @ref PSXStates
+/// -  11: Fit result (0/1)
+/// -  12: Event manual QC call, One of @ref PSXStates
+Function/WAVE GetPSXEventWaveAsFree()
+
+	variable versionOfWave = PSX_WAVE_VERSION
+
+	Make/D/FREE=1/N=(0, PSX_EVENT_WAVE_COLUMNS) psxEvent = NaN
+	WAVE wv = psxEvent
+
+	SetDimLabel COLS,  0, index, wv
+	SetDimLabel COLS,  1, dc_peak_time, wv
+	SetDimLabel COLS,  2, dc_amp, wv
+	SetDimLabel COLS,  3, i_peak, wv
+	SetDimLabel COLS,  4, i_peak_t, wv
+	SetDimLabel COLS,  5, pre_min, wv
+	SetDimLabel COLS,  6, pre_min_t, wv
+	SetDimLabel COLS,  7, i_amp, wv
+	SetDimLabel COLS,  8, isi, wv
+	SetDimLabel COLS,  9, tau, wv
+	SetDimLabel COLS, 10, $"Fit manual QC call", wv
+	SetDimLabel COLS, 11, $"Fit result", wv
+	SetDimLabel COLS, 12, $"Event manual QC call", wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+Function/WAVE GetPSXSingleEventFitWaveFromDFR(DFREF dfr)
+
+	WAVE/D/SDFR=dfr/Z wv = singleEventFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:singleEventFit/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXEventFitWaveAsFree()
+
+	variable versionOfWave = 1
+
+	Make/WAVE/FREE=1/N=(0) eventFit
+	WAVE wv = eventFit
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventColorsWaveAsFree(variable numEvents)
+
+	Make/FREE/N=(numEvents, 4)/FREE=1 eventColors
+
+	return eventColors
+End
+
+Function/WAVE GetPSXEventMarkerWaveAsFree(variable numEvents)
+
+	Make/FREE/N=(numEvents)/FREE=1 eventMarker
+
+	return eventMarker
+End
+
+static Function/WAVE GetWaveFromFolder(DFREF dfr, string name)
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+
+	WAVE/SDFR=dfr/Z wv = $name
+	ASSERT(WaveExists(wv), "Missing wave:" + name)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "psxEvent")
+End
+
+Function/WAVE GetPSXPeakXWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakX")
+End
+
+Function/WAVE GetPSXPeakYWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakY")
+End
+
+Function/WAVE GetPSXPeakYAtFiltWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakYAtFilt")
+End
+
+Function/WAVE GetPSXEventColorsWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventColors")
+End
+
+Function/WAVE GetPSXEventMarkerWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventMarker")
+End
+
+Function/WAVE GetPSXEventFitWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventFit")
+End
+
+Function/WAVE GetPSXSweepDataWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepData")
+End
+
+Function/WAVE GetPSXSweepDataFiltOffWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepDataFiltOff")
+End
+
+Function/WAVE GetPSXSweepDataFiltOffDeconvWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepDataFiltOffDeconv")
+End
+
+Function/WAVE GetPSXEventLocationLabels(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventLocationLabels")
+End
+
+Function/WAVE GetPSXEventLocationTicks(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventLocationTicks")
+End
+
+Function/S GetPSXFolderForComboAsString(DFREF dfr, variable index)
+
+	return GetDataFolder(1, dfr) + "combo_" + num2istr(index)
+End
+
+Function/DF GetPSXFolderForCombo(DFREF dfr, variable index)
+
+	return createDFWithAllParents(GetPSXFolderForComboAsString(dfr, index))
+End
+
+Function/WAVE GetPSXComboListBox(DFREF dfr)
+
+	string name = "combinations"
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	WAVE wv = PSX_CreateCombinationsListBoxWaveAsFree(dfr)
+
+	MoveWave wv, dfr:$name
+
+	return wv
+End
+
+Function/S GetPSXSingleEventFolderAsString(DFREF comboDFR)
+
+	return GetDataFolder(1, comboDFR) + "singleEvent"
+End
+
+Function/DF GetPSXSingleEventFolder(DFREF comboDFR)
+
+	return createDFWithAllParents(GetPSXSingleEventFolderAsString(comboDFR))
+End
+
+/// @brief Return the average wave of the given state for the PSX event plot
+///
+/// `dfr` can be either `singleEventDFR` for the per-combo averages or `workDFR`
+/// for the average over all events disregarding the combo.
+Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
+
+	string name = "average" + PSX_StateToString(state)
+
+	WAVE/D/SDFR=dfr/Z wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=0 dfr:$name/WAVE=wv
+
+	return wv
+End
+
+/// @}

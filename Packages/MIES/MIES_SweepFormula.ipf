@@ -206,7 +206,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_DERIVATIVE, SF_OP_INTEGRATE, SF_OP_TIME, SF_OP_XVALUES, SF_OP_TEXT, SF_OP_LOG,                        \
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
-	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT}
+	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,        \
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS}
 
 	return wt
 End
@@ -1083,6 +1084,15 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_TPFIT:
 			WAVE out = SF_OperationTPFit(jsonId, jsonPath, graph)
 			break
+		case SF_OP_PSX:
+			WAVE out = PSX_Operation(jsonId, jsonPath, graph)
+			break
+		case SF_OP_PSX_KERNEL:
+			WAVE out = PSX_OperationKernel(jsonId, jsonPath, graph)
+			break
+		case SF_OP_PSX_STATS:
+			WAVE out = PSX_OperationStats(jsonId, jsonPath, graph)
+			break
 		default:
 			SFH_ASSERT(0, "Undefined Operation", jsonId=jsonId)
 	endswitch
@@ -1246,7 +1256,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
@@ -1545,7 +1555,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	string trace
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
-	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent
+	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
@@ -1576,6 +1586,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		traceCnt = 0
 		numAnnotations = 0
+		postPlotPSX = 0
 		showLegend = 1
 		formulaCounter = 0
 		WAVE/Z wvX = $""
@@ -1606,8 +1617,15 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				SF_CleanUpPlotWindowsOnFail(plotGraphs)
 				Abort
 			endtry
+
 			WAVE/T yUnitsResult = SF_GatherYUnits(formulaResults, plotMetaData.yAxisLabel, yUnits)
 			WAVE/T yUnits = yUnitsResult
+
+			if(!cmpstr(plotMetaData.dataType, SF_DATATYPE_PSX))
+				PSX_Plot(win, graph, formulaResults, plotMetaData)
+				postPlotPSX = 1
+				continue
+			endif
 
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
@@ -1867,6 +1885,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		endif
 		if(traceCnt > 0)
 			ModifyGraph/W=$win zapTZ(bottom)=1
+		endif
+
+		if(postPlotPSX)
+			PSX_PostPlot(win)
 		endif
 
 		if(keepUserSelection)

@@ -19,6 +19,7 @@
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
+#include "UTF_SweepFormula_PSX"
 #include "UTF_Testpulse"
 #include "UTF_ThreadsafeDataSharing"
 #include "UTF_TraceUserData"
@@ -106,6 +107,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
+	list = AddListItem("UTF_SweepFormula_PSX.ipf", list, ";", inf)
 	list = AddListItem("UTF_Testpulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
 	list = AddListItem("UTF_ThreadsafeDataSharing.ipf", list, ";", inf)

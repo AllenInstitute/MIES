@@ -363,6 +363,7 @@ Constant UNKNOWN_MODE            = NaN
 Constant DATA_ACQUISITION_MODE   = 0
 Constant TEST_PULSE_MODE         = 1
 Constant SWEEP_FORMULA_RESULT    = 2
+Constant SWEEP_FORMULA_PSX       = 3
 /// @}
 
 Constant NUMBER_OF_LBN_DAQ_MODES = 4
@@ -713,6 +714,20 @@ Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
+
+/// Window hook key constants
+/// @{
+Constant LEFT_KEY  =  28
+Constant RIGHT_KEY =  29
+Constant UP_KEY    =  30
+Constant DOWN_KEY  =  31
+Constant SPACE_KEY =  32
+Constant C_KEY     =  99
+Constant E_KEY     = 101
+Constant F_KEY     = 102
+Constant R_KEY     = 114
+Constant Z_KEY     = 122
+/// @}
 
 Constant MAX_COMMANDLINE_LENGTH = 2500
 
@@ -1932,6 +1947,9 @@ StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave
 StrConstant SF_META_LINESTYLE = "/LineStyle" // number
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
 
+StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
+                                          // top-level group with individual entries
+
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
 StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
@@ -1954,6 +1972,7 @@ StrConstant SF_DATATYPE_TPINST = "TestPulseMode_Instantaneous"
 StrConstant SF_DATATYPE_TPBASE = "TestPulseMode_Baseline"
 StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
+StrConstant SF_DATATYPE_PSX = "PSX"
 
 StrConstant SF_WREF_MARKER = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
@@ -1999,7 +2018,7 @@ StrConstant SFH_USER_DATA_BROWSER = "browser"
 /// @anchor ResultTypes
 /// @{
 Constant SFH_RESULT_TYPE_STORE = 0x01
-Constant SFH_RESULT_TYPE_EPSP  = 0x02
+Constant SFH_RESULT_TYPE_PSX   = 0x02
 /// @}
 
 /// @name Constants used in the wave note JSON support
@@ -2103,3 +2122,31 @@ Constant SECONDS_PER_DAY = 86400
 /// @{
 Strconstant DB_AXIS_PART_EPOCHS = "_EP"
 /// @}
+
+StrConstant SF_OP_PSX        = "psx"
+StrConstant SF_OP_PSX_KERNEL = "psxKernel"
+StrConstant SF_OP_PSX_STATS  = "psxStats"
+
+/// @name Available PSX states
+/// @anchor PSXStates
+/// @{
+Constant PSX_ACCEPT = 0x01
+Constant PSX_REJECT = 0x02
+Constant PSX_UNDET  = 0x04
+Constant PSX_LAST   = 0x04 // neeeds to be the same as the last valid state
+Constant PSX_ALL    = 0x07
+/// @}
+
+/// @name Available PSX state types
+/// @anchor PSXStateTypes
+/// @{
+Constant PSX_STATE_EVENT = 0x1
+Constant PSX_STATE_FIT   = 0x2
+Constant PSX_STATE_BOTH  = 0x3
+/// @}
+
+StrConstant PSX_EVENTS_COMBO_KEY_WAVE_NOTE = "comboKey"
+
+Constant PSX_MARKER_ACCEPT = 19
+Constant PSX_MARKER_REJECT = 23
+Constant PSX_MARKER_UNDET  = 18

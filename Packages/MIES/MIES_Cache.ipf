@@ -373,6 +373,19 @@ Function/S CA_HardwareDataTPKey(s)
 	return num2istr(crc) + "HW Datawave Testpulse Version 2"
 End
 
+Function/S CA_PSXKernelKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
+	variable crc
+
+	crc = StringCRC(crc, num2strHighPrec(riseTau, precision = MAX_DOUBLE_PRECISION))
+	crc = StringCRC(crc, num2strHighPrec(decayTau, precision = MAX_DOUBLE_PRECISION))
+	crc = StringCRC(crc, num2strHighPrec(amp, precision = MAX_DOUBLE_PRECISION))
+	crc = StringCRC(crc, num2strHighPrec(numPoints, precision = MAX_DOUBLE_PRECISION))
+	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
+	crc = WaveCRC(crc, range)
+
+	return num2istr(crc) + "PSX Kernel Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

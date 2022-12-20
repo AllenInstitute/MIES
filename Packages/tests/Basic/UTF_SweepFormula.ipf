@@ -31,7 +31,9 @@ static Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
-static Function [string win, string device] CreateFakeDataBrowserWindow()
+Function [string win, string device] CreateFakeDataBrowserWindow()
+
+	string extWin
 
 	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 	win = DATABROWSER_WINDOW_NAME
@@ -46,6 +48,12 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 	BSP_SetDevice(win, device)
 	MIES_DB#DB_SetUserData(win, device)
 	TUD_Clear(win)
+
+	NewPanel/EXT=3/HOST=$win/N=$EXT_PANEL_SETTINGSHISTORY
+	extWin = win + "#" + EXT_PANEL_SETTINGSHISTORY
+
+	PopupMenu popup_experiment, win=$extWin, value="A;B",mode=1
+	PopupMenu popup_device, win=$extWin, value="C;D", mode=2
 End
 
 static Function/S CreateFormulaGraphForBrowser(string browser)
