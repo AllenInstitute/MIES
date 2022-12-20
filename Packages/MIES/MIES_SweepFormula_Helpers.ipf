@@ -239,7 +239,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			rangeStart = range[0][j]
 			rangeEnd = range[1][j]
 
-			SFH_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+			SFH_ASSERT(!SFH_IsEmptyRange(range), "Specified range not valid.")
 			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
