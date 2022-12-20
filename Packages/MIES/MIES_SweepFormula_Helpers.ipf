@@ -78,6 +78,13 @@ Function SFH_IsEmptyRange(WAVE range)
 	return	EqualWaves(rangeRef, range, 1)
 End
 
+Function/WAVE SFH_GetFullRange()
+
+	Make/FREE/D range = {-inf, inf}
+
+	return range
+End
+
 /// @brief Returns a range from a epochName
 ///
 /// @param graph name of databrowser graph
