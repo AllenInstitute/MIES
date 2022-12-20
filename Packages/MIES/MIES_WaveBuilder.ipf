@@ -1448,7 +1448,7 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 
 		ASSERT(IsFinite(xzero), "xzero must be finite")
 		ASSERT(xzero >= 0, "xzero must >= 0")
-		ASSERT(xzero <= pa.duration, "xzero must <= pa.duration")
+		ASSERT(xzero < pa.duration || CheckIfClose(xzero, pa.duration), "xzero must <= pa.duration")
 
 		EnsureLargeEnoughWave(inflectionPoints, minimumSize = idx, dimension = ROWS, initialValue = NaN)
 		inflectionPoints[idx++] = xzero
