@@ -3,29 +3,29 @@
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_SF_HELPERS
+#pragma ModuleName=MIES_SFH_HELPERS
 #endif
 
 /// @file MIES_SweepFormula_Helpers.ipf
 ///
-/// @brief __SF__ Sweep formula related helper code
+/// @brief __SFH__ Sweep formula related helper code
 
-static StrConstant SF_WORKING_DF = "FormulaData"
+static StrConstant SFH_WORKING_DF = "FormulaData"
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+Function/WAVE SFH_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	string opSpec, argStr
 
 	argStr = num2istr(argNum)
 	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + argStr)
 	opSpec = "_arg" + argStr
-	WAVE/WAVE input = SF_ParseArgument(graph, wv, opShort + opSpec)
+	WAVE/WAVE input = SFH_ParseArgument(graph, wv, opShort + opSpec)
 
 	return input
 End
 
-Function/WAVE SF_ParseArgument(string win, WAVE input, string opShort)
+Function/WAVE SFH_ParseArgument(string win, WAVE input, string opShort)
 
 	string wName, tmpStr
 
@@ -48,7 +48,7 @@ End
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
-Function SF_ASSERT(variable condition, string message[, variable jsonId])
+Function SFH_ASSERT(variable condition, string message[, variable jsonId])
 
 	if(!condition)
 		if(!ParamIsDefault(jsonId))
@@ -63,17 +63,17 @@ Function SF_ASSERT(variable condition, string message[, variable jsonId])
 	endif
 End
 
-Function/WAVE SF_GetEmptyRange()
+Function/WAVE SFH_GetEmptyRange()
 
 	Make/FREE/D range = {NaN, NaN}
 
 	return range
 End
 
-Function SF_IsEmptyRange(WAVE range)
+Function SFH_IsEmptyRange(WAVE range)
 
 	ASSERT(IsNumericWave(range), "Invalid Range wave")
-	WAVE rangeRef = SF_GetEmptyRange()
+	WAVE rangeRef = SFH_GetEmptyRange()
 
 	return	EqualWaves(rangeRef, range, 1)
 End
@@ -85,12 +85,12 @@ End
 /// @param sweep number of sweep
 /// @param channel number of DA channel
 /// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
-Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
+Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
 
 	string regex
 	variable numEpochs
 
-	WAVE range = SF_GetEmptyRange()
+	WAVE range = SFH_GetEmptyRange()
 	if(IsEmpty(epochName) || !IsValidSweepNumber(sweep))
 		return range
 	endif
@@ -111,7 +111,7 @@ Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variable swee
 		return range
 	endif
 	numEpochs = DimSize(epochs, ROWS)
-	SF_ASSERT(numEpochs <= 1, "Found several fitting epochs. Currently only a single epoch is supported")
+	SFH_ASSERT(numEpochs <= 1, "Found several fitting epochs. Currently only a single epoch is supported")
 	if(numEpochs == 0)
 		return range
 	endif
@@ -122,7 +122,7 @@ Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variable swee
 	return range
 End
 
-Function SF_GetDAChannel(string graph, variable sweep, variable channelType, variable channelNumber)
+Function SFH_GetDAChannel(string graph, variable sweep, variable channelType, variable channelNumber)
 
 	variable DAC, index
 
@@ -140,7 +140,7 @@ Function SF_GetDAChannel(string graph, variable sweep, variable channelType, var
 	return NaN
 End
 
-Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
+Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
 	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
 	variable chanNr, chanType, cIndex, isSweepBrowser
@@ -150,24 +150,24 @@ Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
-	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
+	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
 	if(IsTextWave(range))
-		SF_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
+		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
 		WAVE/T epochNames = range
 		numEpochPatterns = DimSize(epochNames, ROWS)
 	else
-		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
 		numEpochPatterns = 1
 	endif
 	if(!WaveExists(selectData))
-		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 		return output
 	endif
-	SF_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
+	SFH_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
 
 	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, MINIMUM_WAVE_SIZE)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
 
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
 
@@ -175,7 +175,7 @@ Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData
 		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 	else
-		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
+		SFH_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
 		device = BSP_GetDevice(graph)
 		DFREF deviceDFR = GetDeviceDataPath(device)
 	endif
@@ -209,21 +209,21 @@ Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData
 		endif
 
 		if(WaveExists(epochNames))
-			DAChannel = SF_GetDAChannel(graph, sweepNo, chanType, chanNr)
+			DAChannel = SFH_GetDAChannel(graph, sweepNo, chanType, chanNr)
 			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 			WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-			SF_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+			SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAChannel, allEpochsRegex)
 			if(!WaveExists(epochInfo))
 				continue
 			endif
-			WAVE/T allEpNames = SF_GetEpochNamesFromInfo(epochInfo)
-			WAVE/Z epIndices = SF_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
+			WAVE/T allEpNames = SFH_GetEpochNamesFromInfo(epochInfo)
+			WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
 			if(!WaveExists(epIndices))
 				continue
 			endif
 			numEpochs = DimSize(epIndices, ROWS)
-			WAVE range = SF_GetEmptyRange()
+			WAVE range = SFH_GetEmptyRange()
 			Redimension/N=(-1, numEpochs) range
 			for(j = 0; j < numEpochs; j += 1)
 				epIndex = epIndices[j]
@@ -239,9 +239,9 @@ Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData
 			rangeStart = range[0][j]
 			rangeEnd = range[1][j]
 
-			SF_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
-			SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-			SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
@@ -261,7 +261,7 @@ Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData
 End
 
 // returns number of operation arguments
-Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
+Function SFH_GetNumberOfArguments(variable jsonId, string jsonPath)
 
 	variable size
 
@@ -273,18 +273,18 @@ Function SF_GetNumberOfArguments(variable jsonId, string jsonPath)
 	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : size
 End
 
-Function/DF SF_GetWorkingDF(string win)
+Function/DF SFH_GetWorkingDF(string win)
 
 	DFREF dfr = BSP_GetFolder(GetMainWindow(win), MIES_BSP_PANEL_FOLDER)
 
-	return createDFWithAllParents(GetDataFolder(1, dfr) + SF_WORKING_DF)
+	return createDFWithAllParents(GetDataFolder(1, dfr) + SFH_WORKING_DF)
 End
 
-Function/WAVE SF_CreateSFRefWave(string win, string opShort, variable size)
+Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
 
 	string wName
 
-	DFREF dfrWork = SF_GetWorkingDF(win)
+	DFREF dfrWork = SFH_GetWorkingDF(win)
 	wName = UniqueWaveName(dfrWork, opShort + "_output_")
 
 	Make/WAVE/N=(size) dfrWork:$wName/WAVE=wv
@@ -292,58 +292,58 @@ Function/WAVE SF_CreateSFRefWave(string win, string opShort, variable size)
 	return wv
 End
 
-Function SF_CleanUpInput(WAVE input)
+Function SFH_CleanUpInput(WAVE input)
 
 #ifndef SWEEPFORMULA_DEBUG
 	KillOrMoveToTrash(wv = input)
 #endif
 End
 
-static Function SF_AddOpToOpStack(WAVE w, string oldStack, string opShort)
+static Function SFH_AddOpToOpStack(WAVE w, string oldStack, string opShort)
 
 	JWN_SetStringInWaveNote(w, SF_META_OPSTACK, AddListItem(opShort, oldStack))
 End
 
-Function/WAVE SF_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
+Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
 
 	if(!ParamIsDefault(clear))
-		SF_CleanUpInput(clear)
+		SFH_CleanUpInput(clear)
 	endif
 
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 1)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 1)
 	if(WaveExists(data))
 		output[0] = data
 	endif
 
 	if(!ParamIsDefault(opStack))
-		SF_AddOpToOpStack(output, opStack, opShort)
+		SFH_AddOpToOpStack(output, opStack, opShort)
 	endif
 
-	return SF_GetOutputForExecutor(output, graph, opShort)
+	return SFH_GetOutputForExecutor(output, graph, opShort)
 End
 
-Function/WAVE SF_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
+Function/WAVE SFH_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
 
 	if(!ParamIsDefault(clear))
-		SF_CleanUpInput(clear)
+		SFH_CleanUpInput(clear)
 	endif
 	Make/FREE/T wRefPath = {SF_WREF_MARKER + GetWavesDataFolder(output, 2)}
 
 #ifdef SWEEPFORMULA_DEBUG
-	SF_ConvertAllReturnDataToPermanent(output, win, opShort)
+	SFH_ConvertAllReturnDataToPermanent(output, win, opShort)
 #endif
 
 	return wRefPath
 End
 
-static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win, string opShort)
+static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win, string opShort)
 
 	string wName
 	variable i
 
 	for(data : output)
 		if(WaveExists(data) && IsFreeWave(data))
-			DFREF dfrWork = SF_GetWorkingDF(win)
+			DFREF dfrWork = SFH_GetWorkingDF(win)
 			wName = UniqueWaveName(dfrWork, opShort + "_return_arg" + num2istr(i) + "_")
 			MoveWave data, dfrWork:$wName
 		endif
@@ -352,22 +352,22 @@ static Function SF_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win,
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SF_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
+Function/WAVE SFH_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
-	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, opShort, argNum)
-	SF_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
+	WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, opShort, argNum)
+	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
 	WAVE/Z data = input[0]
-	SF_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
-	SF_CleanUpInput(input)
+	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
+	SFH_CleanUpInput(input)
 
 	return data
 End
 
 /// @brief Transfer wavenote from input data sets to output data sets
 ///        set a label for a x-axis and x-value(s) for data waves
-Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
+Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
 
 	variable sweepNo, numResults, i, setXLabel
 	string opStack, inDataType, xLabel
@@ -378,7 +378,7 @@ Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
 
 	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
-	SF_AddOpToOpStack(output, opStack, opShort)
+	SFH_AddOpToOpStack(output, opStack, opShort)
 
 	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 
@@ -428,31 +428,31 @@ Function SF_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 End
 
-Function/WAVE SF_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	variable numArgs
 	string msg
 
-	numArgs = SF_GetNumberOfArguments(jsonId, jsonPath)
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/Z selectData = SF_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum)
+		WAVE/Z selectData = SFH_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum)
 	else
 		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
 	endif
 
 	if(WaveExists(selectData))
 		sprintf msg, "Argument #%d of operation %s: input must have three columns", argNum, opShort
-		SF_ASSERT(DimSize(selectData, COLS) == 3, msg)
+		SFH_ASSERT(DimSize(selectData, COLS) == 3, msg)
 
 		sprintf msg, "Argument #%d of operation %s: Must be numeric ", argNum, opShort
-		SF_ASSERT(IsNumericWave(selectData), msg)
+		SFH_ASSERT(IsNumericWave(selectData), msg)
 	endif
 
 	return selectData
 End
 
-Function/WAVE SF_GetEpochNamesFromInfo(WAVE/T epochInfo)
+Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
 
 	string epName, epShortName
 	variable i
@@ -468,7 +468,7 @@ Function/WAVE SF_GetEpochNamesFromInfo(WAVE/T epochInfo)
 	return epNames
 End
 
-Function/WAVE SF_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T patterns)
+Function/WAVE SFH_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T patterns)
 
 	variable i
 	variable numPatterns = DimSize(patterns, ROWS)

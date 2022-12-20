@@ -54,7 +54,7 @@ static Function/WAVE GetMultipleResults(string formula, string win)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SF_HELPERS#SF_ParseArgument(win, wTextRef, "TestRun")
+	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 End
 
 static Function/WAVE GetSingleResult(string formula, string win)
@@ -506,7 +506,7 @@ static Function array()
 	jsonID1 = DirectToFormulaParser("1,5/(6+7)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
-	// failures that have to SF_ASSERT
+	// failures that have to SFH_ASSERT
 	FailFormula("1]")
 	FailFormula("[1")
 	FailFormula("0[1]")
@@ -2899,7 +2899,7 @@ static Function ZeroSizedSubArrayTest()
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	WAVE/WAVE wRefResult = MIES_SF_HELPERS#SF_ParseArgument(win, wTextRef, "TestRun")
+	WAVE/WAVE wRefResult = MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
 	WAVE wv = wRefResult[0]
