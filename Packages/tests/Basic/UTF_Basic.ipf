@@ -11,6 +11,7 @@
 #include "UTF_AnalysisFunctionParameters"
 #include "UTF_AsynFrameworkTest"
 #include "UTF_Configuration"
+#include "UTF_DAEphyswoHardware"
 #include "UTF_EpochswoHardware"
 #include "UTF_JSONWaveNotes"
 #include "UTF_Labnotebook"
@@ -91,6 +92,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
 	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
+	list = AddListItem("UTF_DAEphyswoHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_JSONWaveNotes.ipf", list, ";", inf)
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)

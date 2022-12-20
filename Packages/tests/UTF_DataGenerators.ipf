@@ -185,3 +185,27 @@ Function/WAVE GetITCDevices()
 
 	return DeviceNameGeneratorMD1()
 End
+
+Function/WAVE GetChannelNumbersForDATTL()
+
+	string list
+
+	Make/FREE/N=(NUM_DA_TTL_CHANNELS + 3) channelNumbers = p
+	channelNumbers[NUM_DA_TTL_CHANNELS] = CHANNEL_INDEX_ALL
+	channelNumbers[NUM_DA_TTL_CHANNELS + 1] = CHANNEL_INDEX_ALL_V_CLAMP
+	channelNumbers[NUM_DA_TTL_CHANNELS + 2] = CHANNEL_INDEX_ALL_I_CLAMP
+
+	list = BuildList("%d", 0, 1, NUM_DA_TTL_CHANNELS) + "All;VC_All;IC_All"
+	SetDimensionLabels(channelNumbers, list, ROWS)
+
+	return channelNumbers
+End
+
+Function/WAVE GetChannelTypes()
+
+	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
+
+	SetDimensionLabels(channelTypes, "DAC;TTL", ROWS)
+
+	return channelTypes
+End

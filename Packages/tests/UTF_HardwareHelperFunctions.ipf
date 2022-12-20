@@ -5,7 +5,6 @@
 
 #include "UTF_HelperFunctions"
 #include "UTF_BackgroundFunctions"
-#include "UTF_DataGenerators"
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 
