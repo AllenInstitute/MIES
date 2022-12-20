@@ -709,3 +709,8 @@ Function MoveStimsetsIntoPlace()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
 End
+
+Function/S GetTestName()
+
+	return "MIES with " + GetExperimentName()
+End

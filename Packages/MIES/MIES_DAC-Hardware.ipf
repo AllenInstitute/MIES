@@ -736,6 +736,12 @@ Function/S HW_ITC_ListDevices()
 
 	DEBUGPRINTSTACKINFO()
 
+#ifndef EVIL_KITTEN_EATING_MODE
+#ifdef TESTS_WITH_NI_HARDWARE
+	return ""
+#endif
+#endif
+
 	for(i=0; i < ItemsInList(DEVICE_TYPES_ITC); i+=1)
 		type = StringFromList(i, DEVICE_TYPES_ITC)
 
@@ -2244,33 +2250,19 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 End
 
 /// @brief returns properties of NI device
-
-/// @param devNr number of NI device to query
+///
+/// @param device name of NI device
+///
 /// @return keyword list of device properties, empty if device not present
-Function/S HW_NI_GetPropertyListOfDevices(devNr)
-	variable devNr
-
-	string device
+Function/S HW_NI_GetPropertyListOfDevices(string device)
 
 	variable numAI, numAO, numCounter, numDIO
-	string devices
 	string lines = ""
 	string propList
-	variable numDevices, i, portWidth
+	variable i, portWidth
 
 	DEBUGPRINTSTACKINFO()
 
-	if(devNr < 0)
-		return ""
-	endif
-
-	devices    = fDAQmx_DeviceNames()
-	numDevices = ItemsInList(devices)
-	if(devNr >= numDevices)
-		return ""
-	endif
-
-	device = StringFromList(devNr, devices)
 	numAI       = fDAQmx_NumAnalogInputs(device)
 	numAO       = fDAQmx_NumAnalogOutputs(device)
 	numCounter  = fDAQmx_NumCounters(device)
@@ -2573,6 +2565,14 @@ Function/S HW_NI_ListDevices([flags])
 	variable flags
 
 	DEBUGPRINTSTACKINFO()
+
+#ifndef EVIL_KITTEN_EATING_MODE
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	return ""
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	return ""
+#endif
+#endif
 
 	return fDAQmx_DeviceNames()
 End
@@ -2917,8 +2917,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function/S HW_NI_GetPropertyListOfDevices(devNr)
-	variable devNr
+Function/S HW_NI_GetPropertyListOfDevices(string device)
 	return ""
 End
 

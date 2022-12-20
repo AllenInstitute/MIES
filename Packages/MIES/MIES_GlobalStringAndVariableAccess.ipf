@@ -364,6 +364,8 @@ End
 /// @brief Returns NI device list
 ///
 /// Internal use only, prefer DAP_GetNIDeviceList() instead.
+///
+/// The initial value `""` is different from #NONE which denotes no matches.
 Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
@@ -373,6 +375,8 @@ End
 /// @brief Returns ITC device list
 ///
 /// Internal use only, prefer DAP_GetITCDeviceList() instead.
+///
+/// The initial value `""` is different from #NONE which denotes no matches.
 Function/S GetITCDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
