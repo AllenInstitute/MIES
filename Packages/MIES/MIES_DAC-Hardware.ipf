@@ -883,6 +883,47 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 #endif
 End
 
+static Function HW_ITC_DAQDataWaveDebug_Impl(string device, variable mode)
+
+	variable numChannels, numPoints
+	string name, ptr
+
+	WAVE DAQDataWave = GetDAQDataWave(device, mode)
+
+	switch(mode)
+		case DATA_ACQUISITION_MODE:
+			name = "DAQ"
+			break
+		case TEST_PULSE_MODE:
+			name = "TP"
+			break
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
+
+	numPoints   = DimSize(DAQDataWave, ROWS)
+	numChannels = DimSize(DAQDataWave, COLS)
+	printf "DAQDataWave (%s) sizes: (%d, %d)\r", name, numPoints, numChannels
+
+	ptr = GetWavePointer(DAQDataWave)
+	Make/FREE/N=(numChannels) ptrs = str2num(ptr) + numPoints * p
+	printf "DAQDataWave (%s) ptrs:", name
+	printf "\r"
+	wfprintf 1, "\t%#08X\r", ptrs
+
+End
+
+static Function HW_ITC_DAQDataWaveDebug(variable deviceID)
+
+	string device
+
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+
+	HW_ITC_DAQDataWaveDebug_Impl(device, DATA_ACQUISITION_MODE)
+	printf "\r"
+	HW_ITC_DAQDataWaveDebug_Impl(device, TEST_PULSE_MODE)
+End
+
 /// @brief Return the error message for the given ITC XOP2 error code
 ///
 /// @param errCode one of @ref ITCXOP2Errors
@@ -1262,6 +1303,8 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
 			endif
 
+			// TODO
+
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
 			do
@@ -1273,6 +1316,8 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 			if(retries > 1)
 				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
 			endif
+
+			// TODO
 
 			break
 		default:
@@ -1287,7 +1332,8 @@ End
 Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 	variable deviceID, triggerMode, flags
 
-	variable retries
+	variable retries, returnedHardwareType
+	string device
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1300,6 +1346,8 @@ Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
 					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
 
+			 // TODO
+
 			if(retries > 1)
 				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
 			endif
@@ -1308,13 +1356,39 @@ Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+				Sleep/S 0.1
 				retries += 1
 			while(retries < HW_ITC_MAX_RETRIES                                        \
 			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
 					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
 
-			if(retries > 1)
-				printf "%s: Had to retry ITCStartAcq2 %d times\r", GetRTStackInfo(1), retries
+			if(V_ITCError != 0)
+				HW_ITC_DAQDataWaveDebug(deviceID)
+
+				printf "%s: Had to retry ITCStartAcq2 %d times with result %#0x\r", GetRTStackInfo(1), retries, V_ITCError
+
+				HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE) // TODO mode is hardcoded
+
+				do
+					ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+				printf "%s: Tried to reconfigure device with result %#0x\r", GetRTStackInfo(1), V_ITCError
+
+				if(V_ITCError != 0)
+					device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+
+					HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
+					HW_OpenDevice(device, returnedHardwareType)
+					ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Unexpected hardware type")
+					HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE) // TODO mode is hardcoded
+
+					do
+						ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+					while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+					printf "%s: Tried to close/open and reconfigure device with result %#0x\r", GetRTStackInfo(1), V_ITCError
+				endif
 			endif
 
 			break
