@@ -6078,14 +6078,23 @@ threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
 End
 
 /// @brief Perform FFT on input with optionally given window function
-///        The input data gets padded to the next power of 2 points.
-threadsafe Function/WAVE DoFFT(WAVE input[, string winFunc])
+///
+/// @param input   Wave to perform FFT on
+/// @param winFunc [optional, defaults to NONE] FFT window function
+/// @param padSize [optional, defaults to the next power of 2 of the input wave row size] Target size used for padding
+threadsafe Function/WAVE DoFFT(WAVE input[, string winFunc, variable padSize])
+
+	if(ParamIsDefault(padSize))
+		padSize = TP_GetPowerSpectrumLength(DimSize(input, ROWS))
+	else
+		ASSERT_TS(IsFinite(padSize) && padSize >= DimSize(input, ROWS), "padSize must be finite and larger as the input row size")
+	endif
 
 	if(ParamIsDefault(winFunc))
-		FFT/PAD={TP_GetPowerSpectrumLength(DimSize(input, ROWS))}/DEST=result/FREE input
+		FFT/PAD={padSize}/DEST=result/FREE input
 	else
 		ASSERT_TS(WhichListItem(winFunc, FFT_WINF) >= 0, "Invalid window function for FFT")
-		FFT/PAD={TP_GetPowerSpectrumLength(DimSize(input, ROWS))}/WINF=$winFunc/DEST=result/FREE input
+		FFT/PAD={padSize}/WINF=$winFunc/DEST=result/FREE input
 	endif
 
 	return result
