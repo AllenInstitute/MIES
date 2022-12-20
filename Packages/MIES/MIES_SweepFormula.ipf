@@ -278,7 +278,7 @@ End
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
-static Function SF_Assert(variable condition, string message[, variable jsonId])
+static Function SF_ASSERT(variable condition, string message[, variable jsonId])
 
 	if(!condition)
 		if(!ParamIsDefault(jsonId))
@@ -298,9 +298,9 @@ End
 /// @return parsed formula
 static Function/S SF_FormulaPreParser(string formula)
 
-	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
-	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
-	SF_Assert(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
+	SF_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
+	SF_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
+	SF_ASSERT(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -419,7 +419,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					continue
 				endif
 				state = SF_STATE_COLLECT
-				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=!]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
+				SF_ASSERT(GrepString(token, "[A-Za-z0-9_\.:;=!]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
@@ -518,7 +518,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					action = SF_ACTION_COLLECT
 					break
 				default:
-					SF_Assert(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
+					SF_ASSERT(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
 			endswitch
 			lastState = state
 		endif
@@ -596,7 +596,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// If there was no array created, we have to add another outer array around the returned json
 				// An array needs to be also added if the returned json is a simple value as this action requires
 				// to return an array.
-				SF_Assert(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
+				SF_ASSERT(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
 				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
@@ -1480,7 +1480,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
-	SF_Assert(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
+	SF_ASSERT(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
 	DFREF dfrWork = SF_GetWorkingDF(graph)
 	KillOrMoveToTrash(dfr=dfrWork)
@@ -1579,10 +1579,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					MoveWaveWithOverWrite(wvY, wvResultY)
 				endif
 				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
-				SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+				SF_ASSERT(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 
 				if(IsTextWave(wvY))
-					SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
+					SF_ASSERT(WaveExists(wvX), "Cannot plot a single text wave")
 					ModifyGraph/W=$win swapXY = 1
 					WAVE dummy = wvY
 					WAVE wvY = wvX
@@ -2350,7 +2350,7 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 		jsonPath = "/Formula_" + num2istr(i)
 		JSON_AddObjects(jsonID, jsonPath)
 
-		// catch Abort from SF_Assert called from SF_FormulaParser
+		// catch Abort from SF_ASSERT called from SF_FormulaParser
 		try
 			jsonIDy = SF_FormulaParser(SF_FormulaPreParser(formulaPairs[i][%FORMULA_Y]))
 		catch
@@ -2362,7 +2362,7 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 
 		xFormula = formulaPairs[i][%FORMULA_X]
 		if(!IsEmpty(xFormula))
-			// catch Abort from SF_Assert called from SF_FormulaParser
+			// catch Abort from SF_ASSERT called from SF_FormulaParser
 			try
 				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
 			catch
