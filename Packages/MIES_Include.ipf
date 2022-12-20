@@ -217,6 +217,7 @@ End
 #include "MIES_StimsetAPI"
 #include "MIES_Structures"
 #include "MIES_SweepFormula"
+#include "MIES_SweepFormula_Helpers"
 #include "MIES_SweepSaving"
 #include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeDataSharing"
