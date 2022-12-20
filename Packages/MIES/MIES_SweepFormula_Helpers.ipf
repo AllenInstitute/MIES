@@ -12,6 +12,157 @@
 
 static StrConstant SFH_WORKING_DF = "FormulaData"
 
+/// @brief Convenience helper function to get a numeric SweepFormula operation argument
+///
+/// Given the operation `fetchBeer(variable numBottles, [variable size])` one can fetch both parameters via:
+///
+/// \rst
+/// .. code-block:: text
+///
+///    opShort    = "fetchBeer"
+///    numBottles = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 0)
+///    size       = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue = 0.5)
+///
+/// \endrst
+///
+/// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
+///
+/// The second argument `size` is optional with 0.5 as default.
+Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue])
+
+	string msg
+	variable checkExist, numArgs
+
+	if(ParamIsDefault(defValue))
+		checkExist = 1
+	else
+		checkExist = 0
+	endif
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
+		SFH_ASSERT(WaveExists(data), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Must be numeric ", argNum, opShort
+		SFH_ASSERT(IsNumericWave(data), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
+		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
+
+		return data[0]
+	endif
+
+	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
+	SFH_ASSERT(!checkExist, msg)
+
+	return defValue
+End
+
+/// @brief Convenience helper function to get a textual SweepFormula operation argument
+///
+/// Given the operation `getTrainTable(string date, [string type])` one can fetch both parameters via:
+///
+/// \rst
+/// .. code-block:: text
+///
+///    opShort = "getTrainTable"
+///    date    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 0)
+///    type    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue = "steam train")
+///
+/// \endrst
+///
+/// Here `date` is argument number 0 and mandatory as `defValue` is not present.
+///
+/// The second argument `type` is optional with `steam train` as default.
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue])
+
+	string msg
+	variable checkExist, numArgs
+
+	if(ParamIsDefault(defValue))
+		checkExist = 1
+	else
+		checkExist = 0
+	endif
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		WAVE/T/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
+		SFH_ASSERT(WaveExists(data), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Must be text ", argNum, opShort
+		SFH_ASSERT(IsTextWave(data), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
+		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
+
+		return data[0]
+	endif
+
+	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
+	SFH_ASSERT(!checkExist, msg)
+
+	return defValue
+End
+
+/// @brief Convenience helper function to get a wave SweepFormula operation argument
+///
+/// Given the operation `countBirds(array birds, [birdTypes()])` one can fetch both parameters via:
+///
+/// \rst
+/// .. code-block:: text
+///
+///    opShort      = "countBirds"
+///    WAVE/D birds = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 0, singleResult = 1)
+///    WAVE/T types = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 1, defOp = "birdTypes()", singleResult = 1)
+///
+/// \endrst
+///
+/// Here `birds` is argument number 0 and mandatory as `defOp` is not present. Passing `singleResult == 1` already
+/// unpacks the outer wave reference wave container. It should always be passed if you only expect one wave to be
+/// returned.
+///
+/// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned.
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, variable singleResult])
+
+	variable checkExist, numArgs
+	string msg
+
+	if(ParamIsDefault(defOp))
+		checkExist = 1
+	else
+		checkExist = 0
+	endif
+
+	if(ParamIsDefault(singleResult))
+		singleResult = 0
+	else
+		singleResult = !!singleResult
+	endif
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		if(singleResult)
+			WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		else
+			WAVE data = SFH_GetArgument(jsonId, jsonPath, graph, opShort, argNum)
+		endif
+
+		return data
+	endif
+
+	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
+	SFH_ASSERT(!checkExist, msg)
+
+	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult)
+End
+
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
 Function/WAVE SFH_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
@@ -437,16 +588,9 @@ End
 
 Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
-	variable numArgs
 	string msg
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-
-	if(argNum < numArgs)
-		WAVE/Z selectData = SFH_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum)
-	else
-		WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	endif
+	WAVE/Z selectData = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, argNum, defOp = "select()", singleResult = 1)
 
 	if(WaveExists(selectData))
 		sprintf msg, "Argument #%d of operation %s: input must have three columns", argNum, opShort

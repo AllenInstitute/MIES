@@ -3440,13 +3440,7 @@ static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string g
 
 	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, SF_OP_AREA, 0)
 
-	zero = 1
-	if(numArgs == 2)
-		WAVE zeroWave = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_AREA, 1, checkExist=1)
-		SFH_ASSERT(DimSize(zeroWave, ROWS) == 1, "Too many input values for parameter zero")
-		SFH_ASSERT(IsNumericWave(zeroWave), "zero parameter must be numeric")
-		zero = !!zeroWave[0]
-	endif
+	zero = !!SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_AREA, 1, defValue = 1)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_AREA, DimSize(input, ROWS))
 
@@ -3668,10 +3662,8 @@ static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string g
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs == 1, "wave expects exactly one argument.")
-	WAVE/T wavelocation = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_WAVE, 0, checkExist=1)
-	SFH_ASSERT(IsTextWave(waveLocation), "First argument must be textual.")
 
-	WAVE/Z output = $(wavelocation[0])
+	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0)
 
 	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, opStack="")
 End
