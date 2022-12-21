@@ -920,8 +920,8 @@ static Function HW_ITC_DAQDataWaveDebug(variable deviceID)
 	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 	HW_ITC_DAQDataWaveDebug_Impl(device, DATA_ACQUISITION_MODE)
-	printf "\r"
-	HW_ITC_DAQDataWaveDebug_Impl(device, TEST_PULSE_MODE)
+	// printf "\r"
+	// HW_ITC_DAQDataWaveDebug_Impl(device, TEST_PULSE_MODE)
 End
 
 /// @brief Return the error message for the given ITC XOP2 error code
@@ -1356,39 +1356,23 @@ Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
 			do
 				ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-				Sleep/S 0.1
-				retries += 1
-			while(retries < HW_ITC_MAX_RETRIES                                        \
-			      && (V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0 \
-					  || V_ITCXOPError == 0 && V_ITCError == HW_ITC_MEMORY_ERROR))
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 			if(V_ITCError != 0)
 				HW_ITC_DAQDataWaveDebug(deviceID)
 
-				printf "%s: Had to retry ITCStartAcq2 %d times with result %#0x\r", GetRTStackInfo(1), retries, V_ITCError
+				device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-				HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE) // TODO mode is hardcoded
+				HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
+				HW_OpenDevice(device, returnedHardwareType)
+				ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Unexpected hardware type")
+				HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE) // TODO mode is hardcoded
 
 				do
 					ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-				printf "%s: Tried to reconfigure device with result %#0x\r", GetRTStackInfo(1), V_ITCError
-
-				if(V_ITCError != 0)
-					device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
-
-					HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
-					HW_OpenDevice(device, returnedHardwareType)
-					ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Unexpected hardware type")
-					HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE) // TODO mode is hardcoded
-
-					do
-						ITCStartAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-					while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-					printf "%s: Tried to close/open and reconfigure device with result %#0x\r", GetRTStackInfo(1), V_ITCError
-				endif
+				printf "%s: Tried to close/open and reconfigure device with result %#0x\r", GetRTStackInfo(1), V_ITCError
 			endif
 
 			break
