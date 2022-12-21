@@ -734,6 +734,11 @@ Function/S EP_GetShortName(string name)
 	return StringByKey(EPOCH_SHORTNAME_KEY, name, SHORTNAMEKEY_SEP)
 End
 
+Function/S EP_RemoveShortNameFromTags(string tags)
+
+	return RemoveByKey(EPOCH_SHORTNAME_KEY, tags, SHORTNAMEKEY_SEP)
+End
+
 /// @brief Adapt epoch information
 ///
 /// - Adjust epoch end time to the acquired time
