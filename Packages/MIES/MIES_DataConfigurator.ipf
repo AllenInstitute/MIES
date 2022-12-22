@@ -100,7 +100,8 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 	DC_UpdateHSProperties(device, ADCs)
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
-	ADChannelToMonitor = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	ADChannelToMonitor = DimSize(DACs, ROWS)
 
 	KillOrMoveToTrash(wv = GetTPResultsBuffer(device))
 
@@ -149,7 +150,9 @@ static Function DC_NoOfChannelsSelected(device, type)
 	string device
 	variable type
 
-	return sum(DAG_GetChannelState(device, type))
+	WAVE channelState = DAG_GetChannelState(device, type)
+
+	return sum(channelState)
 End
 
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
@@ -403,9 +406,12 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 
 	hardwareType = GetHardwareType(device)
 
-	numADCs = DimSize(GetADCListFromConfig(config), ROWS)
-	numDACs = DimSize(GetDACListFromConfig(config), ROWS)
-	numTTLs = DimSize(GetTTLListFromConfig(config), ROWS)
+	WAVE ADCs = GetADCListFromConfig(config)
+	numADCs = DimSize(ADCs, ROWS)
+	WAVE DACs = GetDACListFromConfig(config)
+	numDACs = DimSize(DACs, ROWS)
+	WAVE TTLs = GetTTLListFromConfig(config)
+	numTTLs = DimSize(TTLs, ROWS)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:

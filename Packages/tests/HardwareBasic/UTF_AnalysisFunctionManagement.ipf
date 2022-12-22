@@ -175,8 +175,8 @@ static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisP
 	numFuncs = DimSize(funcs, ROWS)
 	CHECK_GT_VAR(numFuncs, 0)
 
-	Make/N=(numFuncs)/WAVE requiredParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], REQUIRED_PARAMS)), ";")
-	Make/N=(numFuncs)/WAVE optParams      = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
+	Make/N=(numFuncs)/FREE/WAVE requiredParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], REQUIRED_PARAMS)), ";")
+	Make/N=(numFuncs)/FREE/WAVE optParams      = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
 
 	Concatenate/NP/FREE {requiredParams}, allRequiredParams
 	Concatenate/NP/FREE {optParams}, allOptParams

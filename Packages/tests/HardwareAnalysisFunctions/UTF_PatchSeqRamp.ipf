@@ -102,6 +102,24 @@ static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, "Stim set length", PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
+End
+
+static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
+End
+
 static Function/WAVE GetUserEpochs_IGNORE(sweepNo, device)
 	variable sweepNo
 	string device
@@ -246,13 +264,13 @@ static Function PS_RA1_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 2)
 
-	DAScale = GetLastSetting(numericalValues, sweeps[0], STIMSET_SCALE_FACTOR_KEY, UNKNOWN_MODE)[PSQ_TEST_HEADSTAGE]
-	CHECK_EQUAL_VAR(DAScale, PSQ_RA_DASCALE_DEFAULT)
+	WAVE/Z DAScaleWave = GetStimscaleFactor_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(DAScaleWave, {PSQ_RA_DASCALE_DEFAULT, PSQ_RA_DASCALE_DEFAULT}, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
 	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
@@ -855,13 +873,13 @@ static Function PS_RA7_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 1)
 
-	DAScale = GetLastSetting(numericalValues, sweeps[0], STIMSET_SCALE_FACTOR_KEY, UNKNOWN_MODE)[PSQ_TEST_HEADSTAGE]
-	CHECK_EQUAL_VAR(DAScale, PSQ_RA_DASCALE_DEFAULT)
+	WAVE/Z DAScaleWave = GetStimscaleFactor_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(DAScaleWave, {PSQ_RA_DASCALE_DEFAULT}, mode = WAVE_DATA)
 
 	// no early abort on BL QC failure
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
 	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)

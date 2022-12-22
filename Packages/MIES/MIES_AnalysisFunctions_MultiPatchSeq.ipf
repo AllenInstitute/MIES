@@ -334,7 +334,8 @@ Function/WAVE MSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case MSQ_FAST_RHEO_EST:
 			numRows = IDX_NumberOfSweepsInSet(stimset)
-			numCols = Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE))
+			WAVE activeHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+			numCols = Sum(activeHS)
 			numLayers = 0
 			numChunks = 0
 			typeOfWave = IGOR_TYPE_64BIT_FLOAT
@@ -669,7 +670,9 @@ Function MSQ_FastRheoEst(device, s)
 				return 1
 			endif
 
-			if(Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE)) == 0)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+
+			if(Sum(statusHSIC) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", device
 				ControlWindowToFront()
 				return 1
@@ -680,8 +683,6 @@ Function MSQ_FastRheoEst(device, s)
 			PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -701,8 +702,6 @@ Function MSQ_FastRheoEst(device, s)
 			endif
 
 			minRheoOffset = AFH_GetAnalysisParamNumerical("PostDAQDAScaleMinOffset", s.params)
-
-			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -789,7 +788,8 @@ Function MSQ_FastRheoEst(device, s)
 					continue
 				endif
 
-				spikeDetection[i] = MSQ_SearchForSpikes(device, MSQ_FAST_RHEO_EST, sweepWave, i, totalOnsetDelay)[i]
+				WAVE spikeDetectionAll = MSQ_SearchForSpikes(device, MSQ_FAST_RHEO_EST, sweepWave, i, totalOnsetDelay)
+				spikeDetection[i] = spikeDetectionAll[i]
 
 				ASSERT(IsFinite(stepSize[i]), "Unexpected step size value")
 				ASSERT(IsFinite(DaScale[i]), "Unexpected DAScale value")
@@ -1190,7 +1190,9 @@ Function MSQ_DAScale(device, s)
 				endif
 			endfor
 
-			if(Sum(DAG_GetActiveHeadstages(device, I_CLAMP_MODE)) == 0)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+
+			if(Sum(statusHSIC) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", device
 				ControlWindowToFront()
 				return 1

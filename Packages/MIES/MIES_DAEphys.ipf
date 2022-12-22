@@ -2336,7 +2336,8 @@ Function DAP_CheckSettings(device, mode)
 			return 1
 		endif
 
-		numHS = sum(DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE))
+		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+		numHS = sum(statusHS)
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", device
 			ControlWindowToFront()
@@ -2351,14 +2352,13 @@ Function DAP_CheckSettings(device, mode)
 			return 1
 		endif
 
-		numADCs = sum(DAG_GetChannelState(device, CHANNEL_TYPE_ADC))
+		WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+		numADCs = sum(statusAD)
 		if(!numADCs)
 			printf "(%s) Please activate at least one AD channel\r", device
 			ControlWindowToFront()
 			return 1
 		endif
-
-		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 		if(mode == DATA_ACQUISITION_MODE)
 

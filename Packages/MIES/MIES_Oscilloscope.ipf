@@ -222,8 +222,9 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
-	numActiveDACs = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	numActiveDACs = DimSize(DACs, ROWS)
 	graph = SCOPE_GetGraph(device)
 	Yoffset = 40 / numADChannels
 	YaxisSpacing = 0.95 / numADChannels
@@ -527,12 +528,13 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
 		WAVE ADCs = GetADCListFromConfig(config)
+		WAVE DACs = GetDACListFromConfig(config)
 		WAVE hsProp = GetHSProperties(device)
 
 		WAVE scaledDataWave = GetScaledDataWave(device)
 		sampleInt = DimDelta(scaledDataWave, ROWS)
 		osciUnits = WaveUnits(scaledDataWave, ROWS)
-		numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+		numDACs = DimSize(DACs, ROWS)
 		numADCs = DimSize(ADCs, ROWS)
 
 		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
@@ -696,7 +698,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 	WAVE DAQDataWave       = GetDAQDataWave(device, dataAcqOrTP)
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	startOfADColumns = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	startOfADColumns = DimSize(DACs, ROWS)
 	numEntries = DimSize(ADCs, ROWS)
 
 	WAVE allGain = SWS_GETChannelGains(device, timing = GAIN_AFTER_DAQ)

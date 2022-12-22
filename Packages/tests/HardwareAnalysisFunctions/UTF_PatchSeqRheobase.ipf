@@ -81,7 +81,12 @@ static Function/WAVE GetLimitedResolution_IGNORE(sweepNo, device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
-	Make/D val = {GetLastSettingRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)[PSQ_TEST_HEADSTAGE]}
+
+	WAVE/Z settings = GetLastSettingRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	Make/FREE/D val = {settings[PSQ_TEST_HEADSTAGE]}
+
 	return val
 End
 
@@ -107,6 +112,24 @@ static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_ASYNC_PASS, query = 1)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+End
+
+static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, "Stim set length", PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
+End
+
+static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 End
 
 static Function PS_RB1_preAcq(string device)
@@ -168,7 +191,7 @@ static Function PS_RB1_REENTRY([str])
 	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 
 	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
@@ -176,7 +199,7 @@ static Function PS_RB1_REENTRY([str])
 	// no early abort on BL QC failure
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
 	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
@@ -261,7 +284,7 @@ static Function PS_RB2_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 6)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + PSQ_GetFinalDAScaleFake()) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -344,7 +367,7 @@ static Function PS_RB3_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 6)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -427,7 +450,7 @@ static Function PS_RB4_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 2)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -510,7 +533,7 @@ static Function PS_RB5_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 2)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -593,7 +616,7 @@ static Function PS_RB6_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 	stimScaleRef[0, 1] = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 1) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
@@ -679,7 +702,7 @@ static Function PS_RB7_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 8)
 
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 	stimScaleRef[0, 1]   = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 2) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
@@ -772,7 +795,7 @@ static Function PS_RB8_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 4)
 
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 
 	stimScaleRef[0] = PSQ_GetFinalDAScaleFake()
@@ -863,7 +886,7 @@ static Function PS_RB9_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 
 	stimScaleRef[0] = PSQ_RB_DASCALE_STEP_LARGE
@@ -953,7 +976,7 @@ static Function PS_RB10_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 2)
 
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 
 	stimScaleRef[0] = -8
@@ -1040,7 +1063,7 @@ static Function PS_RB11_REENTRY([str])
 	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 
 	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
@@ -1048,7 +1071,7 @@ static Function PS_RB11_REENTRY([str])
 	// no early abort on BL QC failure
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
 	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
