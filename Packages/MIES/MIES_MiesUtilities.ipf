@@ -2713,7 +2713,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
 			// The regions from the second active headstage are duplicated into the
 			// first region in case we had more than two active headstages taking part in oodDAQ.
-			WAVE/Z indizes = FindIndizes(oodDAQRegions, col=0, prop=PROP_NON_EMPTY)
+			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop=PROP_NON_EMPTY)
 			if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
 				oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
 			endif
@@ -6525,11 +6525,12 @@ End
 /// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
 /// which requires a `var`/`str` parameter as well.
 /// `prop == PROP_GREP` requires `str`.
+/// `prop == PROP_WILDCARD` requires `str`.
 ///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
 /// @param numericOrTextWave   wave to search in
-/// @param col [optional]      column to search in only
+/// @param col [optional, default=0] column to search in only
 /// @param colLabel [optional] column label to search in only
 /// @param var [optional]      numeric value to search
 /// @param str [optional]      string value to search
@@ -6551,12 +6552,13 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	variable numCols, numRows, numLayers
 	string key
 
-	ASSERT_TS(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                 \
 	          || (!ParamIsDefault(prop)                                                             \
 	              && (((prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
 	                    && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                        \
-	                  || (prop == PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var)))),      \
+					  || (prop == PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))         \
+					  || (prop == PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))     \
+					  )),                                                                          \
 	          "Invalid combination of var/str/prop arguments")
 
 	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
@@ -6570,9 +6572,14 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	numLayers = DimSize(numericOrTextWave, LAYERS)
 	ASSERT_TS(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
 
-	if(!ParamIsDefault(colLabel))
+	ASSERT_TS(!ParamIsDefault(col) + !ParamIsDefault(colLabel) < 2, "Ambiguous input. Col and ColLabel is set.")
+	if(!ParamIsDefault(col))
+		// do nothing
+	elseif(!ParamIsDefault(colLabel))
 		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
 		ASSERT_TS(col >= 0, "invalid column label")
+	else
+		col = 0
 	endif
 
 	ASSERT_TS(col == 0 || (col > 0 && col < numCols), "Invalid column")
@@ -6590,7 +6597,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 		          || prop == PROP_EMPTY                     \
 		          || prop == PROP_MATCHES_VAR_BIT_MASK      \
 		          || prop == PROP_NOT_MATCHES_VAR_BIT_MASK  \
-		          || prop == PROP_GREP,                     \
+				  || prop == PROP_GREP                      \
+				  || prop == PROP_WILDCARD,                 \
 		          "Invalid property")
 
 		if(prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
@@ -6668,6 +6676,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
 			elseif(prop == PROP_GREP)
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1)
+			elseif(prop == PROP_WILDCARD)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1)
 			endif
 		else
 			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
@@ -6685,6 +6695,8 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(str2num(wvText[p][col][q]) & var) ? p : -1)
 			elseif(prop == PROP_GREP)
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (GrepString(wvText[p][col][q], str) ? p : -1)
+			elseif(prop == PROP_WILDCARD)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (StringMatch(wvText[p][col][q], str) ? p : -1)
 			endif
 		else
 			MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], str) ? p : -1)

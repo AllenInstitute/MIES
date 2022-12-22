@@ -1112,7 +1112,7 @@ Function FI_NumSearchWithCol1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
-	WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1)
+	WAVE/Z indizes = FindIndizes(numeric, var = 1)
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
@@ -1120,7 +1120,7 @@ Function FI_NumSearchWithColAndLayer1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
-	WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1, startLayer = 0, endLayer = 1)
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startLayer = 0, endLayer = 1)
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
@@ -1128,7 +1128,7 @@ Function FI_NumSearchWithColAndLayer2()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
-	WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1, startLayer = 1, endLayer = 1)
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startLayer = 1, endLayer = 1)
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
@@ -1204,6 +1204,22 @@ Function FI_NumSearchWithColAndProp5()
 	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
 End
 
+Function FI_NumSearchWithColAndProp6()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6*", prop = PROP_WILDCARD)
+	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
+End
+
+Function FI_NumSearchWithColAndProp6a()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "!*2.00000", prop = PROP_WILDCARD)
+	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
+End
+
 Function FI_NumSearchWithRestRows()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -1216,7 +1232,7 @@ Function FI_TextSearchWithCol1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 0, str = "text123")
+	WAVE/Z indizes = FindIndizes(text, str = "text123")
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
@@ -1224,7 +1240,7 @@ Function FI_TextSearchWithColAndLayer1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 0, str = "text123", startLayer = 0, endLayer = 1)
+	WAVE/Z indizes = FindIndizes(text, str = "text123", startLayer = 0, endLayer = 1)
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
@@ -1232,7 +1248,7 @@ Function FI_TextSearchWithColAndLayer2()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 0, str = "text123", startLayer = 1, endLayer = 1)
+	WAVE/Z indizes = FindIndizes(text, str = "text123", startLayer = 1, endLayer = 1)
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
@@ -1316,6 +1332,14 @@ Function FI_TextSearchWithColAndProp5()
 	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
 End
 
+Function FI_TextSearchWithColAndProp6()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr text
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "1*", prop = PROP_WILDCARD, startLayer = 1, endLayer = 1)
+	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
+End
+
 Function FI_TextSearchWithRestRows()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -1326,7 +1350,7 @@ End
 
 Function FI_EmptyWave()
 	Make/FREE/N=0 emptyWave
-	WAVE/Z indizes = FindIndizes(emptyWave, col = 0, var = NaN)
+	WAVE/Z indizes = FindIndizes(emptyWave, var = NaN)
 	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
@@ -1347,7 +1371,7 @@ Function FI_AbortsWithInvalidParams2()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1, str = "123")
+		WAVE/Z indizes = FindIndizes(numeric, var = 1, str = "123")
 		FAIL()
 	catch
 		PASS()
@@ -1359,7 +1383,7 @@ Function FI_AbortsWithInvalidParams3()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, prop = 4711)
+		WAVE/Z indizes = FindIndizes(numeric, prop = 4711)
 		FAIL()
 	catch
 		PASS()
@@ -1383,7 +1407,7 @@ Function FI_AbortsWithInvalidParams5()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 0, startRow = 100)
+		WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 100)
 		FAIL()
 	catch
 		PASS()
@@ -1395,7 +1419,7 @@ Function FI_AbortsWithInvalidParams6()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 0, endRow = 100)
+		WAVE/Z indizes = FindIndizes(numeric, var = 0, endRow = 100)
 		FAIL()
 	catch
 		PASS()
@@ -1407,7 +1431,7 @@ Function FI_AbortsWithInvalidParams7()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 0, startRow = 3, endRow = 2)
+		WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 3, endRow = 2)
 		FAIL()
 	catch
 		PASS()
@@ -1419,7 +1443,7 @@ Function FI_AbortsWithInvalidParams8()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = NaN)
+		WAVE/Z indizes = FindIndizes(numeric, var = NaN)
 		FAIL()
 	catch
 		PASS()
@@ -1431,7 +1455,7 @@ Function FI_AbortsWithInvalidParams9()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, str = "NaN")
+		WAVE/Z indizes = FindIndizes(numeric, str = "NaN")
 		FAIL()
 	catch
 		PASS()
@@ -1443,7 +1467,7 @@ Function FI_AbortsWithInvalidParams10()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1, startLayer = 1)
+		WAVE/Z indizes = FindIndizes(numeric, var = 1, startLayer = 1)
 		FAIL()
 	catch
 		PASS()
@@ -1455,7 +1479,7 @@ Function FI_AbortsWithInvalidParams11()
 	WAVE/SDFR=dfr numeric
 
 	try
-		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = 1, startLayer = 100, endLayer = 100)
+		WAVE/Z indizes = FindIndizes(numeric, var = 1, startLayer = 100, endLayer = 100)
 		FAIL()
 	catch
 		PASS()
@@ -1466,7 +1490,7 @@ Function FI_AbortsWithInvalidParams12()
 
 	Make/FREE/N=(1, 2, 3, 4) data
 	try
-		WAVE/Z indizes = FindIndizes(data, col = 0, var = 0)
+		WAVE/Z indizes = FindIndizes(data, var = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1476,7 +1500,7 @@ End
 Function FI_AbortsWithInvalidWave()
 
 	try
-		FindIndizes($"", col = 0, var = 0)
+		FindIndizes($"", var = 0)
 		FAIL()
 	catch
 		PASS()
@@ -1488,7 +1512,7 @@ Function FI_AbortsWithInvalidRegExp()
 	WAVE/SDFR=dfr numeric
 
 	try
-		FindIndizes(numeric, col = 0, str = "*", prop = PROP_GREP)
+		FindIndizes(numeric, str = "*", prop = PROP_GREP)
 		FAIL()
 	catch
 		PASS()

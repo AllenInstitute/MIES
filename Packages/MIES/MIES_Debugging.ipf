@@ -638,7 +638,7 @@ threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
 		FindValue/UOFV/V=0 valid
 
 		if(V_Value >= 0)
-			WAVE/Z indizes = FindIndizes(valid, col = 0, var = 0)
+			WAVE/Z indizes = FindIndizes(valid, var = 0)
 			numMatches = WaveExists(indizes) ? DimSize(indizes, ROWS) : 0
 
 			for(j = 0; j < numMatches; j += 1)
@@ -657,7 +657,7 @@ threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
 		Multithread results[] = CheckDimensionLabels(waveRef[p])
 
 		if(HasOneValidEntry(results))
-			WAVE/Z indizes = FindIndizes(results, col = 0, prop = PROP_NON_EMPTY)
+			WAVE/Z indizes = FindIndizes(results, prop = PROP_NON_EMPTY)
 			numMatches = WaveExists(indizes) ? DimSize(indizes, ROWS) : 0
 
 			for(i = 0; i < numMatches; i += 1)

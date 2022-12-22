@@ -66,7 +66,7 @@ static Function [WAVE startT, WAVE endT, WAVE levels, WAVE/T description] Remove
 	WAVE/Z levels = ZapNans(levels_sub)
 	CHECK_WAVE(levels, NUMERIC_WAVE)
 
-	WAVE/Z indizes = FindIndizes(description_sub, col = 0, prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(description_sub, prop = PROP_NON_EMPTY)
 	if(WaveExists(indizes))
 		Make/N=(DimSize(indizes, ROWS))/T/FREE description = description_sub[indizes[p]]
 	endif
@@ -138,7 +138,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 		level = levels[i]
 
 		// find all epochs which have level + 1
-		WAVE/Z matches = FindIndizes(levels, col = 0, var = level + 1)
+		WAVE/Z matches = FindIndizes(levels, var = level + 1)
 
 		if(!WaveExists(matches))
 			continue

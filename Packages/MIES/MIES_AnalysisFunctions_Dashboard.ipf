@@ -1084,7 +1084,7 @@ static Function AD_SelectResult(win, [index])
 		WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
 
 		// update databrowser if required and not already done
-		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
+		WAVE/Z indizes = FindIndizes(ovsListWave, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
 		if(!WaveExists(indizes))
 			DB_UpdateToLastSweep(win, force = 1)
 		endif
@@ -1124,7 +1124,7 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	WAVE/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", UNKNOWN_MODE)
 	ASSERT(WaveExists(statusHS), "No active headstages")
 
-	WAVE/Z indizes = FindIndizes(statusHS, var = 1, col = 0)
+	WAVE/Z indizes = FindIndizes(statusHS, var = 1)
 	ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) == 1, "Could not find one valid entry.")
 	headstage = indizes[0]
 

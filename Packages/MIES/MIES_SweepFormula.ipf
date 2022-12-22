@@ -419,7 +419,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					continue
 				endif
 				state = SF_STATE_COLLECT
-				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
+				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=!]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
@@ -1824,20 +1824,22 @@ End
 
 static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
-	variable i, rangeStart, rangeEnd, DAChannel, sweepNo
+	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
 	variable chanNr, chanType, cIndex, isSweepBrowser
-	variable numSelected, index
-	string dimLabel, device, dataFolder, epochName
+	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex
+	string dimLabel, device, dataFolder
+	string	allEpochsRegex = "^.*$"
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
 	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
 	if(IsTextWave(range))
-		SF_ASSERT(DimSize(range, ROWS) == 1, "A epoch range must be a single string with the epoch name.")
-		WAVE/T wEpochName = range
-		epochName = wEpochName[0]
+		SF_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
+		WAVE/T epochNames = range
+		numEpochPatterns = DimSize(epochNames, ROWS)
 	else
 		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
+		numEpochPatterns = 1
 	endif
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, 0)
@@ -1847,7 +1849,7 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 	SF_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
 
 	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, numSelected)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, MINIMUM_WAVE_SIZE)
 
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
 
@@ -1888,27 +1890,50 @@ static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE/Z sel
 			continue
 		endif
 
-		if(WaveExists(wEpochName))
+		if(WaveExists(epochNames))
 			DAChannel = SF_GetDAChannel(graph, sweepNo, chanType, chanNr)
-			WAVE range = SF_GetRangeFromEpoch(graph, epochName, sweepNo, DAChannel)
-			if(SF_IsEmptyRange(range))
+			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			SF_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAChannel, allEpochsRegex)
+			if(!WaveExists(epochInfo))
 				continue
 			endif
+			WAVE/T allEpNames = SF_GetEpochNamesFromInfo(epochInfo)
+			WAVE/Z epIndices = SF_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
+			if(!WaveExists(epIndices))
+				continue
+			endif
+			numEpochs = DimSize(epIndices, ROWS)
+			WAVE range = SF_GetEmptyRange()
+			Redimension/N=(-1, numEpochs) range
+			for(j = 0; j < numEpochs; j += 1)
+				epIndex = epIndices[j]
+				range[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+				range[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+			endfor
+		else
+			Redimension/N=(-1, 1) range
 		endif
-		rangeStart = range[0]
-		rangeEnd = range[1]
 
-		SF_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
-		SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-		SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
-		Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
+		numRanges = DimSize(range, COLS)
+		for(j = 0; j < numRanges; j += 1)
+			rangeStart = range[0][j]
+			rangeEnd = range[1][j]
 
-		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
-		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
-		JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+			SF_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+			SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
-		output[index] = rangedSweepData
-		index += 1
+			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
+			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
+			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+
+			EnsureLargeEnoughWave(output, minimumSize=index)
+			output[index] = rangedSweepData
+			index += 1
+		endfor
 	endfor
 	Redimension/N=(index) output
 
@@ -3089,19 +3114,18 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 	endif
 
-	WAVE/T epochName = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
-	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Epoch name must be a single string.")
-	SF_ASSERT(IsTextWave(epochName), "Epoch name argument must be textual")
+	WAVE/T epochPatterns = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
+	SF_ASSERT(IsTextWave(epochPatterns), "Epoch pattern argument must be textual")
 
-	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochName[0], selectData, epType, SF_OP_EPOCHS)
+	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
 
 	return SF_GetOutputForExecutor(output, graph, SF_OP_EPOCHS)
 End
 
-Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE/Z selectData, variable epType, string opShort)
+Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
 
-	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex
-	string epName, epShortName, epEntry, yAxisLabel
+	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex, numPatterns, numEntries
+	string epName, epShortName, epEntry, yAxisLabel, epAxisName
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
@@ -3112,16 +3136,18 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 	endif
 
 	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, numSelected)
+	WAVE/WAVE output = SF_CreateSFRefWave(graph, opShort, MINIMUM_WAVE_SIZE)
 
+	epAxisName = TextWaveToList(epochPatterns, "/")
 	if(epType == EPOCHS_TYPE_NAME)
-		yAxisLabel = "epoch " + epochName + " name"
+		yAxisLabel = "epoch " + epAxisName + " name"
 	elseif(epType == EPOCHS_TYPE_TREELEVEL)
-		yAxisLabel = "epoch " + epochName + " tree level"
+		yAxisLabel = "epoch " + epAxisName + " tree level"
 	else
-		yAxisLabel = "epoch " + epochName + " range"
+		yAxisLabel = "epoch " + epAxisName + " range"
 	endif
 
+	numPatterns = DimSize(epochPatterns, ROWS)
 	for(i = 0; i < numSelected; i += 1)
 
 		sweepNo = selectData[i][%SWEEP]
@@ -3147,38 +3173,35 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, string epochName, WAVE
 		epEntry = settingsT[settingsIndex]
 		SF_ASSERT(!IsEmpty(epEntry), "Encountered sweep/channel without epoch information.")
 		WAVE/T epochInfo = EP_EpochStrToWave(epEntry)
-		numEpochs = DimSize(epochInfo, ROWS)
-		Make/FREE/T/N=(numEpochs) epNames
-		for(j = 0; j < numEpochs; j += 1)
-			epName = epochInfo[j][EPOCH_COL_TAGS]
-			epShortName = EP_GetShortName(epName)
-			epNames[j] = SelectString(IsEmpty(epShortName), epShortName, epName)
+		WAVE/T epNames = SF_GetEpochNamesFromInfo(epochInfo)
+		WAVE/Z epIndices = SF_GetEpochIndicesByWildcardPatterns(epNames, epochPatterns)
+		if(!WaveExists(epIndices))
+			break
+		endif
+
+		numEntries = DimSize(epIndices, ROWS)
+		for(j = 0; j < numEntries; j += 1)
+			epIndex = epIndices[j]
+			if(epType == EPOCHS_TYPE_NAME)
+				Make/FREE/T wt = {epNames[epIndex]}
+				WAVE out = wt
+			elseif(epType == EPOCHS_TYPE_TREELEVEL)
+				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
+				WAVE out = wv
+			else
+				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
+				WAVE out = wv
+			endif
+
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+
+			EnsureLargeEnoughWave(output, minimumSize=index)
+			output[index] = out
+			index +=1
 		endfor
-
-		FindValue/TXOP=4/TEXT=epochName epNames
-		if(V_Row == -1)
-			continue
-		endif
-		epIndex = V_Row
-
-		if(epType == EPOCHS_TYPE_NAME)
-			Make/FREE/T wt = {epNames[epIndex]}
-			WAVE out = wt
-		elseif(epType == EPOCHS_TYPE_TREELEVEL)
-			Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
-			WAVE out = wv
-		else
-			Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
-			WAVE out = wv
-		endif
-
-		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
-
-		output[index] = out
-		index +=1
 	endfor
 	Redimension/N=(index) output
 
@@ -4252,7 +4275,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	WAVE range = SF_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0, checkExist=1)
 	SF_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
 	if(IsTextWave(range))
-		SF_ASSERT(DimSize(range, ROWS) == 1, "For range from epoch only a single name is supported.")
+		SF_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
 	else
 		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
 		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
@@ -5156,4 +5179,40 @@ threadsafe static Function SF_RemoveEndOfSweepNaNs(WAVE/Z input)
 	if(V_Value >= 0)
 		Redimension/N=(V_Value) input
 	endif
+End
+
+static Function/WAVE SF_GetEpochNamesFromInfo(WAVE/T epochInfo)
+
+	string epName, epShortName
+	variable i
+	variable numEpochs = DimSize(epochInfo, ROWS)
+
+	Make/FREE/T/N=(numEpochs) epNames
+	for(i = 0; i < numEpochs; i += 1)
+		epName = epochInfo[i][EPOCH_COL_TAGS]
+		epShortName = EP_GetShortName(epName)
+		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epName)
+	endfor
+
+	return epNames
+End
+
+static Function/WAVE SF_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T patterns)
+
+	variable i
+	variable numPatterns = DimSize(patterns, ROWS)
+
+	for(i = 0; i < numPatterns; i += 1)
+		WAVE/Z indices = FindIndizes(epochNames, str=patterns[i], prop=PROP_WILDCARD)
+		if(!WaveExists(indices))
+			continue
+		endif
+		Concatenate/FREE/NP {indices}, allIndices
+	endfor
+	if(!WaveExists(allIndices))
+		return $""
+	endif
+	WAVE uniqueEntries = GetUniqueEntries(allIndices, dontDuplicate=1)
+
+	return uniqueEntries
 End

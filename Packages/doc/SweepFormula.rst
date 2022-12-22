@@ -655,9 +655,10 @@ The range can be either supplied explicitly using `[100, 300]` which would
 select `100 ms` to `300 ms` or by using `cursors` that also returns a range specification. In case `cursors()` is
 used but there are no cursors on the graph, the full x-range is used. A numerical range applies to all sweeps.
 
-Instead of a numerical range also the short name of an epoch can be given. Then the range
-is determined from the epoch information of each sweep/channel data iterates over. If a specified epoch does not exist in a sweep
-that sweep data is not included in the sweep data returned.
+Instead of a numerical range also the short names of epochs can be given including wildcard expressions. Then the range
+is determined from the epoch information of each sweep/channel/epoch data iterates over. If a specified epoch does not exist in a sweep
+that sweep data is not included in the sweep data returned. If the same epoch is resolved multiple times from wildcard expressions or
+multiple epoch names then it is included only once per sweep.
 
 selectData is retrieved through the `select` operation. It selects for which sweeps and channels sweep data is returned.
 `select` also allows to choose currently displayed sweeps or all existing sweeps as data source.
@@ -674,6 +675,18 @@ The returned data type is `SF_DATATYPE_SWEEP`.
 
    // Shows epoch "E1" range of the AD channels of all displayed sweeps
    data("E1", select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs starting with "E" of the AD channels of all displayed sweeps
+   data("E*", select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs starting with "E"  and "TP" of the AD channels of all displayed sweeps
+   data(["E*","TP*"], select(channels(AD), sweeps()))
+
+   // Shows sweep data from all epochs that do not start with "E"  and that do start with "TP" of the AD channels of all displayed sweeps
+   data(["!E*","TP*"], select(channels(AD), sweeps()))
+
+   // No double resolve of the same epoch name: Shows sweep data from epoch "TP" of the AD channels of all displayed sweeps.
+   data(["TP","TP"], select(channels(AD), sweeps()))
 
 labnotebook
 """""""""""
@@ -916,10 +929,10 @@ The epochs operation returns information from epochs.
 
 .. code-block:: bash
 
-   epochs(string name[, array selectData[, string type]])
+   epochs(array names[, array selectData[, string type]])
 
 name
-  the name of the epoch.
+  the name(s) of the epoch. The names can contain wildcard `*` and `!`.
 
 selectData
   the second argument is a selection of sweeps and channels where the epoch information is retrieved from. It must be specified through the `select` operation. When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
@@ -927,7 +940,7 @@ selectData
 type
   sets what information is returned. Valid types are: `range`, `name` or `treelevel`. If type is not specified then `range` is used as default.
 
-The operation returns for each selected sweep a data wave. The sweep meta data is transferred to the output data waves.
+The operation returns for each selected sweep times matching epoch a data wave. The sweep meta data is transferred to the output data waves.
 If there was nothing selected the number of returned data waves is zero.
 If the selection contains channels that do not have epoch information stored, e.g. `AD`, these selections are skipped in the evaluation.
 For example if `select()` is used for the selectData argument then all channels are selected, but only for `DA` channels epoch information is stored in the labnotebook.
@@ -940,13 +953,13 @@ range:
 Each output data wave is numeric and contains two elements with the start and end time of the epoch in [ms].
 
 name:
-Each output data wave is textual and contains one elements with the full name of the epoch.
+Each output data wave is textual and contains one elements with the name of the epoch.
 
 treelevel:
 Each output data wave is numeric with one element with the tree level of the epoch.
 
 The returned data type is `SF_DATATYPE_EPOCHS`.
-The default suggested x-axis values for the formula plotter are sweep numbers. The suggested y-axis label is the type requested (`name`, `tree level`, `range`).
+The default suggested x-axis values for the formula plotter are sweep numbers. The suggested y-axis label is the combination of the requested type (`name`, `tree level`, `range`) and the epoch name wildcards.
 
 .. code-block:: bash
 
@@ -955,6 +968,12 @@ The default suggested x-axis values for the formula plotter are sweep numbers. T
 
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
    epochs(ST, select(channels(AD), sweeps()), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+
+   // get stimset range from epochs starting with TP_ and epochs starting with E from all displayed sweeps and channels
+   epochs(["TP_*", "E*"], select(channels(AD), sweeps()))
+
+   // get stimset range from specified epochs from all displayed sweeps and channels
+   epochs(["TP_B?", "E?_*"], select(channels(AD), sweeps()))
 
 tp
 ""
