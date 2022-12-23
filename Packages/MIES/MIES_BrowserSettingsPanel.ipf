@@ -1654,6 +1654,7 @@ Function BSP_AddTracesForEpochs(string win)
 		endif
 
 		WAVE/T epochs = EP_EpochStrToWave(epochInfoStr)
+		SetEpochsDimensionLabels(epochs)
 
 		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
 
@@ -1743,8 +1744,8 @@ End
 Function BSP_EpochGraphToolTip(s)
 	STRUCT WMTooltipHookStruct &s
 
-	variable idx
-	string first, last
+	variable idx, hasShortname
+	string first, last, tags, treelevel, shortname
 	Variable hookResult = 0 // 0 tells Igor to use the standard tooltip
 
 	// traceName is set only for graphs and only if the mouse hovered near a trace
@@ -1757,10 +1758,20 @@ Function BSP_EpochGraphToolTip(s)
 			ASSERT(WaveExists(epochs), "Missing epoch info")
 			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx = w[s.row][s.column][1]
-			first = num2strHighPrec(str2num(epochs[idx][0]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
-			last  = num2strHighPrec(str2num(epochs[idx][1]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
 
-			s.tooltip = first + " <-> " + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
+			first     = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
+			last      = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
+			tags      = epochs[idx][EPOCH_COL_TAGS]
+			treelevel = epochs[idx][EPOCH_COL_TREELEVEL]
+
+			shortname = EP_GetShortName(tags)
+			hasShortname = IsEmpty(shortname)
+
+			if(hasShortname)
+				tags = EP_RemoveShortNameFromTags(tags)
+			endif
+
+			sprintf s.tooltip, "%s<br>%s &lt;-&gt; %s (ms)<br>Tags: %s<br>TreeLevel: %s", SelectString(hasShortname, "<b>" + shortname + "</b>", "Shortname: NA"), first, last, tags, treelevel
 		endif
 	endif
 
