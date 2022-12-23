@@ -45,6 +45,7 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 	BSP_SetDataBrowser(win, BROWSER_MODE_USER)
 	BSP_SetDevice(win, device)
 	MIES_DB#DB_SetUserData(win, device)
+	TUD_Clear(win)
 End
 
 static Function/WAVE GetMultipleResults(string formula, string win)
@@ -53,7 +54,7 @@ static Function/WAVE GetMultipleResults(string formula, string win)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 End
 
 static Function/WAVE GetSingleResult(string formula, string win)
@@ -505,7 +506,7 @@ static Function array()
 	jsonID1 = DirectToFormulaParser("1,5/(6+7)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
-	// failures that have to SF_ASSERT
+	// failures that have to SFH_ASSERT
 	FailFormula("1]")
 	FailFormula("[1")
 	FailFormula("0[1]")
@@ -1719,10 +1720,8 @@ static Function TestOperationSelect()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(device, sweepNo=sweepNo)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
 
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
@@ -1993,8 +1992,8 @@ static Function TestOperationData()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(device, sweepNo=sweepNo)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
 	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
@@ -2221,8 +2220,8 @@ static Function TestOperationPowerSpectrum()
 	sweepNo = 0
 	FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorPS
 
-	CreateFakeSweepData(device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
-	CreateFakeSweepData(device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
 
 	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)))"
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
@@ -2372,7 +2371,6 @@ static Function TestOperationLabNotebook()
 	string win, device
 
 	[win, device] = CreateFakeDataBrowserWindow()
-	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2474,7 +2472,6 @@ static Function TestOperationEpochs()
 	string channelTypeC = channelType + "C"
 
 	[win, device] = CreateFakeDataBrowserWindow()
-	TUD_Clear(win)
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2902,7 +2899,7 @@ static Function ZeroSizedSubArrayTest()
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	WAVE/WAVE wRefResult = MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+	WAVE/WAVE wRefResult = MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
 	WAVE wv = wRefResult[0]

@@ -1931,6 +1931,8 @@ StrConstant SF_DATATYPE_TPINST = "TestPulseMode_Instantaneous"
 StrConstant SF_DATATYPE_TPBASE = "TestPulseMode_Baseline"
 StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
+
+StrConstant SF_WREF_MARKER = "\"WREF@\":"
 /// @}
 
 /// @name Available source options for RA_SkipSweeps()

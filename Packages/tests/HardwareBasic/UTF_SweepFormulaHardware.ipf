@@ -27,7 +27,7 @@ static Function/WAVE GetMultipleResults(string formula, string win)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SF#SF_ParseArgument(win, wTextRef, "TestRun")
+	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 End
 
 static Function/WAVE GetSingleResult(string formula, string win)

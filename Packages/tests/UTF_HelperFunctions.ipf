@@ -427,7 +427,7 @@ Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
 	return sweep
 End
 
-Function CreateFakeSweepData(string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
+Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
 
 	string list, key, keyTxt
 	variable numChannels
@@ -464,6 +464,7 @@ Function CreateFakeSweepData(string device, [variable sweepNo, FUNCREF FakeSweep
 	DFREF dfr = GetDeviceDataPath(device)
 	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)
 	MoveWave config, dfr:$GetConfigWaveName(sweepNo)
+	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
 
 	list = GetAllDevicesWithContent()
 	list = RemoveEnding(list, ";")
@@ -475,8 +476,12 @@ Function/S GetDataBrowserWithData()
 	string win, device, result
 
 	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
-	CreateFakeSweepData(device)
+
 	win = DB_OpenDataBrowser()
+	CreateFakeSweepData(win, device)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
+	win = GetCurrentWindow()
+
 	result = BSP_GetDevice(win)
 	CHECK_EQUAL_STR(device, result)
 
