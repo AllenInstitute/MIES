@@ -4744,39 +4744,3 @@ threadsafe static Function SF_RemoveEndOfSweepNaNs(WAVE/Z input)
 		Redimension/N=(V_Value) input
 	endif
 End
-
-static Function/WAVE SF_GetEpochNamesFromInfo(WAVE/T epochInfo)
-
-	string epName, epShortName
-	variable i
-	variable numEpochs = DimSize(epochInfo, ROWS)
-
-	Make/FREE/T/N=(numEpochs) epNames
-	for(i = 0; i < numEpochs; i += 1)
-		epName = epochInfo[i][EPOCH_COL_TAGS]
-		epShortName = EP_GetShortName(epName)
-		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epName)
-	endfor
-
-	return epNames
-End
-
-static Function/WAVE SF_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T patterns)
-
-	variable i
-	variable numPatterns = DimSize(patterns, ROWS)
-
-	for(i = 0; i < numPatterns; i += 1)
-		WAVE/Z indices = FindIndizes(epochNames, str=patterns[i], prop=PROP_WILDCARD)
-		if(!WaveExists(indices))
-			continue
-		endif
-		Concatenate/FREE/NP {indices}, allIndices
-	endfor
-	if(!WaveExists(allIndices))
-		return $""
-	endif
-	WAVE uniqueEntries = GetUniqueEntries(allIndices, dontDuplicate=1)
-
-	return uniqueEntries
-End
