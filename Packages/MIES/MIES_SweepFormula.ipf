@@ -52,6 +52,7 @@ static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
 static Constant SF_APFREQUENCY_FULL          = 0x0
 static Constant SF_APFREQUENCY_INSTANTANEOUS = 0x1
 static Constant SF_APFREQUENCY_APCOUNT       = 0x2
+static Constant SF_APFREQUENCY_INSTANTANEOUS_PAIR = 0x3
 
 static StrConstant SF_OP_MINUS = "-"
 static StrConstant SF_OP_PLUS = "+"
@@ -118,6 +119,13 @@ static StrConstant SF_OP_TPFIT_RET_TAUSMALL = "tausmall"
 static StrConstant SF_OP_TPFIT_RET_AMP = "amp"
 static StrConstant SF_OP_TPFIT_RET_MINAMP = "minabsamp"
 static StrConstant SF_OP_TPFIT_RET_FITQUALITY = "fitq"
+
+static StrConstant SF_OP_APFREQUENCY_Y_TIME = "time"
+static StrConstant SF_OP_APFREQUENCY_Y_FREQ = "freq"
+static StrConstant SF_OP_APFREQUENCY_NORM = "normalize"
+static StrConstant SF_OP_APFREQUENCY_NONORM = "nonorm"
+static StrConstant SF_OP_APFREQUENCY_X_COUNT = "count"
+static StrConstant SF_OP_APFREQUENCY_X_TIME = "time"
 
 static Constant EPOCHS_TYPE_INVALID = -1
 static Constant EPOCHS_TYPE_RANGE = 0
@@ -4260,17 +4268,46 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_FINDLEVEL)
 End
 
-// apfrequency(data, [frequency calculation method], [spike detection crossing level])
+// apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i
+	variable i, numArgs, keepX
+	string xLabel
 
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <=3, "ApFrequency has 3 arguments at most.")
+	SFH_ASSERT(numArgs <= 6, "ApFrequency has 6 arguments at most.")
 	SFH_ASSERT(numArgs >= 1, "ApFrequency needs at least one argument.")
 
 	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
-	if(numArgs == 3)
+
+	if(numArgs == 6)
+		WAVE/T xAxisType = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 5, checkExist=1)
+		SFH_ASSERT(DimSize(xAxisType, ROWS) == 1, "Too many input values for parameter x-axis type")
+		SFH_ASSERT(IsTextWave(xAxisType), "x-axis type parameter must be textual")
+		SFH_ASSERT(!CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_COUNT) || !CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_TIME), "Unknown x-axis type parameter.")
+	else
+		Make/FREE/T xAxisType = {SF_OP_APFREQUENCY_X_TIME}
+	endif
+
+	if(numArgs == 5)
+		WAVE/T normalize = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 4, checkExist=1)
+		SFH_ASSERT(DimSize(normalize, ROWS) == 1, "Too many input values for parameter normalize")
+		SFH_ASSERT(IsTextWave(normalize), "normalize parameter must be textual")
+		SFH_ASSERT(!CmpStr(normalize[0], SF_OP_APFREQUENCY_NORM) || !CmpStr(normalize[0], SF_OP_APFREQUENCY_NONORM), "Unknown normalize parameter.")
+	else
+		Make/FREE/T normalize = {SF_OP_APFREQUENCY_NONORM}
+	endif
+
+	if(numArgs >= 4)
+		WAVE/T timeFreq = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 3, checkExist=1)
+		SFH_ASSERT(DimSize(timeFreq, ROWS) == 1, "Too many input values for parameter result value")
+		SFH_ASSERT(IsTextWave(timeFreq), "result value parameter must be textual")
+		SFH_ASSERT(!CmpStr(timeFreq[0], SF_OP_APFREQUENCY_Y_TIME) || !CmpStr(timeFreq[0], SF_OP_APFREQUENCY_Y_FREQ), "Unknown result value parameter.")
+	else
+		Make/FREE/T timeFreq = {SF_OP_APFREQUENCY_Y_FREQ}
+	endif
+
+	if(numArgs >= 3)
 		WAVE level = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 2, checkExist=1)
 		SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 		SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
@@ -4282,51 +4319,122 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		WAVE method = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 1, checkExist=1)
 		SFH_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
 		SFH_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
-		SFH_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
+		SFH_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT || method[0] == SF_APFREQUENCY_INSTANTANEOUS_PAIR, "method parameter is invalid")
 	else
 		Make/FREE method = {SF_APFREQUENCY_FULL}
 	endif
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(input, ROWS))
-	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0])
+	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0], timeFreq[0], normalize[0], xAxisType[0])
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY)
+	if(method[0] == SF_APFREQUENCY_INSTANTANEOUS_PAIR)
+		keepX = 1
+		xLabel = SelectString(!CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_COUNT), "ms", "peak number")
+		JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
+	endif
+
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY, keepX=keepX)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_APFREQUENCY)
 End
 
-static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method)
+static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method, string yStr, string normStr, string xAxisTypeStr)
 
-	variable numSets, i
+	variable numPeaks, yModeTime, xAxisCount, normalize
+	variable peakTimeDiff, peakTimeFreq
+	string yUnit
 
-	WAVE levels = FindLevelWrapper(data, level, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
-	numSets = DimSize(levels, ROWS)
-	Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
+	yModeTime = !CmpStr(yStr, SF_OP_APFREQUENCY_Y_TIME)
+	xAxisCount = !CmpStr(xAxisTypeStr, SF_OP_APFREQUENCY_X_COUNT)
+
+	WAVE peaksAt = FindLevelWrapper(data, level, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+	numPeaks = str2num(GetDimLabel(peaksAt, ROWS, 0))
+	Redimension/N=(1, numPeaks) peaksAt
+
+	normalize = numPeaks > 1 ? !CmpStr(normStr, SF_OP_APFREQUENCY_NORM) : 0
 
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
 	switch(method)
 		case SF_APFREQUENCY_FULL:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE)
+			// number_of_peaks / sweep_length
+			Make/FREE/D outD = { numPeaks / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE) }
+			yUnit = SelectString(normalize, "Hz [Full]", "normalized frequency [Full]")
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
 			break
 		case SF_APFREQUENCY_INSTANTANEOUS:
-			Make/N=(numSets)/D/FREE outD
-
-			for(i = 0; i < numSets; i += 1)
-				if(levelPerSet[i] <= 1)
-					outD[i] = 0
-				else
-					Make/FREE/D/N=(levelPerSet[i] - 1) distances
-					distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
-					outD[i] = 1.0 / (Mean(distances) * MILLI_TO_ONE)
-				endif
-			endfor
+			Make/FREE/D outD = { SF_ApFrequencyInstantaneous(peaksAt) }
+			yUnit = SelectString(normalize, "Hz [Instantaneous]", "normalized frequency [Instantaneous]")
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
+			break
+		case SF_APFREQUENCY_INSTANTANEOUS_PAIR:
+			WAVE/Z xAxisvalues = $""
+			[outD, xAxisvalues] = SF_ApFrequencyInstantaneousPairs(peaksAt, yModeTime, normalize, xAxisCount)
+			if(WaveExists(outD))
+				JWN_SetWaveInWaveNote(outD, SF_META_XVALUES, xAxisvalues)
+			endif
 			break
 		case SF_APFREQUENCY_APCOUNT:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p]
+			Make/FREE/D outD = { numPeaks }
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), "peaks [APCount]", outD
 			break
 	endswitch
 
+	if(normalize)
+		peakTimeDiff = (peaksAt[1] - peaksAt[0]) * MILLI_TO_ONE
+		peakTimeFreq = 1.0 / peakTimeDiff
+		if(yModetime)
+			outD /= peakTimeDiff
+		else
+			outD /= peakTimeFreq
+		endif
+	endif
+
 	return outD
+End
+
+static Function SF_ApFrequencyInstantaneous(WAVE peaksAt)
+
+	variable numPeaks
+
+	numPeaks = DimSize(peaksAt, COLS)
+
+	if(numPeaks <= 1)
+		return 0
+	endif
+
+	Make/FREE/D/N=(numPeaks - 1) distances
+	distances[0, numPeaks - 2] = peaksAt[0][p + 1] - peaksAt[0][p]
+	return 1.0 / (mean(distances) * MILLI_TO_ONE)
+End
+
+static Function [WAVE/D result, WAVE/D xAxisvalues] SF_ApFrequencyInstantaneousPairs(WAVE peaksAt, variable yModeTime, variable normalize, variable xAxisIsCounts)
+
+	variable numPeaks
+	string yUnit
+
+	numPeaks = DimSize(peaksAt, COLS)
+	if(numPeaks == 0)
+		return [$"", $""]
+	endif
+
+	Make/FREE/D/N=(max(numPeaks - 1, 1)) result, xAxisvalues
+	if(numPeaks == 1)
+		result[0] = 0
+		xAxisvalues[0] = xAxisIsCounts ? 0 : peaksAt[0][0]
+	else
+		xAxisvalues = xAxisIsCounts ? p : peaksAt[0][p]
+		result = (peaksAt[0][p + 1] - peaksAt[0][p]) * MILLI_TO_ONE
+		if(yModeTime)
+			yUnit = SelectString(normalize, "s [inst pairs]", "normalized time [inst pairs]")
+			SetScale/P y, DimOffset(result, ROWS), DimDelta(result, ROWS), yUnit, result
+		else
+			yUnit = SelectString(normalize, "Hz [inst pairs]", "normalized frequency [inst pairs]")
+			result = 1.0 / result
+			SetScale/P y, DimOffset(result, ROWS), DimDelta(result, ROWS), yUnit, result
+		endif
+	endif
+
+	return [result, xAxisvalues]
 End
 
 // `store(name, ...)`
