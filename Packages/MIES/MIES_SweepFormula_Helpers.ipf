@@ -606,13 +606,25 @@ End
 
 /// @brief Transfer wavenote from input data sets to output data sets
 ///        set a label for a x-axis and x-value(s) for data waves
-Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType)
+///
+/// @param input Input wave reference wave
+/// @param output Output wave reference wave
+/// @param opShort operation short name
+/// @param newDataType data type of output
+/// @param keepX [optional, default=0] When set then xvalues and xlabel of output are kept.
+Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType[, variable keepX])
 
 	variable sweepNo, numResults, i, setXLabel
-	string opStack, inDataType, xLabel
+	string opStack, inDataType
+	string xLabel = ""
 
 	numResults = DimSize(input, ROWS)
 	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
+	keepX = ParamIsDefault(keepX) ? 0 : !!keepX
+
+	if(keepX)
+		xLabel = JWN_GetStringFromWaveNote(output, SF_META_XAXISLABEL)
+	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, newDataType)
 
@@ -628,8 +640,16 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 		if(!WaveExists(inData) || !WaveExists(outData))
 			continue
 		endif
+		if(keepX)
+			WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(outData, SF_META_XVALUES)
+		endif
 
 		Note/K outData, note(inData)
+
+		if(keepX && WaveExists(xValues))
+			JWN_SetWaveInWaveNote(outData, SF_META_XVALUES, xValues)
+			continue
+		endif
 
 		strswitch(inDataType)
 			case SF_DATATYPE_SWEEP:
@@ -652,8 +672,7 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 
 	endfor
 
-	xLabel = ""
-	if(setXLabel)
+	if(!keepX && setXLabel)
 		strswitch(inDataType)
 			case SF_DATATYPE_SWEEP:
 				xLabel = "Sweeps"
