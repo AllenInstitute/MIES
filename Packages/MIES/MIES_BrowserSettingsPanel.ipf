@@ -354,13 +354,13 @@ End
 
 /// @brief get a FOLDER property from the specified panel
 ///
-/// @param win                   name of external panel or main window
-/// @param MIES_BSP_FOLDER_TYPE  see the FOLDER constants in this file
-/// @param versionCheck          [optional, defaults to true] abort on outdated window version
+/// @param win          name of external panel or main window
+/// @param folderType   see the FOLDER constants in this file
+/// @param versionCheck [optional, defaults to true] abort on outdated window version
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE, [versionCheck])
-	string win, MIES_BSP_FOLDER_TYPE
+Function/DF BSP_GetFolder(win, folderType, [versionCheck])
+	string win, folderType
 	variable versionCheck
 
 	string mainPanel
@@ -377,7 +377,7 @@ Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE, [versionCheck])
 
 	mainPanel = GetMainWindow(win)
 
-	DFREF dfr = $GetUserData(mainPanel, "", MIES_BSP_FOLDER_TYPE)
+	DFREF dfr = $GetUserData(mainPanel, "", folderType)
 	ASSERT(DataFolderExistsDFR(dfr), "DataFolder does not exist. Probably check device assignment.")
 
 	return dfr
@@ -385,11 +385,11 @@ End
 
 /// @brief set a FOLDER property at the specified panel
 ///
-/// @param win 						name of external panel or main window
-/// @param dfr 						DataFolder Reference to the folder
-/// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
-Function BSP_SetFolder(win, dfr, MIES_BSP_FOLDER_TYPE)
-	string win, MIES_BSP_FOLDER_TYPE
+/// @param win 			name of external panel or main window
+/// @param dfr 			DataFolder Reference to the folder
+/// @param folderType 	see the FOLDER constants in this file
+Function BSP_SetFolder(win, dfr, folderType)
+	string win, folderType
 	DFREF dfr
 
 	string mainPanel
@@ -398,7 +398,7 @@ Function BSP_SetFolder(win, dfr, MIES_BSP_FOLDER_TYPE)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
-	SetWindow $mainPanel, userData($MIES_BSP_FOLDER_TYPE) = GetDataFolder(1, dfr)
+	SetWindow $mainPanel, userData($folderType) = GetDataFolder(1, dfr)
 End
 
 /// @brief get the assigned DEVICE property from the main panel
