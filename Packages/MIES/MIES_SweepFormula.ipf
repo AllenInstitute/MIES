@@ -1307,7 +1307,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		for(i = 0; i < numGraphs + 1; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos = i / numGraphs
-			DefineGuide $guideName1={FT, guidePos, FB}
+			DefineGuide/W=$winNameTemplate $guideName1={FT, guidePos, FB}
 		endfor
 
 		// and now the subwindow graphs
