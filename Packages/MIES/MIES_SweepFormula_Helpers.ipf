@@ -718,3 +718,10 @@ static Function/S SFH_PrepareDataForResultsWave(WAVE data)
 
 	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
 End
+
+/// @brief Return the SweepBrowser/DataBrowser from which the given
+///        SweepFormula plot window originated from
+Function/S SFH_GetBrowserForFormulaGraph(string win)
+
+	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
+End

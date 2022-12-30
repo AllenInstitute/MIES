@@ -1969,3 +1969,4 @@ Constant HARDWARE_ITC_FIFO_ERROR       = -1
 Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
 
 StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
+StrConstant SFH_USER_DATA_BROWSER = "browser"

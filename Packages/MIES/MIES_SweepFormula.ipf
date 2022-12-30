@@ -156,8 +156,6 @@ static Constant SF_POWERSPECTRUM_RATIO_MAXFWHM = 5
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM = 2.35482004503
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS = 4
 
-static StrConstant SF_USER_DATA_BROWSER = "browser"
-
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -166,7 +164,7 @@ Function SF_BringBrowserToFront()
 	string browser, graph
 
 	graph = GetMainWindow(GetCurrentWindow())
-	browser = SF_GetBrowserForFormulaGraph(graph)
+	browser = SFH_GetBrowserForFormulaGraph(graph)
 
 	if(IsEmpty(browser))
 		print "This menu option only applies to SweepFormula plots."
@@ -177,13 +175,6 @@ Function SF_BringBrowserToFront()
 	endif
 
 	DoWindow/F $browser
-End
-
-/// @brief Return the SweepBrowser/DataBrowser from which the given
-///        SweepFormula plot window originated from
-static Function/S SF_GetBrowserForFormulaGraph(string win)
-
-	return GetUserData(win, "", SF_USER_DATA_BROWSER)
 End
 
 Function/WAVE SF_GetNamedOperations()
