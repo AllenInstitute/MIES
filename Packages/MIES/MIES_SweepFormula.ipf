@@ -1149,7 +1149,7 @@ static Function/S SF_GetMetaDataAnnotationText(STRUCT SF_PlotMetaData& plotMetaD
 	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(plotMetaData, data) + "\r"
 End
 
-static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
+Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged
 
