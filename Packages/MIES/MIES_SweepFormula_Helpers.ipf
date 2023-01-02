@@ -639,12 +639,29 @@ Function/WAVE SFH_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T pa
 	return uniqueEntries
 End
 
-Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
+static Function/S SFH_ResultTypeToString(variable resultType)
+
+	switch(resultType)
+		case SFH_RESULT_TYPE_STORE:
+			return "store"
+		case SFH_RESULT_TYPE_EPSP:
+			return "epsp"
+		default:
+			ASSERT(0, "Invalid resultType")
+	endswitch
+End
+
+Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [variable serializationMode, WAVE data, string name, variable resultType])
+
 	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
-	string shPanel, dataFolder, device
+	string shPanel, dataFolder, device, str
+
+	if(ParamIsDefault(serializationMode))
+		serializationMode = SER_MODE_IP
+	endif
 
 	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
-	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters")
+	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters data and name")
 	hasStoreEntry = (numOptParams == 0)
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
@@ -662,8 +679,9 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
+		SFH_ASSERT(!ParamIsDefault(resultType), "Missing type")
 		SFH_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
-		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
+		keys[0][numEntries - 1] = "Sweep Formula " + SFH_ResultTypeToString(resultType) + " [" + name + "]"
 	endif
 
 	LBN_SetDimensionLabels(keys, values)
@@ -690,13 +708,27 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	endif
 
 	if(hasStoreEntry)
-		values[0][numEntries - 1][INDEP_HEADSTAGE] = SFH_PrepareDataForResultsWave(data)
+		switch(serializationMode)
+			case SER_MODE_IP:
+				str = SFH_PrepareDataForResultsWaveAsIP(data)
+				break
+			case SER_MODE_JSON:
+				str = WaveToJSON(data)
+				break
+			default:
+				ASSERT(0, "Invalid serialization mode")
+		endswitch
+
+		values[0][numEntries - 1][INDEP_HEADSTAGE] = str
 	endif
 
 	return [keys, values]
 End
 
-static Function/S SFH_PrepareDataForResultsWave(WAVE data)
+/// @brief Serialization of wave without metadata as nested Igor style string lists
+///
+/// Also limits the number of entries.
+static Function/S SFH_PrepareDataForResultsWaveAsIP(WAVE data)
 	variable numEntries, maxEntries
 
 	if(IsNumericWave(data))

@@ -4294,7 +4294,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0], resultType = SFH_RESULT_TYPE_STORE)
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 
