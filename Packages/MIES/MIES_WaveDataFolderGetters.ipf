@@ -2084,7 +2084,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 35
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 36
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2609,6 +2609,7 @@ End
 /// - 38: TTL rack zero set cycle counts (ITC hardware)
 /// - 39: TTL rack one set cycle counts (ITC hardware)
 /// - 40: TTL set cycle counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 41: Device (aka DAEphys panel name)
 Function/Wave GetSweepSettingsTextKeyWave(device)
 	string device
 
@@ -2627,9 +2628,9 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 41, 0) wv
+		Redimension/N=(-1, 42, 0) wv
 	else
-		Make/T/N=(1, 41) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 42) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2677,6 +2678,7 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	wv[0][38] = "TTL rack zero set cycle counts"
 	wv[0][39] = "TTL rack one set cycle counts"
 	wv[0][40] = "TTL set cycle counts"
+	wv[0][41] = "Device"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

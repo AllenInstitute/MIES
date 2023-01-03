@@ -1018,6 +1018,8 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	endif
 	DC_DocumentChannelProperty(device, "Follower Device", INDEP_HEADSTAGE, NaN, NaN, str=followerDevices)
 
+	DC_DocumentChannelProperty(device, "Device", INDEP_HEADSTAGE, NaN, NaN, str=device)
+
 	DC_DocumentChannelProperty(device, "MIES version", INDEP_HEADSTAGE, NaN, NaN, str=GetMIESVersionAsString())
 	DC_DocumentChannelProperty(device, "Igor Pro version", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProVersion())
 	DC_DocumentChannelProperty(device, "Igor Pro build", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProBuildVersion())

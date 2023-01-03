@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 7
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 67
+Constant LABNOTEBOOK_VERSION = 68
 Constant RESULTS_VERSION     = 2
 /// @}
 
