@@ -6463,3 +6463,31 @@ static Function TestDeepCopyWaveRefWave()
 End
 
 /// @}
+
+Function JSONWaveSerializationWorks()
+
+	string str
+
+	Make/FREE/D wv = {{1, 2, 3}, {4, 5, 6}}
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 2)
+
+	Note wv, "abcd"
+
+	SetScale d, 7, 8, "efgh", wv
+
+	SetDimLabel ROWS, -1, $"ijkl", wv
+	SetDimLabel COLS, -1, $"mnop", wv
+
+	SetDimLabel ROWS, 0, $"qrst", wv
+	SetDimLabel COLS, 1, $"uvwx", wv
+	SetDimLabel ROWS, 2, $"yz", wv
+
+	str = WaveToJSON(wv)
+	CHECK_PROPER_STR(str)
+
+	WAVE/Z serialized = JSONToWave(str)
+	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(wv, serialized)
+End

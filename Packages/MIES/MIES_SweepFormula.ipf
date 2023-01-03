@@ -156,8 +156,6 @@ static Constant SF_POWERSPECTRUM_RATIO_MAXFWHM = 5
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM = 2.35482004503
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS = 4
 
-static StrConstant SF_USER_DATA_BROWSER = "browser"
-
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -166,7 +164,7 @@ Function SF_BringBrowserToFront()
 	string browser, graph
 
 	graph = GetMainWindow(GetCurrentWindow())
-	browser = SF_GetBrowserForFormulaGraph(graph)
+	browser = SFH_GetBrowserForFormulaGraph(graph)
 
 	if(IsEmpty(browser))
 		print "This menu option only applies to SweepFormula plots."
@@ -177,13 +175,6 @@ Function SF_BringBrowserToFront()
 	endif
 
 	DoWindow/F $browser
-End
-
-/// @brief Return the SweepBrowser/DataBrowser from which the given
-///        SweepFormula plot window originated from
-static Function/S SF_GetBrowserForFormulaGraph(string win)
-
-	return GetUserData(win, "", SF_USER_DATA_BROWSER)
 End
 
 Function/WAVE SF_GetNamedOperations()
@@ -1158,7 +1149,7 @@ static Function/S SF_GetMetaDataAnnotationText(STRUCT SF_PlotMetaData& plotMetaD
 	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(plotMetaData, data) + "\r"
 End
 
-static Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
+Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged
 
@@ -1316,14 +1307,17 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		for(i = 0; i < numGraphs + 1; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos = i / numGraphs
-			DefineGuide $guideName1={FT, guidePos, FB}
+			DefineGuide/W=$winNameTemplate $guideName1={FT, guidePos, FB}
 		endfor
+
+		DefineGuide/W=$winNameTemplate customLeft = {FL, 0.0, FR}
+		DefineGuide/W=$winNameTemplate customRight = {FL, 1.0, FR}
 
 		// and now the subwindow graphs
 		for(i = 0; i < numGraphs; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
-			Display/HOST=$winNameTemplate/FG=(FL, $guideName1, FR, $guideName2)/N=$("Graph" + num2str(i))
+			Display/HOST=$winNameTemplate/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
 			plotGraphs[i] = winNameTemplate + "#" + S_name
 		endfor
 	endif
@@ -1345,7 +1339,7 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
 
-	SetWindow $win hook(resetScaling)=IH_ResetScaling, userData(browser)=graph
+	SetWindow $win hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
 
 	newTitle = BSP_GetFormulaGraphTitle(graph)
 	DoWindow/T $win, newTitle
@@ -2214,7 +2208,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				SVAR lastCode = $GetLastSweepFormulaCode(dfr)
 				lastCode = preProcCode
 
-				[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
+				[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(mainPanel, rawCode)
 
 				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
@@ -2225,86 +2219,6 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 	endswitch
 
 	return 0
-End
-
-static Function/S SF_PrepareDataForResultsWave(WAVE data)
-	variable numEntries, maxEntries
-
-	if(IsNumericWave(data))
-		Make/T/FREE/N=(DimSize(data, ROWS), DimSize(data, COLS), DimSize(data, LAYERS), DimSize(data, CHUNKS)) dataTxT
-		MultiThread dataTxT[][][][] = num2strHighPrec(data[p][q][r][s], precision = MAX_DOUBLE_PRECISION, shorten = 1)
-	else
-		WAVE/T dataTxT = data
-	endif
-
-	// assuming 100 sweeps on average
-	maxEntries = 100 * NUM_HEADSTAGES * 10 // NOLINT
-	numEntries = numpnts(dataTxT)
-
-	if(numpnts(dataTxT) > maxEntries)
-		printf "The store operation received too much data to store, it will only store the first %d entries\r.", maxEntries
-		ControlWindowToFront()
-		numEntries = maxEntries
-	endif
-
-	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
-End
-
-static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
-	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
-	string shPanel, dataFolder, device
-
-	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
-	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters")
-	hasStoreEntry = (numOptParams == 0)
-
-	ASSERT(!IsEmpty(code), "Unexpected empty code")
-	numCursors = ItemsInList(CURSOR_NAMES)
-	numBasicEntries = 4
-	numEntries = numBasicEntries + numCursors + hasStoreEntry
-
-	Make/T/FREE/N=(1, numEntries) keys
-	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
-
-	keys[0][0]                                                 = "Sweep Formula code"
-	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
-	keys[0][2]                                                 = "Sweep Formula experiment"
-	keys[0][3]                                                 = "Sweep Formula device"
-	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
-
-	if(hasStoreEntry)
-		SFH_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
-		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
-	endif
-
-	LBN_SetDimensionLabels(keys, values)
-
-	values[0][%$"Sweep Formula code"][INDEP_HEADSTAGE] = NormalizeToEOL(TrimString(code), "\n")
-
-	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
-
-	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
-	if(WaveExists(selectData))
-		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
-	endif
-
-	shPanel = LBV_GetSettingsHistoryPanel(graph)
-
-	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
-	values[0][%$"Sweep Formula experiment"][INDEP_HEADSTAGE] = dataFolder
-
-	device = GetPopupMenuString(shPanel, "popup_Device")
-	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
-
-	if(WaveExists(cursorInfos))
-		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
-	endif
-
-	if(hasStoreEntry)
-		values[0][numEntries - 1][INDEP_HEADSTAGE] = SF_PrepareDataForResultsWave(data)
-	endif
-
-	return [keys, values]
 End
 
 Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
@@ -4380,7 +4294,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	[WAVE/T keys, WAVE/T values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0], resultType = SFH_RESULT_TYPE_STORE)
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 

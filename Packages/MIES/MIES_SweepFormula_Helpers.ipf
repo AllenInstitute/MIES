@@ -638,3 +638,122 @@ Function/WAVE SFH_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T pa
 
 	return uniqueEntries
 End
+
+static Function/S SFH_ResultTypeToString(variable resultType)
+
+	switch(resultType)
+		case SFH_RESULT_TYPE_STORE:
+			return "store"
+		case SFH_RESULT_TYPE_EPSP:
+			return "epsp"
+		default:
+			ASSERT(0, "Invalid resultType")
+	endswitch
+End
+
+Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [variable serializationMode, WAVE data, string name, variable resultType])
+
+	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
+	string shPanel, dataFolder, device, str
+
+	if(ParamIsDefault(serializationMode))
+		serializationMode = SER_MODE_IP
+	endif
+
+	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
+	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters data and name")
+	hasStoreEntry = (numOptParams == 0)
+
+	ASSERT(!IsEmpty(code), "Unexpected empty code")
+	numCursors = ItemsInList(CURSOR_NAMES)
+	numBasicEntries = 4
+	numEntries = numBasicEntries + numCursors + hasStoreEntry
+
+	Make/T/FREE/N=(1, numEntries) keys
+	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]                                                 = "Sweep Formula code"
+	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
+	keys[0][2]                                                 = "Sweep Formula experiment"
+	keys[0][3]                                                 = "Sweep Formula device"
+	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
+
+	if(hasStoreEntry)
+		SFH_ASSERT(!ParamIsDefault(resultType), "Missing type")
+		SFH_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
+		keys[0][numEntries - 1] = "Sweep Formula " + SFH_ResultTypeToString(resultType) + " [" + name + "]"
+	endif
+
+	LBN_SetDimensionLabels(keys, values)
+
+	values[0][%$"Sweep Formula code"][INDEP_HEADSTAGE] = NormalizeToEOL(TrimString(code), "\n")
+
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
+	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	if(WaveExists(selectData))
+		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
+	endif
+
+	shPanel = LBV_GetSettingsHistoryPanel(graph)
+
+	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+	values[0][%$"Sweep Formula experiment"][INDEP_HEADSTAGE] = dataFolder
+
+	device = GetPopupMenuString(shPanel, "popup_Device")
+	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
+
+	if(WaveExists(cursorInfos))
+		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
+	endif
+
+	if(hasStoreEntry)
+		switch(serializationMode)
+			case SER_MODE_IP:
+				str = SFH_PrepareDataForResultsWaveAsIP(data)
+				break
+			case SER_MODE_JSON:
+				str = WaveToJSON(data)
+				break
+			default:
+				ASSERT(0, "Invalid serialization mode")
+		endswitch
+
+		values[0][numEntries - 1][INDEP_HEADSTAGE] = str
+	endif
+
+	return [keys, values]
+End
+
+/// @brief Serialization of wave without metadata as nested Igor style string lists
+///
+/// Also limits the number of entries.
+static Function/S SFH_PrepareDataForResultsWaveAsIP(WAVE data)
+	variable numEntries, maxEntries
+
+	if(IsNumericWave(data))
+		Make/T/FREE/N=(DimSize(data, ROWS), DimSize(data, COLS), DimSize(data, LAYERS), DimSize(data, CHUNKS)) dataTxT
+		MultiThread dataTxT[][][][] = num2strHighPrec(data[p][q][r][s], precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	else
+		WAVE/T dataTxT = data
+	endif
+
+	// assuming 100 sweeps on average
+	maxEntries = 100 * NUM_HEADSTAGES * 10 // NOLINT
+	numEntries = numpnts(dataTxT)
+
+	if(numpnts(dataTxT) > maxEntries)
+		printf "The store operation received too much data to store, it will only store the first %d entries\r.", maxEntries
+		ControlWindowToFront()
+		numEntries = maxEntries
+	endif
+
+	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
+End
+
+/// @brief Return the SweepBrowser/DataBrowser from which the given
+///        SweepFormula plot window originated from
+Function/S SFH_GetBrowserForFormulaGraph(string win)
+
+	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
+End
