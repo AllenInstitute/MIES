@@ -4808,7 +4808,7 @@ Function/DF GetAnalysisLabNBFolder(expFolder, device)
 	return createDFWithAllParents(GetAnalysisLabNBFolderAS(expFolder, device))
 End
 
-/// @brief Return the full path to the labnotebook folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:labnotebook
+/// @brief Return the full path to the labnotebook folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:labnotebook
 Function/S GetAnalysisLabNBFolderAS(expFolder, device)
 	string expFolder, device
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":labnotebook"
@@ -4821,7 +4821,7 @@ Function/DF GetAnalysisSweepPath(expFolder, device)
 	return createDFWithAllParents(GetAnalysisSweepPathAsString(expFolder, device))
 End
 
-/// @brief Return the full path to the sweep folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:sweep
+/// @brief Return the full path to the sweep folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:sweep
 Function/S GetAnalysisSweepPathAsString(expFolder, device)
 	string expFolder, device
 
@@ -4836,7 +4836,7 @@ Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
 	return createDFWithAllParents(GetAnalysisSweepDataPathAS(expFolder, device, sweep))
 End
 
-/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep:X_$sweep
+/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:sweep:X_$sweep
 Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
