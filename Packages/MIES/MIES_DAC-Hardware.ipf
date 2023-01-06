@@ -993,7 +993,10 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	if(HW_ITC_SelectDevice(deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
-		// if the device can't be selected it is already closed
+		do
+			ITCCloseDevice2/DEV=(deviceID)/Z=1
+		while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
+
 		return NaN
 	endif
 
