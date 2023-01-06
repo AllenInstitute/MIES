@@ -21,6 +21,8 @@ Function TEST_BEGIN_OVERRIDE(name)
 	variable needsLoading
 	string filepath
 
+	AdditionalExperimentCleanup()
+
 	NVAR interactiveMode = $GetInteractiveMode()
 	interactiveMode = 0
 	variable/G root:interactiveMode = interactiveMode
