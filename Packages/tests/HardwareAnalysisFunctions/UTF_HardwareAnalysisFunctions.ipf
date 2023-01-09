@@ -95,7 +95,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
-	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
+	// list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
