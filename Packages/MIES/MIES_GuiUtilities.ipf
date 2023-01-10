@@ -1152,15 +1152,6 @@ Function/S GetCurrentWindow()
 	return s_value
 End
 
-/// @brief Return 1 if there are cursors on the graph, 0 if not
-Function GraphHasCursors(graph)
-	string graph
-
-	Make/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = WaveExists(CsrWaveRef($StringFromList(p, CURSOR_NAMES), graph))
-
-	return WaveMax(wv) > 0
-End
-
 /// @brief Return a 1D text wave with all infos about the cursors
 ///
 /// Returns an invalid wave reference when no cursors are present. Counterpart
@@ -1170,11 +1161,11 @@ End
 Function/WAVE GetCursorInfos(graph)
 	string graph
 
-	if(!GraphHasCursors(graph))
+	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
+
+	if(!HasOneValidEntry(wv))
 		return $""
 	endif
-
-	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
 	return wv
 End
