@@ -1209,6 +1209,60 @@ Function RestoreCursors(graph, cursorInfos)
 	endfor
 End
 
+/// @brief Return the infos for all annotations on the graph
+Function/WAVE GetAnnotationInfo(string graph)
+
+	variable numEntries
+	string annotations
+
+	annotations = AnnotationList(graph)
+	numEntries = ItemsInList(annotations)
+
+	if(numEntries == 0)
+		return $""
+	endif
+
+	Make/FREE/N=(numEntries)/T annoInfo = AnnotationInfo(graph, StringFromList(p, annotations))
+
+	SetDimensionLabels(annoInfo, annotations, ROWS)
+
+	return annoInfo
+End
+
+/// @brief Restore annotation positions
+Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
+
+	variable i, idx, numEntries, xPos, yPos
+	string annotations, name, infoStr, flags, anchor
+
+	annotations = AnnotationList(graph)
+	numEntries = ItemsInList(annotations)
+
+	if(numEntries == 0)
+		return NaN
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+
+		name = StringFromList(i, annotations)
+		idx = FindDimLabel(annoInfo, ROWS, name)
+
+		if(idx < 0)
+			continue
+		endif
+
+		infoStr = annoInfo[idx]
+
+		flags = StringByKey("FLAGS", infoStr)
+
+		xPos   = NumberByKey("X", flags, "=", "/")
+		yPos   = NumberByKey("Y", flags, "=", "/")
+		anchor = StringByKey("A", flags, "=", "/")
+
+		TextBox/W=$graph/N=$name/C/X=(xPos)/Y=(yPos)/A=$anchor
+	endfor
+End
+
 /// @brief Autoscale all vertical axes in the visible x range
 Function AutoscaleVertAxisVisXRange(graph)
 	string graph
