@@ -4988,6 +4988,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 		WAVE/Z deviceInfo = $""
 	else
 		WAVE deviceInfo = GetDeviceInfoWave(device)
+		ASSERT(IsFinite(deviceInfo[%DA]) && IsFinite(deviceInfo[%AD]) && deviceInfo[%TTL], "Could not query the device info wave")
 	endif
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
