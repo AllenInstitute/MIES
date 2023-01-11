@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(69,6)	labnotebook_textual_description
+WAVES/T/N=(70,6)	labnotebook_textual_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
