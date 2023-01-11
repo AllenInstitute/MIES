@@ -2703,11 +2703,10 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 					SFH_ASSERT(0, "tp: Unknown type.")
 					break
 			endswitch
-
-			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 		endif
 
 		if(!debugMode)
+			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
@@ -2725,15 +2724,12 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	strswitch(dataType)
 		case SF_DATATYPE_TPSS:
 			yAxisLabel = "steady state resistance"
-			xAxisLabel = "Sweeps"
 			break
 		case SF_DATATYPE_TPINST:
 			yAxisLabel = "instantaneous resistance"
-			xAxisLabel = "Sweeps"
 			break
 		case SF_DATATYPE_TPBASE:
 			yAxisLabel = "baseline level"
-			xAxisLabel = "Sweeps"
 			break
 		case SF_DATATYPE_TPFIT:
 			if(!CmpStr(retWhat, SF_OP_TPFIT_RET_TAULARGE) || !CmpStr(retWhat, SF_OP_TPFIT_RET_TAUSMALL))
@@ -2743,12 +2739,13 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_FITQUALITY))
 				yAxisLabel = "fitQuality"
 			endif
-			xAxisLabel = "TPs"
 			break
 		default:
 			SFH_ASSERT(0, "tp: Unknown mode.")
 			break
 	endswitch
+
+	xAxisLabel = "Sweeps"
 
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xAxisLabel)
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)

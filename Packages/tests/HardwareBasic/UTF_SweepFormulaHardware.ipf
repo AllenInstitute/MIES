@@ -424,6 +424,24 @@ static Function	TestSweepFormulaTP(string device)
 		CHECK_EQUAL_VAR(sweepNums[i], sweep)
 		CHECK_EQUAL_VAR(channelNums[i], chanNr)
 		CHECK_EQUAL_VAR(channelTypes[i], chanType)
+
+		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		CHECK_WAVE(xValues, NUMERIC_WAVE | FREE_WAVE)
+		CHECK_EQUAL_WAVES(xValues, {sweepNums[i]}, mode = WAVE_DATA)
+		i += 1
+	endfor
+
+	formula = "tp(tpfit(doubleexp, tausmall, 500), select(channels(AD1), sweeps(), all))"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	dataType = JWN_GetStringFromWaveNote(tpResult, SF_META_DATATYPE)
+	strRef = SF_DATATYPE_TP
+	CHECK_EQUAL_STR(strRef, dataType)
+	Make/FREE sweepNums = {0, 1, 2}
+	i = 0
+	for(data : tpResult)
+		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		CHECK_WAVE(xValues, NUMERIC_WAVE | FREE_WAVE)
+		CHECK_EQUAL_WAVES(xValues, {sweepNums[i]}, mode = WAVE_DATA)
 		i += 1
 	endfor
 End
