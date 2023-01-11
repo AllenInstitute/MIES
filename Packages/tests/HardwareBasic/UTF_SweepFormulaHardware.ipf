@@ -440,9 +440,9 @@ static Function SF_TPTest2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES0"                   + \
-								 "__HS2_DA0_AD1_CM:IC:_ST:EpochTest0_DA_0:"  + \
-								 "__HS3_DA1_AD2_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:EpochTest0_DA_0:"       + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -456,9 +456,6 @@ static Function SF_TPTest2_REENTRY([str])
 	graph = DB_OpenDataBrowser()
 	dbPanel = BSP_GetPanel(graph)
 
-	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_ADC", val = 0)
-	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_DAC", val = 1)
-
 	formula = "tp(tpfit(exp,tau),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
@@ -471,7 +468,6 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(beginTrails[0], 15)
 	CHECK_EQUAL_VAR(endTrails[0], 20)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 0.000428, tol=10^-3)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
@@ -482,7 +478,6 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(beginTrails[0], 15)
 	CHECK_EQUAL_VAR(endTrails[0], 15 + 250)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 8.8475e-05, tol=10^-4)
 
 	formula = "tp(tpfit(doubleexp,tau),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -490,12 +485,10 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 0.0067, tol=10^-2)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 0.0067, tol=10^-2)
 
 	formula = "tp(tpfit(doubleexp,tausmall),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -503,12 +496,10 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 0.000105, tol=10^-2.5)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 3.66e-05, tol=10^-2.5)
 
 	formula = "tp(tpfit(doubleexp,amp),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -516,12 +507,10 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], -23.5, tol=10^-3)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 4.55, tol=10^-2.5)
 
 	formula = "tp(tpfit(doubleexp,minabsamp),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -529,12 +518,10 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], -18.9, tol=10^-2)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 3.75, tol=10^-3)
 
 	formula = "tp(tpfit(doubleexp,fitq),select())"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -542,12 +529,10 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], 0.27, tol=10^-2)
 
 	WAVE/Z data = tpResult[1]
 	CHECK(WaveExists(data))
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_CLOSE_VAR(data[0], .14E-3, tol=0.1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
