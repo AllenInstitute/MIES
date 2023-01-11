@@ -89,11 +89,6 @@ Function/S DAP_GetNIDeviceList()
 #endif
 	endfor
 
-	// we want to have device infos for all NI devices
-	// devList holds only the ones suitable for DAQ but
-	// skips the ones used for pressure
-	DAP_UpdateDeviceInfoWaves(allDevices, HARDWARE_NI_DAC)
-
 	if(!IsEmpty(devList))
 		globalNIDevList = devList
 	else
@@ -116,8 +111,6 @@ Function/S DAP_GetITCDeviceList()
 	endif
 
 	devList = HW_ITC_ListDevices()
-
-	DAP_UpdateDeviceInfoWaves(devList, HARDWARE_ITC_DAC)
 
 	if(!IsEmpty(devList))
 		globalITCDevList = devList
@@ -5696,26 +5689,6 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 	endswitch
 
 	return 0
-End
-
-/// @brief Update the device info waves for all passed devices
-///
-/// Usually only called once during startup
-///
-/// @param deviceList   list of devices usable for DAQ and pressure
-/// @param hardwareType One of @ref HardwareDACTypeConstants
-Function DAP_UpdateDeviceInfoWaves(string deviceList, variable hardwareType)
-	string device
-	variable numEntries, i
-
-	numEntries = ItemsInList(deviceList)
-	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, deviceList)
-		WAVE deviceInfo = GetDeviceInfoWave(device)
-		WAVE/Z devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
-		hardwareType = GetHardwareType(device)
-		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
-	endfor
 End
 
 Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl

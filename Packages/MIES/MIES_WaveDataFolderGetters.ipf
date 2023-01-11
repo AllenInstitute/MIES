@@ -6800,6 +6800,7 @@ Function/WAVE GetDeviceInfoWave(device)
 	string device
 
 	variable versionOfNewWave = 1
+	variable hardwareType
 
 	DFREF dfr = GetDeviceInfoPath()
 	WAVE/D/Z/SDFR=dfr wv = $device
@@ -6821,6 +6822,9 @@ Function/WAVE GetDeviceInfoWave(device)
 	wv = NaN
 
 	SetWaveVersion(wv, versionOfNewWave)
+
+	hardwareType = GetHardwareType(device)
+	HW_WriteDeviceInfo(hardwareType, device, wv)
 
 	return wv
 End
