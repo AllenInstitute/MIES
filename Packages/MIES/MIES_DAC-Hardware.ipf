@@ -154,13 +154,13 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())
-			HW_NI_OpenDevice(deviceToOpen)
+			HW_NI_OpenDevice(deviceToOpen, flags = flags)
 			break
 		case HARDWARE_ITC_DAC:
 			ParseDeviceString(deviceToOpen, deviceType, deviceNumber)
 			deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
 			deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
-			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex)
+			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex, flags = flags)
 			break
 		default:
 			ASSERT(0, "Unable to open device: Device to open had an unsupported hardware type")
