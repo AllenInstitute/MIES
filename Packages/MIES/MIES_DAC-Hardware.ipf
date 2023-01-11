@@ -2876,7 +2876,14 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	DEBUGPRINTSTACKINFO()
 
 #if exists("DAQmx_DeviceInfo")
-	DAQmx_DeviceInfo/DEV=device
+
+	AssertOnAndClearRTError()
+	try
+		DAQmx_DeviceInfo/DEV=device; AbortOnRTE
+	catch
+		ClearRTError()
+		return $""
+	endtry
 
 	Make/FREE/T/N=(8) deviceInfo
 	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo
