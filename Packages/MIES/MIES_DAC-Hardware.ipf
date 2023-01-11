@@ -454,12 +454,17 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+
+			if(!HW_IsValidDeviceID(deviceID))
+				return $""
+			endif
+
 			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
 			HW_CloseDevice(hardwareType, deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			HW_NI_AssertOnInvalid(device)
-			WAVE devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
+			WAVE/Z devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
 			// nothing to do for NI
 			break
 		default:
