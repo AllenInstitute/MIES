@@ -1152,15 +1152,6 @@ Function/S GetCurrentWindow()
 	return s_value
 End
 
-/// @brief Return 1 if there are cursors on the graph, 0 if not
-Function GraphHasCursors(graph)
-	string graph
-
-	Make/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = WaveExists(CsrWaveRef($StringFromList(p, CURSOR_NAMES), graph))
-
-	return WaveMax(wv) > 0
-End
-
 /// @brief Return a 1D text wave with all infos about the cursors
 ///
 /// Returns an invalid wave reference when no cursors are present. Counterpart
@@ -1170,11 +1161,11 @@ End
 Function/WAVE GetCursorInfos(graph)
 	string graph
 
-	if(!GraphHasCursors(graph))
+	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
+
+	if(!HasOneValidEntry(wv))
 		return $""
 	endif
-
-	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
 	return wv
 End
@@ -1215,6 +1206,60 @@ Function RestoreCursors(graph, cursorInfos)
 		endif
 
 		Execute StringByKey("RECREATION", info)
+	endfor
+End
+
+/// @brief Return the infos for all annotations on the graph
+Function/WAVE GetAnnotationInfo(string graph)
+
+	variable numEntries
+	string annotations
+
+	annotations = AnnotationList(graph)
+	numEntries = ItemsInList(annotations)
+
+	if(numEntries == 0)
+		return $""
+	endif
+
+	Make/FREE/N=(numEntries)/T annoInfo = AnnotationInfo(graph, StringFromList(p, annotations))
+
+	SetDimensionLabels(annoInfo, annotations, ROWS)
+
+	return annoInfo
+End
+
+/// @brief Restore annotation positions
+Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
+
+	variable i, idx, numEntries, xPos, yPos
+	string annotations, name, infoStr, flags, anchor
+
+	annotations = AnnotationList(graph)
+	numEntries = ItemsInList(annotations)
+
+	if(numEntries == 0)
+		return NaN
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+
+		name = StringFromList(i, annotations)
+		idx = FindDimLabel(annoInfo, ROWS, name)
+
+		if(idx < 0)
+			continue
+		endif
+
+		infoStr = annoInfo[idx]
+
+		flags = StringByKey("FLAGS", infoStr)
+
+		xPos   = NumberByKey("X", flags, "=", "/")
+		yPos   = NumberByKey("Y", flags, "=", "/")
+		anchor = StringByKey("A", flags, "=", "/")
+
+		TextBox/W=$graph/N=$name/C/X=(xPos)/Y=(yPos)/A=$anchor
 	endfor
 End
 

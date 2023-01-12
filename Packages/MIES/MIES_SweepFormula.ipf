@@ -1255,8 +1255,8 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 	string panelName, guideName1, guideName2, win
 
 	Make/FREE/T/N=(numGraphs) plotGraphs
-	Make/FREE/WAVE/N=(numGraphs, 2) infos
-	SetDimensionLabels(infos, "axes;cursors", COLS)
+	Make/FREE/WAVE/N=(numGraphs, 3) infos
+	SetDimensionLabels(infos, "axes;cursors;annotations", COLS)
 
 	// collect infos
 	for(i = 0; i < numGraphs; i += 1)
@@ -1267,15 +1267,17 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endif
 
 		if(WindowExists(win))
-			WAVE/T/Z axes    = GetAxesRanges(win)
-			WAVE/T/Z cursors = GetCursorInfos(win)
+			WAVE/T/Z axes     = GetAxesRanges(win)
+			WAVE/T/Z cursors  = GetCursorInfos(win)
+			WAVE/T/Z annoInfo = GetAnnotationInfo(win)
 
 			if(WaveExists(cursors) && winDisplayMode == SF_DM_SUBWINDOWS)
 				restoreCursorInfo = 1
 			endif
 
-			infos[i][%axes]    = axes
-			infos[i][%cursors] = cursors
+			infos[i][%axes]        = axes
+			infos[i][%cursors]     = cursors
+			infos[i][%annotations] = annoInfo
 		endif
 	endfor
 
@@ -1682,6 +1684,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(keepUserSelection)
 			WAVE/Z cursorInfos = infos[j][%cursors]
 			WAVE/Z axesRanges  = infos[j][%axes]
+			WAVE/Z annoInfos   = infos[j][%annotations]
 
 			if(WaveExists(cursorInfos))
 				RestoreCursors(win, cursorInfos)
@@ -1689,6 +1692,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 			if(WaveExists(axesRanges))
 				SetAxesRanges(win, axesRanges)
+			endif
+
+			if(WaveExists(annoInfos))
+				RestoreAnnotationPositions(win, annoInfos)
 			endif
 		endif
 	endfor
