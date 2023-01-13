@@ -209,3 +209,12 @@ Function/WAVE GetChannelTypes()
 
 	return channelTypes
 End
+
+Function/WAVE NonExistingDevices()
+
+	Make/FREE/T wv = {"Dev0815", "ITC16_DEV_15"}
+
+	SetDimensionLabels(wv, TextWaveToList(wv, ";"), ROWS)
+
+	return wv
+End

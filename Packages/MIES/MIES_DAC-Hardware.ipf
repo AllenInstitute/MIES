@@ -154,13 +154,13 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())
-			HW_NI_OpenDevice(deviceToOpen)
+			HW_NI_OpenDevice(deviceToOpen, flags = flags)
 			break
 		case HARDWARE_ITC_DAC:
 			ParseDeviceString(deviceToOpen, deviceType, deviceNumber)
 			deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
 			deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
-			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex)
+			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex, flags = flags)
 			break
 		default:
 			ASSERT(0, "Unable to open device: Device to open had an unsupported hardware type")
@@ -454,12 +454,17 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+
+			if(!HW_IsValidDeviceID(deviceID))
+				return $""
+			endif
+
 			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
 			HW_CloseDevice(hardwareType, deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			HW_NI_AssertOnInvalid(device)
-			WAVE devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
+			WAVE/Z devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
 			// nothing to do for NI
 			break
 		default:
@@ -469,20 +474,34 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 	return devInfo
 End
 
-/// @brief Update the device info wave
-///
-/// Query the data via GetDeviceInfoWave().
-Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE/Z devInfoHW)
+/// @brief Fill the device info wave
+Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInfo)
 
-	deviceInfo[%HardwareType] = hardwareType
+	variable deviceID
 
 #ifdef EVIL_KITTEN_EATING_MODE
-	deviceInfo[%AD]   = 1024
-	deviceInfo[%DA]   = 1024
-	deviceInfo[%TTL]  = 1024
-	deviceInfo[%Rack] = NaN
-#else
-	ASSERT(WaveExists(devInfoHW), "Missing device info hardware wave")
+	deviceInfo[%HardwareType] = hardwareType
+	deviceInfo[%AD]           = 1024
+	deviceInfo[%DA]           = 1024
+	deviceInfo[%TTL]          = 1024
+	deviceInfo[%Rack]         = NaN
+
+	return NaN
+#endif // EVIL_KITTEN_EATING_MODE
+
+	deviceID = ROVar(GetDAQDeviceID(device))
+
+	if(HW_IsValidDeviceID(deviceID) && !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
+		WAVE/Z devInfoHW = HW_GetDeviceInfo(hardwareType, deviceID)
+	else
+		WAVE/Z devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+	endif
+
+	if(!WaveExists(devInfoHW))
+		return NaN
+	endif
+
+	deviceInfo[%HardwareType] = hardwareType
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -499,7 +518,6 @@ Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE/Z devIn
 			deviceInfo[%Rack] = NaN
 			break
 	endswitch
-#endif // EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Start data acquisition
@@ -2871,7 +2889,14 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	DEBUGPRINTSTACKINFO()
 
 #if exists("DAQmx_DeviceInfo")
-	DAQmx_DeviceInfo/DEV=device
+
+	AssertOnAndClearRTError()
+	try
+		DAQmx_DeviceInfo/DEV=device; AbortOnRTE
+	catch
+		ClearRTError()
+		return $""
+	endtry
 
 	Make/FREE/T/N=(8) deviceInfo
 	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo

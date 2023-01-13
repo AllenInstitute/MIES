@@ -21,6 +21,9 @@ End
 static Function TestLocking([str])
 	string str
 
+	// check that we can gather the device config wave
+	KillOrMoveToTrash(dfr = GetDeviceInfoPath())
+
 	try
 		CreateLockedDAEphys(str)
 		PASS()
@@ -89,4 +92,30 @@ static Function CheckDeviceLists()
 	FAIL()
 #endif
 
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckGetDeviceInfoValid([string str])
+
+	WAVE/Z wv = GetDeviceInfoWave(str)
+	CHECK_WAVE(wv, NORMAL_WAVE | NUMERIC_WAVE)
+	CHECK_GT_VAR(wv[%AD], 0)
+	CHECK_GT_VAR(wv[%AD], 0)
+	CHECK_GT_VAR(wv[%TTL], 0)
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	CHECK_EQUAL_VAR(wv[%Rack], NaN)
+#else
+	CHECK_GE_VAR(wv[%Rack], 0)
+#endif
+
+	CHECK_EQUAL_VAR(wv[%HardwareType], GetHardwareType(str))
+End
+
+// UTF_TD_GENERATOR NonExistingDevices
+static Function CheckGetDeviceInfoWithInvalid([string str])
+
+	WAVE/Z wv = GetDeviceInfoWave(str)
+	CHECK_WAVE(wv, NORMAL_WAVE | NUMERIC_WAVE)
+	CHECK(!HasOneValidEntry(wv))
 End
