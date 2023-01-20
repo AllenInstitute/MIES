@@ -498,6 +498,18 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	return NaN
 #endif // EVIL_KITTEN_EATING_MODE
 
+#ifndef ITC_XOP_PRESENT
+	if(hardwareType == HARDWARE_ITC_DAC)
+		return NaN
+	endif
+#endif
+
+#ifndef NIDAQMX_XOP_PRESENT
+	if(hardwareType == HARDWARE_NI_DAC)
+		return NaN
+	endif
+#endif
+
 	deviceID = ROVar(GetDAQDeviceID(device))
 
 	if(HW_IsValidDeviceID(deviceID) && !HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
