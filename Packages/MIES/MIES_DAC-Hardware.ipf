@@ -15,6 +15,15 @@
 #define ITC_XOP_PRESENT
 #endif
 
+/// Generic check for NIDAQmx XOP
+///
+/// In case newer functions are required which might
+/// not be present in all NIDAQmx XOP versions,
+/// check for their existance directly
+#if exists("fDAQmx_DeviceNames")
+#define NIDAQMX_XOP_PRESENT
+#endif
+
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
@@ -488,6 +497,18 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 
 	return NaN
 #endif // EVIL_KITTEN_EATING_MODE
+
+#ifndef ITC_XOP_PRESENT
+	if(hardwareType == HARDWARE_ITC_DAC)
+		return NaN
+	endif
+#endif
+
+#ifndef NIDAQMX_XOP_PRESENT
+	if(hardwareType == HARDWARE_NI_DAC)
+		return NaN
+	endif
+#endif
 
 	deviceID = ROVar(GetDAQDeviceID(device))
 
@@ -2046,7 +2067,7 @@ Function/S HW_NI_AnalogInputToString(variable config)
 	return RemoveEnding(str, ", ")
 End
 
-#if exists("fDAQmx_DeviceNames")
+#ifdef NIDAQMX_XOP_PRESENT
 
 /// @name Minimum voltages for the analog inputs/outputs
 /// We always use the maximum range so that we have a constant resolution on the DAC
@@ -3069,6 +3090,6 @@ Function HW_NI_ResetTaskIDs(device)
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-#endif // exists NI DAQ XOP
+#endif // NIDAQMX_XOP_PRESENT
 
 /// @}
