@@ -606,7 +606,7 @@ StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
 Constant WB_TOTAL_NUMBER_OF_EPOCHS = 94
 
 /// Minimum logarithm to base two for the DAQDataWave size for ITC hardware
-Constant MINIMUM_ITCDATAWAVE_EXPONENT = 20
+Constant MINIMUM_ITCDATAWAVE_EXPONENT = 22
 
 /// Minimum value for the baseline fraction of the Testpulse in percent
 Constant MINIMUM_TP_BASELINE_PERCENTAGE = 25
