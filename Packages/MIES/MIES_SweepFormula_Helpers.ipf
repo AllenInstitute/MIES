@@ -11,6 +11,8 @@
 /// @brief __SFH__ Sweep formula related helper code
 
 static StrConstant SFH_WORKING_DF = "FormulaData"
+static StrConstant SFH_ARGSETUP_OPERATION_KEY = "Operation"
+static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 
 /// @brief Convenience helper function to get a numeric SweepFormula operation argument
 ///
@@ -538,13 +540,41 @@ Function SFH_CleanUpInput(WAVE input)
 #endif
 End
 
-static Function SFH_AddOpToOpStack(WAVE w, string oldStack, string opShort)
+Function SFH_AddOpToOpStack(WAVE w, string oldStack, string opShort)
 
 	JWN_SetStringInWaveNote(w, SF_META_OPSTACK, AddListItem(opShort, oldStack))
 End
 
-Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, string opStack, WAVE clear])
+Function SFH_AddToArgSetupStack(WAVE output, WAVE/Z input, string argSetupStr, [variable resetStack])
 
+	string argSetupStack
+	variable argStackId, stackCnt
+
+	resetStack = ParamIsDefault(resetStack) ? 0 : !!resetStack
+	if(!resetStack)
+		ASSERT(WaveExists(input), "Need input wave")
+		argSetupStack = JWN_GetStringFromWaveNote(input, SF_META_ARGSETUPSTACK)
+		if(IsEmpty(argSetupStack))
+			argStackId = JSON_New()
+		else
+			argStackId = JSON_Parse(argSetupStack)
+		endif
+	else
+		argStackId = JSON_New()
+	endif
+
+	WAVE/Z/T wStack = JSON_GetKeys(argStackId, "", ignoreErr=1)
+	if(waveExists(wStack))
+		stackCnt = DimSize(wStack, ROWS)
+	endif
+	JSON_AddString(argStackId, "/" + num2istr(stackCnt), argSetupStr)
+	JWN_SetStringInWaveNote(output, SF_META_ARGSETUPSTACK, JSON_Dump(argStackId))
+	JSON_Release(argStackId)
+End
+
+Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, variable discardOpStack, WAVE clear])
+
+	discardOpStack = ParamIsDefault(discardOpStack) ? 0 : !!discardOpStack
 	if(!ParamIsDefault(clear))
 		SFH_CleanUpInput(clear)
 	endif
@@ -554,8 +584,9 @@ Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string o
 		output[0] = data
 	endif
 
-	if(!ParamIsDefault(opStack))
-		SFH_AddOpToOpStack(output, opStack, opShort)
+	if(discardOpStack)
+		SFH_AddOpToOpStack(output, "", opShort)
+		SFH_ResetArgSetupStack(output, opShort)
 	endif
 
 	return SFH_GetOutputForExecutor(output, graph, opShort)
@@ -611,16 +642,28 @@ End
 /// @param output Output wave reference wave
 /// @param opShort operation short name
 /// @param newDataType data type of output
+/// @param argSetup [optional, default=$""] 2d text wave with argument setup of operation @sa SFH_GetNewArgSetupWave
 /// @param keepX [optional, default=0] When set then xvalues and xlabel of output are kept.
-Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType[, variable keepX])
+Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType[, WAVE/T argSetup, variable keepX])
 
-	variable sweepNo, numResults, i, setXLabel
-	string opStack, inDataType
+	variable sweepNo, numResults, i, setXLabel, size
+	string opStack, argSetupStr, inDataType
 	string xLabel = ""
 
 	numResults = DimSize(input, ROWS)
 	ASSERT(numResults == DimSize(output, ROWS), "Input and output must have the same size.")
 	keepX = ParamIsDefault(keepX) ? 0 : !!keepX
+	if(ParamIsDefault(argSetup))
+		WAVE/T argSetup = SFH_GetNewArgSetupWave(1)
+		argSetup[0][%KEY] = SFH_ARGSETUP_OPERATION_KEY
+		argSetup[0][%VALUE] = opShort
+	else
+		size = DimSize(argSetup, ROWS)
+		Redimension/N=(size + 1, -1) argSetup
+		argSetup[size][%KEY] = SFH_ARGSETUP_OPERATION_KEY
+		argSetup[size][%VALUE] = opShort
+	endif
+	argSetupStr = SFH_SerializeArgSetup(argSetup)
 
 	if(keepX)
 		xLabel = JWN_GetStringFromWaveNote(output, SF_META_XAXISLABEL)
@@ -630,6 +673,7 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 
 	opStack = JWN_GetStringFromWaveNote(input, SF_META_OPSTACK)
 	SFH_AddOpToOpStack(output, opStack, opShort)
+	SFH_AddToArgSetupStack(output, input, argSetupStr)
 
 	inDataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 
@@ -902,4 +946,221 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	selectData[0][%CHANNELNUMBER] = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
 
 	return [selectData, range]
+End
+
+Function/WAVE SFH_GetNewArgSetupWave(variable size)
+
+	ASSERT(size >= 0, "Invalid size")
+	Make/FREE/T/N=(size, 2) wv
+	SetDimLabel COLS, 0, KEY, wv
+	SetDimLabel COLS, 1, VALUE, wv
+
+	return wv
+End
+
+static Function/S SFH_SerializeArgSetup(WAVE/T argSetup)
+
+	variable i, jsonId, size
+	string argSetupStr, key
+
+	size = DimSize(argSetup, ROWS)
+	ASSERT(size > 0, "Encountered empty argSetup")
+
+	jsonId = JSON_New()
+	for(i = 0; i < size; i += 1)
+		key = argSetup[i][%KEY]
+		ASSERT(!IsEmpty(key), "ArgumentSetup key is empty.")
+		JSON_AddString(jsonId, "/" + key, argSetup[i][%VALUE])
+	endfor
+
+	argSetupStr = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+
+	return argSetupStr
+End
+
+Function/WAVE SFH_DeSerializeArgSetup(variable jsonId, string jsonPath)
+
+	variable size, jsonIdOp
+	string argSetupStr
+
+	argSetupStr = JSON_GetString(jsonId, jsonPath)
+	jsonIdOp = JSON_Parse(argSetupStr)
+
+	WAVE/Z/T keys = JSON_GetKeys(jsonIdOp, "")
+	if(!WaveExists(keys))
+		WAVE/T argSetup = SFH_GetNewArgSetupWave(0)
+		return argSetup
+	endif
+
+	size = DimSize(keys, ROWS)
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(size)
+	argSetup[][%KEY] = keys[p]
+	argSetup[][%VALUE] = JSON_GetString(jsonIdOp, "/" + keys[p])
+
+	JSON_Release(jsonIdOp)
+
+	return argSetup
+End
+
+Function SFH_ResetArgSetupStack(WAVE output, string opShort)
+
+	string argSetupStr
+
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(1)
+	argSetup[0][%KEY] = SFH_ARGSETUP_OPERATION_KEY
+	argSetup[0][%VALUE] = opShort
+	argSetupStr = SFH_SerializeArgSetup(argSetup)
+	SFH_AddToArgSetupStack(output, $"", argSetupStr, resetStack=1)
+End
+
+static Function/S SFH_GetArgSetupValueByKey(WAVE/T argSetup, string key)
+
+	variable dim
+
+	dim = FindDimLabel(argSetup, COLS, "KEY")
+	FindValue/RMD=[][dim]/TEXT=key/TXOP=4 argSetup
+	if(!(V_Value >= 0))
+		return ""
+	endif
+
+	return argSetup[V_row][%VALUE]
+End
+
+static Function/S SFH_GetEmptyArgSetup()
+
+	variable jsonId, jsonId1
+	string dump
+
+	jsonId = JSON_New()
+	jsonId1 = JSON_New()
+	JSON_AddString(jsonId1, "/" + SFH_ARGSETUP_OPERATION_KEY, SFH_ARGSETUP_EMPTY_OPERATION_VALUE)
+	JSON_AddString(jsonId, "/0", JSON_Dump(jsonId1))
+	dump = JSON_Dump(jsonId)
+	JSON_Release(jsonId1)
+	JSON_Release(jsonId)
+
+	return dump
+End
+
+/// @brief Based on the argument setup modifies the annotations per formula with additional information from
+///        the different arguments.
+///
+/// @returns 1 of difference was found, 0 otherwise
+Function SFH_EnrichAnnotations(WAVE/T annotations, WAVE/T formulaArgSetup)
+
+	variable i, j, k, numFormulas, numOps, numKeys, dim, isDifferent
+	string testKey, testValue, buildDiffArgsStr, newAnnotation
+
+	numFormulas = DimSize(formulaArgSetup, ROWS)
+
+	Make/FREE/N=(numFormulas) stackSize, formulaIds
+	for(i = 0; i < numFormulas; i += 1)
+		if(IsEmpty(formulaArgSetup[i]))
+			formulaArgSetup[i] = SFH_GetEmptyArgSetup()
+		endif
+		formulaIds[i] = JSON_Parse(formulaArgSetup[i])
+		WAVE/Z/T wStack = JSON_GetKeys(formulaIds[i], "")
+		ASSERT(WaveExists(wStack), "Encountered invalid argSetup")
+		stackSize[i] = DimSize(wStack, ROWS)
+	endfor
+	WAVE uniques = GetUniqueEntries(stackSize)
+	if(DimSize(uniques, ROWS) > 1)
+		// stacksize different -> all different
+		SFH_EnrichAnnotationsRelease(formulaIds)
+		return 1
+	else
+		numOps = stackSize[0]
+		Make/FREE/WAVE/N=(numFormulas, numOps) argSetup
+		argSetup[][] = SFH_DeSerializeArgSetup(formulaIds[p], "/" + num2istr(q))
+
+		Make/FREE/T/N=(numFormulas, numOps) opIds
+		opIds[][] = SFH_GetArgSetupValueByKey(argSetup[p][q], SFH_ARGSETUP_OPERATION_KEY)
+		for(i = 0; i < numOps; i += 1)
+			Duplicate/FREE/RMD=[][i] opIds, opRow
+			Redimension/N=(-1) opRow
+			WAVE opRowUniques = GetUniqueEntries(opRow)
+			if(DimSize(opRowUniques, ROWS) > 1)
+				// At least one operation is different
+				SFH_EnrichAnnotationsRelease(formulaIds)
+				return 1
+			endif
+		endfor
+
+		Make/FREE/T/N=(numFormulas, numOps) shrinkedDiff
+		Make/FREE/T/N=(numFormulas) opStackStr
+		for(i = 0; i < numOps; i += 1)
+			Make/FREE/T/N=0 allKeys
+			for(j = 0; j < numFormulas; j += 1)
+				WAVE/T argOpSetup = argSetup[j][i]
+				dim = FindDimLabel(argOpSetup, COLS, "KEY")
+				Duplicate/FREE/RMD=[][dim] argOpSetup, argOpSetupKeys
+				Redimension/N=(-1) argOpSetupKeys
+				Concatenate/NP/T {argOpSetupKeys}, allKeys
+			endfor
+			WAVE/T uniqueKeys = GetUniqueEntries(allKeys)
+			numKeys = DimSize(uniqueKeys, ROWS)
+			Make/FREE/N=(numKeys) markDiff
+			if(numKeys > 1)
+				for(j = 0; j < numKeys; j += 1)
+					testKey = uniqueKeys[j]
+					testValue = ""
+					for(k = 0; k < numFormulas; k += 1)
+						WAVE/T argOpSetup = argSetup[k][i]
+						if(IsEmpty(testValue))
+							testValue = SFH_GetArgSetupValueByKey(argOpSetup, testKey)
+							continue
+						endif
+						if(CmpStr(testValue, SFH_GetArgSetupValueByKey(argOpSetup, testKey), 1))
+							markDiff[j] = 1
+						endif
+					endfor
+				endfor
+			endif
+			// build nice string per formula
+			shrinkedDiff[][i] = SFH_GetArgSetupValueByKey(WaveRef(argSetup, row = p, col = i), SFH_ARGSETUP_OPERATION_KEY)
+			opStackStr[] = shrinkedDiff[p][i] + " " + opStackStr[p]
+			for(j = 0; j < numFormulas; j += 1)
+				WAVE/T argOpSetup = argSetup[j][i]
+
+				if(sum(markDiff) == 0)
+					continue
+				endif
+
+				isDifferent = 1
+
+				buildDiffArgsStr = ""
+				for(k = 0; k < numKeys; k += 1)
+					if(!markDiff[k])
+						continue
+					endif
+					buildDiffArgsStr += uniqueKeys[k] + ":" + SFH_GetArgSetupValueByKey(argOpSetup, uniqueKeys[k]) + " "
+				endfor
+				buildDiffArgsStr = RemoveEnding(buildDiffArgsStr, " ")
+				shrinkedDiff[j][i] += "(" + buildDiffArgsStr + ")"
+			endfor
+		endfor
+
+		opStackStr[] = RemoveEnding(opStackStr[p], " ")
+		for(i = 0; i < numFormulas; i += 1)
+			newAnnotation = ""
+			for(j = 0; j < numOps; j += 1)
+				newAnnotation = shrinkedDiff[i][j] + " " + newAnnotation
+			endfor
+			newAnnotation = RemoveEnding(newAnnotation, " ")
+			annotations[i] = ReplaceString(opStackStr[i], annotations[i], newAnnotation)
+		endfor
+
+	endif
+
+	SFH_EnrichAnnotationsRelease(formulaIds)
+
+	return isDifferent
+End
+
+static Function SFH_EnrichAnnotationsRelease(WAVE formulaIDs)
+
+	for(ids : formulaIds)
+		JSON_Release(ids)
+	endfor
 End

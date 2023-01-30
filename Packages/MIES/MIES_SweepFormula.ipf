@@ -1097,6 +1097,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
+	plotMetaData.argSetupStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
 	plotMetaData.xAxisLabel = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
 	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
 
@@ -1507,7 +1508,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		win = plotGraphs[j]
 		wList = AddListItem(win, wList)
 
-		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations
+		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup
 
 		do
 
@@ -1707,6 +1708,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!IsEmpty(annotation))
 				EnsureLargeEnoughWave(wAnnotations, minimumSize=numAnnotations + 1)
 				wAnnotations[numAnnotations] = annotation
+				EnsureLargeEnoughWave(formulaArgSetup, minimumSize=numAnnotations + 1)
+				formulaArgSetup[numAnnotations] = plotMetaData.argSetupStack
 				numAnnotations += 1
 			endif
 		while(1)
@@ -1716,10 +1719,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(showLegend && numAnnotations)
 			annotation = ""
 			for(k = 0; k < numAnnotations; k += 1)
-				annotation += SF_ShrinkLegend(wAnnotations[k]) + "\r"
+				wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
 			endfor
-			annotation = RemoveEnding(annotation, "\r")
-			annotation = RemoveEnding(annotation, "\r")
+			Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
+			SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
+			annotation = TextWaveToList(wAnnotations, "\r")
+			annotation = UnPadString(annotation, char2num("\r"))
 			Legend/W=$win/C/N=metadata/F=2 annotation
 		endif
 		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
@@ -3649,7 +3654,7 @@ static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string g
 
 	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0)
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, opStack="")
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, discardOpStack=1)
 End
 
 /// `channels([str name]+)` converts a named channel from string to numbers.
@@ -3688,7 +3693,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, opStack="")
+	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, discardOpStack=1)
 End
 
 /// `sweeps()`
@@ -3703,7 +3708,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 
-	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, opStack="")
+	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, discardOpStack=1)
 End
 
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
@@ -3995,7 +4000,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"), clampMode)
 
-	return SFH_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, opStack="")
+	return SFH_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, discardOpStack=1)
 End
 
 /// `data(array range[, array selectData])`
@@ -4019,7 +4024,8 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		DebugPrint("Call to SFH_GetSweepsForFormula returned no results")
 	endif
 
-	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_DATA, ""))
+	SFH_AddOpToOpStack(output, "", SF_OP_DATA)
+	SFH_ResetArgSetupStack(output, SF_OP_DATA)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATA)
 End
@@ -4236,7 +4242,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, opStack="")
+	return SFH_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, discardOpStack=1)
 End
 
 // findlevel(data, level, [edge])
@@ -4272,7 +4278,7 @@ End
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
 	variable i, numArgs, keepX
-	string xLabel
+	string xLabel, methodStr
 
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
 	SFH_ASSERT(numArgs <= 6, "ApFrequency has 6 arguments at most.")
@@ -4289,7 +4295,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		Make/FREE/T xAxisType = {SF_OP_APFREQUENCY_X_TIME}
 	endif
 
-	if(numArgs == 5)
+	if(numArgs >= 5)
 		WAVE/T normalize = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 4, checkExist=1)
 		SFH_ASSERT(DimSize(normalize, ROWS) == 1, "Too many input values for parameter normalize")
 		SFH_ASSERT(IsTextWave(normalize), "normalize parameter must be textual")
@@ -4324,6 +4330,19 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		Make/FREE method = {SF_APFREQUENCY_FULL}
 	endif
 
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(5)
+
+	argSetup[0][%KEY] = "Method"
+	argSetup[0][%VALUE] = SF_OperationApFrequencyMethodToString(method[0])
+	argSetup[1][%KEY] = "Level"
+	argSetup[1][%VALUE] = num2str(level[0])
+	argSetup[2][%KEY] = "ResultType"
+	argSetup[2][%VALUE] = timeFreq[0]
+	argSetup[3][%KEY] = "Normalize"
+	argSetup[3][%VALUE] = normalize[0]
+	argSetup[4][%KEY] = "XAxisType"
+	argSetup[4][%VALUE] = xAxisType[0]
+
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(input, ROWS))
 	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0], timeFreq[0], normalize[0], xAxisType[0])
 
@@ -4333,7 +4352,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 	endif
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY, keepX=keepX)
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY, keepX=keepX, argSetup=argSetup)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_APFREQUENCY)
 End
@@ -4390,6 +4409,22 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, vari
 	endif
 
 	return outD
+End
+
+static Function/S SF_OperationApFrequencyMethodToString(variable method)
+
+	switch(method)
+		case SF_APFREQUENCY_FULL:
+			return "Full"
+		case SF_APFREQUENCY_INSTANTANEOUS:
+			return "Instantaneous"
+		case SF_APFREQUENCY_INSTANTANEOUS_PAIR:
+			return "Instantaneous Pair"
+		case SF_APFREQUENCY_APCOUNT:
+			return "APCount"
+		default:
+			ASSERT(0, "Unknown apfrequency method")
+	endswitch
 End
 
 static Function SF_ApFrequencyInstantaneous(WAVE peaksAt)
