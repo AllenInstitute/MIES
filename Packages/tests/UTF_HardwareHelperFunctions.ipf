@@ -1104,7 +1104,7 @@ Function EnsureMCCIsOpen()
 End
 
 Structure DAQSettings
-	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP
+	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
 	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL
 
 	WAVE hs, da, ad, cm, ttl, aso
@@ -1240,6 +1240,8 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.itp = ParseNumber(str, "_ITP", defValue = 1)
 
+	s.far = ParseNumber(str, "_FAR", defValue = 1)
+
 	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
@@ -1352,6 +1354,7 @@ End
 /// - Get/Set ITI checkbox (GSI: 1/0)
 /// - TP during ITI checkbox (TPI: 1/0)
 /// - Inserted TP checkbox (ITP: 1/0)
+/// - Fail on Abort/RTE: (FAR: 1/0), defaults to 1
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1540,11 +1543,21 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 		OpenDatabrowser()
 	endif
 
-	if(s.TP && !s.DAQ)
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-	elseif(!s.TP && s.DAQ)
-		PGC_SetAndActivateControl(device, "DataAcquireButton")
-	endif
+	AssertOnAndClearRTError()
+	try
+		if(s.TP && !s.DAQ)
+			PGC_SetAndActivateControl(device, "StartTestPulseButton"); AbortOnRTE
+		elseif(!s.TP && s.DAQ)
+			PGC_SetAndActivateControl(device, "DataAcquireButton"); AbortOnRTE
+		endif
+	catch
+		if(s.FAR)
+			// fail hard on aborts, most likely due to memory error on HW_ITC_StartAcq
+			FAIL()
+		else
+			Abort
+		endif
+	endtry
 End
 
 Function CheckDAQStopReason(string device, variable stopReason, [variable sweepNo])
