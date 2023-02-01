@@ -3,9 +3,15 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=SetControlsTesting
 
-static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device)
+static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device, [variable far])
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                      + \
+	if(ParamisDefault(far))
+		far = 1
+	else
+		far = !!far
+	endif
+
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far)    + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
 
 	 return [s]
@@ -68,7 +74,7 @@ End
 static Function SC_SetControls2([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -100,7 +106,7 @@ End
 static Function SC_SetControls2a([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -133,7 +139,7 @@ End
 static Function SC_SetControls2b([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -166,7 +172,7 @@ End
 static Function SC_SetControls3([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -199,7 +205,7 @@ End
 static Function SC_SetControls3a([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -232,7 +238,7 @@ End
 static Function SC_SetControls3b([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -265,7 +271,7 @@ End
 static Function SC_SetControls3c([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
@@ -298,7 +304,7 @@ End
 static Function SC_SetControls4([str])
 	string str
 
-	[STRUCT DAQSettings s] = SC_GetDAQSettings(str)
+	[STRUCT DAQSettings s] = SC_GetDAQSettings(str, far = 0)
 
 	try
 		AcquireData_NG(s, str)
