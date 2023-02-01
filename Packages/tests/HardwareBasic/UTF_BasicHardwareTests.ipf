@@ -1588,7 +1588,7 @@ static Function CheckSettingsFails([str])
 
 	STRUCT DAQSettings s
 	// No active headstages
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0")
 
 	try
 		AcquireData_NG(s, str)
