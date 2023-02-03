@@ -1286,8 +1286,6 @@ Function TP_Setup(device, runMode, [fast])
 	variable runMode
 	variable fast
 
-	variable multiDevice
-
 	if(ParamIsDefault(fast))
 		fast = 0
 	else
@@ -1305,7 +1303,7 @@ Function TP_Setup(device, runMode, [fast])
 		return NaN
 	endif
 
-	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
+	DC_Configure(device, TEST_PULSE_MODE, multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE))
 
 	TP_SetupCommon(device)
 
@@ -1320,8 +1318,6 @@ Function TP_Setup(device, runMode, [fast])
 	runModeGlobal = runMode
 
 	DAP_AdaptAutoTPColorAndDependent(device)
-
-	DC_Configure(device, TEST_PULSE_MODE, multiDevice=multiDevice)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
