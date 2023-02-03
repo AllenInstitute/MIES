@@ -125,7 +125,6 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 			TP_Teardown(device)
 		endif
 	catch
-		TP_Teardown(device)
 		return NaN
 	endtry
 End

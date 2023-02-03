@@ -45,10 +45,11 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	if(!DeviceHasFollower(device))
 		try
 			TP_Setup(device, runMode, fast = fast)
-			TPM_BkrdTPMD(device)
 		catch
-			TP_Teardown(device)
+			return NaN
 		endtry
+
+		TPM_BkrdTPMD(device)
 
 		return NaN
 	else
@@ -67,14 +68,6 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 
 		TP_Setup(device, runMode)
 	catch
-		// deconfigure all followers
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-			TP_Teardown(followerDevice)
-		endfor
-
-		// deconfigure leader
-		TP_Teardown(device)
 		return NaN
 	endtry
 
