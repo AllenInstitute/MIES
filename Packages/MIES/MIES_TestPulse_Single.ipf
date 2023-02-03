@@ -111,7 +111,6 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 		return NaN
 	endif
 
-	AssertOnAndClearRTError()
 	try
 		if(bkg)
 			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE)
@@ -125,7 +124,6 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 			TP_Teardown(device)
 		endif
 	catch
-		ClearRTError()
 		TP_Teardown(device)
 		return NaN
 	endtry

@@ -43,12 +43,10 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	endif
 
 	if(!DeviceHasFollower(device))
-		AssertOnAndClearRTError()
 		try
 			TP_Setup(device, runMode, fast = fast)
 			TPM_BkrdTPMD(device)
 		catch
-			ClearRTError()
 			TP_Teardown(device)
 		endtry
 
@@ -60,7 +58,6 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	SVAR listOfFollowerDevices = $GetFollowerList(device)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
-	AssertOnAndClearRTError()
 	try
 		// configure all followers
 		for(i = 0; i < numFollower; i += 1)
@@ -70,7 +67,6 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 
 		TP_Setup(device, runMode)
 	catch
-		ClearRTError()
 		// deconfigure all followers
 		for(i = 0; i < numFollower; i += 1)
 			followerDevice = StringFromList(i, listOfFollowerDevices)
