@@ -1164,3 +1164,17 @@ static Function SFH_EnrichAnnotationsRelease(WAVE formulaIDs)
 		JSON_Release(ids)
 	endfor
 End
+
+Function SFH_GetPlotMarkerCodeSelection(variable count)
+
+	Make/FREE wv = {19, 5, 16, 8, 17, 7, 18, 6}
+
+	return wv[mod(count, DimSize(wv, ROWS))]
+End
+
+Function SFH_GetPlotLineCodeSelection(variable count)
+
+	Make/FREE wv = {0, 3, 7, 2, 1, 8}
+
+	return wv[mod(count, DimSize(wv, ROWS))]
+End

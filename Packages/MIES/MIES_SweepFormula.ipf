@@ -1467,7 +1467,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent
-	variable formulaCounter, gdIndex
+	variable formulaCounter, gdIndex, markerCode, lineCode
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
@@ -1691,27 +1691,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					endfor
 				endif
 
-				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
-					&& (!WaveExists(wvX) \
-					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-					ModifyGraph/W=$win mode=3,marker=19
-
-					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
-
-					if(WaveExists(customMarkerAsFree))
-						DFREF dfrWork = SFH_GetWorkingDF(graph)
-						for(i = 0; i < numTraces; i += 1)
-
-							wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
-							MoveWave customMarkerAsFree, dfrWork:$wvName
-							WAVE/SDFR=dfrWork customMarker = $wvName
-							ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-
-							ModifyGraph/W=$win zmrkNum($traces[i])={customMarker}
-						endfor
-					endif
-				endif
-
 				showLegend = showLegend && SF_GetShowLegend(wvY)
 
 				dataCnt += 1
@@ -1752,16 +1731,35 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			WAVE/T tracesInGraph = plotFormData[0]
 			WAVE/WAVE dataInGraph = plotFormData[1]
 			numTraces = DimSize(tracesInGraph, ROWS)
+			markerCode = formulasAreDifferent ? k : 0
+			markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
+			lineCode = formulasAreDifferent ? k : 0
+			lineCode = SFH_GetPlotLineCodeSelection(lineCode)
 			for(l = 0; l < numTraces; l += 1)
 
 				WAVE/Z wvX = dataInGraph[l][%WAVEX]
 				WAVE wvY = dataInGraph[l][%WAVEY]
+				trace = tracesInGraph[l]
 
 				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
 					&& (!WaveExists(wvX) \
 					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-					trace = tracesInGraph[l]
-					ModifyGraph/W=$win mode($trace)=3,marker($trace)=19
+
+					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+					if(!WaveExists(customMarkerAsFree))
+						ModifyGraph/W=$win mode($trace)=3,marker($trace)=markerCode
+						continue
+					endif
+
+					DFREF dfrWork = SFH_GetWorkingDF(graph)
+					wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
+					MoveWave customMarkerAsFree, dfrWork:$wvName
+					WAVE/SDFR=dfrWork customMarker = $wvName
+					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
+					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+
+				elseif(formulasAreDifferent)
+					ModifyGraph/W=$win lStyle($trace)=lineCode
 				endif
 			endfor
 		endfor
