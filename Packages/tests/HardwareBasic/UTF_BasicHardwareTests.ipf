@@ -1757,11 +1757,7 @@ static Function ConfigureFails([str])
 								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	try
-		AcquireData_NG(s, str)
-	catch
-		PASS()
-	endtry
+	AcquireData_NG(s, str)
 End
 
 static Function ConfigureFails_REENTRY([str])
