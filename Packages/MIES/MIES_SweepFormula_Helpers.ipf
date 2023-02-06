@@ -21,17 +21,17 @@ static StrConstant SFH_WORKING_DF = "FormulaData"
 ///
 ///    opShort    = "fetchBeer"
 ///    numBottles = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 0)
-///    size       = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue = 0.5)
+///    size       = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue = 0.5, allowedValues = {0.33, 0.5, 1.0})
 ///
 /// \endrst
 ///
 /// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
 ///
-/// The second argument `size` is optional with 0.5 as default.
-Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue])
+/// The second argument `size` is optional with 0.5 as default and also defines a list of valid values.
+Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues])
 
-	string msg
-	variable checkExist, numArgs
+	string msg, sep, allowedValuesAsStr
+	variable checkExist, numArgs, result
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -52,13 +52,24 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
 		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
 
-		return data[0]
+		result = data[0]
+	else
+		sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
+		SFH_ASSERT(!checkExist, msg)
+
+		result = defValue
 	endif
 
-	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
-	SFH_ASSERT(!checkExist, msg)
+	if(!ParamIsDefault(allowedValues))
+		ASSERT(WaveExists(allowedValues) && IsNumericWave(allowedValues), "allowedValues must be a numeric wave")
 
-	return defValue
+		sep = ", "
+		allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
+		sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+		SFH_ASSERT(GetRowIndex(allowedValues, val = result) >= 0, msg)
+	endif
+
+	return result
 End
 
 /// @brief Convenience helper function to get a textual SweepFormula operation argument
@@ -70,16 +81,16 @@ End
 ///
 ///    opShort = "getTrainTable"
 ///    date    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 0)
-///    type    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue = "steam train")
+///    type    = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue = "steam train", allowedValues = {"steam train", "light rail"})
 ///
 /// \endrst
 ///
 /// Here `date` is argument number 0 and mandatory as `defValue` is not present.
 ///
-/// The second argument `type` is optional with `steam train` as default.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue])
+/// The second argument `type` is optional with `steam train` as default and a list of allowed values.
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
 
-	string msg
+	string msg, result, sep, allowedValuesAsStr
 	variable checkExist, numArgs
 
 	if(ParamIsDefault(defValue))
@@ -101,13 +112,24 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
 		SFH_ASSERT(DimSize(data, ROWS) == 1 && DimSize(data, COLS) == 0, msg)
 
-		return data[0]
+		result = data[0]
+	else
+		sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
+		SFH_ASSERT(!checkExist, msg)
+
+		result = defValue
 	endif
 
-	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
-	SFH_ASSERT(!checkExist, msg)
+	if(!ParamIsDefault(allowedValues))
+		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
-	return defValue
+		sep = ", "
+		allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
+		sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+		SFH_ASSERT(GetRowIndex(allowedValues, str = result) >= 0, msg)
+	endif
+
+	return result
 End
 
 /// @brief Convenience helper function to get a wave SweepFormula operation argument
