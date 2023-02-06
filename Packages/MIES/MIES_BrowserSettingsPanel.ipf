@@ -1364,9 +1364,12 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief Generic getter for labnotebook waves.
+/// @brief Generic getter for logbook waves
 ///
-/// Works with Databrowser/Sweepbrowser
+/// Works with Databrowser/Sweepbrowser.
+///
+/// For the Sweepbrowser this returns the stored logbooks.
+/// If you want to fetch the global results wave use GetLogbookWaves().
 ///
 /// @param win               panel
 /// @param logbookType       one of @ref LogbookTypes

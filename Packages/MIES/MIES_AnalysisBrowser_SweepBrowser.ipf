@@ -458,10 +458,10 @@ End
 ///
 /// LBT_LABNOTEBOOK:
 ///
-/// Use case 1 ( only):
+/// Use case 1:
 /// - No optional parameters given: Returns a wave reference wave with all labnotebook waves from all displayed sweeps, ordered by index
 ///
-/// Use case 2 (LBT_LABNOTEBOOK only):
+/// Use case 2:
 /// - sweepNumber given: Return the labnotebook wave of that sweep only
 ///
 /// Use case 3:
@@ -469,7 +469,11 @@ End
 ///
 /// LBT_RESULTS:
 ///
-/// - Return one of the four results waves from the given nwb/pxp data folder
+/// Use case 1:
+/// - sweepNumber given: Return one of the four results waves from the sweeps nwb/pxp data folder
+///
+/// Use case 2:
+/// - datafolder given: Return one of the four results waves from the given datafolder sweeps nwb/pxp data folder
 ///
 /// @param win             panel
 /// @param logbookType     one of @ref LogbookTypes
@@ -525,7 +529,18 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 
 			return waves
 		case LBT_RESULTS:
-			ASSERT(!ParamIsDefault(dataFolder), "Missing datafolder")
+
+			if(!ParamIsDefault(sweepNumber))
+				WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
+
+				if(!WaveExists(indices))
+					return $""
+				endif
+
+				datafolder = map[indices[0]][%DataFolder]
+			else
+				ASSERT(!ParamIsDefault(dataFolder), "Missing datafolder")
+			endif
 
 			return GetAnalysisResultsWave(dataFolder, logbookWaveType)
 		default:
