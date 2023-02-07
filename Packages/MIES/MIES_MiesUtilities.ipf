@@ -66,8 +66,11 @@ Function HorizExpandWithVisX()
 		minimum = ranges[i][%minimum]
 		maximum = ranges[i][%maximum]
 
-		if(V_left < minimum || V_right > maximum)
-			// marquee does not lie completely in the axis
+		V_left = limit(V_left, minimum, maximum)
+		V_right = limit(V_right, minimum, maximum)
+
+		if(V_left == V_right)
+			// marquee lies completely outside the axis
 			continue
 		endif
 
