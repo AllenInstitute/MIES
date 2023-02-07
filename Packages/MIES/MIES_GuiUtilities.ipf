@@ -889,7 +889,7 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, list)
 		axisOrientation = GetAxisOrientation(graph, axis)
-		if(!ParamIsDefault(orientation) && axisOrientation != orientation)
+		if(!ParamIsDefault(orientation) && !(axisOrientation & orientation))
 			continue
 		endif
 
