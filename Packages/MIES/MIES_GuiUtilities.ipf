@@ -900,6 +900,7 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 		SetDimLabel ROWS, countAxes, $axis, ranges
 		countAxes += 1
 	endfor
+
 	if(countAxes != numAxes)
 		Redimension/N=(countAxes, 3) ranges
 	endif
