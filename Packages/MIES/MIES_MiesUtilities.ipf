@@ -47,28 +47,15 @@ End
 /// Requires an existing marquee and a graph as current top window
 Function HorizExpandWithVisX()
 
-	string graph, list, axis, str
-	variable numEntries, i, orientation
+	string graph, axis, str
+	variable numEntries, i, minimum, maximum
 
 	graph = GetCurrentWindow()
 
-	list = AxisList(graph)
-	numEntries = ItemsInList(list)
+	WAVE ranges = GetAxesRanges(graph, orientation = AXIS_ORIENTATION_HORIZ, mode = AXIS_RANGE_INC_AUTOSCALED)
+	numEntries = DimSize(ranges, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-
-		axis = StringFromList(i, list)
-
-		GetAxis/Q/W=$graph $axis
-		if(V_flag)
-			// axis does not exist
-			continue
-		endif
-
-		orientation = GetAxisOrientation(graph, axis)
-		if(orientation == AXIS_ORIENTATION_LEFT || orientation == AXIS_ORIENTATION_RIGHT)
-			// no horizontal axis
-			continue
-		endif
+		axis = GetDimLabel(ranges, ROWS, i)
 
 		GetMarquee/Z/W=$graph $axis
 		if(!V_flag)
@@ -76,12 +63,13 @@ Function HorizExpandWithVisX()
 			continue
 		endif
 
-		if(V_left < V_min || V_right > V_max)
+		minimum = ranges[i][%minimum]
+		maximum = ranges[i][%maximum]
+
+		if(V_left < minimum || V_right > maximum)
 			// marquee does not lie completely in the axis
 			continue
 		endif
-
-		graph = S_marqueeWin
 
 		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, V_left, V_right
 		DEBUGPRINT(str)
