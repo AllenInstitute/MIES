@@ -39,7 +39,7 @@ static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
 static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
 Menu "GraphMarquee"
-	"Horiz Expand (VisX)", HorizExpandWithVisX()
+	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
 
 /// @brief Custom graph marquee
