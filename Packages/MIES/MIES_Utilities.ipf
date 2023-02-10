@@ -6249,3 +6249,18 @@ Function/WAVE JSONToWave(string str)
 
 	return data
 End
+
+/// @brief Return the CRC of the contents of the plain/formatted notebook
+///
+/// Takes into account formatting but ignores selection.
+Function GetNotebookCRC(string win)
+
+	string content
+
+	content = WinRecreation(win, 1)
+
+	// Filter out // lines which contain the selection
+	content = GrepList(content, "//.*", 1, "\r")
+
+	return StringCRC(0, content)
+End
