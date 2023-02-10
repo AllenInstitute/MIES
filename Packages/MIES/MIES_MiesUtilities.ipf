@@ -48,7 +48,7 @@ End
 Function HorizExpandWithVisX()
 
 	string graph, axis, str
-	variable numEntries, i, minimum, maximum
+	variable numEntries, i, minimum, maximum, first, last
 
 	graph = GetCurrentWindow()
 
@@ -57,8 +57,9 @@ Function HorizExpandWithVisX()
 	for(i = 0; i < numEntries; i += 1)
 		axis = GetDimLabel(ranges, ROWS, i)
 
-		GetMarquee/Z/W=$graph $axis
-		if(!V_flag)
+		[first, last] = GetMarqueeHelper(axis, kill = 0, doAssert = 0, horiz = 1)
+
+		if(IsNan(first) && IsNaN(last))
 			// no marquee on axis
 			continue
 		endif
@@ -66,18 +67,18 @@ Function HorizExpandWithVisX()
 		minimum = ranges[i][%minimum]
 		maximum = ranges[i][%maximum]
 
-		V_left = limit(V_left, minimum, maximum)
-		V_right = limit(V_right, minimum, maximum)
+		first = limit(first , minimum, maximum)
+		last  = limit(last, minimum, maximum)
 
-		if(V_left == V_right)
+		if(first == last)
 			// marquee lies completely outside the axis
 			continue
 		endif
 
-		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, V_left, V_right
+		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, first, last
 		DEBUGPRINT(str)
 
-		SetAxis/W=$graph $axis, V_left, V_right
+		SetAxis/W=$graph $axis, first, last
 		AutoscaleVertAxisVisXRange(graph)
 	endfor
 
