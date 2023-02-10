@@ -2302,3 +2302,81 @@ Function ColorNotebookKeywords(string win, string keyWord, variable r, variable 
 		endif
 	while(V_flag == 1)
 End
+
+/// @brief Marquee helper
+///
+/// @param[in]  axisName coordinate system to use for returned values
+/// @param[in]  kill     [optional, defaults to false] should the marquee be killed afterwards
+/// @param[in]  doAssert [optional, defaults to true] ASSERT out if nothing can be returned
+/// @param[in]  horiz    [optional] direction to return, exactly one of horiz/vert must be defined
+/// @param[in]  vert     [optional] direction to return, exactly one of horiz/vert must be defined
+/// @param[out] win      [optional] allows to query the window as returned by GetMarquee
+///
+/// @retval first start of the range
+/// @retval last  end of the range
+Function [variable first, variable last] GetMarqueeHelper(string axisName, [variable kill, variable doAssert, variable horiz, variable vert, string &win])
+
+	first = NaN
+	last  = NaN
+
+	if(!ParamIsDefault(win))
+		win = ""
+	endif
+
+	if(ParamIsDefault(kill))
+		kill = 0
+	else
+		kill = !!kill
+	endif
+
+	if(ParamIsDefault(doAssert))
+		doAssert = 1
+	else
+		doAssert = !!doAssert
+	endif
+
+	ASSERT(ParamIsDefault(horiz) + ParamIsDefault(vert) == 1, "Required exactly one of horiz/vert")
+
+	if(ParamIsDefault(horiz))
+		horiz = 0
+	else
+		horiz = !!horiz
+	endif
+
+	if(ParamIsDefault(vert))
+		vert = 0
+	else
+		vert = !!vert
+	endif
+
+	AssertOnAndClearRTError()
+	try
+		if(kill)
+			GetMarquee/K/Z $axisName; AbortOnRTE
+		else
+			GetMarquee/Z $axisName; AbortOnRTE
+		endif
+	catch
+		ClearRTError()
+		ASSERT(!doAssert, "Missing axis")
+
+		return [first, last]
+	endtry
+
+	if(!V_Flag)
+		ASSERT(!doAssert, "Missing marquee")
+		return [first, last]
+	endif
+
+	if(!ParamIsDefault(win))
+		win = S_MarqueeWin
+	endif
+
+	if(horiz)
+		return [V_left, V_right]
+	elseif(vert)
+		return [V_bottom, V_top]
+	else
+		ASSERT(0, "Impossible state")
+	endif
+End

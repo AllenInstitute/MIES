@@ -6491,3 +6491,69 @@ Function JSONWaveSerializationWorks()
 
 	CHECK_EQUAL_WAVES(wv, serialized)
 End
+
+Function GetMarqueeHelperWorks()
+	string win, refWin
+	variable first, last
+
+	Make/O/N=1000 data = 0.1 * p
+	SetScale/P x, 0, 0.5, data
+	Display/K=1 data
+	refWin = S_name
+
+	DoUpdate/W=$refWin
+	SetMarquee/HAX=bottom/VAX=left/W=$refWin 10, 2, 30, 4
+
+	// non-existing axis
+	try
+		[first, last ] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1)
+		FAIL()
+	catch
+		CHECK_EQUAL_VAR(first, NaN)
+		CHECK_EQUAL_VAR(last, NaN)
+	endtry
+
+	// non-existing axis without assert
+	[first, last ] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1, doAssert = 0)
+	CHECK_EQUAL_VAR(first, NaN)
+	CHECK_EQUAL_VAR(last, NaN)
+
+	// missing horiz/vert
+	try
+		[first, last ] = GetMarqueeHelper("left")
+		FAIL()
+	catch
+		CHECK_EQUAL_VAR(first, NaN)
+		CHECK_EQUAL_VAR(last, NaN)
+	endtry
+
+	// both horiz/vert
+	try
+		[first, last ] = GetMarqueeHelper("left", horiz = 1, vert = 1)
+		FAIL()
+	catch
+		CHECK_EQUAL_VAR(first, NaN)
+		CHECK_EQUAL_VAR(last, NaN)
+	endtry
+
+	// querying without kill (default)
+	[first, last ] = GetMarqueeHelper("bottom", horiz = 1)
+	CHECK_EQUAL_VAR(round(first), 10)
+	CHECK_EQUAL_VAR(round(last), 30)
+
+	// querying without kill (explicit)
+	[first, last ] = GetMarqueeHelper("bottom", horiz = 1)
+	CHECK_EQUAL_VAR(round(first), 10)
+	CHECK_EQUAL_VAR(round(last), 30)
+
+	// query with kill and win
+	[first, last ] = GetMarqueeHelper("left", vert = 1, kill = 1, win = win)
+	CHECK_EQUAL_VAR(round(first), 2)
+	CHECK_EQUAL_VAR(round(last), 4)
+	CHECK_EQUAL_STR(win, refWin)
+
+	// marquee is gone
+	[first, last ] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
+	CHECK_EQUAL_VAR(first, NaN)
+	CHECK_EQUAL_VAR(last, NaN)
+End
