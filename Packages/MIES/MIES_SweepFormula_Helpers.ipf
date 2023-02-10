@@ -258,6 +258,35 @@ Function/WAVE SFH_GetFullRange()
 	return range
 End
 
+/// @brief Evaluate range parameter
+///
+/// Range can be `[100-200]` or implicit as `cursors(A, B)` or a named epoch `E0` or a wildcard expression with epochs `E*`
+Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+
+	variable numArgs
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		WAVE range = SFH_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum, checkExist=1)
+	else
+		return SFH_GetFullRange()
+	endif
+
+	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
+
+	if(IsTextWave(range))
+		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
+	else
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
+		// convert an empty range to a full range
+		// an empty range can happen with cursors() as input when there are no cursors
+		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
+	endif
+
+	return range
+End
+
 /// @brief Returns a range from a epochName
 ///
 /// @param graph name of databrowser graph

@@ -3945,15 +3945,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SFH_ASSERT(numArgs >= 1, "data function requires at least 1 argument.")
 	SFH_ASSERT(numArgs <= 2, "data function has maximal 2 arguments.")
 
-	WAVE range = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_DATA, 0, checkExist=1)
-	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
-	if(IsTextWave(range))
-		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
-	else
-		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
-		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
-	endif
-
+	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_DATA, 0)
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
 	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_DATA)
