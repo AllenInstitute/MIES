@@ -1860,7 +1860,7 @@ static Function BSP_SFFormulaColoring(string sfWin)
 	endfor
 
 	Notebook $sfWin, selection={startOfFile, startOfFile}
-	Notebook $sfWin, findText={"", 1}
+	Notebook $sfWin, findText={"", 0}
 End
 
 Function BSP_TTHookSFFormulaNB(STRUCT WMTooltipHookStruct &s)
