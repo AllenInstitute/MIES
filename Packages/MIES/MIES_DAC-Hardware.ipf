@@ -1278,6 +1278,8 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 
 	variable tries
 
+	Sleep/S 1
+
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
 			do
@@ -1306,6 +1308,8 @@ Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 	variable tries
 
 	DEBUGPRINTSTACKINFO()
+
+	Sleep/S 1
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
