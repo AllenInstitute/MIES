@@ -26,6 +26,8 @@ static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_Visi
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
 
+static StrConstant BSP_USER_DATA_SF_CONTENT_CRC = "SweepFormulaContentCRC"
+
 /// @brief return the name of the external panel depending on main window name
 ///
 /// @param mainPanel 	mainWindow panel name
@@ -1785,7 +1787,7 @@ Function BSP_SFHelpWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainWin, sfWin, bspPanel, cmdStr
-	variable modMask
+	variable modMask,refContentCRC, contentCRC
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_MOUSEDOWN:
@@ -1817,11 +1819,14 @@ Function BSP_SFHelpWindowHook(s)
 				return 1
 			endif
 			break
-		case EVENT_WINDOW_HOOK_ACTIVATE:
 		case EVENT_WINDOW_HOOK_DEACTIVATE:
-			sfWin = BSP_GetSFFormula(GetMainWindow(s.winName))
-			if(!CmpStr(sfWin, s.winName))
+			mainWin = GetMainWindow(s.winName)
+			sfWin = BSP_GetSFFormula(mainWin)
+			refContentCRC = str2num(GetUserData(mainWin, "", BSP_USER_DATA_SF_CONTENT_CRC))
+			contentCRC = GetNotebookCRC(sfWin)
+			if(!CmpStr(sfWin, s.winName) && refContentCRC != contentCRC)
 				BSP_SFFormulaColoring(sfWin)
+				SetWindow $mainWin userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
 			endif
 			break
 	endswitch
@@ -1855,7 +1860,7 @@ static Function BSP_SFFormulaColoring(string sfWin)
 	endfor
 
 	Notebook $sfWin, selection={startOfFile, startOfFile}
-	Notebook $sfWin, findText={"", 1}
+	Notebook $sfWin, findText={"", 0}
 End
 
 Function BSP_TTHookSFFormulaNB(STRUCT WMTooltipHookStruct &s)

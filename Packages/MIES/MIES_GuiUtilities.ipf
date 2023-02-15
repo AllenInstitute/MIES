@@ -2292,10 +2292,10 @@ Function ColorNotebookKeywords(string win, string keyWord, variable r, variable 
 	endif
 
 	Notebook $win, selection={startOfFile, startOfFile}
-	Notebook $win, findText={"", 1}
+	Notebook $win, findText={"", 0}
 
 	do
-		Notebook $win, findText={keyWord, 1}
+		Notebook $win, findText={keyWord, 6}
 		if(V_flag == 1)
 			Notebook $win, textRGB=(r, g, b)
 		endif
