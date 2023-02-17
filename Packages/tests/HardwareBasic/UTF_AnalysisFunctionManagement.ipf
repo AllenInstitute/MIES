@@ -340,7 +340,7 @@ static Function AFT1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                        + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
 
 	try
@@ -404,7 +404,7 @@ static Function AFT2([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                        + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
 
 	try
@@ -1205,7 +1205,7 @@ static Function AFT12([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FAR0"                            + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
 								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
 
@@ -1486,7 +1486,7 @@ static Function AFT14b([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                      + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
 
 	try
@@ -1533,7 +1533,7 @@ static Function AFT14c([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
 
 	try
@@ -1582,7 +1582,7 @@ static Function AFT14d([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
@@ -1633,7 +1633,7 @@ static Function AFT14e([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
@@ -1810,7 +1810,7 @@ static Function AFT14i([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                      + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
 
 	try
@@ -1897,7 +1897,7 @@ static Function AFT17([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1"                           + \
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_FAR0"                        + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
 
 	try

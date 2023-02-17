@@ -1588,7 +1588,7 @@ static Function CheckSettingsFails([str])
 
 	STRUCT DAQSettings s
 	// No active headstages
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0")
 
 	try
 		AcquireData_NG(s, str)
@@ -1757,11 +1757,7 @@ static Function ConfigureFails([str])
 								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	try
-		AcquireData_NG(s, str)
-	catch
-		PASS()
-	endtry
+	AcquireData_NG(s, str)
 End
 
 static Function ConfigureFails_REENTRY([str])
@@ -1922,9 +1918,6 @@ End
 static Function ExportOnlyCommentsIntoNWB_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_Comment", str = "abcdefgh ijjkl")
-
-	// don't start TP/DAQ at all
-	Abort
 End
 
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1934,15 +1927,11 @@ static Function ExportOnlyCommentsIntoNWB([string str])
 	variable fileID
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
-	try
-		AcquireData_NG(s, str)
-	catch
-		CHECK_EQUAL_VAR(V_AbortCode, -3)
-	endtry
+	AcquireData_NG(s, str)
 
 	discLocation = TestNWBExportV2#TestFileExport()
 	REQUIRE(FileExists(discLocation))

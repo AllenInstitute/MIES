@@ -91,6 +91,7 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 	bkg = DAG_GetNumericalValue(device, "Check_Settings_BkgTP")
 
 	if(fast)
+		// with fast we don't do try/catch for TP_Setup
 		if(bkg)
 			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE, fast = 1)
 			TPS_StartBackgroundTestPulse(device)
@@ -111,7 +112,6 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 		return NaN
 	endif
 
-	AssertOnAndClearRTError()
 	try
 		if(bkg)
 			TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE)
@@ -125,8 +125,6 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 			TP_Teardown(device)
 		endif
 	catch
-		ClearRTError()
-		TP_Teardown(device)
 		return NaN
 	endtry
 End

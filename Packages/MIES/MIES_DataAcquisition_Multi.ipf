@@ -230,8 +230,6 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 		initialSetupReq = !!initialSetupReq
 	endif
 
-	// catches Abort and AbortOnRTE
-	AssertOnAndClearRTError()
 	try
 		if(initialSetupReq)
 			DAP_OneTimeCallBeforeDAQ(device, DAQ_BG_MULTI_DEVICE)
@@ -240,7 +238,6 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 		DC_Configure(device, DATA_ACQUISITION_MODE)
 		NVAR maxITI = $GetMaxIntertrialInterval(device)
 	catch
-		ClearRTError()
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		else // required for RA for the lead device only
