@@ -181,8 +181,8 @@ Documentation building
 The documentation for the main branch is automatically built and
 uploaded by `this <http://bamboo.corp.alleninstitute.org/browse/MIES-CM>`__ bamboo job.
 
-Setting up a continous integration server (Linux)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting up a continuous integration server (Linux)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Preliminaries
 ^^^^^^^^^^^^^
@@ -244,13 +244,13 @@ Setup bamboo agent
 
 -  Enable it with ``systemctl enable bamboo.service``
 -  Reboot the system and check that the agent runs
--  Add a fitting ``Igor Pro (new)`` capability to the agent in bamboo.
+-  Add a fitting ``Linux`` capability to the agent in bamboo.
 -  Make the agent dedicated to the ``MIES-Igor`` project.
 -  Be sure that the "git" capability and the "bash" executable capability are
    present as well
 
-Setting up a continous integration server (Windows)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting up a continuous integration server (Windows, ``ITC`` and ``NI``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 10 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
@@ -278,6 +278,30 @@ Setting up a continous integration server (Windows)
 -  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` and ``MC700B.exe`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
 - (Only for Code signing machine): Also add a shortcut to ``$HOME/start-bamboo-agent-windows.bat`` in the ``Startup`` folder
 
+Setting up a continuous integration server (Windows, ``IgorPro``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Windows 10 with "Remote Desktop" enabled user
+-  Install the folllowing programs:
+
+   -  Java 8
+   -  Git (choose the installer option which will make the Unix tools
+      available in cmd as well)
+   -  Igor Pro (latest required versions)
+   -  Multiclamp Commander (the MCC library is required to run the non-hardware tests,
+      but the application itself does not have to run)
+   -  Install bamboo remote agent according to
+      http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
+
+-  Add a ``MIES_AgentType`` capability with ``IgorPro`` to the agent in bamboo.
+-  Make the agent dedicated to the ``MIES-Igor`` project.
+-  Be sure that the "git" capability and the "bash" executable capability are
+   present as well
+-  Create the folder ``$HOME/.credentials`` and place the file ``github_api_token`` from an existing CI machine there
+-  Copy ``tools/start-bamboo-agent-windows.sh`` and ``tools/start-bamboo-agent-windows.bat`` to ``$HOME``
+-  Edit ``tools/start-bamboo-agent-windows.bat`` so that it points to the existing Git location
+-  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
+
 Available CI servers
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -299,15 +323,23 @@ The following capabilities are in use:
 
 - ``ITC``: Agent can execute hardware tests with ITC18USB hardware
 
+  - Windows 10
   - ITC18-USB hardware, 2 AD/DA channels are looped
   - MCC demo amplifier only
   - Igor Pro (latest required versions)
 
 - ``NI``: Agent can execute hardware tests with NI/ITC1600 hardware
 
+  - Windows 10
   - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
   - NI PCIe-6343, 2 AD/DA channels are looped
   - MCC demo amplifier only
+  - Igor Pro (latest required versions)
+
+- ``IgorPro``: Can run Igor Pro
+
+  - Windows 10
+  - No Hardware
   - Igor Pro (latest required versions)
 
 Branch naming scheme
