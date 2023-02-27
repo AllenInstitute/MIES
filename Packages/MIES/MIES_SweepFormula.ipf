@@ -1451,7 +1451,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
-	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel
+	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
@@ -1666,6 +1666,21 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					&& (!WaveExists(wvX) \
 					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
 					ModifyGraph/W=$win mode=3,marker=19
+
+					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+					if(WaveExists(customMarkerAsFree))
+						DFREF dfrWork = SFH_GetWorkingDF(graph)
+						for(i = 0; i < numTraces; i += 1)
+
+							wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
+							MoveWave customMarkerAsFree, dfrWork:$wvName
+							WAVE/SDFR=dfrWork customMarker = $wvName
+							ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
+
+							ModifyGraph/W=$win zmrkNum($traces[i])={customMarker}
+						endfor
+					endif
 				endif
 
 				dataCnt += 1
