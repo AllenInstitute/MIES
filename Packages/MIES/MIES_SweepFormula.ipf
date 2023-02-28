@@ -1449,7 +1449,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 	string trace
 	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode
+	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
@@ -1483,6 +1483,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		traceCnt = 0
 		numAnnotations = 0
+		showLegend = 1
 		WAVE/Z wvX = $""
 		WAVE/T/Z yUnits = $""
 
@@ -1683,6 +1684,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					endif
 				endif
 
+				showLegend = showLegend && SF_GetShowLegend(wvY)
+
 				dataCnt += 1
 			endfor
 
@@ -1695,7 +1698,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		yAxisLabel = SF_CombineYUnits(yUnits)
 
-		if(numAnnotations)
+		if(showLegend && numAnnotations)
 			annotation = ""
 			for(k = 0; k < numAnnotations; k += 1)
 				annotation += SF_ShrinkLegend(wAnnotations[k]) + "\r"
@@ -1745,6 +1748,19 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 		endfor
 	endif
+End
+
+static Function SF_GetShowLegend(WAVE wv)
+
+	variable showLegend
+
+	showLegend = JWN_GetNumberFromWaveNote(wv, SF_META_SHOW_LEGEND)
+
+	if(IsFinite(showLegend))
+		return !!showLegend
+	endif
+
+	return 1
 End
 
 /// @brief utility function for @c SF_FormulaPlotter
