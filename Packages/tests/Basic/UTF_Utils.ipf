@@ -6557,3 +6557,15 @@ Function GetMarqueeHelperWorks()
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
 End
+
+Function FTWWorks()
+
+	string result, expected
+
+	Make/FREE/T/N=(2, 3) input = num2istr(p) + num2istr(q) + PadString("", p + q, char2num("x"))
+
+	result   = FormatTextWaveForLegend(input)
+	expected = "00   01x   02xx \r10x  11xx  12xxx"
+
+	CHECK_EQUAL_STR(result, expected)
+End
