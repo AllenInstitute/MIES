@@ -5203,7 +5203,7 @@ Function RemoveDrawLayers(string graph)
 	endfor
 End
 
-/// @brief Remove traces from a graph and optionally try to kill their waves
+/// @brief Remove traces from a graph
 ///
 /// @param graph                            graph
 /// @param trace [optional, default: all]   remove the given trace only
