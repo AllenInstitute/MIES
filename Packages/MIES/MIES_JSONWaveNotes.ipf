@@ -193,3 +193,20 @@ threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWav
 	JSON_SetWave(jsonID, jsonPath, noteWave)
 	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
 End
+
+/// @brief Create a JSON object at the specified path
+///
+/// Non-existing path elements are recursively created.
+///
+/// @param wv       wave reference where the WaveNote is taken from
+/// @param jsonPath path to create as object
+threadsafe Function/WAVE JWN_CreatePath(WAVE wv, string jsonPath)
+
+	variable jsonID
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	JSON_AddTreeObject(jsonID, jsonPath)
+	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
+End

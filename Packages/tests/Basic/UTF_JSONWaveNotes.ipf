@@ -191,7 +191,7 @@ static Function TestWaveNoteFromJSON()
 	CHECK_GE_VAR(jsonID, 0)
 
 	Make/FREE wv
-	Note/K wv, "efgh\rJSON_BEGIN\r"
+	Note/K wv, ("efgh" + WAVE_NOTE_JSON_SEPARATOR)
 	JWN_SetWaveNoteFromJSON(wv, jsonID)
 	CHECK_EQUAL_VAR(NaN, JSON_Release(jsonID, ignoreErr =  1))
 
@@ -200,4 +200,21 @@ static Function TestWaveNoteFromJSON()
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "/abcd")
 	CHECK_EQUAL_WAVES(data, {1, 2}, mode = WAVE_DATA)
+End
+
+static Function TestCreatePath()
+
+	variable jsonID
+
+	Make/FREE wv
+	JWN_CreatePath(wv, "/a/b/c")
+
+	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	CHECK_GE_VAR(jsonID, 0)
+
+	CHECK_EQUAL_VAR(JSON_GetType(jsonID, "/a"), JSON_OBJECT)
+	CHECK_EQUAL_VAR(JSON_GetType(jsonID, "/a/b"), JSON_OBJECT)
+	CHECK_EQUAL_VAR(JSON_GetType(jsonID, "/a/b/c"), JSON_OBJECT)
+
+	JSON_Release(jsonID)
 End
