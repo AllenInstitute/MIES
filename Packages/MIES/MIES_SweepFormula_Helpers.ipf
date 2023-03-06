@@ -365,7 +365,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 		WAVE/T epochNames = range
 		numEpochPatterns = DimSize(epochNames, ROWS)
 	else
-		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range must have two rows for range start and end.")
 		numEpochPatterns = 1
 	endif
 	if(!WaveExists(selectData))
