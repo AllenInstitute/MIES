@@ -217,7 +217,7 @@ End
 
 /// @brief Assertion for sweep formula
 ///
-/// This assertion does *not* indicate a genearl programmer error but a
+/// This assertion does *not* indicate a general programmer error but a
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
