@@ -1035,6 +1035,13 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	useXLabel = 1
 	addDataUnitsInAnnotation = 1
 	Redimension/N=(numResultsY, -1) formulaResults
+
+	if(DimSize(wvYRef, ROWS) > 0 &&  DimSize(formulaResults, ROWS) > 0)
+		CopyDimLabels/ROWS=(ROWS) wvYRef, formulaResults
+	endif
+
+	Note/K formulaResults, note(wvYRef)
+
 	for(i = 0; i < numResultsY; i += 1)
 		WAVE/Z wvYdata = wvYRef[i]
 		if(WaveExists(wvYdata))
