@@ -432,23 +432,25 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 				continue
 			endif
 			numEpochs = DimSize(epIndices, ROWS)
-			WAVE range = SFH_GetEmptyRange()
-			Redimension/N=(-1, numEpochs) range
+			WAVE adaptedRange = SFH_GetEmptyRange()
+			Redimension/N=(-1, numEpochs) adaptedRange
 			for(j = 0; j < numEpochs; j += 1)
 				epIndex = epIndices[j]
-				range[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
-				range[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+				adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+				adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 			endfor
 		else
-			Redimension/N=(-1, 1) range
+			Duplicate/FREE range, adaptedRange
+			Redimension/N=(-1, 1) adaptedRange
 		endif
 
-		numRanges = DimSize(range, COLS)
-		for(j = 0; j < numRanges; j += 1)
-			rangeStart = range[0][j]
-			rangeEnd = range[1][j]
+		SFH_ASSERT(!SFH_IsEmptyRange(adaptedRange), "Specified range not valid.")
 
-			SFH_ASSERT(!SFH_IsEmptyRange(range), "Specified range not valid.")
+		numRanges = DimSize(adaptedRange, COLS)
+		for(j = 0; j < numRanges; j += 1)
+			rangeStart = adaptedRange[0][j]
+			rangeEnd   = adaptedRange[1][j]
+
 			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
