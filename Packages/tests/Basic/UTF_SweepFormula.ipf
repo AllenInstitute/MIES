@@ -48,6 +48,18 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 	TUD_Clear(win)
 End
 
+static Function/S CreateFormulaGraphForBrowser(string browser)
+
+	string win
+
+	NewPanel/N=$CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
+	win = S_name
+
+	SetWindow $win, userData($SFH_USER_DATA_BROWSER)=browser
+
+	return win
+End
+
 Function/WAVE GetMultipleResults(string formula, string win)
 
 	WAVE wTextRef = SF_FormulaExecutor(win, DirectToFormulaParser(formula))
@@ -3000,4 +3012,22 @@ static function TestLegendShrink()
 	strref = str
 	result = MIES_SF#SF_ShrinkLegend(str)
 	CHECK_EQUAL_STR(strRef, result)
+End
+
+static Function BrowserGraphConnectionWorks()
+
+	string formulaGraph, browser, device, result
+
+	[browser, device] = CreateFakeDataBrowserWindow()
+
+	formulaGraph = CreateFormulaGraphForBrowser(browser)
+
+	result = SFH_GetBrowserForFormulaGraph(formulaGraph)
+	CHECK_EQUAL_STR(result, browser)
+
+	result = SFH_GetFormulaGraphForBrowser(browser)
+	CHECK_EQUAL_STR(result, formulaGraph)
+
+	result = SFH_GetFormulaGraphForBrowser("I don't exist")
+	CHECK_EMPTY_STR(result)
 End

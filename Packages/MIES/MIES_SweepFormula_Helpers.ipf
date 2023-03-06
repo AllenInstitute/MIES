@@ -821,6 +821,23 @@ Function/S SFH_GetBrowserForFormulaGraph(string win)
 	return GetUserData(GetMainWindow(win), "", SFH_USER_DATA_BROWSER)
 End
 
+/// @brief Return the SweepFormula plot created by the given
+///        SweepBrowser/DataBrowser
+Function/S SFH_GetFormulaGraphForBrowser(string browser)
+
+	string entry
+
+	WAVE/T matches = ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
+
+	for(entry : matches)
+		if(!cmpstr(SFH_GetBrowserForFormulaGraph(entry), browser))
+			return entry
+		endif
+	endfor
+
+	return ""
+End
+
 /// @brief Create a new selectData wave
 ///        The row counts the selected combinations of sweep, channel type, channel number
 ///        The three columns per row store the sweep number, channel type, channel number
