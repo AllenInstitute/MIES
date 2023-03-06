@@ -453,6 +453,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
+			JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
@@ -807,4 +808,18 @@ End
 Function/S SFH_GetBrowserForFormulaGraph(string win)
 
 	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
+End
+
+/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+
+	WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+
+	WAVE selectData = SFH_NewSelectDataWave(1, 1)
+
+	selectData[0][%SWEEP]         = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPNO)
+	selectData[0][%CHANNELTYPE]   = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELTYPE)
+	selectData[0][%CHANNELNUMBER] = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
+
+	return [selectData, range]
 End

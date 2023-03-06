@@ -1900,6 +1900,7 @@ StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
 /// @{
 StrConstant SF_META_DATATYPE = "/DataType" // string
 StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
+StrConstant SF_META_RANGE = "/Range" // numeric wave
 StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
 StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
 StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
