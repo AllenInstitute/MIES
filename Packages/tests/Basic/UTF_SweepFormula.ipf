@@ -60,6 +60,73 @@ static Function/S CreateFormulaGraphForBrowser(string browser)
 	return win
 End
 
+/// Add 10 sweeps from various AD/DA channels to the fake databrowser
+static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
+
+	variable i, j, channelNumber, sweepNumber
+	string name, trace
+
+	numSweeps = 10
+	numChannels = 5
+
+	Variable dataSize = 128
+	Variable mode = DATA_ACQUISITION_MODE
+
+	String channelType = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
+	String channelTypeC = channelType + "C"
+
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	KillWaves numericalKeys, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
+	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
+	Make/FREE/T/N=(1, 1) textKeys = lbnTextKey
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+
+	DFREF dfr = GetDeviceDataPath(device)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+		WAVE config = GetDAQConfigWave(device)
+		Redimension/N=(numChannels, -1) config
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			channelNumber = channels[i][j]
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber)})
+			values[connections[j]] = channelNumber
+			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[j][%ChannelNumber] = channelNumber
+		endfor
+
+		// create sweeps with dummy data for sweeps() operation thats called when omitting select
+		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
+		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
+		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
+	endfor
+
+	return [numSweeps, numChannels, channels]
+End
+
 Function/WAVE GetMultipleResults(string formula, string win)
 
 	WAVE wTextRef = SF_FormulaExecutor(win, DirectToFormulaParser(formula))
@@ -2367,83 +2434,30 @@ static Function TestOperationPowerSpectrum()
 End
 
 static Function TestOperationLabNotebook()
-	Variable i, j, sweepNumber, channelNumber
-	String str, trace, key, name, epochStr
+	Variable i, j, sweepNumber, channelNumber, numSweeps, numChannels
+	String str, key
 
-	Variable numSweeps = 10
-	Variable numChannels = 5
-	Variable dataSize = 128
-	Variable mode = DATA_ACQUISITION_MODE
-	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 	string textKey = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
 	string textValue = "TestText"
-
-	String channelTypeC = channelType + "C"
 
 	string win, device
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
-	KillWaves numericalKeys, numericalValues
+	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
 
-	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
-	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
-	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = textValue
-	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
-	Make/FREE/T/N=(1, 1) textKeys = textKey
-
-	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
-
-	DFREF dfr = GetDeviceDataPath(device)
-	for(i = 0; i < numSweeps; i += 1)
-		sweepNumber = i
-		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
-		WAVE config = GetDAQConfigWave(device)
-		Redimension/N=(numChannels, -1) config
-		for(j = 0; j < numChannels; j += 1)
-			name = UniqueName("data", 1, 0)
-			trace = "trace_" + name
-			Extract input, $name, q == i && r == j
-			WAVE wv = $name
-			AppendToGraph/W=$win wv/TN=$trace
-			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber)})
-			values[connections[j]] = channelNumber
-			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
-			config[j][%ChannelNumber] = channelNumber
-		endfor
-
-		// create sweeps with dummy data for sweeps() operation thats called when omitting select
-		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
-		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
-		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
-
-		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
-		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
-		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
-		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
-		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
-	endfor
 	ModifyGraph/W=$win log(left)=1
 
 	Make/FREE/N=(numSweeps * numChannels) channelsRef
 	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
-	str = "labnotebook(" + channelTypeC + ")"
+	str = "labnotebook(ADC)"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
-	str = "labnotebook(" + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "))"
+	str = "labnotebook(ADC,select(channels(AD),0..." + num2istr(numSweeps) + "))"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
-	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + "ADC, select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
 
-	str = "labnotebook(" + channelTypeC + ",select(channels(AD12),-1))"
+	str = "labnotebook(ADC, select(channels(AD12),-1))"
 	WAVE/WAVE dataRef = GetMultipleResults(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
@@ -2472,76 +2486,20 @@ End
 /// @brief Test Epoch operation of SweepFormula
 static Function TestOperationEpochs()
 
-	variable i, j, sweepNumber, channelNumber, numResultsRef
-	string str, trace, key, name, win, device, epoch2
-
-	variable numSweeps = 10
-	variable numChannels = 5
+	variable i, j, sweepNumber, channelNumber, numResultsRef, numSweeps, numChannels
+	string str, trace, key, name, win, device, epoch2, textKey, textValue
 	variable activeChannelsDA = 4
-	variable mode = DATA_ACQUISITION_MODE
-	string channelType = StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)
-
-	string channelTypeC = channelType + "C"
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
-	KillWaves numericalKeys, numericalValues
-
-	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
-	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
-	Make/U/I/N=(numSweeps, numChannels) channels = q * 2 // 0, 2, 4, 6, 8 used for all sweeps
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-
-	Make/FREE/N=(128, numSweeps, numChannels) input = q + p^r
-
-	Make/FREE/T/N=(1, 1) keysEpochs = {{EPOCHS_ENTRY_KEY}}
-	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/T wEpochStr
-	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:"
-	wEpochStr += "0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,:"
-	wEpochStr += "0.6000000,0.7000000,NoShortName,3,:"
+	textKey   = EPOCHS_ENTRY_KEY
+	textValue = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:"
+	textValue += "0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,:"
+	textValue += "0.6000000,0.7000000,NoShortName,3,:"
 	epoch2 = "Epoch=0;Type=Pulse Train;Pulse=49;Baseline;"
-	wEpochStr += "0.5100000,0.5200000," + epoch2 + ",2,"
+	textValue += "0.5100000,0.5200000," + epoch2 + ",2,"
 
-	DFREF dfr = GetDeviceDataPath(device)
-	for(i = 0; i < numSweeps; i += 1)
-		sweepNumber = i
-
-		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
-		WAVE config = GetDAQConfigWave(device)
-		Redimension/N=(numChannels, -1) config
-
-		for(j = 0; j < numChannels; j += 1)
-			name = UniqueName("data", 1, 0)
-			trace = "trace_" + name
-			Extract input, $name, q == i && r == j
-			WAVE wv = $name
-			AppendToGraph/W=$win wv/TN=$trace
-			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2istr(channelNumber), num2istr(sweepNumber)})
-			values[connections[j]] = channelNumber
-			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
-			config[j][%ChannelNumber] = channelNumber
-		endfor
-
-		// create sweeps with dummy data for sweeps() operation thats called when omitting select
-		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
-		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
-		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
-
-		// channels setup DA: 8, 6, NaN, 4, NaN, 2, NaN, 0, NaN
-		// -> 4 active channels for DAC, because DAC knows only 8 channels from 0 to 7.
-
-		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
-		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
-
-		ED_AddEntriesToLabnotebook(wEpochStr, keysEpochs, sweepNumber, device, mode)
-	endfor
+	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_DAC, textKey, textValue)
 
 	str = "epochs(\"E0_PT_P48\")"
 	WAVE/WAVE dataWref = GetMultipleResults(str, win)
