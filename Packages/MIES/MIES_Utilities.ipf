@@ -6264,3 +6264,38 @@ Function GetNotebookCRC(string win)
 
 	return StringCRC(0, content)
 End
+
+///@brief Format the 2D text wave into a string usable for a legend
+Function/S FormatTextWaveForLegend(WAVE/T input)
+
+	variable i, j, numRows, numCols, length
+	variable spacing = 2
+	string str = ""
+	string line
+
+	numRows = DimSize(input, ROWS)
+	numCols = DimSize(input, COLS)
+
+	// determine the maximum length of each column
+	Make/FREE/N=(numRows, numCols) totalLength = strlen(input[p][q])
+
+	MatrixOp/FREE maxColLength = maxCols(totalLength)^t
+
+	for(i = 0; i < numRows; i += 1)
+		line = ""
+
+		for(j = 0; j < numCols; j += 1)
+			length = maxColLength[j] - totalLength[i][j]
+
+			if(j < numCols - 1)
+				length += spacing
+			endif
+
+			line += input[i][j] + PadString("", length, 0x20) // space
+		endfor
+
+		str += line + "\r"
+	endfor
+
+	return RemoveEndingRegExp(str, "[[:space:]]*\\r+$")
+End

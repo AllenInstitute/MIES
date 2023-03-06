@@ -39,7 +39,7 @@ static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
 static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
 Menu "GraphMarquee"
-	"Horiz Expand (VisX)", HorizExpandWithVisX()
+	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
 
 /// @brief Custom graph marquee
@@ -47,46 +47,38 @@ End
 /// Requires an existing marquee and a graph as current top window
 Function HorizExpandWithVisX()
 
-	string graph, list, axis, str
-	variable numEntries, i, orientation
+	string graph, axis, str
+	variable numEntries, i, minimum, maximum, first, last
 
 	graph = GetCurrentWindow()
 
-	list = AxisList(graph)
-	numEntries = ItemsInList(list)
+	WAVE ranges = GetAxesRanges(graph, orientation = AXIS_ORIENTATION_HORIZ, mode = AXIS_RANGE_INC_AUTOSCALED)
+	numEntries = DimSize(ranges, ROWS)
 	for(i = 0; i < numEntries; i += 1)
+		axis = GetDimLabel(ranges, ROWS, i)
 
-		axis = StringFromList(i, list)
+		[first, last] = GetMarqueeHelper(axis, kill = 0, doAssert = 0, horiz = 1)
 
-		GetAxis/Q/W=$graph $axis
-		if(V_flag)
-			// axis does not exist
-			continue
-		endif
-
-		orientation = GetAxisOrientation(graph, axis)
-		if(orientation == AXIS_ORIENTATION_LEFT || orientation == AXIS_ORIENTATION_RIGHT)
-			// no horizontal axis
-			continue
-		endif
-
-		GetMarquee/Z/W=$graph $axis
-		if(!V_flag)
+		if(IsNan(first) && IsNaN(last))
 			// no marquee on axis
 			continue
 		endif
 
-		if(V_left < V_min || V_right > V_max)
-			// marquee does not lie completely in the axis
+		minimum = ranges[i][%minimum]
+		maximum = ranges[i][%maximum]
+
+		first = limit(first , minimum, maximum)
+		last  = limit(last, minimum, maximum)
+
+		if(first == last)
+			// marquee lies completely outside the axis
 			continue
 		endif
 
-		graph = S_marqueeWin
-
-		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, V_left, V_right
+		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, first, last
 		DEBUGPRINT(str)
 
-		SetAxis/W=$graph $axis, V_left, V_right
+		SetAxis/W=$graph $axis, first, last
 		AutoscaleVertAxisVisXRange(graph)
 	endfor
 
@@ -5211,7 +5203,7 @@ Function RemoveDrawLayers(string graph)
 	endfor
 End
 
-/// @brief Remove traces from a graph and optionally try to kill their waves
+/// @brief Remove traces from a graph
 ///
 /// @param graph                            graph
 /// @param trace [optional, default: all]   remove the given trace only
