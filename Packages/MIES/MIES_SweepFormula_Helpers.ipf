@@ -810,6 +810,21 @@ Function/S SFH_GetBrowserForFormulaGraph(string win)
 	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
 End
 
+/// @brief Create a new selectData wave
+///        The row counts the selected combinations of sweep, channel type, channel number
+///        The three columns per row store the sweep number, channel type, channel number
+Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
+
+	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
+
+	Make/FREE/D/N=(numSweeps * numChannels, 3) selectData
+	SetDimLabel COLS, 0, SWEEP, selectData
+	SetDimLabel COLS, 1, CHANNELTYPE, selectData
+	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
+
+	return selectData
+End
+
 /// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
 Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
 

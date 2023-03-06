@@ -1872,7 +1872,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 		WAVE sweeps = sweepsIntersect
 		numSweeps = DimSize(sweeps, ROWS)
 
-		WAVE selectDisplayed = SF_NewSelectDataWave(numTraces, 1)
+		WAVE selectDisplayed = SFH_NewSelectDataWave(numTraces, 1)
 		dimPosSweep = FindDimLabel(selectDisplayed, COLS, "SWEEP")
 		dimPosChannelType = FindDimLabel(selectDisplayed, COLS, "CHANNELTYPE")
 		dimPosChannelNumber = FindDimLabel(selectDisplayed, COLS, "CHANNELNUMBER")
@@ -1917,7 +1917,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 	numSweeps = DimSize(sweeps, ROWS)
 	numInChannels = DimSize(channels, ROWS)
 
-	WAVE selectData = SF_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS)
+	WAVE selectData = SFH_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS)
 	if(!fromDisplayed)
 		dimPosSweep = FindDimLabel(selectData, COLS, "SWEEP")
 		dimPosChannelType = FindDimLabel(selectData, COLS, "CHANNELTYPE")
@@ -2513,7 +2513,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	numSelected = DimSize(selectData, ROWS)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
 
-	WAVE singleSelect = SF_NewSelectDataWave(1, 1)
+	WAVE singleSelect = SFH_NewSelectDataWave(1, 1)
 
 	WAVE/Z settings
 	for(i = 0; i < numSelected; i += 1)
@@ -4428,21 +4428,6 @@ static Function/WAVE SF_NewChannelsWave(variable size)
 	SetDimLabel COLS, 1, channelNumber, out
 
 	return out
-End
-
-/// @brief Create a new selectData wave
-///        The row counts the selected combinations of sweep, channel type, channel number
-///        The three columns per row store the sweep number, channel type, channel number
-static Function/WAVE SF_NewSelectDataWave(variable numSweeps, variable numChannels)
-
-	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
-
-	Make/FREE/D/N=(numSweeps * numChannels, 3) selectData
-	SetDimLabel COLS, 0, SWEEP, selectData
-	SetDimLabel COLS, 1, CHANNELTYPE, selectData
-	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
-
-	return selectData
 End
 
 static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
