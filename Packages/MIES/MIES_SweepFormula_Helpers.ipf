@@ -809,7 +809,7 @@ End
 ///        SweepFormula plot window originated from
 Function/S SFH_GetBrowserForFormulaGraph(string win)
 
-	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
+	return GetUserData(GetMainWindow(win), "", SFH_USER_DATA_BROWSER)
 End
 
 /// @brief Create a new selectData wave
