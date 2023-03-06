@@ -184,3 +184,20 @@ static Function TestJSONWaveNoteCombinations()
 	str = GetStringFromWaveNote(wv, "string")
 	CHECK_EQUAL_STR(str1, str)
 End
+
+static Function TestWaveNoteFromJSON()
+
+	variable jsonID = JSON_PARSE("{ \"abcd\" : [1, 2]}")
+	CHECK_GE_VAR(jsonID, 0)
+
+	Make/FREE wv
+	Note/K wv, "efgh\rJSON_BEGIN\r"
+	JWN_SetWaveNoteFromJSON(wv, jsonID)
+	CHECK_EQUAL_VAR(NaN, JSON_Release(jsonID, ignoreErr =  1))
+
+	// existing wave note is preserved
+	CHECK_EQUAL_VAR(strsearch(note(wv), "efgh", 0), 0)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "/abcd")
+	CHECK_EQUAL_WAVES(data, {1, 2}, mode = WAVE_DATA)
+End

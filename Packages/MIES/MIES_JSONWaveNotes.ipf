@@ -39,6 +39,14 @@ threadsafe Function JWN_GetWaveNoteAsJSON(WAVE wv)
 	return JSON_Parse(JWN_GetWaveNoteAsString(wv))
 End
 
+/// @brief Set the JSON json document as JSON wave note. Releases json.
+threadsafe Function JWN_SetWaveNoteFromJSON(WAVE wv, variable jsonID)
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
+End
+
 /// @brief Return the numerical value at jsonPath found in the wave note
 ///
 /// @param wv       wave reference where the WaveNote is taken from
