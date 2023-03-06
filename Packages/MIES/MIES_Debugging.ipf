@@ -500,6 +500,12 @@ Function EnableThreadsafeSupport()
 	Execute/P/Q "SetIgorOption DisableThreadsafe=0"
 End
 
+/// @brief Enable dangerous debugging (allows to call user-defined functions in the debugger)
+Function EnableDangerousDebugging()
+
+	variable/G root:V_debugDangerously = 1
+End
+
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.
