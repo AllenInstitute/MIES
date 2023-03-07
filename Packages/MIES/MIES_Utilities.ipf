@@ -6229,11 +6229,15 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	WAVE/T/Z dimLabelsEach = JSON_GetTextWave(jsonID, path + "/dimension/label/each", ignoreErr = 1)
 
-	for(i = 0; i < MAX_DIMENSION_COUNT; i += 1)
-		for(j = 0; j < newSizes[i]; j += 1)
-			SetDimLabel i, j, $dimLabelsEach[k++], data
+	if(WaveExists(dimLabelsEach))
+		ASSERT(DimSize(dimLabelsEach, ROWS) == Sum(dimSizes), "Mismatched dimension label each wave")
+
+		for(i = 0; i < MAX_DIMENSION_COUNT; i += 1)
+			for(j = 0; j < newSizes[i]; j += 1)
+				SetDimLabel i, j, $dimLabelsEach[k++], data
+			endfor
 		endfor
-	endfor
+	endif
 
 	WAVE/T/Z dimUnits = JSON_GetWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
 	ASSERT(!WaveExists(dimUnits), "dimension units are not supported")
