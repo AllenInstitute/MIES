@@ -6464,9 +6464,7 @@ End
 
 /// @}
 
-Function JSONWaveSerializationWorks()
-
-	string str
+Function/WAVE GetTestWaveForSerialization()
 
 	Make/FREE/D wv = {{1, 2, 3}, {4, 5, 6}}
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
@@ -6483,10 +6481,48 @@ Function JSONWaveSerializationWorks()
 	SetDimLabel COLS, 1, $"uvwx", wv
 	SetDimLabel ROWS, 2, $"yz", wv
 
+	return wv
+End
+
+Function JSONWaveSerializationWorks()
+
+	string str
+
+	WAVE wv = GetTestWaveForSerialization()
+
 	str = WaveToJSON(wv)
 	CHECK_PROPER_STR(str)
 
 	WAVE/Z serialized = JSONToWave(str)
+	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(wv, serialized)
+End
+
+Function JSONWaveSerializationWorksWithPath()
+
+	string str, path
+	variable childID, jsonID
+
+	WAVE wv = GetTestWaveForSerialization()
+
+	str = WaveToJSON(wv)
+	CHECK_PROPER_STR(str)
+
+	childID = JSON_Parse(str)
+	CHECK_GE_VAR(childID, 0)
+
+	jsonID = JSON_New()
+	CHECK_GE_VAR(jsonID, 0)
+	path = "/abcd/efgh"
+	JSON_AddTreeObject(jsonID, path)
+
+	JSON_SetJSON(jsonID, path, childID)
+	JSON_Release(childID)
+	str = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	WAVE/Z serialized = JSONToWave(str, path = path)
 	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
 
 	CHECK_EQUAL_WAVES(wv, serialized)

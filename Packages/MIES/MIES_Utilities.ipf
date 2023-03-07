@@ -6178,11 +6178,19 @@ End
 ///
 /// Supports only a currently used subset.
 ///
+/// @param str  serialized JSON document
+/// @param path [optional, defaults to ""] json path with the serialized wave info
 /// @sa WaveToJSON
-Function/WAVE JSONToWave(string str)
+Function/WAVE JSONToWave(string str, [string path])
 
 	variable jsonID, dim, i, j, k
 	string unit, type, dataUnit, waveNote
+
+	if(ParamIsDefault(path))
+		path = ""
+	else
+		ASSERT(strlen(path) > 1 && !cmpstr(path[0], "/"), "Path must start with /")
+	endif
 
 	jsonID = JSON_Parse(str, ignoreErr = 1)
 
@@ -6190,27 +6198,27 @@ Function/WAVE JSONToWave(string str)
 		return $""
 	endif
 
-	type = JSON_GetString(jsonID, "/type", ignoreErr = 1)
+	type = JSON_GetString(jsonID, path + "/type", ignoreErr = 1)
 
 	// we only support FP64 for now
 	ASSERT(!cmpstr(type, "NT_FP64"), "Type is not supported")
-	WAVE/D/Z data = JSON_GetWave(jsonID, "/data/raw")
+	WAVE/D/Z data = JSON_GetWave(jsonID, path + "/data/raw")
 	ASSERT(WaveExists(data), "Missing data")
 
-	WAVE/D/Z dimSizes = JSON_GetWave(jsonID, "/dimension/size", ignoreErr = 1)
+	WAVE/D/Z dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", ignoreErr = 1)
 	ASSERT(WaveExists(dimSizes), "dimension sizes are missing")
 
 	Make/D/FREE/N=(MAX_DIMENSION_COUNT) newSizes = -1
 	newSizes[0, DimSize(dimSizes, ROWS) - 1] = dimSizes[p]
 	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) data
 
-	WAVE/D/Z dimDeltas = JSON_GetWave(jsonID, "/dimension/delta", ignoreErr = 1)
+	WAVE/D/Z dimDeltas = JSON_GetWave(jsonID, path + "/dimension/delta", ignoreErr = 1)
 	ASSERT(!WaveExists(dimDeltas), "dimension deltas are not supported")
 
-	WAVE/D/Z dimOffsets = JSON_GetWave(jsonID, "/dimension/offset", ignoreErr = 1)
+	WAVE/D/Z dimOffsets = JSON_GetWave(jsonID, path + "/dimension/offset", ignoreErr = 1)
 	ASSERT(!WaveExists(dimOffsets), "dimension offsets are not supported")
 
-	WAVE/T/Z dimLabelsFull = JSON_GetTextWave(jsonID, "/dimension/label/full", ignoreErr = 1)
+	WAVE/T/Z dimLabelsFull = JSON_GetTextWave(jsonID, path + "/dimension/label/full", ignoreErr = 1)
 
 	if(WaveExists(dimLabelsFull))
 		for(lbl : dimLabelsFull)
@@ -6219,7 +6227,7 @@ Function/WAVE JSONToWave(string str)
 		endfor
 	endif
 
-	WAVE/T/Z dimLabelsEach = JSON_GetTextWave(jsonID, "/dimension/label/each", ignoreErr = 1)
+	WAVE/T/Z dimLabelsEach = JSON_GetTextWave(jsonID, path + "/dimension/label/each", ignoreErr = 1)
 
 	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) dimLabelsEach
 
@@ -6229,22 +6237,22 @@ Function/WAVE JSONToWave(string str)
 		endfor
 	endfor
 
-	WAVE/T/Z dimUnits = JSON_GetWave(jsonID, "/dimension/unit", ignoreErr = 1)
+	WAVE/T/Z dimUnits = JSON_GetWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
 	ASSERT(!WaveExists(dimUnits), "dimension units are not supported")
 
 	// no way to restore the modification date
 
-	WAVE/D/Z dataFullScale = JSON_GetWave(jsonID, "/data/fullScale", ignoreErr = 1)
+	WAVE/D/Z dataFullScale = JSON_GetWave(jsonID, path + "/data/fullScale", ignoreErr = 1)
 
 	if(!WaveExists(dataFullScale))
 		Make/FREE/D dataFullScale = {0, 0}
 	endif
 
-	dataUnit = JSON_GetString(jsonID, "/data/unit", ignoreErr = 1)
+	dataUnit = JSON_GetString(jsonID, path + "/data/unit", ignoreErr = 1)
 
 	SetScale d, dataFullScale[0], dataFullScale[1], dataUnit, data
 
-	waveNote = JSON_GetString(jsonID, "/note", ignoreErr = 1)
+	waveNote = JSON_GetString(jsonID, path + "/note", ignoreErr = 1)
 	Note/K data, waveNote
 
 	return data
