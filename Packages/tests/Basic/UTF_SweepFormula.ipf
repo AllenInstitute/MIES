@@ -48,7 +48,7 @@ static Function [string win, string device] CreateFakeDataBrowserWindow()
 	TUD_Clear(win)
 End
 
-static Function/WAVE GetMultipleResults(string formula, string win)
+Function/WAVE GetMultipleResults(string formula, string win)
 
 	WAVE wTextRef = SF_FormulaExecutor(win, DirectToFormulaParser(formula))
 	CHECK(IsTextWave(wTextRef))
@@ -57,7 +57,7 @@ static Function/WAVE GetMultipleResults(string formula, string win)
 	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
 End
 
-static Function/WAVE GetSingleResult(string formula, string win)
+Function/WAVE GetSingleResult(string formula, string win)
 
 	WAVE/WAVE wRefResult = GetMultipleResults(formula, win)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
