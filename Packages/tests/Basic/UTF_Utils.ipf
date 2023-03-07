@@ -6499,6 +6499,22 @@ Function JSONWaveSerializationWorks()
 	CHECK_EQUAL_WAVES(wv, serialized)
 End
 
+Function JSONWaveSerializationWorksOnlyOneRow()
+
+	string str
+
+	WAVE wv = GetTestWaveForSerialization()
+	Redimension/N=(1, -1) wv
+
+	str = WaveToJSON(wv)
+	CHECK_PROPER_STR(str)
+
+	WAVE/Z serialized = JSONToWave(str)
+	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(wv, serialized)
+End
+
 Function JSONWaveSerializationWorksWithPath()
 
 	string str, path

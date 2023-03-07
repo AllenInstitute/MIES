@@ -6229,8 +6229,6 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	WAVE/T/Z dimLabelsEach = JSON_GetTextWave(jsonID, path + "/dimension/label/each", ignoreErr = 1)
 
-	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) dimLabelsEach
-
 	for(i = 0; i < MAX_DIMENSION_COUNT; i += 1)
 		for(j = 0; j < newSizes[i]; j += 1)
 			SetDimLabel i, j, $dimLabelsEach[k++], data
