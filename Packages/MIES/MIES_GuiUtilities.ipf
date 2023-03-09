@@ -793,7 +793,7 @@ End
 ///
 /// @return minimum and maximum value of the axis range
 Function [variable minimum, variable maximum] GetAxisRange(string graph, string axis, [variable mode])
-	string info, flags
+	string info
 
 	if(!windowExists(graph))
 		return [NaN, NaN]
@@ -809,6 +809,13 @@ Function [variable minimum, variable maximum] GetAxisRange(string graph, string 
 	if(isEmpty(info))
 		return [NaN, NaN]
 	endif
+
+	[minimum, maximum] = GetAxisRangeFromInfo(graph, info, axis, mode)
+End
+
+static Function [variable minimum, variable maximum] GetAxisRangeFromInfo(string graph, string info, string axis, variable mode)
+
+	string flags
 
 	if(mode == AXIS_RANGE_DEFAULT)
 		flags = StringByKey("SETAXISFLAGS", info)
