@@ -887,7 +887,7 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
-	string list, axis
+	string list, axis, info
 	variable numAxes, i, countAxes, minimum, maximum, axisOrientation
 
 	if(ParamIsDefault(mode))
@@ -915,7 +915,9 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 			continue
 		endif
 
-		[minimum, maximum] = GetAxisRange(graph, axis, mode=mode)
+		info = AxisInfo(graph, axis)
+
+		[minimum, maximum] = GetAxisRangeFromInfo(graph, info, axis, mode)
 		props[countAxes][%axisType] = axisOrientation
 		props[countAxes][%minimum] = minimum
 		props[countAxes][%maximum] = maximum
