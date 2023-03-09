@@ -860,6 +860,19 @@ Function GetAxisOrientation(graph, axes)
 	DoAbortNow("unknown axis type")
 End
 
+/// @brief Return the recreation macro for an axis
+static Function/S GetAxisRecreationMacro(string info)
+
+	string key
+	variable index
+
+	// straight from the AxisInfo help
+	key = ";RECREATION:"
+	index = strsearch(info,key,0)
+
+	return info[index + strlen(key), inf]
+End
+
 /// @brief Returns a wave with the minimum and maximum
 /// values of each axis
 ///
