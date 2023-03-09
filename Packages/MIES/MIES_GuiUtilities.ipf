@@ -894,10 +894,12 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 		mode = AXIS_RANGE_DEFAULT
 	endif
 
-	list    = AxisList(graph)
+	list = AxisList(graph)
+
 	if(!ParamIsDefault(axesRegexp))
 		list = GrepList(list, axesRegexp)
 	endif
+
 	list    = SortList(list)
 	numAxes = ItemsInList(list)
 
