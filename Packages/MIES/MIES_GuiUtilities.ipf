@@ -12,6 +12,8 @@
 static StrConstant USERDATA_PREFIX = "userdata("
 static StrConstant USERDATA_SUFFIX = ")"
 
+static Constant AXIS_MODE_NO_LOG = 0
+
 /// @brief Show a GUI control in the given window
 Function ShowControl(win, control)
 	string win, control
@@ -907,8 +909,8 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
-	string list, axis, info
-	variable numAxes, i, countAxes, minimum, maximum, axisOrientation
+	string list, axis, recMacro, info
+	variable numAxes, i, countAxes, minimum, maximum, axisOrientation, logMode
 
 	if(ParamIsDefault(mode))
 		mode = AXIS_RANGE_DEFAULT
@@ -923,10 +925,11 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 	list    = SortList(list)
 	numAxes = ItemsInList(list)
 
-	Make/FREE/D/N=(numAxes, 3) props = 0
+	Make/FREE/D/N=(numAxes, 4) props = 0
 	SetDimLabel COLS, 0, minimum , props
 	SetDimLabel COLS, 1, maximum , props
 	SetDimLabel COLS, 2, axisType, props
+	SetDimLabel COLS, 3, logMode, props
 
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, list)
@@ -941,6 +944,9 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 		props[countAxes][%axisType] = axisOrientation
 		props[countAxes][%minimum] = minimum
 		props[countAxes][%maximum] = maximum
+
+		props[countAxes][%logMode] = GetAxisLogModeFromInfo(info)
+
 		SetDimLabel ROWS, countAxes, $axis, props
 		countAxes += 1
 	endfor
@@ -971,7 +977,7 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 	variable orientation, mode
 
 	variable numRows, numAxes, i, minimum, maximum, axisOrientation
-	variable col, row, prevAxisMin, prevAxisMax
+	variable col, row, prevAxisMin, prevAxisMax, logMode
 	string axis, list
 
 	ASSERT(windowExists(graph), "Graph does not exist")
@@ -1005,6 +1011,7 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 		if(row >= 0)
 			minimum = props[row][%minimum]
 			maximum = props[row][%maximum]
+			logMode = props[row][%logMode]
 		else
 			// axis does not exist
 			if(mode & AXIS_RANGE_USE_MINMAX)
@@ -1020,11 +1027,13 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 				endif
 				minimum = prevAxisMin
 				maximum = prevAxisMax
+				logMode = AXIS_MODE_NO_LOG
 			elseif(mode == AXIS_RANGE_DEFAULT)
 				// probably just name has changed, try the axis at the current index and check if the orientation is correct
 				if(i < numRows && axisOrientation == props[i][%axisType])
 					minimum = props[i][%minimum]
 					maximum = props[i][%maximum]
+					logMode = props[i][%logMode]
 				else
 					continue
 				endif
@@ -1036,6 +1045,8 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 		if(IsFinite(minimum) && IsFinite(maximum))
 			SetAxis/W=$graph $axis, minimum, maximum
 		endif
+
+		ModifyGraph/W=$graph log($axis)=logMode
 	endfor
 End
 

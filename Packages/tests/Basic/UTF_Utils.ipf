@@ -6569,3 +6569,107 @@ Function FTWWorks()
 
 	CHECK_EQUAL_STR(result, expected)
 End
+
+static Function/S ConvertMacroToPlainCommands(string recMacro)
+
+	// remove first two and last line
+	variable numLines
+
+	numLines = ItemsInList(recMacro, "\r")
+	CHECK_GT_VAR(numLines, 0)
+
+	Make/FREE/T/N=(numLines) contents = StringFromList(p, recMacro, "\r")
+
+	contents[0, 1] = ""
+	contents[numLines - 1] = ""
+
+	return ReplaceString("\r", TextWaveToList(contents, "\r"), ";")
+End
+
+static Function/WAVE GetDifferentGraphs()
+
+	string win, recMacro
+
+	Make/FREE/T/N=5 wv
+
+	NewDataFolder/O/S root:temp_test
+	Make data
+	data = p
+
+	Display data
+	win = S_name
+	ModifyGraph/W=$win log(left)=0, log(bottom)=1
+	SetAxis/W=$win left, 10, 20
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[0] = recMacro
+
+	Display data
+	win = S_name
+	ModifyGraph/W=$win log(left)=2, log(bottom)=1
+	SetAxis/W=$win bottom, 70, 90
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[1] = recMacro
+
+	Display data
+	win = S_name
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[2] = recMacro
+
+	Display data
+	win = S_name
+	SetAxis/A/W=$win bottom
+	// only supports the default autoscale mode
+	//	SetAxis/A=2/W=$win left
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[3] = recMacro
+
+	Display data
+	win = S_name
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[4] = recMacro
+
+	KillWaves data
+
+	return wv
+End
+
+/// UTF_TD_GENERATOR GetDifferentGraphs
+Function StoreRestoreAxisProps([string str])
+
+	string win, actual, commands
+
+	NewDataFolder/O/S root:temp_test
+	KillWaves/A
+	KillStrings/A
+	KillVariables/A
+	Make data = p
+
+	// execute recreation macro
+	commands = ConvertMacroToPlainCommands(str)
+	Execute commands
+	DoUpdate
+	win = GetCurrentWindow()
+
+	WAVE props = GetAxesProperties(win)
+	RemoveTracesFromGraph(win)
+
+	WAVE/SDFR=root/Z data
+	CHECK_WAVE(data, NORMAL_WAVE)
+	AppendToGraph/W=$win data
+
+	SetAxesProperties(win, props)
+	actual = Winrecreation(win, 0)
+	CHECK_EQUAL_STR(str, actual)
+
+	KillWindow $win
+End
