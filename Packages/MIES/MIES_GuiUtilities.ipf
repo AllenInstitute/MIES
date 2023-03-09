@@ -924,7 +924,7 @@ Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 	endfor
 
 	if(countAxes != numAxes)
-		Redimension/N=(countAxes, 3) props
+		Redimension/N=(countAxes, -1) props
 	endif
 
 	return props
