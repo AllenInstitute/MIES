@@ -1011,11 +1011,9 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 			endif
 		endif
 
-		if(!IsFinite(minimum) || !IsFinite(maximum))
-			continue
+		if(IsFinite(minimum) && IsFinite(maximum))
+			SetAxis/W=$graph $axis, minimum, maximum
 		endif
-
-		SetAxis/W=$graph $axis, minimum, maximum
 	endfor
 End
 
