@@ -962,10 +962,12 @@ Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 
 	numRows = DimSize(props, ROWS)
 
-	list    = AxisList(graph)
+	list = AxisList(graph)
+
 	if(!ParamIsDefault(axesRegexp))
 		list = GrepList(list, axesRegexp)
 	endif
+
 	list    = SortList(list)
 	numAxes = ItemsInList(list)
 
