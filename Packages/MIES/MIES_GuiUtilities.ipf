@@ -789,7 +789,7 @@ End
 ///
 /// @param[in] graph graph name
 /// @param[in] axis  axis name
-/// @param[in] mode  [optional:default #AXIS_RANGE_DEFAULT] optional mode option, see @ref AxisRangeModeConstants
+/// @param[in] mode  [optional:default #AXIS_RANGE_DEFAULT] optional mode option, see @ref AxisPropModeConstants
 ///
 /// @return minimum and maximum value of the axis range
 Function [variable minimum, variable maximum] GetAxisRange(string graph, string axis, [variable mode])
@@ -819,7 +819,7 @@ Function [variable minimum, variable maximum] GetAxisRange(string graph, string 
 	elseif(mode & AXIS_RANGE_INC_AUTOSCALED)
 		// do nothing
 	else
-		ASSERT(0, "Unknown mode from AxisRangeModeConstants for this function")
+		ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
 	endif
 
 	GetAxis/W=$graph/Q $axis
@@ -861,9 +861,9 @@ End
 /// @param[in] graph Name of graph
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
-/// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisRangeModeConstants
+/// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisPropModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
-Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
+Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
@@ -881,10 +881,10 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 	list    = SortList(list)
 	numAxes = ItemsInList(list)
 
-	Make/FREE/D/N=(numAxes, 3) ranges = 0
-	SetDimLabel COLS, 0, minimum , ranges
-	SetDimLabel COLS, 1, maximum , ranges
-	SetDimLabel COLS, 2, axisType, ranges
+	Make/FREE/D/N=(numAxes, 3) props = 0
+	SetDimLabel COLS, 0, minimum , props
+	SetDimLabel COLS, 1, maximum , props
+	SetDimLabel COLS, 2, axisType, props
 
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, list)
@@ -894,34 +894,35 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 		endif
 
 		[minimum, maximum] = GetAxisRange(graph, axis, mode=mode)
-		ranges[countAxes][%axisType] = axisOrientation
-		ranges[countAxes][%minimum] = minimum
-		ranges[countAxes][%maximum] = maximum
-		SetDimLabel ROWS, countAxes, $axis, ranges
+		props[countAxes][%axisType] = axisOrientation
+		props[countAxes][%minimum] = minimum
+		props[countAxes][%maximum] = maximum
+		SetDimLabel ROWS, countAxes, $axis, props
 		countAxes += 1
 	endfor
 
 	if(countAxes != numAxes)
-		Redimension/N=(countAxes, 3) ranges
+		Redimension/N=(countAxes, 3) props
 	endif
 
-	return ranges
+	return props
 End
 
-/// @brief Set the range of all axes as stored by GetAxesRange
+/// @brief Set the properties of all axes as stored by GetAxesProperties
 ///
-/// Includes a heuristic if the name of the axis changed after GetAxesRange.
+/// Includes a heuristic if the name of the axis changed after GetAxesProperties.
 /// The axis range is also restored if its index in the sorted axis list and its
 /// orientation is the same.
-/// @see GetAxisRange
+///
+/// @see GetAxisProps
 /// @param[in] graph Name of graph
-/// @param[in] ranges wave with graph ranges as set in @ref GetAxesRanges
+/// @param[in] props wave with graph props as set in @ref GetAxesProperties
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
-/// @param[in] mode [optional: default 0] axis set mode see @ref AxisRangeModeConstants
-Function SetAxesRanges(graph, ranges[, axesRegexp, orientation, mode])
+/// @param[in] mode [optional: default 0] axis set mode see @ref AxisPropModeConstants
+Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
 	string graph
-	Wave ranges
+	Wave props
 	string axesRegexp
 	variable orientation, mode
 
@@ -937,7 +938,7 @@ Function SetAxesRanges(graph, ranges[, axesRegexp, orientation, mode])
 
 	prevAxisMin = NaN
 
-	numRows = DimSize(ranges, ROWS)
+	numRows = DimSize(props, ROWS)
 
 	list    = AxisList(graph)
 	if(!ParamIsDefault(axesRegexp))
@@ -953,36 +954,36 @@ Function SetAxesRanges(graph, ranges[, axesRegexp, orientation, mode])
 			continue
 		endif
 
-		row = FindDimLabel(ranges, ROWS, axis)
+		row = FindDimLabel(props, ROWS, axis)
 
 		if(row >= 0)
-			minimum = ranges[row][%minimum]
-			maximum = ranges[row][%maximum]
+			minimum = props[row][%minimum]
+			maximum = props[row][%maximum]
 		else
 			// axis does not exist
 			if(mode & AXIS_RANGE_USE_MINMAX)
 				// use MIN/MAX of previous axes
 				if(isNaN(prevAxisMin))
 					// need to retrieve once
-					col = FindDimLabel(ranges, COLS, "maximum")
-					WaveStats/Q/M=1/RMD=[][col] ranges
+					col = FindDimLabel(props, COLS, "maximum")
+					WaveStats/Q/M=1/RMD=[][col] props
 					prevAxisMax = V_Max
-					col = FindDimLabel(ranges, COLS, "minimum")
-					WaveStats/Q/M=1/RMD=[][col] ranges
+					col = FindDimLabel(props, COLS, "minimum")
+					WaveStats/Q/M=1/RMD=[][col] props
 					prevAxisMin = V_Min
 				endif
 				minimum = prevAxisMin
 				maximum = prevAxisMax
 			elseif(mode == AXIS_RANGE_DEFAULT)
 				// probably just name has changed, try the axis at the current index and check if the orientation is correct
-				if(i < numRows && axisOrientation == ranges[i][%axisType])
-					minimum = ranges[i][%minimum]
-					maximum = ranges[i][%maximum]
+				if(i < numRows && axisOrientation == props[i][%axisType])
+					minimum = props[i][%minimum]
+					maximum = props[i][%maximum]
 				else
 					continue
 				endif
 			else
-				ASSERT(0, "Unknown mode from AxisRangeModeConstants for this function")
+				ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
 			endif
 		endif
 

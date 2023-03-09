@@ -402,7 +402,7 @@ Function DB_UpdateSweepPlot(win)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
-	WAVE axesRanges = GetAxesRanges(graph)
+	WAVE axesProps = GetAxesProperties(graph)
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
@@ -462,7 +462,7 @@ Function DB_UpdateSweepPlot(win)
 
 	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 
-	SetAxesRanges(graph, axesRanges)
+	SetAxesProperties(graph, axesProps)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 

@@ -564,7 +564,7 @@ Constant AXIS_ORIENTATION_RIGHT  = 0x22
 /// @}
 
 /// @name Constants for Set/GetAxesRanges modes, use binary pattern
-/// @anchor AxisRangeModeConstants
+/// @anchor AxisPropModeConstants
 /// @{
 Constant AXIS_RANGE_DEFAULT        = 0x00
 Constant AXIS_RANGE_USE_MINMAX     = 0x01

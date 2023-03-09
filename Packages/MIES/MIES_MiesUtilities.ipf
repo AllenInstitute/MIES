@@ -52,10 +52,10 @@ Function HorizExpandWithVisX()
 
 	graph = GetCurrentWindow()
 
-	WAVE ranges = GetAxesRanges(graph, orientation = AXIS_ORIENTATION_HORIZ, mode = AXIS_RANGE_INC_AUTOSCALED)
-	numEntries = DimSize(ranges, ROWS)
+	WAVE axesProps = GetAxesProperties(graph, orientation = AXIS_ORIENTATION_HORIZ, mode = AXIS_RANGE_INC_AUTOSCALED)
+	numEntries = DimSize(axesProps, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		axis = GetDimLabel(ranges, ROWS, i)
+		axis = GetDimLabel(axesProps, ROWS, i)
 
 		[first, last] = GetMarqueeHelper(axis, kill = 0, doAssert = 0, horiz = 1)
 
@@ -64,8 +64,8 @@ Function HorizExpandWithVisX()
 			continue
 		endif
 
-		minimum = ranges[i][%minimum]
-		maximum = ranges[i][%maximum]
+		minimum = axesProps[i][%minimum]
+		maximum = axesProps[i][%maximum]
 
 		first = limit(first , minimum, maximum)
 		last  = limit(last, minimum, maximum)
@@ -6996,14 +6996,14 @@ Function UpdateSweepInGraph(string win, variable index)
 
 	graph = GetMainWindow(win)
 
-	WAVE axesRanges = GetAxesRanges(graph)
+	WAVE axesProps = GetAxesProperties(graph)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
 	RemoveSweepFromGraph(win, index)
 	AddSweepToGraph(win, index)
 
 	RestoreCursors(graph, cursorInfos)
-	SetAxesRanges(graph, axesRanges)
+	SetAxesProperties(graph, axesProps)
 End
 
 /// @brief Generic window hooks for storing the window
