@@ -873,6 +873,26 @@ static Function/S GetAxisRecreationMacro(string info)
 	return info[index + strlen(key), inf]
 End
 
+/// @brief Return the logmode of the axis
+Function GetAxisLogMode(string graph, string axis)
+	string info
+
+	info = AxisInfo(graph, axis)
+
+	if(IsEmpty(info))
+		return NaN
+	endif
+
+	return GetAxisLogModeFromInfo(info)
+End
+
+static Function GetAxisLogModeFromInfo(string info)
+	string recMacro
+
+	recMacro = GetAxisRecreationMacro(info)
+	return NumberByKey("log(x)", recMacro, "=")
+End
+
 /// @brief Returns a wave with the minimum and maximum
 /// values of each axis
 ///
