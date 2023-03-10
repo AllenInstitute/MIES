@@ -1267,7 +1267,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endif
 
 		if(WindowExists(win))
-			WAVE/T/Z axes     = GetAxesRanges(win)
+			WAVE/T/Z axes     = GetAxesProperties(win)
 			WAVE/T/Z cursors  = GetCursorInfos(win)
 			WAVE/T/Z annoInfo = GetAnnotationInfo(win)
 
@@ -1682,16 +1682,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		endif
 
 		if(keepUserSelection)
-			WAVE/Z cursorInfos = infos[j][%cursors]
-			WAVE/Z axesRanges  = infos[j][%axes]
-			WAVE/Z annoInfos   = infos[j][%annotations]
+			WAVE/Z cursorInfos    = infos[j][%cursors]
+			WAVE/Z axesProperties = infos[j][%axes]
+			WAVE/Z annoInfos      = infos[j][%annotations]
 
 			if(WaveExists(cursorInfos))
 				RestoreCursors(win, cursorInfos)
 			endif
 
-			if(WaveExists(axesRanges))
-				SetAxesRanges(win, axesRanges)
+			if(WaveExists(axesProperties))
+				SetAxesProperties(win, axesProperties)
 			endif
 
 			if(WaveExists(annoInfos))

@@ -244,7 +244,7 @@ static Function WBP_DisplaySetInPanel()
 		DoAbortNow("Wavebuilder panel is out of date. Please close and reopen it.")
 	endif
 
-	WAVE ranges = GetAxesRanges(waveBuilderGraph)
+	WAVE axesProps = GetAxesProperties(waveBuilderGraph)
 
 	RemoveTracesFromGraph(waveBuilderGraph)
 
@@ -296,7 +296,7 @@ static Function WBP_DisplaySetInPanel()
 	epochHLEndLeft    = min(0, minYValue)
 
 	SetAxis/W=$waveBuilderGraph/A/E=3 left
-	SetAxesRanges(waveBuilderGraph, ranges)
+	SetAxesProperties(waveBuilderGraph, axesProps)
 End
 
 /// @brief Reponsible for adjusting controls which depend on other controls
@@ -1661,8 +1661,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	graphMag   = extPanel + "#magnitude"
 	graphPhase = extPanel + "#phase"
 
-	WAVE axesRangesMag   = GetAxesRanges(graphMag)
-	WAVE axesRangesPhase = GetAxesRanges(graphPhase)
+	WAVE axesPropsMag   = GetAxesProperties(graphMag)
+	WAVE axesPropsPhase = GetAxesProperties(graphPhase)
 	WAVE/T/Z cursorInfosMag = GetCursorInfos(graphMag)
 	WAVE/T/Z cursorInfosPhase = GetCursorInfos(graphPhase)
 
@@ -1685,8 +1685,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	ModifyGraph/W=$graphMag rgb($trace)   = (s.red, s.green, s.blue)
 	ModifyGraph/W=$graphPhase rgb($trace) = (s.red, s.green, s.blue)
 
-	SetAxesRanges(graphMag, axesRangesMag)
-	SetAxesRanges(graphPhase, axesRangesPhase)
+	SetAxesProperties(graphMag, axesPropsMag)
+	SetAxesProperties(graphPhase, axesPropsPhase)
 	RestoreCursors(graphMag, cursorInfosMag)
 	RestoreCursors(graphPhase, cursorInfosPhase)
 End

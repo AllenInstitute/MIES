@@ -236,7 +236,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 
 	[axisMinTop, axisMaxTop] = GetAxisRange(graph, AXIS_SCOPE_TP_TIME, mode=AXIS_RANGE_INC_AUTOSCALED)
 	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
-		WAVE previousADAxesRanges = GetAxesRanges(graph, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_INC_AUTOSCALED)
+		WAVE previousADAxesProperties = GetAxesProperties(graph, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_INC_AUTOSCALED)
 	endif
 
 	RemoveTracesFromGraph(graph)
@@ -360,8 +360,8 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 		YaxisLow -= YaxisSpacing
 	endfor
 
-	if(WaveExists(previousADAxesRanges))
-		SetAxesRanges(graph, previousADAxesRanges, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
+	if(WaveExists(previousADAxesProperties))
+		SetAxesProperties(graph, previousADAxesProperties, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
 	endif
 
 	SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)

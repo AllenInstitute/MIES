@@ -286,7 +286,7 @@ Function SB_UpdateSweepPlot(win)
 
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(graph, OVS_SWEEP_SELECTION_INDEX)
 
-	WAVE axesRanges = GetAxesRanges(graph)
+	WAVE axesProps = GetAxesProperties(graph)
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
@@ -331,7 +331,7 @@ Function SB_UpdateSweepPlot(win)
 	BSP_UpdateSweepNote(win)
 
 	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
-	SetAxesRanges(graph, axesRanges)
+	SetAxesProperties(graph, axesProps)
 End
 
 Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
