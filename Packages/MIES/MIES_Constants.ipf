@@ -1994,3 +1994,11 @@ Constant SFH_RESULT_TYPE_EPSP  = 0x02
 StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
 StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
 /// @}
+
+/// @name Different log modes for ModifyGraph/Axes
+/// @anchor ModifyGraphLogModes
+/// @{
+Constant MODIFY_GRAPH_LOG_MODE_NORMAL = 0
+Constant MODIFY_GRAPH_LOG_MODE_LOG10  = 1
+Constant MODIFY_GRAPH_LOG_MODE_LOG2   = 2
+/// @}
