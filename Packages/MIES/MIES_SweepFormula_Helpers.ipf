@@ -349,6 +349,15 @@ Function SFH_GetDAChannel(string graph, variable sweep, variable channelType, va
 	return NaN
 End
 
+/// @brief Return a wave reference wave with the requested sweep data
+///
+/// All wave input parameters should are treated as const and are thus *not* modified.
+///
+/// @param graph      name of databrowser graph
+/// @param range      numeric/text wave defining the x-range of the extracted
+///                   data, see also SFH_EvaluateRange()
+/// @param selectData channel/sweep selection, see also SFH_GetArgumentSelect()
+/// @param opShort    operation name (short)
 Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
 	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
