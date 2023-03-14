@@ -1900,6 +1900,7 @@ StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
 /// @{
 StrConstant SF_META_DATATYPE = "/DataType" // string
 StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
+StrConstant SF_META_RANGE = "/Range" // numeric wave
 StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
 StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
 StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
@@ -1908,6 +1909,8 @@ StrConstant SF_META_XVALUES = "/XValues" // numeric wave
 StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
 StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
 StrConstant SF_META_OPSTACK = "/OperationStack" // string
+StrConstant SF_META_MOD_MARKER = "/Marker" // numeric wave
+StrConstant SF_META_SHOW_LEGEND = "/ShowLegend" // numeric, boolean, defaults to true (1)
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
@@ -1983,4 +1986,11 @@ Constant SER_MODE_JSON = 0x02
 /// @{
 Constant SFH_RESULT_TYPE_STORE = 0x01
 Constant SFH_RESULT_TYPE_EPSP  = 0x02
+/// @}
+
+/// @name Constants used in the wave note JSON support
+/// @anchor WaveNoteJSONSupportConstants
+/// @{
+StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
+StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
 /// @}

@@ -217,7 +217,7 @@ End
 
 /// @brief Assertion for sweep formula
 ///
-/// This assertion does *not* indicate a genearl programmer error but a
+/// This assertion does *not* indicate a general programmer error but a
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
@@ -254,6 +254,35 @@ End
 Function/WAVE SFH_GetFullRange()
 
 	Make/FREE/D range = {-inf, inf}
+
+	return range
+End
+
+/// @brief Evaluate range parameter
+///
+/// Range can be `[100-200]` or implicit as `cursors(A, B)` or a named epoch `E0` or a wildcard expression with epochs `E*`
+Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
+
+	variable numArgs
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+
+	if(argNum < numArgs)
+		WAVE range = SFH_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum, checkExist=1)
+	else
+		return SFH_GetFullRange()
+	endif
+
+	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
+
+	if(IsTextWave(range))
+		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
+	else
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
+		// convert an empty range to a full range
+		// an empty range can happen with cursors() as input when there are no cursors
+		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
+	endif
 
 	return range
 End
@@ -320,6 +349,15 @@ Function SFH_GetDAChannel(string graph, variable sweep, variable channelType, va
 	return NaN
 End
 
+/// @brief Return a wave reference wave with the requested sweep data
+///
+/// All wave input parameters should are treated as const and are thus *not* modified.
+///
+/// @param graph      name of databrowser graph
+/// @param range      numeric/text wave defining the x-range of the extracted
+///                   data, see also SFH_EvaluateRange()
+/// @param selectData channel/sweep selection, see also SFH_GetArgumentSelect()
+/// @param opShort    operation name (short)
 Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
 	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
@@ -336,7 +374,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 		WAVE/T epochNames = range
 		numEpochPatterns = DimSize(epochNames, ROWS)
 	else
-		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
+		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range must have two rows for range start and end.")
 		numEpochPatterns = 1
 	endif
 	if(!WaveExists(selectData))
@@ -403,27 +441,30 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 				continue
 			endif
 			numEpochs = DimSize(epIndices, ROWS)
-			WAVE range = SFH_GetEmptyRange()
-			Redimension/N=(-1, numEpochs) range
+			WAVE adaptedRange = SFH_GetEmptyRange()
+			Redimension/N=(-1, numEpochs) adaptedRange
 			for(j = 0; j < numEpochs; j += 1)
 				epIndex = epIndices[j]
-				range[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
-				range[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+				adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+				adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 			endfor
 		else
-			Redimension/N=(-1, 1) range
+			Duplicate/FREE range, adaptedRange
+			Redimension/N=(-1, 1) adaptedRange
 		endif
 
-		numRanges = DimSize(range, COLS)
-		for(j = 0; j < numRanges; j += 1)
-			rangeStart = range[0][j]
-			rangeEnd = range[1][j]
+		SFH_ASSERT(!SFH_IsEmptyRange(adaptedRange), "Specified range not valid.")
 
-			SFH_ASSERT(!SFH_IsEmptyRange(range), "Specified range not valid.")
+		numRanges = DimSize(adaptedRange, COLS)
+		for(j = 0; j < numRanges; j += 1)
+			rangeStart = adaptedRange[0][j]
+			rangeEnd   = adaptedRange[1][j]
+
 			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
+			JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
@@ -777,5 +818,34 @@ End
 ///        SweepFormula plot window originated from
 Function/S SFH_GetBrowserForFormulaGraph(string win)
 
-	return GetUserData(win, "", SFH_USER_DATA_BROWSER)
+	return GetUserData(GetMainWindow(win), "", SFH_USER_DATA_BROWSER)
+End
+
+/// @brief Create a new selectData wave
+///        The row counts the selected combinations of sweep, channel type, channel number
+///        The three columns per row store the sweep number, channel type, channel number
+Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
+
+	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
+
+	Make/FREE/D/N=(numSweeps * numChannels, 3) selectData
+	SetDimLabel COLS, 0, SWEEP, selectData
+	SetDimLabel COLS, 1, CHANNELTYPE, selectData
+	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
+
+	return selectData
+End
+
+/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+
+	WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+
+	WAVE selectData = SFH_NewSelectDataWave(1, 1)
+
+	selectData[0][%SWEEP]         = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPNO)
+	selectData[0][%CHANNELTYPE]   = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELTYPE)
+	selectData[0][%CHANNELNUMBER] = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
+
+	return [selectData, range]
 End

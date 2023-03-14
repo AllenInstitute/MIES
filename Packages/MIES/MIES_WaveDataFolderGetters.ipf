@@ -1788,7 +1788,7 @@ End
 /// - Sweep Formula code: Executed code from SweepFormula
 /// - Sweep Formula sweeps/channels: Displayed sweeps and channels as 2D array
 ///                                  in the form `$sweep0;$channelType0;$channelNumber0;,$sweep1;$channelType1;$channelNumber1;,...`
-///                                  @sa SF_NewSelectDataWave
+///                                  @sa SFH_NewSelectDataWave
 /// - Sweep Formula displayed sweeps: Displayed sweeps (deprecated)
 /// - Sweep Formula active channels: Active channels (deprecated)
 /// - Sweep Formula experiment: Name of the experiment

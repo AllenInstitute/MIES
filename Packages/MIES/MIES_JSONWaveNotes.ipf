@@ -6,13 +6,6 @@
 #pragma ModuleName=MIES_JSONWAVENOTE
 #endif
 
-/// @name Constants used in the wave note JSON support
-/// @anchor WaveNoteJSONSupportConstants
-/// @{
-static StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
-static StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
-/// @}
-
 /// @brief Gets the JSON wave note part as string
 threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 
@@ -37,6 +30,14 @@ threadsafe Function JWN_GetWaveNoteAsJSON(WAVE wv)
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 
 	return JSON_Parse(JWN_GetWaveNoteAsString(wv))
+End
+
+/// @brief Set the JSON json document as JSON wave note. Releases json.
+threadsafe Function JWN_SetWaveNoteFromJSON(WAVE wv, variable jsonID)
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
 End
 
 /// @brief Return the numerical value at jsonPath found in the wave note
@@ -183,5 +184,22 @@ threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWav
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
 	JSON_SetWave(jsonID, jsonPath, noteWave)
+	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
+End
+
+/// @brief Create a JSON object at the specified path
+///
+/// Non-existing path elements are recursively created.
+///
+/// @param wv       wave reference where the WaveNote is taken from
+/// @param jsonPath path to create as object
+threadsafe Function/WAVE JWN_CreatePath(WAVE wv, string jsonPath)
+
+	variable jsonID
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+
+	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	JSON_AddTreeObject(jsonID, jsonPath)
 	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
 End
