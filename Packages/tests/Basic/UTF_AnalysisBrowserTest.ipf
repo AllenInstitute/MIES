@@ -3,9 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisBrowserTests
 
-// If this moves to an independend test, uncomment the following line
-//#include "unit-testing"
-
 /// @file UTF_AnalysisBrowserTest.ipf
 /// @brief __ANALYSISBROWSER_Test__ This file holds the tests for the Analysis Browser Tests
 

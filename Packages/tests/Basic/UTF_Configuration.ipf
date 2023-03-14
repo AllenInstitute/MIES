@@ -3,9 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ConfigurationTest
 
-// If this moves to an independend test, uncomment the following line
-//#include "unit-testing"
-
 /// @file UTF_ConfigurationTest.ipf
 /// @brief __CONFIG_Test__ This file holds the tests for the Configuration saving/loading
 
