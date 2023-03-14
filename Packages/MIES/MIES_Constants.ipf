@@ -1987,3 +1987,10 @@ Constant SER_MODE_JSON = 0x02
 Constant SFH_RESULT_TYPE_STORE = 0x01
 Constant SFH_RESULT_TYPE_EPSP  = 0x02
 /// @}
+
+/// @name Constants used in the wave note JSON support
+/// @anchor WaveNoteJSONSupportConstants
+/// @{
+StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
+StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
+/// @}

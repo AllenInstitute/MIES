@@ -6,13 +6,6 @@
 #pragma ModuleName=MIES_JSONWAVENOTE
 #endif
 
-/// @name Constants used in the wave note JSON support
-/// @anchor WaveNoteJSONSupportConstants
-/// @{
-static StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
-static StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
-/// @}
-
 /// @brief Gets the JSON wave note part as string
 threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 
