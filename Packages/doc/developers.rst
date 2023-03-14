@@ -152,8 +152,8 @@ Unit and integration testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A couple of our bamboo jobs are responsible for executing tests. All
-tests are written using the `Igor Unit Testing
-Framework <https://docs.byte-physics.de/igor-unit-testing-framework>`__.
+tests are written using the `Igor Pro Universal Testing
+Framework <https://docs.byte-physics.de/igortest>`__.
 
 The folders in ``Packages\tests`` follow a common naming scheme. Each folder
 holds a separate Igor Experiment with tests. The tests in folders starting with

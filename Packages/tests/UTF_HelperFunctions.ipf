@@ -4,7 +4,7 @@
 #pragma ModuleName=TestHelperFunctions
 
 #include "MIES_Include", optional
-#include "unit-testing"
+#include "igortest"
 
 // If the next line fails, you are including the MIES created
 // "UserAnalysisFunctions.ipf" and not the one from "Packages/tests"
