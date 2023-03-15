@@ -4314,84 +4314,48 @@ End
 // apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
-	variable i, numArgs, keepX
-	string xLabel, methodStr
+	variable i, numArgs, keepX, method, level
+	string xLabel, methodStr, timeFreq, normalize, xAxisType
+	string opShort = SF_OP_APFREQUENCY
+	variable numArgsMin = 1
+	variable numArgsMax = 6
 
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <= 6, "ApFrequency has 6 arguments at most.")
-	SFH_ASSERT(numArgs >= 1, "ApFrequency needs at least one argument.")
+	SFH_ASSERT(numArgs <= numArgsMax, "ApFrequency has " + num2istr(numArgsMax) + " arguments at most.")
+	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
+	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, opShort, 0)
+	method = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue=SF_APFREQUENCY_FULL, allowedValues={SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
+	level = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 2, defValue=0)
+	timeFreq = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 3, defValue=SF_OP_APFREQUENCY_Y_FREQ, allowedValues={SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
+	normalize = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 4, defValue=SF_OP_APFREQUENCY_NONORM, allowedValues={SF_OP_APFREQUENCY_NONORM, SF_OP_APFREQUENCY_NORM})
+	xAxisType = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 5, defValue=SF_OP_APFREQUENCY_X_TIME, allowedValues={SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
 
-	if(numArgs == 6)
-		WAVE/T xAxisType = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 5, checkExist=1)
-		SFH_ASSERT(DimSize(xAxisType, ROWS) == 1, "Too many input values for parameter x-axis type")
-		SFH_ASSERT(IsTextWave(xAxisType), "x-axis type parameter must be textual")
-		SFH_ASSERT(!CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_COUNT) || !CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_TIME), "Unknown x-axis type parameter.")
-	else
-		Make/FREE/T xAxisType = {SF_OP_APFREQUENCY_X_TIME}
-	endif
-
-	if(numArgs >= 5)
-		WAVE/T normalize = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 4, checkExist=1)
-		SFH_ASSERT(DimSize(normalize, ROWS) == 1, "Too many input values for parameter normalize")
-		SFH_ASSERT(IsTextWave(normalize), "normalize parameter must be textual")
-		SFH_ASSERT(!CmpStr(normalize[0], SF_OP_APFREQUENCY_NORM) || !CmpStr(normalize[0], SF_OP_APFREQUENCY_NONORM), "Unknown normalize parameter.")
-	else
-		Make/FREE/T normalize = {SF_OP_APFREQUENCY_NONORM}
-	endif
-
-	if(numArgs >= 4)
-		WAVE/T timeFreq = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 3, checkExist=1)
-		SFH_ASSERT(DimSize(timeFreq, ROWS) == 1, "Too many input values for parameter result value")
-		SFH_ASSERT(IsTextWave(timeFreq), "result value parameter must be textual")
-		SFH_ASSERT(!CmpStr(timeFreq[0], SF_OP_APFREQUENCY_Y_TIME) || !CmpStr(timeFreq[0], SF_OP_APFREQUENCY_Y_FREQ), "Unknown result value parameter.")
-	else
-		Make/FREE/T timeFreq = {SF_OP_APFREQUENCY_Y_FREQ}
-	endif
-
-	if(numArgs >= 3)
-		WAVE level = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 2, checkExist=1)
-		SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
-		SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
-	else
-		Make/FREE level = {0}
-	endif
-
-	if(numArgs >= 2)
-		WAVE method = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 1, checkExist=1)
-		SFH_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
-		SFH_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
-		SFH_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT || method[0] == SF_APFREQUENCY_INSTANTANEOUS_PAIR, "method parameter is invalid")
-	else
-		Make/FREE method = {SF_APFREQUENCY_FULL}
-	endif
-
-	WAVE/T argSetup = SFH_GetNewArgSetupWave(5)
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(numArgsMax - 1)
 
 	argSetup[0][%KEY] = "Method"
-	argSetup[0][%VALUE] = SF_OperationApFrequencyMethodToString(method[0])
+	argSetup[0][%VALUE] = SF_OperationApFrequencyMethodToString(method)
 	argSetup[1][%KEY] = "Level"
-	argSetup[1][%VALUE] = num2str(level[0])
+	argSetup[1][%VALUE] = num2str(level)
 	argSetup[2][%KEY] = "ResultType"
-	argSetup[2][%VALUE] = timeFreq[0]
+	argSetup[2][%VALUE] = timeFreq
 	argSetup[3][%KEY] = "Normalize"
-	argSetup[3][%VALUE] = normalize[0]
+	argSetup[3][%VALUE] = normalize
 	argSetup[4][%KEY] = "XAxisType"
-	argSetup[4][%VALUE] = xAxisType[0]
+	argSetup[4][%VALUE] = xAxisType
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(input, ROWS))
-	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0], timeFreq[0], normalize[0], xAxisType[0])
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	output = SF_OperationApFrequencyImpl(input[p], level, method, timeFreq, normalize, xAxisType)
 
-	if(method[0] == SF_APFREQUENCY_INSTANTANEOUS_PAIR)
+	if(method == SF_APFREQUENCY_INSTANTANEOUS_PAIR)
 		keepX = 1
 		xLabel = SelectString(!CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_COUNT), "ms", "peak number")
 		JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 	endif
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY, keepX=keepX, argSetup=argSetup)
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_APFREQUENCY, keepX=keepX, argSetup=argSetup)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_APFREQUENCY)
+	return SFH_GetOutputForExecutor(output, graph, opShort)
 End
 
 static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method, string yStr, string normStr, string xAxisTypeStr)
