@@ -65,7 +65,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 
 		sep = ", "
 		allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
-		sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+		sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
 		SFH_ASSERT(GetRowIndex(allowedValues, val = result) >= 0, msg)
 	endif
 
