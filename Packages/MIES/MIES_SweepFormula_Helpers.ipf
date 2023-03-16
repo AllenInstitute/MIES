@@ -91,6 +91,8 @@ End
 /// Here `date` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
+///
+/// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
 Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
 
 	string msg, result, sep, allowedValuesAsStr
@@ -126,12 +128,22 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
-		idx = GetRowIndex(allowedValues, str = result)
-		if(IsNaN(idx))
+		// search are allowed entries and try to match a unique abbreviation
+		WAVE/T/Z matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
+		if(!WaveExists(matches))
 			sep = ", "
 			allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
 			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
 			SFH_ASSERT(0, msg)
+		elseif(DimSize(matches, ROWS) > 1)
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(TextWaveToList(matches, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		else
+			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
+			// replace abbreviated argument with the full name
+			result = matches[0]
 		endif
 	endif
 
