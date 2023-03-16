@@ -31,7 +31,7 @@ static StrConstant SFH_WORKING_DF = "FormulaData"
 Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues])
 
 	string msg, sep, allowedValuesAsStr
-	variable checkExist, numArgs, result
+	variable checkExist, numArgs, result, idx
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -63,10 +63,13 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsNumericWave(allowedValues), "allowedValues must be a numeric wave")
 
-		sep = ", "
-		allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
-		sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-		SFH_ASSERT(GetRowIndex(allowedValues, val = result) >= 0, msg)
+		idx = GetRowIndex(allowedValues, val = result)
+		if(IsNaN(idx))
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		endif
 	endif
 
 	return result
@@ -91,7 +94,7 @@ End
 Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
 
 	string msg, result, sep, allowedValuesAsStr
-	variable checkExist, numArgs
+	variable checkExist, numArgs, idx
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -123,10 +126,13 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
-		sep = ", "
-		allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
-		sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-		SFH_ASSERT(GetRowIndex(allowedValues, str = result) >= 0, msg)
+		idx = GetRowIndex(allowedValues, str = result)
+		if(IsNaN(idx))
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		endif
 	endif
 
 	return result
