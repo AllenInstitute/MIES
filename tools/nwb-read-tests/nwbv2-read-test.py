@@ -25,7 +25,7 @@ def checkFile(path):
         return 1
 
     # 1.) Validation
-    comp = run(["python", "-m", "pynwb.validate", "--cached-namespace", path],
+    comp = run(["python", "-m", "pynwb.validate", path],
                stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
 
     if comp.returncode != 0:

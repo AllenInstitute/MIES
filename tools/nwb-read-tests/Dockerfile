@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&                          \
     apt-get install -y --no-install-recommends \
       git                                      \
+      patch                                    \
       python-is-python3                        \
       python3-minimal                          \
       python3-pip                              \
@@ -18,6 +19,11 @@ ARG PACKAGE_WITH_VERSION
 RUN pip3 install $PACKAGE_WITH_VERSION
 
 RUN pip3 check
+
+COPY 0001-Support-nwb_version-as-a-fixed-length-string-1669.patch /root
+
+RUN patch -d /usr/local/lib/python3.9/dist-packages                         \
+    -p2 </root/0001-Support-nwb_version-as-a-fixed-length-string-1669.patch
 
 ARG USERID
 ARG GROUPID
