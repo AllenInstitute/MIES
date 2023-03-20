@@ -31,7 +31,7 @@ static StrConstant SFH_WORKING_DF = "FormulaData"
 Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues])
 
 	string msg, sep, allowedValuesAsStr
-	variable checkExist, numArgs, result
+	variable checkExist, numArgs, result, idx
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -63,10 +63,13 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsNumericWave(allowedValues), "allowedValues must be a numeric wave")
 
-		sep = ", "
-		allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
-		sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-		SFH_ASSERT(GetRowIndex(allowedValues, val = result) >= 0, msg)
+		idx = GetRowIndex(allowedValues, val = result)
+		if(IsNaN(idx))
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		endif
 	endif
 
 	return result
@@ -88,10 +91,12 @@ End
 /// Here `date` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
+///
+/// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
 Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
 
 	string msg, result, sep, allowedValuesAsStr
-	variable checkExist, numArgs
+	variable checkExist, numArgs, idx
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -123,10 +128,23 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
-		sep = ", "
-		allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
-		sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-		SFH_ASSERT(GetRowIndex(allowedValues, str = result) >= 0, msg)
+		// search are allowed entries and try to match a unique abbreviation
+		WAVE/T/Z matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
+		if(!WaveExists(matches))
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		elseif(DimSize(matches, ROWS) > 1)
+			sep = ", "
+			allowedValuesAsStr = RemoveEnding(TextWaveToList(matches, sep), sep)
+			sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
+			SFH_ASSERT(0, msg)
+		else
+			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
+			// replace abbreviated argument with the full name
+			result = matches[0]
+		endif
 	endif
 
 	return result
@@ -819,6 +837,23 @@ End
 Function/S SFH_GetBrowserForFormulaGraph(string win)
 
 	return GetUserData(GetMainWindow(win), "", SFH_USER_DATA_BROWSER)
+End
+
+/// @brief Return the SweepFormula plot created by the given
+///        SweepBrowser/DataBrowser
+Function/S SFH_GetFormulaGraphForBrowser(string browser)
+
+	string entry
+
+	WAVE/T matches = ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
+
+	for(entry : matches)
+		if(!cmpstr(SFH_GetBrowserForFormulaGraph(entry), browser))
+			return entry
+		endif
+	endfor
+
+	return ""
 End
 
 /// @brief Create a new selectData wave

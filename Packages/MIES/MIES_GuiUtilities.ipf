@@ -876,6 +876,8 @@ static Function/S GetAxisRecreationMacro(string info)
 End
 
 /// @brief Return the logmode of the axis
+///
+/// @return One of @ref ModifyGraphLogModes
 Function GetAxisLogMode(string graph, string axis)
 	string info
 
