@@ -3,9 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AsynTest
 
-// If this moves to an independend test, uncomment the following line
-//#include "unit-testing"
-
 /// @file UTF_AsynFrameworkTest.ipf
 /// @brief __ASYNC_Test__ This file holds the tests for the Async Framework
 

@@ -129,8 +129,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 
 	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
 	CHECK_EQUAL_WAVES(startT, levels, mode = DIMENSION_SIZES)
-	// workaround UTF issue: https://github.com/byte-physics/igor-unit-testing-framework/issues/199
-	CHECK_EQUAL_VAR(DimSize(startT, ROWS), DimSize(description, ROWS))
+	CHECK_EQUAL_WAVES(startT, description, mode = DIMENSION_SIZES)
 
 	epochCnt = DimSize(levels, ROWS)
 

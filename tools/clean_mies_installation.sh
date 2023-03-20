@@ -121,8 +121,8 @@ do
   mkdir -p "$user_proc"
 
   # install testing files from git repo
-  mkdir -p "$user_proc/unit-testing"
-  cp -r  "$top_level"/Packages/unit-testing/procedures "$user_proc/unit-testing"
+  mkdir -p "$user_proc/igortest"
+  cp -r  "$top_level"/Packages/igortest/procedures "$user_proc/igortest"
   cp -r  "$top_level"/Packages/tests  "$user_proc"
   cp -r  "$top_level"/Packages/doc/ipf  "$user_proc"
 

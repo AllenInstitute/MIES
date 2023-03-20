@@ -1450,7 +1450,7 @@ End
 static Function TestPlotting()
 	String traces
 
-	Variable minimum, maximum, i, pos, offset
+	Variable minimum, maximum, i, pos
 	string win, gInfo, tmpStr, refStr
 	DFREF dfr
 
@@ -1609,7 +1609,6 @@ static Function TestPlotting()
 	win = winBase + "_1"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
 
-	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
 	win = winBase + "_"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
@@ -1617,7 +1616,7 @@ static Function TestPlotting()
 		gInfo = GuideInfo(win, "HOR" + num2istr(i))
 		CHECK_NON_EMPTY_STR(gInfo)
 		pos = NumberByKey("RELPOSITION", gInfo)
-		CHECK_CLOSE_VAR(pos + offset, i / 3 + offset, tol = 0.01)
+		CHECK_CLOSE_VAR(pos, i / 3, tol = 0.01)
 		pos = NumberByKey("HORIZONTAL", gInfo)
 		CHECK_EQUAL_VAR(pos, 1)
 		tmpStr = StringByKey("GUIDE1", gInfo)

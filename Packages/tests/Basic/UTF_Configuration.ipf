@@ -3,9 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ConfigurationTest
 
-// If this moves to an independend test, uncomment the following line
-//#include "unit-testing"
-
 /// @file UTF_ConfigurationTest.ipf
 /// @brief __CONFIG_Test__ This file holds the tests for the Configuration saving/loading
 
@@ -181,12 +178,7 @@ static Function TCONF_CompareTextFiles(fName1, fName2)
 	[s1, fName1] = LoadTextFile(PrependExperimentFolder_IGNORE(fName1))
 	[s2, fName2] = LoadTextFile(PrependExperimentFolder_IGNORE(fName2))
 
-	// work around CHECK_EQUAL_STR: fails for very long strings
-	// see https://github.com/byte-physics/igor-unit-testing-framework/issues/76
-	Make/FREE/T w1 = { TCONF_NormalizeJSON(s1) }
-	Make/FREE/T w2 = { TCONF_NormalizeJSON(s2) }
-
-	CHECK_EQUAL_WAVES(w1, w2)
+	CHECK_EQUAL_STR(TCONF_NormalizeJSON(s1), TCONF_NormalizeJSON(s2))
 End
 
 /// @brief Save Test Panel and check against reference template

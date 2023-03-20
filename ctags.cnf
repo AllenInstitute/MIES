@@ -3,5 +3,5 @@
 # See https://github.com/universal-ctags/ctags/issues/759#issuecomment-171155113
 --exclude=Packages/doc/doxygen-filter-ipf/*
 --exclude=tools/installer/*
---exclude=Packages/unit-testing/internal_dev/*
---exclude=Packages/unit-testing/docu/*
+--exclude=Packages/igortest/internal_dev/*
+--exclude=Packages/igortest/docu/*
