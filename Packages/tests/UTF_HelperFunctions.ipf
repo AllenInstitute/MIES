@@ -721,3 +721,12 @@ Function/S GetTestName()
 
 	return "MIES with " + GetExperimentName()
 End
+
+Function/S GetDefaultTraceOptions()
+
+	string traceOptions = ""
+
+	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
+
+	return traceOptions
+End
