@@ -1,0 +1,287 @@
+---
+oid: 9115426383286239394
+key: RELEASE
+name: Build release (latest)
+project:
+  oid: 9116411545704726583
+  key: MIES
+repositories:
+- oid: 9115848595751305374
+  name: Plan Repository
+  description: A Git Repository
+  pluginKey: com.atlassian.bamboo.plugins.atlassian-bamboo-plugin-git:gitv2
+  server:
+    commandTimeout: 180
+    useSubmodules: true
+    on.cleanCheckout: false
+    authenticationType: NONE
+    on.cleanWorkingDirectory: false
+    verbose.logs: false
+    useShallowClones: false
+    fetch.whole.repository: true
+    useRemoteAgentCache: true
+    repositoryUrl: https://github.com/AllenInstitute/MIES
+    sitoryViewer: bamboo.webrepositoryviewer.provided:noRepositoryViewer
+  branch:
+    branch: release/2.6
+  changeDetectionOptions:
+    repository.common.quietPeriod.enabled: true
+    repository.common.quietPeriod.period: 120
+    repository.common.quietPeriod.maxRetries: 10
+    filter.pattern.option: none
+    filter.pattern.regex: ''
+    changeset.filter.pattern.regex: ''
+triggers:
+- name: Repository polling
+  description: ''
+  pluginKey: com.atlassian.bamboo.triggers.atlassian-bamboo-triggers:poll
+  enabled: true
+  configuration:
+    repository.change.poll.pollingPeriod: '180'
+    repository.change.poll.type: PERIOD
+    repository.change.poll.cronExpression: 0 0 0 ? * *
+  triggerConditions:
+    com.atlassian.bamboo.triggercondition.internal:plansGreenCondition:
+      enabled: 'false'
+  triggeringRepositories:
+  - 9115848595751305374
+branchConfiguration:
+  planBranchCreation:
+    enabled: false
+  removedBranchCleanup:
+    enabled: false
+  inactiveBranchesCleanup:
+    enabled: false
+  merging:
+    enabled: false
+  notificationStrategy: notifyCommitters
+  triggers: inherited
+  issueLinking: enabled
+dependencies:
+  configuration:
+    enabledForBranches: null
+    requireAllStagesPassing: null
+    blockingStrategy: none
+  childPlans: []
+permissions:
+  users:
+    thomasb:
+    - administration
+    - build
+    - clone
+    - read
+    - write
+  groups: {}
+  roles:
+    user:
+    - read
+    anonymous:
+    - read
+notifications:
+- conditionKey: com.atlassian.bamboo.plugin.system.notifications:chainCompleted.failedChains
+  conditionConfiguration:
+    condition: ''
+  recipientKey: com.atlassian.bamboo.plugin.system.notifications:recipient.user
+  recipientConfiguration:
+    recipient: thomasb
+variables:
+- name: INSTRUMENT_TESTS
+  value: '0'
+plugins:
+- pluginKey: com.atlassian.bamboo.plugin.system.additionalBuildConfiguration:buildExpiry
+  configuration:
+    custom.buildExpiryConfig.enabled: 'true'
+    custom.buildExpiryConfig.duration: '1'
+    custom.buildExpiryConfig.period: weeks
+    custom.buildExpiryConfig.buildsToKeep: '1'
+    custom.buildExpiryConfig.labelsToKeep: ''
+    custom.buildExpiryConfig.expiryTypeArtifact: 'true'
+- pluginKey: com.atlassian.bamboo.plugin.artifact.handler.local:artifactHandlersConfiguration
+  configuration:
+    custom.artifactHandlers.useCustomArtifactHandlers: 'false'
+buildDefinition:
+  custom:
+    com.atlassian.bamboo.plugin.hungbuildkiller:
+      stopped.enabled: 'true'
+      hung.enabled: 'true'
+      add_comment_when_hung.enabled: 'true'
+    triggerrCondition.plansGreen.plans: ''
+stages:
+- oid: 9115567120774594873
+  name: Compilation Stage
+  jobs:
+  - oid: 9115707858262950947
+    key: CRP
+    name: Installer and release packages
+    tasks:
+    - oid: 9116270808216372156
+      description: Checkout Default Repository
+      pluginKey: com.atlassian.bamboo.plugins.vcs:task.vcs.checkout
+      configuration:
+        cleanCheckout: true
+        repositories:
+        - ref: defaultRepository
+    - oid: 9116270808216382487
+      description: Build started notification
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/send-github-message-build-started.sh'
+    - oid: 9116270808216376398
+      description: Initial repo config
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/initial-repo-config.sh'
+    - oid: 9116270808216378463
+      description: Create release package and installer
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/create-installer.sh'
+    - oid: 9116270808216382526
+      description: Sign installer
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/sign-installer.sh'
+    - oid: 9116270808216382486
+      description: Mark job as success
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/set-bamboo-job-result.sh
+          -r 0'
+    - oid: 9116270808216378462
+      pluginKey: com.atlassian.bamboo.plugins.testresultparser:task.testresultparser.junit
+      configuration:
+        testResultsDirectory: tools/unit-testing/*.xml
+        pickupOutdatedFiles: ''
+    - oid: 9116270808216382485
+      description: Build finished notification
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      final: true
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/send-github-message-build-finished.sh'
+    requirements:
+    - key: MIES_AgentType
+      matchValue: CodeSigning
+      matchType: EQUALS
+    artifacts:
+    - oid: 9116552283193089094
+      name: Installer
+      copyPattern: MIES-*.exe
+      location: tools/installer
+      shared: true
+      subscriptions:
+      - job: 9115707858262958108
+        destination: ''
+    - oid: 9116552283193082903
+      name: Release package
+      copyPattern: '*.zip'
+      location: ''
+      shared: true
+      subscriptions:
+      - job: 9115707858262958108
+        destination: ''
+    buildDefinition:
+      cleanWorkingDirectory: false
+      repositoryDefiningWorkingDirectory: -1
+- oid: 9115567120774602028
+  name: Testing without hardware
+  jobs:
+  - oid: 9115707858262956063
+    key: UT
+    name: Unit testing
+    tasks:
+    - oid: 9116270808216372240
+      description: Checkout Default Repository
+      pluginKey: com.atlassian.bamboo.plugins.vcs:task.vcs.checkout
+      configuration:
+        cleanCheckout: true
+        repositories:
+        - ref: defaultRepository
+    - oid: 9116270808216382488
+      description: Build started notification
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/send-github-message-build-started.sh'
+    - oid: 9116270808216376391
+      description: Initial repo config
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/initial-repo-config.sh'
+    - oid: 9116270808216372241
+      description: Clean MIES installation from git
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/clean_mies_installation.sh
+          -s git'
+    - oid: 9116270808216372242
+      description: Testing without hardware IP9-64bit
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" run_unit_tests.sh
+          -p RunAllTests.pxp -v IP_9_64'
+        workingDirectory: tools/unit-testing/
+    - oid: 9116270808216373306
+      pluginKey: com.atlassian.bamboo.plugins.testresultparser:task.testresultparser.junit
+      configuration:
+        testResultsDirectory: tools/unit-testing/*.xml
+        pickupOutdatedFiles: ''
+    - oid: 9116270808216382489
+      description: Build finished notification
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      final: true
+      configuration:
+        interpreter: run_as_executable
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/send-github-message-build-finished.sh'
+    requirements:
+    - key: MIES_AgentType
+      matchValue: (ITC|NI|IgorPro)
+      matchType: MATCHES
+    buildDefinition:
+      cleanWorkingDirectory: false
+      repositoryDefiningWorkingDirectory: -1
+- oid: 9115567120774602029
+  name: Hardware Testing
+  jobs: []
+- oid: 9115567120774595808
+  name: Uploading assets
+  jobs:
+  - oid: 9115707858262958108
+    key: UIRPTG
+    name: Uploading the installer and release package to github
+    tasks:
+    - oid: 9116270808216372145
+      description: Checkout Default Repository
+      pluginKey: com.atlassian.bamboo.plugins.vcs:task.vcs.checkout
+      configuration:
+        cleanCheckout: true
+        repositories:
+        - ref: defaultRepository
+    - oid: 9116270808216376399
+      description: Initial repo config
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        script: '"${bamboo.capability.system.builder.command.bash}" tools/initial-repo-config.sh'
+    - oid: 9116270808216372147
+      description: Deploy release assets to github
+      pluginKey: com.atlassian.bamboo.plugins.scripttask:task.builder.script
+      configuration:
+        interpreter: legacy_sh_bat
+        scriptLocation: tools/upload-github-release-asset.sh
+    requirements:
+    - key: MIES_AgentType
+      matchValue: Linux
+      matchType: MATCHES
+    buildDefinition:
+      cleanWorkingDirectory: false
+      repositoryDefiningWorkingDirectory: -1
+...
