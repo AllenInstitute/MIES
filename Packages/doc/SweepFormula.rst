@@ -762,25 +762,54 @@ The `apfrequency` operation returns the action potential frequency using the giv
 
 .. code-block:: bash
 
-   apfrequency(array data[, variable method[, variable level]])
+   apfrequency(array data[, variable method[, variable level[, string resultType[, string normalize,[string xAxisType]]]]])
 
 data
   one or multiple data waves. If multiple data waves are given then the same number of data waves is returned. The operation is applied for each data wave separately.
 
 method
-  the method can be either `0` for "full", `1` for "instantaneous" or `2` for apcount. The default method is `0`.
+  the method can be either
+  * `0` for "full"
+  * `1` for "instantaneous"
+  * `2` for apcount
+  * `3` for "instantaneous pair"
+
+  The default method is `0`.
 
 level
-  level value. The default level is 0.
+  level threshold for peak detection. The level refers to the amplitude of the sweep(s). level is a numeric value and defaults to 0.
 
-The calculation for these methods are done using the below formulas where
+resultType
+  the result type defines what result(s) the apfrequency operation returns if the method `3` (instantaneous pair) is set.
+  * `time` returns time intervals
+  * `freq` returns frequencies.
+
+normalize
+  sets the way the results get normalized
+  * `nonorm`: no normalzation is applied (default)
+  * `normoversweepsmin`: normalizes over all sweeps based on the minimum result value in all sweeps based on the current method
+  * `normoversweepsmax`: normalizes over all sweeps based on the maximum result value in all sweeps based on he current method
+  * `normoversweepsavg`: normalizes over all sweeps based on the average result value in all sweeps based on the current method
+  * `norminsweepsmin`: normalizes each sweep based on the minimum result value in the specific sweep based on the current method
+  * `norminsweepsmax`: normalizes each sweep based on the maximum result value in the specific sweep based on the current method
+  * `norminsweepsavg`: normalizes each sweep based on the average result value in the specific sweep based on the current method
+
+xAxisType
+  if the method `3` (instantaneous pair) is set then xAxisType defines the x-axis of the data display.
+  * `time`: the x-axis shows the occurence in time of the first peak of the pair(s), default
+  * `count`: the x-axis counts the pair(s)
+
+The basic calculation for these methods are done using the below formulas where
 :math:`l` denotes the number of found levels, :math:`t_{i}` the timepoint in
 seconds of the level and :math:`T` the total x range of the data in seconds.
 
 .. math::
-   f_{\text{full}}          &= \frac{l}{T}                                                         \\
-   f_{\text{instantaneous}} &= \frac{1}{\sum_{i = 0}^{i = l - 1} \left( t_{i + 1} - t_{i} \right)} \\
-   f_{\text{apcount}}       &= l                                                                   \\
+   f_{\text{full}}               &= \frac{l}{T}                                                                   \\
+   f_{\text{instantaneous}}      &= \frac{1}{\frac{\sum_{i = 0}^{i = l - 1} \left( t_{i + 1} - t_{i} \right)}{l}} \\
+   f_{\text{apcount}}            &= l                                                                             \\
+   f_{\text{instantaneous_pair}} &= \frac{1}{\left( t_{i + 1} - t_{i} \right)}
+
+The method `2` (instantaneous) and `3` (instantaneous pair) treat the peaks as interleaved pairs of peaks and returns results only if there are two or more peaks found.
 
 The returned data type is `SF_DATATYPE_APFREQUENCY`.
 If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
@@ -788,6 +817,10 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta
 .. code-block:: bash
 
    apfrequency([10, 20, 30], 1, 15)
+
+   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+
+   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
 
 powerspectrum
 """""""""""""
@@ -1382,7 +1415,7 @@ This allows to put output from e.g. `data` directly in such an operation as firs
 
 	  output[] = OperationCalculation(input[p])
 
-	  SF_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_OPSHORTNAME, SF_DATATYPE_OP)
+	  SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_OPSHORTNAME, SF_DATATYPE_OP)
 
 	  return SF_GetOutputForExecutor(output, graph, SF_OP_OPSHORTNAME, clear=input)
   End
@@ -1406,8 +1439,8 @@ This allows to put output from e.g. `data` directly in such an operation as firs
 	 return out
   End
 
-The function `SF_TransferFormulaDataWaveNoteAndMeta` transfers the meta information and wave notes of the reference and data waves.
-It also updates the operation stack information. There are two cases where `SF_TransferFormulaDataWaveNoteAndMeta` can not be used:
+The function `SFH_TransferFormulaDataWaveNoteAndMeta` transfers the meta information and wave notes of the reference and data waves.
+It also updates the operation stack information. There are two cases where `SFH_TransferFormulaDataWaveNoteAndMeta` can not be used:
 
 - The operation does not take an input reference wave
 - The operation returns data through `SF_GetOutputForExecutorSingle` that creates the reference wave.
@@ -1449,7 +1482,7 @@ For the data wave(s):
 
 See also `SF_OperationLabnotebookImpl`, where such meta data is set.
 
-The function `SF_TransferFormulaDataWaveNoteAndMeta` transfers meta data from one operation to the next.
+The function `SFH_TransferFormulaDataWaveNoteAndMeta` transfers meta data from one operation to the next.
 If the following conditions are met then a suggested X-values are set in the meta data:
 
 - The input data type is SF_DATATYPE_SWEEP and all output data waves have no wave units for x set and all output data waves have only one data point -> sweep number is set as X-value and "Sweeps" as x label
@@ -1467,14 +1500,14 @@ If the following conditions are met then a suggested X-values are set in the met
      ,4,100,4)
    )
 
-In the above example the data operation sets sweep number as meta data. The `SF_TransferFormulaDataWaveNoteAndMeta` function transfers that meta data also to the results of the outer operations.
+In the above example the data operation sets sweep number as meta data. The `SFH_TransferFormulaDataWaveNoteAndMeta` function transfers that meta data also to the results of the outer operations.
 The data waves returned from the min operation contain only a single data point and the result complies with the second set of conditions mentioned above. Thus, the results are
 displayed in the plotter with sweep numbers on the x-axis and "Sweeps" as x-label.
 
 Operation Stack
 """""""""""""""
 
-The operation stack meta data is updated in the called operation, typically through `SF_TransferFormulaDataWaveNoteAndMeta`.
+The operation stack meta data is updated in the called operation, typically through `SFH_TransferFormulaDataWaveNoteAndMeta`.
 It is a semicolon separated list of operations called for a single formula, where the most recent operation is at the front of the list.
 Operations where data from several sources is joined, like `plus` discard the previous operation stack. Thus, the operation stack contains
 only operations that were relevant for the strands of data that reaches ultimately the formula plotter.
@@ -1482,3 +1515,40 @@ The operation stack information is used to create the trace legend(s) in the gra
 Also the trace color is determined through evaluation of the operation stack. For example, only if the operation stack indicates that the most recent data
 originated from a `data()` operation without intermediate operations that break this data strand, such as `+`, then the meta iformation about sweep data is taken to
 determine the traces color.
+
+Argument Setup Stack
+""""""""""""""""""""
+
+The idea of the argument setup stack is to store the arguments of each operation to be able determine differences between formulas
+in the end. This information can be used to change the trace style for differently setup formulas when plotted in the same graph with the
+`with` keyword. Also in the legend it can be shown what was setup differently.
+Operations can prepare argument setup information through a key/value style text wave with two columns. The wave is created with
+`SFH_GetNewArgSetupWave` and is filled then by the operation e.g.:
+
+.. code-block:: igorpro
+
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(5)
+
+	argSetup[0][%KEY] = "Method"
+	argSetup[0][%VALUE] = SF_OperationApFrequencyMethodToString(method)
+	argSetup[1][%KEY] = "Level"
+	argSetup[1][%VALUE] = num2str(level)
+	argSetup[2][%KEY] = "ResultType"
+	argSetup[2][%VALUE] = timeFreq
+	argSetup[3][%KEY] = "Normalize"
+	argSetup[3][%VALUE] = normalize
+	argSetup[4][%KEY] = "XAxisType"
+	argSetup[4][%VALUE] = xAxisType
+
+This information is stored when `SFH_TransferFormulaDataWaveNoteAndMeta` is called with the optional `argSetup` argument.
+If not setup by the operation, by default the only argSetup entry is the operation short name. Thus, the information content
+without setting it up is the same as in the operation stack.
+
+The information is evaluated in the Formula Plotter to determine if traces from different formulas specified through the `with` keyword
+need to be shown with a different marker or line style. It also adapts the legend to show details about differences in arguments in formulas.
+
+.. code-block:: igorpro
+
+   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   with
+   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
