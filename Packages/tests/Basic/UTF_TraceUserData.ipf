@@ -398,6 +398,48 @@ Function GetUserDataWorks()
 	CHECK_EQUAL_STR(actual, expected)
 End
 
+// Test: TUD_GetAllUserData
+Function GetAllUserDataExpectsExistingTrace()
+
+	SVAR graph = root:graph
+
+	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+
+	TUD_SetUserData(graph, "trace1", "key", "value")
+
+	try
+		WAVE/Z wv = TUD_GetAllUserData(graph, "I DONT EXIST")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/Z wv = TUD_GetAllUserData(graph, "wrongTraceName")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// Test: TUD_GetAllUserData
+Function GetAllUserDataWorks()
+
+	SVAR graph = root:graph
+
+	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+
+	TUD_SetUserDataFromWaves(graph, "trace1", {"key1", "key2"}, {"value1", "value2"})
+	TUD_SetUserData(graph, "trace1", "key3", "value3")
+
+	WAVE/Z actual = TUD_GetAllUserData(graph, "trace1")
+	CHECK_WAVE(actual, TEXT_WAVE)
+
+	Make/FREE/T ref = {"trace1", "value1", "value2", "value3"}
+	SetDimensionLabels(ref, "traceName;key1;key2;key3;", ROWS)
+	CHECK_EQUAL_TEXTWAVES(actual, ref, mode = DIMENSION_LABELS)
+End
+
 // Test: TUD_GetUserDataAsWave
 Function GetUserDataAsWaveChecksInput()
 

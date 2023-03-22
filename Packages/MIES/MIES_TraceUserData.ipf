@@ -101,6 +101,22 @@ Function/S TUD_GetUserData(string graph, string trace, string key)
 	return graphUserData[row][%$key]
 End
 
+/// @brief Return all the user data from `trace` of `graph`
+Function/WAVE TUD_GetAllUserData(string graph, string trace)
+
+	variable row
+
+	WAVE/T graphUserData = GetGraphUserData(graph)
+	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0)
+
+	Duplicate/RMD=[row][]/FREE graphUserData, traceData
+	Redimension/N=(numpnts(traceData))/E=1 traceData
+	CopyDimLabels/COLS=(ROWS) graphUserData, traceData
+	Note/K traceData
+
+	return traceData
+End
+
 /// @brief Return the user data for `key` of all traces in graph in a 1D text wave
 ///
 /// @param graph         existing graph
