@@ -1716,7 +1716,7 @@ static Function TestPlotting()
 		MIES_SF#SF_FormulaPlotter(sweepBrowser, "[abc,def]")
 		FAIL()
 	catch
-		PASS()
+		CHECK_NO_RTE()
 	endtry
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strWith)

@@ -1572,7 +1572,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					MoveWaveWithOverWrite(wvY, wvResultY)
 				endif
 				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
-				SFH_ASSERT(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+				SFH_ASSERT(!(IsTextWave(wvY) && (WaveExists(wvX) && IsTextWave(wvX))), "One wave needs to be numeric for plotting")
 
 				if(IsTextWave(wvY))
 					SFH_ASSERT(WaveExists(wvX), "Cannot plot a single text wave")
