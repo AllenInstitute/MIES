@@ -3099,3 +3099,55 @@ static Function BrowserGraphConnectionWorks()
 	result = SFH_GetFormulaGraphForBrowser("I don't exist")
 	CHECK_EMPTY_STR(result)
 End
+
+static Function TestArgSetup()
+
+	string win, device, formula, argSetupStack, argSetup, str
+	variable numResults, jsonId, jsonId1
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
+	CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
+
+	formula = "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin,time)"
+	WAVE/WAVE outputRef = GetMultipleResults(formula, win)
+	argSetupStack = JWN_GetStringFromWaveNote(outputRef, SF_META_ARGSETUPSTACK)
+	jsonId = JSON_Parse(argSetupStack)
+	CHECK_NEQ_VAR(jsonId, NaN)
+
+	argSetup = JSON_GetString(jsonId, "/0")
+	jsonId1 = JSON_Parse(argSetup)
+	CHECK_NEQ_VAR(jsonId1, NaN)
+
+	str = JSON_GetString(jsonId1, "/Operation")
+	CHECK_EQUAL_STR(str, "data")
+	JSON_Release(jsonId1)
+
+	argSetup = JSON_GetString(jsonId, "/1")
+	jsonId1 = JSON_Parse(argSetup)
+	CHECK_NEQ_VAR(jsonId1, NaN)
+
+	str = JSON_GetString(jsonId1, "/Operation")
+	CHECK_EQUAL_STR(str, "apfrequency")
+	str = JSON_GetString(jsonId1, "/Level")
+	CHECK_EQUAL_STR(str, "15")
+	str = JSON_GetString(jsonId1, "/Method")
+	CHECK_EQUAL_STR(str, "Instantaneous Pair")
+	str = JSON_GetString(jsonId1, "/Normalize")
+	CHECK_EQUAL_STR(str, "normoversweepsmin")
+	str = JSON_GetString(jsonId1, "/ResultType")
+	CHECK_EQUAL_STR(str, "time")
+	str = JSON_GetString(jsonId1, "/XAxisType")
+	CHECK_EQUAL_STR(str, "time")
+	JSON_Release(jsonId1)
+
+	JSON_Release(jsonId)
+
+	Make/FREE/T wAnnotations = {"\s(T000000d0_apfrequency_data_Sweep_0_AD0)apfrequency data Sweeps 0-8,145 AD0", "\s(T000010d0_apfrequency_data_Sweep_0_AD0)apfrequency data Sweeps 0-8,145 AD0"}
+	Make/FREE/T formulaArgSetup = { "{\n\"0\": \"{\\n\\\"Operation\\\": \\\"data\\\"\\n}\",\n\"1\": \"{\\n\\\"Level\\\": \\\"100\\\",\\n\\\"Method\\\": \\\"Instantaneous Pair\\\",\\n\\\"Normalize\\\": \\\"normoversweepsavg\\\",\\n\\\"Operation\\\": \\\"apfrequency\\\",\\n\\\"ResultType\\\": \\\"freq\\\",\\n\\\"XAxisType\\\": \\\"count\\\"\\n}\"}", \
+	"{\n\"0\": \"{\\n\\\"Operation\\\": \\\"data\\\"\\n}\",\n\"1\": \"{\\n\\\"Level\\\": \\\"100\\\",\\n\\\"Method\\\": \\\"Instantaneous Pair\\\",\\n\\\"Normalize\\\": \\\"norminsweepsavg\\\",\\n\\\"Operation\\\": \\\"apfrequency\\\",\\n\\\"ResultType\\\": \\\"time\\\",\\n\\\"XAxisType\\\": \\\"count\\\"\\n}\"}"}
+	Make/FREE/T result = {"\s(T000000d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:normoversweepsavg ResultType:freq) data Sweeps 0-8,145 AD0", "\s(T000010d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:norminsweepsavg ResultType:time) data Sweeps 0-8,145 AD0"}
+	CHECK_EQUAL_VAR(SFH_EnrichAnnotations(wAnnotations, formulaArgSetup), 1)
+	CHECK_EQUAL_WAVES(result, wAnnotations, mode = WAVE_DATA)
+End
