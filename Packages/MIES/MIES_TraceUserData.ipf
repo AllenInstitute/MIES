@@ -90,7 +90,7 @@ static Function TUD_ClearImpl(string graph)
 	SetNumberInWaveNote(graphUserData, NOTE_INDEX, 0)
 End
 
-/// @brief Return the user data the given `graph` and `trace` named `key`
+/// @brief Return the user data given by the `graph` and `trace` named `key`
 Function/S TUD_GetUserData(string graph, string trace, string key)
 
 	variable row
