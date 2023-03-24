@@ -3166,7 +3166,7 @@ Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
 		graph = wGraphs[i0]
 		i0Path = BUFFEREDDRAWHIDDENTRACES + "/" + graph
 		WAVE/T hiddenTracesNames = JSON_GetTextWave(bdi.jsonID, i0Path)
-		AccelerateHideTraces(graph, hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), 1)
+		ACC_HideTraces(graph, hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), 1)
 	endfor
 
 	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWLABEL)
