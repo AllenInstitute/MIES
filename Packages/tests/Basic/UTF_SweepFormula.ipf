@@ -1212,6 +1212,70 @@ static Function TestOperationFindLevel()
 	CHECK_EQUAL_STR(strRef, dataType)
 End
 
+Function/WAVE FakeSweepDataGeneratorAPF0(WAVE sweep, variable numChannels)
+
+	variable pnts = 9
+
+	Redimension/D/N=(pnts, numChannels) sweep
+	sweep[0][] = 10
+	sweep[1][] = 20
+	sweep[2][] = 30
+	sweep[3][] = 10
+	sweep[4][] = 20
+	sweep[5][] = 30
+	sweep[6][] = 10
+	sweep[7][] = 20
+	sweep[8][] = 30
+
+	return sweep
+End
+
+Function/WAVE FakeSweepDataGeneratorAPF1(WAVE sweep, variable numChannels)
+
+	variable pnts = 9
+
+	Redimension/D/N=(pnts, numChannels) sweep
+	sweep[0][] = 30
+	sweep[1][] = 10
+	sweep[2][] = 30
+	sweep[3][] = 10
+	sweep[4][] = 30
+	sweep[5][] = 10
+	sweep[6][] = 30
+	sweep[7][] = 10
+	sweep[8][] = 30
+
+	return sweep
+End
+
+// IUTF_TD_GENERATOR TestOperationAPFrequency2Gen
+static Function TestOperationAPFrequency2([WAVE wv])
+
+	string win, device, formula
+	variable numResults
+
+	formula = note(wv)
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
+	CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
+
+	WAVE/WAVE outputRef = GetMultipleResults(formula, win)
+	numResults = DimSize(wv, ROWS)
+	CHECK_EQUAL_VAR(numResults, DimSize(outputRef, ROWS))
+	WAVE/WAVE results = wv
+
+	Make/FREE/N=(numResults) idxHelper
+	idxHelper = TestOperationAPFrequency2Checks(formula, results[p], outputRef[p])
+End
+
+static Function TestOperationAPFrequency2Checks(string formula, WAVE w1, WAVE w2)
+
+	INFO("Formula: %s", s0 = formula)
+	REQUIRE_EQUAL_WAVES(w1, w2, mode = WAVE_DATA, tol = 1E-12)
+End
+
 static Function TestOperationAPFrequency()
 
 	string str, strRef, dataType
@@ -1228,8 +1292,8 @@ static Function TestOperationAPFrequency()
 		PASS()
 	endtry
 
-	// but no more than three
-	str = "apfrequency([1], 0, 3, 4)"
+	// but no more than six
+	str = "apfrequency([1], 0, 0.5, freq, nonorm, time, 3)"
 	try
 		WAVE output = GetSingleResult(str, win)
 		FAIL()
@@ -1238,7 +1302,7 @@ static Function TestOperationAPFrequency()
 	endtry
 
 	// requires valid method
-	str = "apfrequency([1], 3)"
+	str = "apfrequency([1], 10)"
 	try
 		WAVE output = GetSingleResult(str, win)
 		FAIL()
@@ -1258,28 +1322,28 @@ static Function TestOperationAPFrequency()
 	Make/FREE/D output_ref = {3}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
-	// works with 2D data and instantaneous
-	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 0, 15)"
-	WAVE output = GetSingleResult(str, win)
-	Make/FREE/D output_ref = {100, 100}
-	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
-
 	// works with instantaneous
 	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 1, 15)"
 	WAVE output = GetSingleResult(str, win)
 	Make/FREE/D output_ref = {57.14285714285714}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
-	// works with 2D data and instantaneous
-	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"
+	// works with instantaneous pair
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15)"
 	WAVE output = GetSingleResult(str, win)
-	Make/FREE/D output_ref = {100, 94.59459459459457}
+	Make/FREE/D output_ref = {100 * 2 / 3, 50}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15,freq)"
+	WAVE output = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
-	// x offset does not play any role
-	str = "apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"
+	// works with instantaneous pair time
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time)"
 	WAVE output = GetSingleResult(str, win)
-	Make/FREE/D output_ref = {100, 94.59459459459457}
+	Make/FREE/D output_ref = {0.015, 0.02}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, nonorm)"
+	WAVE output = GetSingleResult(str, win)
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
 	// returns 0 if nothing found for Full
@@ -1288,11 +1352,20 @@ static Function TestOperationAPFrequency()
 	Make/FREE/D output_ref = {0}
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 
-	// returns 0 if nothing found for Instantaneous
+	// returns null wave if nothing found for Instantaneous
 	str = "apfrequency([10, 20, 30, 20], 1, 100)"
-	WAVE output = GetSingleResult(str, win)
-	Make/FREE/D output_ref = {0}
-	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+	WAVE/Z output = GetSingleResult(str, win)
+	CHECK_WAVE(output, NULL_WAVE)
+
+	// returns null wave if nothing found for Instantaneous Pair
+	str = "apfrequency([10, 20, 30, 20], 3, 100)"
+	WAVE/Z output = GetSingleResult(str, win)
+	CHECK_WAVE(output, NULL_WAVE)
+
+	// returns null wave for single peak for Instantaneous Pair
+	str = "apfrequency([10, 20, 30, 20], 3, 25)"
+	WAVE/Z output = GetSingleResult(str, win)
+	CHECK_WAVE(output, NULL_WAVE)
 
 	// check meta data
 	str = "apfrequency([10, 20, 30, 20], 1, 100)"
@@ -1300,6 +1373,44 @@ static Function TestOperationAPFrequency()
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_APFREQUENCY
 	CHECK_EQUAL_STR(strRef, dataType)
+
+	// works with instantaneous pair time, norminsweepsmin
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsmin)"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE/D output_ref = {1, 0.02 / 0.015}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with instantaneous pair time, norminsweepsmax
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsmax)"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE/D output_ref = {0.015 / 0.02, 1}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with instantaneous pair time, norminsweepsavg
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg)"
+	WAVE output = GetSingleResult(str, win)
+	Make/FREE/D output_ref = {0.015 / 0.0175, 0.02 / 0.0175}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with instantaneous pair time, norminsweepsavg, time as x-axis
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg, time)"
+	WAVE/WAVE outputRef = GetMultipleResults(str, win)
+	Make/FREE/D output_ref = {2.5, 17.5}
+	for(data : outputRef)
+		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		CHECK_WAVE(xValues, NUMERIC_WAVE)
+		CHECK_EQUAL_WAVES(xValues, output_Ref, mode = WAVE_DATA)
+	endfor
+
+	// works with instantaneous pair time, norminsweepsavg, count as x-axis
+	str = "apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 3, 15, time, norminsweepsavg, count)"
+	WAVE/WAVE outputRef = GetMultipleResults(str, win)
+	Make/FREE/D/N=2 output_ref = p
+	for(data : outputRef)
+		WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		CHECK_WAVE(xValues, NUMERIC_WAVE)
+		CHECK_EQUAL_WAVES(xValues, output_Ref, mode = WAVE_DATA)
+	endfor
 End
 
 static Function TestOperationWave()
@@ -2987,4 +3098,56 @@ static Function BrowserGraphConnectionWorks()
 
 	result = SFH_GetFormulaGraphForBrowser("I don't exist")
 	CHECK_EMPTY_STR(result)
+End
+
+static Function TestArgSetup()
+
+	string win, device, formula, argSetupStack, argSetup, str
+	variable numResults, jsonId, jsonId1
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
+	CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
+
+	formula = "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin,time)"
+	WAVE/WAVE outputRef = GetMultipleResults(formula, win)
+	argSetupStack = JWN_GetStringFromWaveNote(outputRef, SF_META_ARGSETUPSTACK)
+	jsonId = JSON_Parse(argSetupStack)
+	CHECK_NEQ_VAR(jsonId, NaN)
+
+	argSetup = JSON_GetString(jsonId, "/0")
+	jsonId1 = JSON_Parse(argSetup)
+	CHECK_NEQ_VAR(jsonId1, NaN)
+
+	str = JSON_GetString(jsonId1, "/Operation")
+	CHECK_EQUAL_STR(str, "data")
+	JSON_Release(jsonId1)
+
+	argSetup = JSON_GetString(jsonId, "/1")
+	jsonId1 = JSON_Parse(argSetup)
+	CHECK_NEQ_VAR(jsonId1, NaN)
+
+	str = JSON_GetString(jsonId1, "/Operation")
+	CHECK_EQUAL_STR(str, "apfrequency")
+	str = JSON_GetString(jsonId1, "/Level")
+	CHECK_EQUAL_STR(str, "15")
+	str = JSON_GetString(jsonId1, "/Method")
+	CHECK_EQUAL_STR(str, "Instantaneous Pair")
+	str = JSON_GetString(jsonId1, "/Normalize")
+	CHECK_EQUAL_STR(str, "normoversweepsmin")
+	str = JSON_GetString(jsonId1, "/ResultType")
+	CHECK_EQUAL_STR(str, "time")
+	str = JSON_GetString(jsonId1, "/XAxisType")
+	CHECK_EQUAL_STR(str, "time")
+	JSON_Release(jsonId1)
+
+	JSON_Release(jsonId)
+
+	Make/FREE/T wAnnotations = {"\s(T000000d0_apfrequency_data_Sweep_0_AD0)apfrequency data Sweeps 0-8,145 AD0", "\s(T000010d0_apfrequency_data_Sweep_0_AD0)apfrequency data Sweeps 0-8,145 AD0"}
+	Make/FREE/T formulaArgSetup = { "{\n\"0\": \"{\\n\\\"Operation\\\": \\\"data\\\"\\n}\",\n\"1\": \"{\\n\\\"Level\\\": \\\"100\\\",\\n\\\"Method\\\": \\\"Instantaneous Pair\\\",\\n\\\"Normalize\\\": \\\"normoversweepsavg\\\",\\n\\\"Operation\\\": \\\"apfrequency\\\",\\n\\\"ResultType\\\": \\\"freq\\\",\\n\\\"XAxisType\\\": \\\"count\\\"\\n}\"}", \
+	"{\n\"0\": \"{\\n\\\"Operation\\\": \\\"data\\\"\\n}\",\n\"1\": \"{\\n\\\"Level\\\": \\\"100\\\",\\n\\\"Method\\\": \\\"Instantaneous Pair\\\",\\n\\\"Normalize\\\": \\\"norminsweepsavg\\\",\\n\\\"Operation\\\": \\\"apfrequency\\\",\\n\\\"ResultType\\\": \\\"time\\\",\\n\\\"XAxisType\\\": \\\"count\\\"\\n}\"}"}
+	Make/FREE/T result = {"\s(T000000d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:normoversweepsavg ResultType:freq) data Sweeps 0-8,145 AD0", "\s(T000010d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:norminsweepsavg ResultType:time) data Sweeps 0-8,145 AD0"}
+	CHECK_EQUAL_VAR(SFH_EnrichAnnotations(wAnnotations, formulaArgSetup), 1)
+	CHECK_EQUAL_WAVES(result, wAnnotations, mode = WAVE_DATA)
 End

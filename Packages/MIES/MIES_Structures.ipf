@@ -598,6 +598,7 @@ EndStructure
 Structure SF_PlotMetaData
 	string dataType // from SF_META_DATATYPE constant
 	string opStack // from SF_META_OPSTACK constant
+	string argSetupStack // from SF_META_ARGSETUPSTACK constant
 	string xAxisLabel // from SF_META_XAXISLABEL constant
 	string yAxisLabel // from SF_META_YAXISLABEL constant
 EndStructure

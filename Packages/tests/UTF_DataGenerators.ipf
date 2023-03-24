@@ -218,3 +218,40 @@ Function/WAVE NonExistingDevices()
 
 	return wv
 End
+
+Function/WAVE TestOperationAPFrequency2Gen()
+
+	variable m
+
+	Make/FREE/WAVE/N=3 wv
+
+	Make/FREE/WAVE/N=4 results
+	Make/FREE/D sweep0Result = {0.003 / 0.002, 0.003 / 0.002}
+	Make/FREE/D sweep1Result = {1, 1, 1}
+	results[0, 1] = sweep0Result
+	results[2, 3] = sweep1Result
+	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin)"
+	wv[0] = results
+	SetDimLabel ROWS, 0, normoversweepsmin, wv
+
+	Make/FREE/WAVE/N=4 results
+	Make/FREE/D sweep0Result = {1, 1}
+	Make/FREE/D sweep1Result = {0.002 / 0.003, 0.002 / 0.003, 0.002 / 0.003}
+	results[0, 1] = sweep0Result
+	results[2, 3] = sweep1Result
+	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmax)"
+	wv[1] = results
+	SetDimLabel ROWS, 1, normoversweepsmax, wv
+
+	Make/FREE/WAVE/N=4 results
+	m = (2 * 0.003 + 3 * 0.002) / 5
+	Make/FREE/D sweep0Result = {0.003 / m, 0.003 / m}
+	Make/FREE/D sweep1Result = {0.002 / m, 0.002 / m, 0.002 / m}
+	results[0, 1] = sweep0Result
+	results[2, 3] = sweep1Result
+	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsavg)"
+	wv[2] = results
+	SetDimLabel ROWS, 2, normoversweepsavg, wv
+
+	return wv
+End

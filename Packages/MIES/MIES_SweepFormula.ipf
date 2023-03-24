@@ -52,6 +52,7 @@ static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
 static Constant SF_APFREQUENCY_FULL          = 0x0
 static Constant SF_APFREQUENCY_INSTANTANEOUS = 0x1
 static Constant SF_APFREQUENCY_APCOUNT       = 0x2
+static Constant SF_APFREQUENCY_INSTANTANEOUS_PAIR = 0x3
 
 static StrConstant SF_OP_MINUS = "-"
 static StrConstant SF_OP_PLUS = "+"
@@ -118,6 +119,18 @@ static StrConstant SF_OP_TPFIT_RET_TAUSMALL = "tausmall"
 static StrConstant SF_OP_TPFIT_RET_AMP = "amp"
 static StrConstant SF_OP_TPFIT_RET_MINAMP = "minabsamp"
 static StrConstant SF_OP_TPFIT_RET_FITQUALITY = "fitq"
+
+static StrConstant SF_OP_APFREQUENCY_Y_TIME = "time"
+static StrConstant SF_OP_APFREQUENCY_Y_FREQ = "freq"
+static StrConstant SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN = "normoversweepsmin"
+static StrConstant SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX = "normoversweepsmax"
+static StrConstant SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG = "normoversweepsavg"
+static StrConstant SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN = "norminsweepsmin"
+static StrConstant SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX = "norminsweepsmax"
+static StrConstant SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG = "norminsweepsavg"
+static StrConstant SF_OP_APFREQUENCY_NONORM = "nonorm"
+static StrConstant SF_OP_APFREQUENCY_X_COUNT = "count"
+static StrConstant SF_OP_APFREQUENCY_X_TIME = "time"
 
 static Constant EPOCHS_TYPE_INVALID = -1
 static Constant EPOCHS_TYPE_RANGE = 0
@@ -1089,6 +1102,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	plotMetaData.dataType = JWN_GetStringFromWaveNote(wvYRef, SF_META_DATATYPE)
 	plotMetaData.opStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_OPSTACK)
+	plotMetaData.argSetupStack = JWN_GetStringFromWaveNote(wvYRef, SF_META_ARGSETUPSTACK)
 	plotMetaData.xAxisLabel = SelectString(useXLabel, SF_XLABEL_USER, JWN_GetStringFromWaveNote(wvYRef, SF_META_XAXISLABEL))
 	plotMetaData.yAxisLabel = JWN_GetStringFromWaveNote(wvYRef, SF_META_YAXISLABEL) + dataUnits
 
@@ -1455,9 +1469,10 @@ End
 static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
 	string trace
-	variable i, j, k, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
+	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
-	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations
+	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent
+	variable formulaCounter, gdIndex, markerCode, lineCode
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
@@ -1491,6 +1506,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		traceCnt = 0
 		numAnnotations = 0
 		showLegend = 1
+		formulaCounter = 0
 		WAVE/Z wvX = $""
 		WAVE/T/Z yUnits = $""
 
@@ -1499,10 +1515,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		win = plotGraphs[j]
 		wList = AddListItem(win, wList)
 
-		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations
+		Make/FREE=1/T/N=(MINIMUM_WAVE_SIZE) wAnnotations, formulaArgSetup
+		Make/FREE=1/WAVE/N=(MINIMUM_WAVE_SIZE) collPlotFormData
 
 		do
 
+			WAVE/WAVE plotFormData = SF_CreatePlotFormulaDataWave()
+			gdIndex = 0
 			annotation = ""
 
 			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
@@ -1588,6 +1607,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, k, plotMetaData, wvResultY)
 
 					for(i = 0; i < numTraces; i += 1)
+						SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i]
 						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 					endfor
@@ -1598,6 +1618,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, k, plotMetaData, wvResultY)
 
 						for(i = 0; i < numTraces; i += 1)
+							SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[i][]
 							annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 						endfor
@@ -1607,6 +1628,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, k, plotMetaData, wvResultY)
 
 						for(i = 0; i < numTraces; i += 1)
+							SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[i][]/TN=$traces[i] vs wvX[][0]
 							annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 						endfor
@@ -1620,6 +1642,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 							DebugPrint("Unmatched Data Alignment in ROWS.")
 						endif
 						for(i = 0; i < numTraces; i += 1)
+							SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 							splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 							splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
 							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[splitY, splitY + splitTraces - 1][0]/TN=$traces[i] vs wvX[splitX, splitX + splitTraces - 1][0]
@@ -1632,6 +1655,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, k, plotMetaData, wvResultY)
 
 					for(i = 0; i < numTraces; i += 1)
+						SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][0]/TN=$traces[i] vs wvX[][i]
 						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 					endfor
@@ -1646,6 +1670,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					[WAVE/T traces, traceCnt] = SF_CreateTraceNames(numTraces, k, plotMetaData, wvResultY)
 
 					for(i = 0; i < numTraces; i += 1)
+						SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 						AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][i]/TN=$traces[i] vs wvX
 						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 					endfor
@@ -1661,6 +1686,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						DebugPrint("Size mismatch in entity columns for plotting waves.")
 					endif
 					for(i = 0; i < numTraces; i += 1)
+						SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 						if(WaveExists(wvX))
 							AppendTograph/W=$win/C=(color.red, color.green, color.blue) wvY[][min(yMxN - 1, i)]/TN=$traces[i] vs wvX[][min(xMxN - 1, i)]
 						else
@@ -1668,27 +1694,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						endif
 						annotation += SF_GetMetaDataAnnotationText(plotMetaData, wvResultY, traces[i])
 					endfor
-				endif
-
-				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
-					&& (!WaveExists(wvX) \
-					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-					ModifyGraph/W=$win mode=3,marker=19
-
-					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
-
-					if(WaveExists(customMarkerAsFree))
-						DFREF dfrWork = SFH_GetWorkingDF(graph)
-						for(i = 0; i < numTraces; i += 1)
-
-							wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
-							MoveWave customMarkerAsFree, dfrWork:$wvName
-							WAVE/SDFR=dfrWork customMarker = $wvName
-							ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-
-							ModifyGraph/W=$win zmrkNum($traces[i])={customMarker}
-						endfor
-					endif
 				endif
 
 				showLegend = showLegend && SF_GetShowLegend(wvY)
@@ -1699,8 +1704,17 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			if(!IsEmpty(annotation))
 				EnsureLargeEnoughWave(wAnnotations, minimumSize=numAnnotations + 1)
 				wAnnotations[numAnnotations] = annotation
+				EnsureLargeEnoughWave(formulaArgSetup, minimumSize=numAnnotations + 1)
+				formulaArgSetup[numAnnotations] = plotMetaData.argSetupStack
 				numAnnotations += 1
 			endif
+
+			EnsureLargeEnoughWave(collPlotFormData, minimumSize=formulaCounter + 1)
+			WAVE/T tracesInGraph = plotFormData[0]
+			WAVE/WAVE dataInGraph = plotFormData[1]
+			Redimension/N=(gdIndex, -1) tracesInGraph, dataInGraph
+			collPlotFormData[formulaCounter] = plotFormData
+			formulaCounter += 1
 		while(1)
 
 		yAxisLabel = SF_CombineYUnits(yUnits)
@@ -1708,12 +1722,53 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(showLegend && numAnnotations)
 			annotation = ""
 			for(k = 0; k < numAnnotations; k += 1)
-				annotation += SF_ShrinkLegend(wAnnotations[k]) + "\r"
+				wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
 			endfor
-			annotation = RemoveEnding(annotation, "\r")
-			annotation = RemoveEnding(annotation, "\r")
+			Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
+			formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
+			annotation = TextWaveToList(wAnnotations, "\r")
+			annotation = UnPadString(annotation, char2num("\r"))
 			Legend/W=$win/C/N=metadata/F=2 annotation
 		endif
+
+		for(k = 0; k < formulaCounter; k += 1)
+			WAVE/WAVE plotFormData = collPlotFormData[k]
+			WAVE/T tracesInGraph = plotFormData[0]
+			WAVE/WAVE dataInGraph = plotFormData[1]
+			numTraces = DimSize(tracesInGraph, ROWS)
+			markerCode = formulasAreDifferent ? k : 0
+			markerCode = SFH_GetPlotMarkerCodeSelection(markerCode)
+			lineCode = formulasAreDifferent ? k : 0
+			lineCode = SFH_GetPlotLineCodeSelection(lineCode)
+			for(l = 0; l < numTraces; l += 1)
+
+				WAVE/Z wvX = dataInGraph[l][%WAVEX]
+				WAVE wvY = dataInGraph[l][%WAVEY]
+				trace = tracesInGraph[l]
+
+				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
+					&& (!WaveExists(wvX) \
+					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+
+					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+					if(!WaveExists(customMarkerAsFree))
+						ModifyGraph/W=$win mode($trace)=3,marker($trace)=markerCode
+						continue
+					endif
+
+					DFREF dfrWork = SFH_GetWorkingDF(graph)
+					wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
+					MoveWave customMarkerAsFree, dfrWork:$wvName
+					WAVE/SDFR=dfrWork customMarker = $wvName
+					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
+					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+
+				elseif(formulasAreDifferent)
+					ModifyGraph/W=$win lStyle($trace)=lineCode
+				endif
+			endfor
+		endfor
+
 		if(!IsEmpty(plotMetaData.xAxisLabel) && traceCnt > 0)
 			Label/W=$win bottom plotMetaData.xAxisLabel
 			ModifyGraph/W=$win tickUnit(bottom)=1
@@ -3641,7 +3696,7 @@ static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string g
 
 	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0)
 
-	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, opStack="")
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, discardOpStack=1)
 End
 
 /// `channels([str name]+)` converts a named channel from string to numbers.
@@ -3680,7 +3735,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, opStack="")
+	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, discardOpStack=1)
 End
 
 /// `sweeps()`
@@ -3695,7 +3750,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 
-	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, opStack="")
+	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, discardOpStack=1)
 End
 
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
@@ -3987,7 +4042,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SF_GetActiveChannelNumbersForSweeps(graph, channels, sweeps, !CmpStr(mode, "displayed"), clampMode)
 
-	return SFH_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, opStack="")
+	return SFH_GetOutputForExecutorSingle(selectData, graph, SF_OP_SELECT, discardOpStack=1)
 End
 
 /// `data(array range[, array selectData])`
@@ -4011,7 +4066,8 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		DebugPrint("Call to SFH_GetSweepsForFormula returned no results")
 	endif
 
-	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_DATA, ""))
+	SFH_AddOpToOpStack(output, "", SF_OP_DATA)
+	SFH_ResetArgSetupStack(output, SF_OP_DATA)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATA)
 End
@@ -4228,7 +4284,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, opStack="")
+	return SFH_GetOutputForExecutorSingle(out, graph, SF_OP_CURSORS, discardOpStack=1)
 End
 
 // findlevel(data, level, [edge])
@@ -4260,73 +4316,207 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_FINDLEVEL)
 End
 
-// apfrequency(data, [frequency calculation method], [spike detection crossing level])
+// apfrequency(data, [frequency calculation method], [spike detection crossing level], [result value type], [normalize], [x-axis type])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i
+	variable i, numArgs, keepX, method, level, normValue
+	string xLabel, methodStr, timeFreq, normalize, xAxisType
+	string opShort = SF_OP_APFREQUENCY
+	variable numArgsMin = 1
+	variable numArgsMax = 6
 
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <=3, "ApFrequency has 3 arguments at most.")
-	SFH_ASSERT(numArgs >= 1, "ApFrequency needs at least one argument.")
+	SFH_ASSERT(numArgs <= numArgsMax, "ApFrequency has " + num2istr(numArgsMax) + " arguments at most.")
+	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 0)
-	if(numArgs == 3)
-		WAVE level = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 2, checkExist=1)
-		SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
-		SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
-	else
-		Make/FREE level = {0}
+	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, opShort, 0)
+	method = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue=SF_APFREQUENCY_FULL, allowedValues={SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
+	level = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 2, defValue=0)
+	timeFreq = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 3, defValue=SF_OP_APFREQUENCY_Y_FREQ, allowedValues={SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
+	normalize = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 4, defValue=SF_OP_APFREQUENCY_NONORM, allowedValues={\
+	SF_OP_APFREQUENCY_NONORM, \
+	SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN, \
+	SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX, \
+	SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG, \
+	SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN, \
+	SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX, \
+	SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG  \
+	})
+	xAxisType = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 5, defValue=SF_OP_APFREQUENCY_X_TIME, allowedValues={SF_OP_APFREQUENCY_X_TIME, SF_OP_APFREQUENCY_X_COUNT})
+
+	WAVE/T argSetup = SFH_GetNewArgSetupWave(numArgsMax - 1)
+
+	argSetup[0][%KEY] = "Method"
+	argSetup[0][%VALUE] = SF_OperationApFrequencyMethodToString(method)
+	argSetup[1][%KEY] = "Level"
+	argSetup[1][%VALUE] = num2str(level)
+	argSetup[2][%KEY] = "ResultType"
+	argSetup[2][%VALUE] = timeFreq
+	argSetup[3][%KEY] = "Normalize"
+	argSetup[3][%VALUE] = normalize
+	argSetup[4][%KEY] = "XAxisType"
+	argSetup[4][%VALUE] = xAxisType
+
+	normValue = NaN
+	Make/FREE/D/N=0 normMean
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+	output = SF_OperationApFrequencyImpl(input[p], level, method, timeFreq, normalize, xAxisType, normValue, normMean)
+	if(!CmpStr(normalize, SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG) && DimSize(normMean, ROWS))
+		normValue = mean(normMean)
+		SF_OperationApFrequencyNormalizeOverSweeps(output, normValue)
+	elseif((!CmpStr(normalize, SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN) || !CmpStr(normalize, SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX)) && !IsNaN(normValue))
+		SF_OperationApFrequencyNormalizeOverSweeps(output, normValue)
 	endif
 
-	if(numArgs >= 2)
-		WAVE method = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_APFREQUENCY, 1, checkExist=1)
-		SFH_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
-		SFH_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
-		SFH_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
-	else
-		Make/FREE method = {SF_APFREQUENCY_FULL}
+	if(method == SF_APFREQUENCY_INSTANTANEOUS_PAIR)
+		keepX = 1
+		xLabel = SelectString(!CmpStr(xAxisType[0], SF_OP_APFREQUENCY_X_COUNT), "ms", "peak number")
+		JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 	endif
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_APFREQUENCY, DimSize(input, ROWS))
-	output = SF_OperationApFrequencyImpl(input[p], level[0], method[0])
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_APFREQUENCY, keepX=keepX, argSetup=argSetup)
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_APFREQUENCY, SF_DATATYPE_APFREQUENCY)
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_APFREQUENCY)
+	return SFH_GetOutputForExecutor(output, graph, opShort)
 End
 
-static Function/WAVE SF_OperationApFrequencyImpl(WAVE data, variable level, variable method)
+static Function SF_OperationApFrequencyNormalizeOverSweeps(WAVE/WAVE output, variable normValue)
 
-	variable numSets, i
+	Make/FREE/D/N=(DimSize(output, ROWS)) idxHelper
+	idxHelper = SF_OperationApFrequencyNormalizeOverSweepsImpl(output[p], normValue)
+End
 
-	WAVE levels = FindLevelWrapper(data, level, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
-	numSets = DimSize(levels, ROWS)
-	Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
+static Function SF_OperationApFrequencyNormalizeOverSweepsImpl(WAVE/Z data, variable normValue)
+
+	if(!WaveExists(data))
+		return NaN
+	endif
+
+	MultiThread data /= normValue
+End
+
+static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, variable method, string yStr, string normStr, string xAxisTypeStr, variable &normOSValue, WAVE normMean)
+
+	variable numPeaks, yModeTime, xAxisCount, normalize, normISValue
+	string yUnit
+
+	if(!WaveExists(data))
+		return $""
+	endif
+
+	yModeTime = !CmpStr(yStr, SF_OP_APFREQUENCY_Y_TIME)
+	xAxisCount = !CmpStr(xAxisTypeStr, SF_OP_APFREQUENCY_X_COUNT)
+	normalize = CmpStr(normStr, SF_OP_APFREQUENCY_NONORM)
+
+	WAVE peaksAt = FindLevelWrapper(data, level, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+	numPeaks = str2num(GetDimLabel(peaksAt, ROWS, 0))
+	Redimension/N=(1, numPeaks) peaksAt
 
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
 	switch(method)
 		case SF_APFREQUENCY_FULL:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE)
+			// number_of_peaks / sweep_length
+			Make/FREE/D outD = { numPeaks / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE) }
+			yUnit = SelectString(normalize, "Hz [Full]", "normalized frequency [Full]")
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
 			break
 		case SF_APFREQUENCY_INSTANTANEOUS:
-			Make/N=(numSets)/D/FREE outD
+			if(numPeaks <= 1)
+				return $""
+			endif
 
-			for(i = 0; i < numSets; i += 1)
-				if(levelPerSet[i] <= 1)
-					outD[i] = 0
-				else
-					Make/FREE/D/N=(levelPerSet[i] - 1) distances
-					distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
-					outD[i] = 1.0 / (Mean(distances) * MILLI_TO_ONE)
-				endif
-			endfor
+			Make/FREE/D outD = { SF_ApFrequencyInstantaneous(peaksAt) }
+			yUnit = SelectString(normalize, "Hz [Instantaneous]", "normalized frequency [Instantaneous]")
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
+			break
+		case SF_APFREQUENCY_INSTANTANEOUS_PAIR:
+			if(numPeaks <= 1)
+				return $""
+			endif
+
+			WAVE outD = SF_ApFrequencyInstantaneousPairs(peaksAt, yModeTime, xAxisCount)
+			if(yModeTime)
+				yUnit = SelectString(normalize, "s [inst pairs]", "normalized time [inst pairs]")
+			else
+				yUnit = SelectString(normalize, "Hz [inst pairs]", "normalized frequency [inst pairs]")
+			endif
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
 			break
 		case SF_APFREQUENCY_APCOUNT:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p]
+			Make/FREE/D outD = { numPeaks }
+			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), "peaks [APCount]", outD
 			break
 	endswitch
 
+	if(normalize)
+		if(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMWITHINSWEEPMIN))
+			normISValue = WaveMin(outD)
+			MultiThread outD /= normISValue
+		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMWITHINSWEEPMAX))
+			normISValue = WaveMax(outD)
+			MultiThread outD /= normISValue
+		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMWITHINSWEEPAVG))
+			normISValue = mean(outD)
+			MultiThread outD /= normISValue
+		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMOVERSWEEPSMIN))
+			normOSValue = IsNaN(normOSValue) ? WaveMin(outD) : min(normOSValue, WaveMin(outD))
+		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMOVERSWEEPSMAX))
+			normOSValue = IsNaN(normOSValue) ? WaveMax(outD) : max(normOSValue, WaveMax(outD))
+		elseif(!CmpStr(normStr, SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG))
+			Concatenate/FREE/NP {outD}, normMean
+		else
+			ASSERT(0, "Unknown normalization method")
+		endif
+	endif
+
 	return outD
+End
+
+static Function/S SF_OperationApFrequencyMethodToString(variable method)
+
+	switch(method)
+		case SF_APFREQUENCY_FULL:
+			return "Full"
+		case SF_APFREQUENCY_INSTANTANEOUS:
+			return "Instantaneous"
+		case SF_APFREQUENCY_INSTANTANEOUS_PAIR:
+			return "Instantaneous Pair"
+		case SF_APFREQUENCY_APCOUNT:
+			return "APCount"
+		default:
+			ASSERT(0, "Unknown apfrequency method")
+	endswitch
+End
+
+static Function SF_ApFrequencyInstantaneous(WAVE peaksAt)
+
+	variable numPeaks
+
+	numPeaks = DimSize(peaksAt, COLS)
+	ASSERT(numPeaks > 1, "Number of peaks must be greater than 1 to calculate pairs.")
+
+	Make/FREE/D/N=(numPeaks - 1) distances
+	distances[0, numPeaks - 2] = peaksAt[0][p + 1] - peaksAt[0][p]
+	return 1.0 / (mean(distances) * MILLI_TO_ONE)
+End
+
+static Function/WAVE SF_ApFrequencyInstantaneousPairs(WAVE peaksAt, variable yModeTime, variable xAxisIsCounts)
+
+	variable numPeaks
+
+	numPeaks = DimSize(peaksAt, COLS)
+	ASSERT(numPeaks > 1, "Number of peaks must be greater than 1 to calculate pairs.")
+
+	Make/FREE/D/N=(numPeaks - 1) result, xAxisvalues
+
+	xAxisvalues = xAxisIsCounts ? p : peaksAt[0][p]
+	JWN_SetWaveInWaveNote(result, SF_META_XVALUES, xAxisvalues)
+
+	result = (peaksAt[0][p + 1] - peaksAt[0][p]) * MILLI_TO_ONE
+	if(!yModeTime)
+		FastOp result = 1.0 / result
+	endif
+
+	return result
 End
 
 // `store(name, ...)`
@@ -4688,4 +4878,29 @@ threadsafe static Function SF_RemoveEndOfSweepNaNs(WAVE/Z input)
 	if(V_Value >= 0)
 		Redimension/N=(V_Value) input
 	endif
+End
+
+static Function/WAVE SF_CreatePlotFormulaDataWave()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) tracesInGraph
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE, 2) dataInGraph
+	SetDimLabel COLS, 0, WAVEX, dataInGraph
+	SetDimLabel COLS, 1, WAVEY, dataInGraph
+	Make/FREE/WAVE/N=2 graphData
+	graphData[0] = tracesInGraph
+	graphData[1] = dataInGraph
+
+	return graphData
+End
+
+static Function SF_CollectTraceData(variable &index, WAVE/WAVE graphData, string traceName, WAVE/Z wx, WAVE wy)
+
+	WAVE/T tracesInGraph = graphData[0]
+	WAVE/WAVE dataInGraph = graphData[1]
+	EnsureLargeEnoughWave(tracesInGraph, minimumSize=index)
+	EnsureLargeEnoughWave(dataInGraph, minimumSize=index)
+	tracesInGraph[index] = traceName
+	dataInGraph[index][%WAVEX] = wx
+	dataInGraph[index][%WAVEY] = wy
+	index += 1
 End
