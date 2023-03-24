@@ -1771,7 +1771,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					MoveWave customMarkerAsFree, dfrWork:$wvName
 					WAVE/SDFR=dfrWork customMarker = $wvName
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+					ModifyGraph/W=$win mode($trace)=3,zmrkNum($trace)={customMarker}
 
 				elseif(formulasAreDifferent)
 					ModifyGraph/W=$win lStyle($trace)=lineCode
