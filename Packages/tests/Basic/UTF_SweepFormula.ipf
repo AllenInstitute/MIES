@@ -2918,8 +2918,17 @@ End
 // UTF_TD_GENERATOR TestHelpNotebookGetter_IGNORE
 static Function TestHelpNotebook([string str])
 
-	DB_OpenDataBrowser()
-	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine("operation - " + str), 0)
+	string browser, headLine, helpText, sfHelpWin
+
+	browser = DB_OpenDataBrowser()
+
+	sfHelpWin = BSP_GetSFHELP(browser)
+	headLine = MIES_BSP#BSP_GetHelpOperationHeadline(str)
+
+	helpText = MIES_BSP#BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + str)
+	CHECK_PROPER_STR(helpText)
+
+	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine(headLine), 0)
 End
 
 // data acquired with model cell, 45% baseline
