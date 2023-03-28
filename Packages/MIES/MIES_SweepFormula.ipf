@@ -169,6 +169,8 @@ static Constant SF_POWERSPECTRUM_RATIO_MAXFWHM = 5
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_SIGMA2FWHM = 2.35482004503
 static Constant SF_POWERSPECTRUM_RATIO_GAUSS_NUMCOEFS = 4
 
+static Constant SF_VARIABLE_PREFIX = 36
+
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -706,6 +708,24 @@ static Function SF_PlaceSubArrayAt(WAVE/Z out, WAVE/Z subArray, variable index)
 	endif
 End
 
+static Function/WAVE SF_FormulaExecutorStringOrVariable(string graph, variable jsonId, string jsonPath)
+
+	string str
+	variable dim
+
+	str = JSON_GetString(jsonID, jsonPath)
+	if(strlen(str) > 1 && char2num(str[0]) == SF_VARIABLE_PREFIX)
+		DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+		WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+		dim = FindDimLabel(varStorage, ROWS, str[1, inf])
+		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, inf])
+		return varStorage[dim]
+	else
+		Make/FREE/T outT = { str }
+		return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
+	endif
+End
+
 /// @brief Execute the formula parsed by SF_FormulaParser
 ///
 /// Recursively executes the formula parsed into jsonID.
@@ -715,7 +735,7 @@ End
 /// @param jsonPath JSON pointer compliant path
 Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
 
-	string opName
+	string opName, str
 	variable JSONType, numArrObjElems, arrayElemJSONType, effectiveArrayDimCount, dim
 	variable colSize, layerSize, chunkSize, arrOrObjAtIndex, operationsWithScalarResultCount
 
@@ -738,8 +758,7 @@ Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath
 		Make/FREE out = { JSON_GetVariable(jsonID, jsonPath) }
 		return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 	elseif(JSONtype == JSON_STRING)
-		Make/FREE/T outT = { JSON_GetString(jsonID, jsonPath) }
-		return SFH_GetOutputForExecutorSingle(outT, graph, "ExecutorStringReturn")
+		return SF_FormulaExecutorStringOrVariable(graph, jsonId, jsonPath)
 	elseif(JSONtype == JSON_ARRAY)
 		// Evaluate an array consisting of any elements including subarrays and objects (operations)
 
