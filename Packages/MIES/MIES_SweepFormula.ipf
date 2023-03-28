@@ -1288,6 +1288,8 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 	variable i, guidePos, restoreCursorInfo
 	string panelName, guideName1, guideName2, win
 
+	ASSERT(numGraphs > 0, "Can not prepare plotter window for zero graphs")
+
 	Make/FREE/T/N=(numGraphs) plotGraphs
 	Make/FREE/WAVE/N=(numGraphs, 3) infos
 	SetDimensionLabels(infos, "axes;cursors;annotations", COLS)
@@ -2325,7 +2327,6 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			bsPanel = BSP_GetPanel(mainPanel)
 
 			[rawCode, preProcCode] = SF_GetCode(mainPanel)
-
 			if(IsEmpty(preProcCode))
 				break
 			endif
@@ -2345,6 +2346,10 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 			// catch Abort from SFH_ASSERT
 			try
+				preProcCode = SF_ExecuteVariableAssignments(mainPanel, preProcCode, dfr)
+				if(IsEmpty(preProcCode))
+					break
+				endif
 				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr)
 
 				SVAR lastCode = $GetLastSweepFormulaCode(dfr)
@@ -4924,4 +4929,43 @@ static Function SF_CollectTraceData(variable &index, WAVE/WAVE graphData, string
 	dataInGraph[index][%WAVEX] = wx
 	dataInGraph[index][%WAVEY] = wy
 	index += 1
+End
+
+static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode, DFREF dfr)
+
+	variable i, numLines, jsonId, varCnt
+	string line, varName, formula
+	string lineEnd = "\r"
+	string varPart = ""
+	string regex = "^(?i)\\s*([A-Z]{1}[A-Z0-9_]*)\\s*=(.+)$"
+
+	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	KillOrMoveToTrash(wv = varStorage)
+	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+
+	numLines = ItemsInList(preProcCode, lineEnd)
+	for(i = 0; i < numLines; i += 1)
+		line = StringFromList(i, preProcCode, lineEnd)
+		if(IsEmpty(line))
+			varPart += lineEnd
+			continue
+		endif
+		SplitString/E=regex line, varName, formula
+		if(V_flag != 2)
+			break
+		endif
+		SFH_ASSERT(IsValidObjectName(varName), "Invalid SF variable name")
+		SFH_ASSERT(FindDimLabel(varStorage, ROWS, varName) == -2, "Duplicate variable name.")
+		jsonId = SF_ParseFormulaToJSON(formula, dontCatch=1)
+		varPart += line + lineEnd
+		WAVE result = SF_FormulaExecutor(graph, jsonId)
+		EnsureLargeEnoughWave(varStorage, minimumSize=varCnt)
+		varStorage[varCnt] = result
+		SetDimLabel ROWS, varCnt, $varName, varStorage
+
+		varCnt += 1
+	endfor
+	Redimension/N=(varCnt) varStorage
+
+	return ReplaceString(varPart, preProcCode, "")
 End
