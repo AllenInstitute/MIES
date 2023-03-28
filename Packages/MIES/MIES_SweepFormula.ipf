@@ -2243,29 +2243,47 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 		jsonPath = "/Formula_" + num2istr(i)
 		JSON_AddObjects(jsonID, jsonPath)
 
-		// catch Abort from SFH_ASSERT called from SF_FormulaParser
-		try
-			jsonIDy = SF_FormulaParser(SF_FormulaPreParser(formulaPairs[i][%FORMULA_Y]))
-		catch
+		jsonIdy = SF_ParseFormulaToJSON(formulaPairs[i][%FORMULA_Y])
+		if(IsNaN(jsonIdy))
 			JSON_Release(jsonID, ignoreErr = 1)
 			return NaN
-		endtry
+		endif
 		JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
 		JSON_Release(jsonIDy)
 
 		xFormula = formulaPairs[i][%FORMULA_X]
 		if(!IsEmpty(xFormula))
-			// catch Abort from SFH_ASSERT called from SF_FormulaParser
-			try
-				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
-			catch
+			jsonIdx = SF_ParseFormulaToJSON(xFormula)
+			if(IsNaN(jsonIdx))
 				JSON_Release(jsonID, ignoreErr = 1)
 				return NaN
-			endtry
+			endif
 			JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
 			JSON_Release(jsonIDx)
 		endif
 	endfor
+End
+
+// returns jsonID or NaN is not successful
+static Function SF_ParseFormulaToJSON(string formula, [variable dontCatch])
+
+	variable jsonid
+
+	dontCatch = ParamIsDefault(dontCatch) ? 0 : !!dontCatch
+
+	if(dontCatch)
+		return SF_FormulaParser(SF_FormulaPreParser(formula))
+	endif
+
+	// catch Abort from SFH_ASSERT called from SF_FormulaParser
+	try
+		jsonId = SF_FormulaParser(SF_FormulaPreParser(formula))
+	catch
+		JSON_Release(jsonId, ignoreErr = 1)
+		return NaN
+	endtry
+
+	return jsonId
 End
 
 Function SF_Update(string graph)
@@ -4735,8 +4753,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	formula = SF_PreprocessInput(formula)
-	formula = SF_FormulaPreParser(formula)
-	jsonId = SF_FormulaParser(formula)
+	jsonId = SF_ParseFormulaToJSON(formula, dontCatch = 1)
 	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
