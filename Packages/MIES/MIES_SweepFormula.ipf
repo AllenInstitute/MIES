@@ -1320,7 +1320,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			win = winNameTemplate + num2istr(i)
 
 			if(!WindowExists(win))
-				Display/N=$win as win
+				Display/N=$win/K=1 as win
 				win = S_name
 			endif
 
@@ -1330,7 +1330,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
 		KillWindow/Z $winNameTemplate
-		NewPanel/N=$winNameTemplate
+		NewPanel/N=$winNameTemplate/K=1
 		winNameTemplate = S_name
 
 		SF_CommonWindowSetup(winNameTemplate, graph)

@@ -19,7 +19,7 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder])
 
 	variable debugMode
-	string traceOptions = ""
+	string traceOptions
 	string list = ""
 	string name = GetTestName()
 
@@ -57,7 +57,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		traceWinList = ""
 	endif
 
-	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
+	traceOptions = GetDefaultTraceOptions()
 
 	list = AddListItem("UTF_PA_Tests.ipf", list, ";", inf)
 

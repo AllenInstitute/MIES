@@ -1718,11 +1718,11 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		numHiddenTracesGraphs = DimSize(hiddenTracesGraphs, ROWS)
 		for(j = 0; j < numHiddenTracesGraphs; j += 1)
 			WAVE/T hiddenTracesNames = JSON_GetTextWave(hideTraceJsonID, hiddenTracesGraphs[j] + "/hiddenTraces")
-			AccelerateHideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), hideTrace)
+			ACC_HideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), hideTrace)
 		endfor
 		JSON_Release(hideTraceJsonID)
 	elseif(!IsNull(graph) && !IsEmpty(graph))
-		AccelerateHideTraces(graph, hiddenTraces, hiddenTracesCount, hideTrace)
+		ACC_HideTraces(graph, hiddenTraces, hiddenTracesCount, hideTrace)
 	endif
 
 	JSON_Release(jsonID)
@@ -1826,8 +1826,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		endfor
 	endfor
 	if(!pa.multipleGraphs)
-		AccelerateModLineSizeTraces(graph, avgPlotTraces, avgPlotCount, PA_AVGERAGE_PLOT_LSIZE)
-		AccelerateModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
+		ACC_ModLineSizeTraces(graph, avgPlotTraces, avgPlotCount, PA_AVGERAGE_PLOT_LSIZE)
+		ACC_ModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
 	endif
 
 	PA_LayoutGraphs(win, pa, pasi, PA_DISPLAYMODE_TRACES)

@@ -34,7 +34,7 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder])
 
 	variable debugMode
-	string traceOptions = ""
+	string traceOptions
 	string list = ""
 	string name = GetTestName()
 
@@ -80,7 +80,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	HW_ITC_DebugMode(ITCXOP2Debug)
 
-	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
+	traceOptions = GetDefaultTraceOptions()
 
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)

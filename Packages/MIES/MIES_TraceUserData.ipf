@@ -90,7 +90,7 @@ static Function TUD_ClearImpl(string graph)
 	SetNumberInWaveNote(graphUserData, NOTE_INDEX, 0)
 End
 
-/// @brief Return the user data the given `graph` and `trace` named `key`
+/// @brief Return the user data given by the `graph` and `trace` named `key`
 Function/S TUD_GetUserData(string graph, string trace, string key)
 
 	variable row
@@ -99,6 +99,22 @@ Function/S TUD_GetUserData(string graph, string trace, string key)
 	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0)
 
 	return graphUserData[row][%$key]
+End
+
+/// @brief Return all the user data from `trace` of `graph`
+Function/WAVE TUD_GetAllUserData(string graph, string trace)
+
+	variable row
+
+	WAVE/T graphUserData = GetGraphUserData(graph)
+	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0)
+
+	Duplicate/RMD=[row][]/FREE graphUserData, traceData
+	Redimension/N=(numpnts(traceData))/E=1 traceData
+	CopyDimLabels/COLS=(ROWS) graphUserData, traceData
+	Note/K traceData
+
+	return traceData
 End
 
 /// @brief Return the user data for `key` of all traces in graph in a 1D text wave

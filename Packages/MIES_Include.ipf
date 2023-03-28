@@ -143,6 +143,7 @@ End
 #include "ZeroMQ_Interop"
 
 // our includes
+#include "MIES_AcceleratedModifyGraph"
 #include "MIES_AcquisitionStateHandling"
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisBrowser"
