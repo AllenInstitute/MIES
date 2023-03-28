@@ -2912,6 +2912,8 @@ static Function/WAVE TestHelpNotebookGetter_IGNORE()
 
 	WAVE/T wt = SF_GetNamedOperations()
 
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
 	return wt
 End
 
