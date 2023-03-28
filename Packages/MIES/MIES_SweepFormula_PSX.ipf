@@ -2591,6 +2591,27 @@ Function/S PSX_GetEventStateNames()
 	return PSX_TUD_EVENT_STATE_KEY + ";" + PSX_TUD_FIT_STATE_KEY
 End
 
+static Function/S PSX_GetUIControlHelp()
+	return "<html><pre>"                                                                                              + \
+	       "The following keyboard shortcuts work for either the psx or the psxstats graphs.\r"                       + \
+	       "All of them require that the cursor A is located on an event, which is by default\r"                      + \
+	       "the case for the psx graph. The current direction for automatic advancement defaults to left-to-right.\r" + \
+	       ""                                                                                                         + \
+	       "    ↑ (up): Accept the current event, changing both event and fit state to accept,\r"                     + \
+	       "            and advance the cursor to the next event in the current direction\r"                          + \
+	       "    ↓ (down): Reject the current event, changing both event and fit state to reject,\r"                   + \
+	       "              and advance the cursor to the next event in the current direction\r"                        + \
+	       "    → (right): Move the cursor to the next event on the right\r"                                          + \
+	       "    ← (left): Move the cursor to the previous event on the left\r"                                        + \
+	       "    (space): Toggle the event and fit state of the current event without any movement\r"                  + \
+	       "    r: Reverse the current direction\r"                                                                   + \
+	       "    c: Center the x-axis around the current event\r"                                                      + \
+	       "    e: Toggle the event state\r"                                                                          + \
+	       "    f: Toggle the fit state\r"                                                                            + \
+	       "    z: Accept the event state but reject the fit state\r"                                                 + \
+	       "</pre><html>"
+End
+
 /// @brief Create the PSX graph together with all subwindows (all event graph, single event graph)
 ///
 /// This is only called for the very first `psx` operation output, subsequent
@@ -2621,7 +2642,15 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	CheckBox checkbox_suppress_update,win=$mainWin,pos={23.00,81.00},size={40.00,15.00},proc=PSX_CheckboxProcSuppressUpdate
 	CheckBox checkbox_suppress_update,win=$mainWin,value=0,title="Suppress Update",help={"Suppress updating the single/all event graphs on state changes"}
 
-	Button button_psx_info,win=$mainWin,pos={76.00,18.00},size={19.00,19.00},title="i",proc=PSX_CopyHelpToClipboard
+	Button button_psx_info,win=$mainWin,pos={18.00,458.00},size={19.00,19.00},proc=PSX_CopyHelpToClipboard
+	Button button_psx_info,win=$mainWin,title="i"
+
+	GroupBox group_UI,win=$mainWin,pos={45.00,458.00},size={20.00,22.00},font="Lucida Console", help={PSX_GetUIControlHelp()}
+
+	SetDrawEnv/W=$mainWin pop
+	DrawText/W=$mainWin 47,475,"UI"
+	SetDrawEnv/W=$mainWin fname= "Lucida Console"
+	SetDrawEnv/W=$mainWin push
 
 	WAVE combos = GetPSXComboListBox(workDFR)
 	ListBox listbox_select_combo,win=$mainWin,pos={16.00,108.00},size={108.00,341.00},proc=PSX_ListBoxSelectCombo
