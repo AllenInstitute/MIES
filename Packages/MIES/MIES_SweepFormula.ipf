@@ -1460,6 +1460,12 @@ static Function SF_CleanUpPlotWindowsOnFail(WAVE/T plotGraphs)
 	endfor
 End
 
+static Function SF_KillWorkingDF(string graph)
+
+	DFREF dfrWork = SFH_GetWorkingDF(graph)
+	KillOrMoveToTrash(dfr=dfrWork)
+End
+
 /// @brief  Plot the formula using the data from graph
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
@@ -1488,9 +1494,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
 	SFH_ASSERT(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
-
-	DFREF dfrWork = SFH_GetWorkingDF(graph)
-	KillOrMoveToTrash(dfr=dfrWork)
 
 	SVAR lastCode = $GetLastSweepFormulaCode(dfr)
 	keepUserSelection = !cmpstr(lastCode, formula)
@@ -2337,6 +2340,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 
+			SF_KillWorkingDF(mainPanel)
 			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
 
 			// catch Abort from SFH_ASSERT
