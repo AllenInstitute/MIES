@@ -462,13 +462,21 @@ End
 /// @brief Return the index of the entry `key`
 ///
 /// @return non-negative number or `NaN` if it could not be found.
-threadsafe static Function CA_GetCacheIndex(key)
-	string key
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe static Function CA_GetCacheIndex(WAVE keys, string key)
+
+	variable numFilledRows
+
+	numFilledRows = GetNumberFromWaveNote(keys, NOTE_INDEX) - 1
 
 	ASSERT_TS(!isEmpty(key), "Cache key can not be empty")
 
-	WAVE/T keys = GetCacheKeyWave()
-	FindValue/TXOP=4/TEXT=key keys
+	if(numFilledRows <= 0)
+		return NaN
+	endif
+
+	FindValue/TXOP=4/TEXT=key/RMD=[0, numFilledRows] keys
 
 	return V_Value == -1 ? NaN : V_Value
 End
@@ -493,7 +501,9 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 		returnDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	index = CA_GetCacheIndex(key)
+	WAVE/T keys = GetCacheKeyWave()
+
+	index = CA_GetCacheIndex(keys, key)
 
 	if(!IsFinite(index))
 #ifdef CACHE_DEBUGGING
@@ -502,9 +512,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 		return $""
 	endif
 
-	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
-	WAVE stats       = GetCacheStatsWave()
 
 	ASSERT_TS(index < DimSize(values, ROWS), "Invalid index")
 	WAVE/Z cache = values[index]
@@ -519,6 +527,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 		return $""
 	endif
 
+	WAVE stats = GetCacheStatsWave()
 	stats[index][%Hits] += 1
 
 #ifdef CACHE_DEBUGGING
@@ -544,22 +553,25 @@ End
 Function CA_DeleteCacheEntry(key)
 	string key
 
-	variable index = CA_GetCacheIndex(key)
+	WAVE/T keys = GetCacheKeyWave()
 
-	WAVE/T keys      = GetCacheKeyWave()
-	WAVE/WAVE values = GetCacheValueWave()
-	WAVE stats       = GetCacheStatsWave()
+	variable index = CA_GetCacheIndex(keys, key)
 
 	if(!IsFinite(index))
 		return 0
-	else
-		ASSERT(index < DimSize(values, ROWS) && index < DimSize(keys, ROWS), "Invalid index")
-		// does currently not reset `NOTE_INDEX`
-		keys[index]   = ""
-		values[index] = $""
-		stats[index]  = NaN
-		return 1
 	endif
+
+	WAVE/WAVE values = GetCacheValueWave()
+	WAVE stats       = GetCacheStatsWave()
+
+	ASSERT(index < DimSize(values, ROWS) && index < DimSize(keys, ROWS), "Invalid index")
+
+	// does currently not reset `NOTE_INDEX`
+	keys[index]   = ""
+	values[index] = $""
+	stats[index]  = NaN
+
+	return 1
 End
 
 /// @brief Remove all entries from the wave cache
