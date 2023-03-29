@@ -783,7 +783,7 @@ Function/WAVE SFH_GetEpochIndicesByWildcardPatterns(WAVE/T epochNames, WAVE/T pa
 	return uniqueEntries
 End
 
-static Function/S SFH_ResultTypeToString(variable resultType)
+Function/S SFH_ResultTypeToString(variable resultType)
 
 	switch(resultType)
 		case SFH_RESULT_TYPE_STORE:
