@@ -2236,7 +2236,7 @@ static Function/WAVE PSX_GetEventsFromResults(string comboKey)
 
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
-	sprintf name, "Sweep Formula %s [%s]", SFH_ResultTypeToString(SFH_RESULT_TYPE_PSX), comboKey
+	sprintf name, "Sweep Formula %s [%s]", SFH_ResultTypeToString(SFH_RESULT_TYPE_PSX_EVENTS), comboKey
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_PSX)
 
 	if(IsEmpty(entry))
@@ -3750,7 +3750,7 @@ Function PSX_ButtonProc_StoreEvents(STRUCT WMButtonAction &ba) : ButtonControl
 			for(DFREF comboDFR : comboFolders)
 				WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
 				name = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
-				PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX, psxEvent, name)
+				PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, name)
 			endfor
 
 			bsPanel = BSP_GetPanel(browser)

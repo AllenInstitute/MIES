@@ -2017,8 +2017,8 @@ StrConstant SFH_USER_DATA_BROWSER = "browser"
 /// @name Available result types for SFH_CreateResultsWaveWithCode()
 /// @anchor ResultTypes
 /// @{
-Constant SFH_RESULT_TYPE_STORE = 0x01
-Constant SFH_RESULT_TYPE_PSX   = 0x02
+Constant SFH_RESULT_TYPE_STORE      = 0x01
+Constant SFH_RESULT_TYPE_PSX_EVENTS = 0x02
 /// @}
 
 /// @name Constants used in the wave note JSON support
