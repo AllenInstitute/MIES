@@ -419,7 +419,7 @@ threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 	WAVE val
 	variable options
 
-	variable index, storeDuplicate
+	variable index, storeDuplicate, foundIndex
 
 	if(ParamIsDefault(options))
 		storeDuplicate = 1
@@ -427,17 +427,16 @@ threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 		storeDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	ASSERT_TS(!IsEmpty(key), "Key must not be empty")
-
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE stats       = GetCacheStatsWave()
 
-	FindValue/TEXT=key/TXOP=4 keys
-	if(V_Value == -1)
+	foundIndex = CA_GetCacheIndex(keys, key)
+
+	if(IsNaN(foundIndex))
 		index = CA_MakeSpaceForNewEntry()
 	else
-		index = V_Value
+		index = foundIndex
 	endif
 
 	if(storeDuplicate)
