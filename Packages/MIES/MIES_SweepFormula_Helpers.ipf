@@ -241,6 +241,8 @@ End
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
+///
+/// UTF_NOINSTRUMENTATION
 Function SFH_ASSERT(variable condition, string message[, variable jsonId])
 
 	if(!condition)

@@ -630,6 +630,8 @@ Function ASYNC_Execute(dfr)
 End
 
 /// @brief test if data folder is marked for thread usage
+///
+/// UTF_NOINSTRUMENTATION
 static Function ASYNC_IsThreadDF(dfr)
 	DFREF dfr
 

@@ -576,6 +576,8 @@ Function/DF GetDAQDevicesFolder()
 End
 
 /// @brief Return a data folder reference to the DAQ devices folder
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetDAQDevicesFolderAsString()
 
 	return GetMiesPathAsString() + ":HardwareDevices"
@@ -612,6 +614,8 @@ Function/DF GetDeviceTypePath(deviceType)
 End
 
 /// @brief Return the path to the device type folder, e.g. root:mies:HardwareDevices:ITC1600
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
@@ -625,6 +629,8 @@ threadsafe Function/DF GetDevicePath(device)
 End
 
 /// @brief Return the path to the device info folder, e.g. root:mies:HardwareDevices:DeviceInfo
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetDeviceInfoPathAsString()
 
 	return GetDAQDevicesFolderAsString() + ":DeviceInfo"
@@ -637,6 +643,8 @@ threadsafe Function/DF GetDeviceInfoPath()
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetDevicePathAsString(device)
 	string device
 
@@ -662,12 +670,16 @@ Function/DF GetDeviceDataPath(device)
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:Data
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDeviceDataPathAsString(device)
 	string device
 	return GetDevicePathAsString(device) + ":Data"
 End
 
 /// @brief Returns a data folder reference to the mies base folder
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/DF GetMiesPath()
 	return createDFWithAllParents(GetMiesPathAsString())
 End
@@ -684,6 +696,8 @@ threadsafe Function/DF GetSweepFormulaPath()
 End
 
 /// @brief Returns the temporary folder for Sweep formula, e.g. root:MIES:SweepFormula
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetSweepFormulaPathAsString()
 	return GetMiesPathAsString() + ":SweepFormula"
 End
@@ -694,11 +708,15 @@ threadsafe Function/DF GetCalledOncePath()
 End
 
 /// @brief Returns a name of the data folder for the call once folder, e.g. root:MIES:CalledOnce
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetCalledOncePathAsString()
 	return GetMiesPathAsString() + ":CalledOnce"
 End
 
 /// @brief Return a datafolder reference to a subfolder below `dfr` for splitted sweep specific data, e.g. dfr:X_5
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetSingleSweepFolder(dfr, sweepNo)
 	DFREF dfr
 	variable sweepNo
@@ -1094,6 +1112,8 @@ Function/DF GetLabNotebookFolder()
 End
 
 /// @brief Return the full path to the lab notebook, e.g. root:MIES:LabNoteBook
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetLabNotebookFolderAsString()
 
 	return GetMiesPathAsString() + ":LabNoteBook"
@@ -1107,6 +1127,8 @@ Function/DF GetDevSpecLabNBFolder(device)
 End
 
 /// @brief Return the full path to the device specific lab notebook, e.g. root:MIES:LabNoteBook:ITC18USB:Device0
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDevSpecLabNBFolderAsString(device)
 	string device
 
@@ -2832,12 +2854,16 @@ Function/Wave GetAcqTPStorage()
 End
 
 /// @brief Return a datafolder reference to the test pulse folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDeviceTestPulse(device)
 	string device
 	return createDFWithAllParents(GetDeviceTestPulseAsString(device))
 End
 
 /// @brief Return the path to the test pulse folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:TestPulse
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDeviceTestPulseAsString(device)
 	string device
 	return GetDevicePathAsString(device) + ":TestPulse"
@@ -3014,11 +3040,15 @@ End
 /// @{
 
 /// @brief Return the datafolder reference to the amplifier
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAmplifierFolder()
 	return createDFWithAllParents(GetAmplifierFolderAsString())
 End
 
 /// @brief Return the path to the amplifierm e.g. root:mies:Amplifiers"
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAmplifierFolderAsString()
 	return GetMiesPathAsString() + ":Amplifiers"
 End
@@ -3431,81 +3461,113 @@ End
 /// @{
 
 /// @brief Returns a data folder reference to the base
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWaveBuilderPath()
 	return createDFWithAllParents(GetWaveBuilderPathAsString())
 End
 
 /// @brief Returns the full path to the base path, e.g. root:MIES:WaveBuilder
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWaveBuilderPathAsString()
 	return GetMiesPathAsString() + ":WaveBuilder"
 End
 
 /// @brief Returns a data folder reference to the data
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWaveBuilderDataPath()
 	return createDFWithAllParents(GetWaveBuilderDataPathAsString())
 End
 
 ///	@brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWaveBuilderDataPathAsString()
 	return GetWaveBuilderPathAsString() + ":Data"
 End
 
 /// @brief Returns a data folder reference to the stimulus set parameter
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetParamPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamPathAS())
 End
 
 ///	@brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamPathAS()
 	return GetWaveBuilderPathAsString() + ":SavedStimulusSetParameters"
 End
 
 /// @brief Returns a data folder reference to the stimulus set
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetPath()
 	return createDFWithAllParents(GetWBSvdStimSetPathAsString())
 End
 
 ///	@brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetPathAsString()
 	return GetWaveBuilderPathAsString() + ":SavedStimulusSets"
 End
 
 /// @brief Returns a data folder reference to the stimulus set parameters of `DA` type
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetParamDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamDAPathAS())
 End
 
 ///	@brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamDAPathAS()
 	return GetWBSvdStimSetParamPathAS() + ":DA"
 End
 
 /// @brief Returns a data folder reference to the stimulus set parameters of `TTL` type
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetParamTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamTTLAsString())
 End
 
 ///	@brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamTTLAsString()
 	return GetWBSvdStimSetParamPathAS() + ":TTL"
 End
 
 /// @brief Returns a data folder reference to the stimulus set of `DA` type
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetDAPathAsString())
 End
 
 ///	@brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetDAPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":DA"
 End
 
 /// @brief Returns a data folder reference to the stimulus set of `TTL` type
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetWBSvdStimSetTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetTTLPathAsString())
 End
 
 ///	@brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetTTLPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":TTL"
 End
@@ -4372,18 +4434,24 @@ Function/S P_GetDevicePressureFolderAS(device)
 End
 
 /// @brief Creates device specific pressure folder - used to store data for pressure regulators
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF P_DeviceSpecificPressureDFRef(device)
 	string device
 	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(device))
 End
 
 /// @brief Returns pressure folder as string
+///
+/// UTF_NOINSTRUMENTATION
 Function/S P_GetPressureFolderAS(device)
 	string device
 	return GetMiesPathAsString() + ":Pressure"
 End
 
 /// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF P_PressureFolderReference(device)
 	string device
 	return CreateDFWithAllParents(P_GetPressureFolderAS(device))
@@ -4702,6 +4770,8 @@ End
 /// @}
 
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDevSpecLabNBTempFolder(device)
 	string device
 
@@ -4709,6 +4779,8 @@ Function/DF GetDevSpecLabNBTempFolder(device)
 End
 
 /// @brief Return the full path to the device specific lab notebook temp folder, e.g. root:MIES:LabNoteBook:ITC18USB:Device0:Temp
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDevSpecLabNBTempFolderAS(device)
 	string device
 
@@ -4716,12 +4788,16 @@ Function/S GetDevSpecLabNBTempFolderAS(device)
 End
 
 /// @brief Return the full path to the results folder, e.g. root:MIES:Results
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetResultsFolderAsString()
 
 	return GetMiesPathAsString() + ":Results"
 End
 
 /// @brief Return the data folder reference to the results folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetResultsFolder()
 
 	return createDFWithAllParents(GetResultsFolderAsString())
@@ -4731,46 +4807,62 @@ End
 /// @{
 
 /// @brief Return the datafolder reference to the root folder for the analysis browser
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisFolder()
 	return createDFWithAllParents(GetAnalysisFolderAS())
 End
 
 /// @brief Return the full path to the root analysis folder, e.g. root:MIES:analysis
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisFolderAS()
 	return GetMiesPathAsString() + ":Analysis"
 End
 
 /// @brief Return the datafolder reference to the per experiment folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisExpFolder(expFolder)
 	string expFolder
 	return createDFWithAllParents(GetAnalysisExpFolderAS(expFolder))
 End
 
 /// @brief Return the full path to the per experiment folder, e.g. root:MIES:Analysis:my_experiment
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisExpFolderAS(expFolder)
 	string expFolder
 	return GetAnalysisFolderAS() + ":" + expFolder
 End
 
 /// @brief Return the datafolder reference to the per device folder of an experiment
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisDeviceFolder(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisDeviceFolderAS(expFolder, device))
 End
 
 /// @brief Return the full path to the per device folder of an experiment, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisDeviceFolderAS(expFolder, device)
 	string expFolder, device
 	return GetAnalysisExpFolderAS(expFolder) + ":" + device
 End
 
 /// @brief Return the datafolder reference to the sweep to channel relation of a device and experiment pair
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisDevChannelFolder(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisDevChannelFolderAS(expFolder, device))
 End
 
 /// @brief Return the full path to the sweep to channel relation folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:channel
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisDevChannelFolderAS(expFolder, device)
 	string expFolder, device
 
@@ -4778,12 +4870,16 @@ Function/S GetAnalysisDevChannelFolderAS(expFolder, device)
 End
 
 /// @brief Return the datafolder reference to the sweep config folder of a device and experiment pair
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisDeviceConfigFolder(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisDeviceConfigFolderAS(expFolder, device))
 End
 
 /// @brief Return the full path to the sweep config folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:config
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisDeviceConfigFolderAS(expFolder, device)
 	string expFolder, device
 
@@ -4791,30 +4887,40 @@ Function/S GetAnalysisDeviceConfigFolderAS(expFolder, device)
 End
 
 /// @brief Return the datafolder reference to the testpulse folder of a device and experiment pair
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisDeviceTestpulse(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisDeviceTestpulseAS(expFolder, device))
 End
 
 /// @brief Return the full path to the testpulse folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:testpulse
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisDeviceTestpulseAS(expFolder, device)
 	string expFolder, device
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":testpulse"
 End
 
 /// @brief Return the datafolder reference to the labnotebook folder of a device and experiment pair
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisLabNBFolder(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisLabNBFolderAS(expFolder, device))
 End
 
 /// @brief Return the full path to the labnotebook folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:labnotebook
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisLabNBFolderAS(expFolder, device)
 	string expFolder, device
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":labnotebook"
 End
 
 /// @brief Return the datafolder reference to the sweep folder of a device and experiment pair
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisSweepPath(expFolder, device)
 	string expFolder, device
 
@@ -4822,6 +4928,8 @@ Function/DF GetAnalysisSweepPath(expFolder, device)
 End
 
 /// @brief Return the full path to the sweep folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:sweep
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisSweepPathAsString(expFolder, device)
 	string expFolder, device
 
@@ -4829,6 +4937,8 @@ Function/S GetAnalysisSweepPathAsString(expFolder, device)
 End
 
 /// @brief Return the datafolder reference to the per sweep folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
@@ -4837,6 +4947,8 @@ Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
 End
 
 /// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:sweep:X_$sweep
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
@@ -4846,6 +4958,8 @@ Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 End
 
 /// @brief Return the datafolder reference to the stim set folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisStimSetPath(expFolder, device)
 	string expFolder, device
 
@@ -4853,6 +4967,8 @@ Function/DF GetAnalysisStimSetPath(expFolder, device)
 End
 
 /// @brief Return the full path to the stim set folder, e.g. root:MIES:Analysis:my_experiment::stimset
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	string expFolder, device
 
@@ -4860,11 +4976,15 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 End
 
 /// @brief Return the datafolder reference to results folder of an experiment
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAnalysisResultsFolder(string expFolder)
 	return createDFWithAllParents(GetAnalysisResultsFolderAsString(expFolder))
 End
 
 /// @brief Return the datafolder reference to results folder of an experiment, e.g. root:MIES:Analysis:my_experiment:results
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAnalysisResultsFolderAsString(string expFolder)
 
 	return GetAnalysisExpFolderAS(expFolder) + ":results"
@@ -5148,6 +5268,7 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	return wv
 End
 
+/// UTF_NOINSTRUMENTATION
 Function/WAVE ANALYSIS_LBN_GETTER_PROTO(string expFolder, string device)
 	ASSERT(0, "Can not call prototype function")
 End
@@ -5253,6 +5374,8 @@ Function/Wave GetIndexingStorageWave(device)
 End
 
 /// @brief Return the temporary folder below the MIES hierarchy, e.g. root:mies:trash.
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetTempPath()
 
 	return createDFWithAllParents(GetMiesPathAsString() + ":" + TRASH_FOLDER_PREFIX)
@@ -5262,17 +5385,23 @@ End
 ///
 /// As soon as you discard the latest reference to the folder it will
 /// be slated for removal at some point in the future.
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/DF GetUniqueTempPath()
 
 	return UniqueDataFolder(GetMiesPath(), TRASH_FOLDER_PREFIX)
 End
 
 /// @brief Return the datafolder reference to the static data location, e.g. root:mies:StaticData:
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetStaticDataFolder()
 	return createDFWithAllParents(GetStaticDataFolderAS())
 End
 
 /// @brief Return the full path to the static data location
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetStaticDataFolderAS()
 
 	return GetMiesPathAsString() + ":StaticData"
@@ -5280,11 +5409,15 @@ End
 
 /// @brief Return the datafolder reference to the active DAQ devices folder,
 /// e.g. root:MIES:HardwareDevices:ActiveDAQDevices:TestPulse
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetActDAQDevicesTestPulseFolder()
 	return createDFWithAllParents(GetActiveDAQDevicesTestPulseFolderAsString())
 End
 
 /// @brief Return the full path to the active DAQ devices location for the test pulse
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetActiveDAQDevicesTestPulseFolderAsString()
 	return GetDAQDevicesFolderAsString() + ":ActiveDAQDevices:TestPulse"
 End
@@ -5469,11 +5602,15 @@ End
 
 /// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,
 ///        e.g. root:MIES:NWB
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetNWBFolder()
 	return createDFWithAllParents(GetNWBFolderAS())
 End
 
 /// @brief Return the full path to the NeuroDataWithoutBorders folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetNWBFolderAS()
 	return GetMiesPathAsString() + ":NWB"
 End
@@ -5641,12 +5778,16 @@ End
 /// @}
 
 /// @brief Return the datafolder reference to the oodDAQ folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDistDAQFolder()
 	return createDFWithAllParents(GetDistDAQFolderAS())
 End
 
 /// @brief Return the full path to the optimized overlap distributed
 ///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDistDAQFolderAS()
 	return GetDAQDevicesFolderAsString() + ":oodDAQ"
 End
@@ -5723,6 +5864,8 @@ Function/WAVE GetPressureTypeWv(device)
 End
 
 /// @brief Return the pulse averaging folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDevicePulseAverageFolder(dfr)
 	DFREF dfr
 
@@ -5730,6 +5873,8 @@ Function/DF GetDevicePulseAverageFolder(dfr)
 End
 
 /// @brief Return the full path to the pulse averaging folder, e.g. dfr:PulseAveraging
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDevicePulseAverageFolderAS(dfr)
 	DFREF dfr
 
@@ -5739,6 +5884,8 @@ End
 /// @brief Return the pulse averaging helper folder
 ///
 /// This holds various helper waves for the graph generation.
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDevicePulseAverageHelperFolder(dfr)
 	DFREF dfr
 
@@ -5746,6 +5893,8 @@ Function/DF GetDevicePulseAverageHelperFolder(dfr)
 End
 
 /// @brief Return the full path to the pulse averaging helper folder, e.g. dfr:Helper
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDevicePulseAverageHelperFolderAS(dfr)
 	DFREF dfr
 
@@ -6215,11 +6364,15 @@ End
 /// @name Getters related to debugging
 /// @{
 /// @brief Return the datafolder reference to the debug folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDebugPanelFolder()
 	return createDFWithAllParents(GetDebugPanelFolderAS())
 End
 
 /// @brief Return the full path to the debug datafolder, e.g. root:MIES:Debug
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetDebugPanelFolderAS()
 	return GetMiesPathAsString() + ":Debug"
 End
@@ -6910,23 +7063,30 @@ Function/WAVE GetPopupExtMenuWave()
 End
 
 /// @brief Return the reference to the graph user data datafolder as string
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetGraphUserDataFolderAsString()
 
 	return GetMiesPathAsString() + ":GraphUserData"
 End
 
 /// @brief Return the reference to the graph user data datafolder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetGraphUserDataFolderDFR()
 
 	return createDFWithAllParents(GetGraphUserDataFolderAsString())
 End
 
+/// UTF_NOINSTRUMENTATION
 static Function/S BuildGraphName(string graph)
 
 	return CleanupName(graph, 0) + "_wave"
 End
 
 /// @brief Return the path to the text wave for the graph user data as string
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetGraphUserDataAsString(string graph)
 
 	return GetGraphUserDataFolderAsString() + ":" + BuildGraphName(graph)
@@ -7121,11 +7281,14 @@ Function/WAVE GetValidAcqStateTransitions()
 	return wv
 End
 
+/// UTF_NOINSTRUMENTATION
 Function/S GetDANDIFolderAsString()
 	return "root:MIES:DANDI"
 End
 
 /// @brief Return the data folder reference to the DANDI folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetDANDIFolder()
 
 	return createDFWithAllParents(GetDANDIFolderAsString())
@@ -7505,11 +7668,15 @@ Function/WAVE GetSerialExecutionBuffer(dfr)
 End
 
 /// @brief Returns string path to async framework home data folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetAsyncHomeStr()
 	return "root:Packages:Async"
 End
 
 /// @brief Returns reference to async framework home data folder
+///
+/// UTF_NOINSTRUMENTATION
 Function/DF GetAsyncHomeDF()
 	return createDFWithAllParents(getAsyncHomeStr())
 End

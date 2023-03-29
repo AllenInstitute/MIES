@@ -1198,6 +1198,8 @@ End
 /// @brief Return the main window name from a full subwindow specification
 ///
 /// @param subwindow window name including subwindows, e.g. `panel#subWin1#subWin2`
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetMainWindow(subwindow)
 	string subwindow
 
@@ -1205,6 +1207,8 @@ Function/S GetMainWindow(subwindow)
 End
 
 /// @brief Return the currently active window
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetCurrentWindow()
 
 	GetWindow kwTopWin activesw
