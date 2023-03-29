@@ -275,20 +275,6 @@ static Function/S SF_StringifyAction(variable action)
 	endswitch
 End
 
-/// @brief preparse user input to correct formula patterns
-///
-/// @return parsed formula
-static Function/S SF_FormulaPreParser(string formula)
-
-	SFH_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
-	SFH_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
-	SFH_ASSERT(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
-
-	formula = ReplaceString("...", formula, "…")
-
-	return formula
-End
-
 static Function SF_IsStateGathering(variable state)
 
 	return state == SF_STATE_COLLECT || state == SF_STATE_WHITESPACE || state == SF_STATE_NEWLINE
@@ -2206,7 +2192,7 @@ End
 Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
-	variable jsonId, errState
+	variable errState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -2223,17 +2209,27 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb, mode=2)
 
-			SF_CheckInputCode(formula, dfr)
+			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+			SVAR result = $GetSweepFormulaParseErrorMessage()
+			result = ""
+			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
 
-			errMsg = ROStr(GetSweepFormulaParseErrorMessage())
-			errState = IsEmpty(errMsg) ? SF_MSG_OK : SF_MSG_ERROR
-			SF_SetStatusDisplay(bsPanel, errMsg, errState)
+			try
+				SF_CheckInputCode(formula, dfr)
+			catch
+				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
+				JSON_Release(jsonID, ignoreErr = 1)
+				jsonID = NaN
+			endtry
 
 			json_nb = BSP_GetSFJSON(mainPanel)
-			jsonID = ROVar(GetSweepFormulaJSONid(dfr))
-			text = JSON_Dump(jsonID, indent = 2, ignoreErr = 1)
-			text = NormalizeToEOL(text, "\r")
-			ReplaceNotebookText(json_nb, text)
+			if(!IsNaN(jsonID))
+				text = JSON_Dump(jsonID, indent = 2, ignoreErr = 1)
+				text = NormalizeToEOL(text, "\r")
+				ReplaceNotebookText(json_nb, text)
+			else
+				ReplaceNotebookText(json_nb, "")
+			endif
 
 			break
 	endswitch
@@ -2244,11 +2240,8 @@ End
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, DFREF dfr)
 
-	variable i, numFormulae, numGraphs, jsonIDy, jsonIDx
-	string jsonPath, tmpStr, xFormula
-
-	SVAR errMsg = $GetSweepFormulaParseErrorMessage()
-	errMsg = ""
+	variable i, numGraphs, jsonIDy, jsonIDx
+	string jsonPath, xFormula
 
 	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
 	JSON_Release(jsonID, ignoreErr = 1)
@@ -2259,10 +2252,7 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
-	if(!WaveExists(formulaPairs))
-		errMsg = "Could not determine y [vs x] formula pair."
-		return NaN
-	endif
+	SFH_ASSERT(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
 	numGraphs = DimSize(formulaPairs, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
@@ -2270,46 +2260,28 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 		JSON_AddObjects(jsonID, jsonPath)
 
 		jsonIdy = SF_ParseFormulaToJSON(formulaPairs[i][%FORMULA_Y])
-		if(IsNaN(jsonIdy))
-			JSON_Release(jsonID, ignoreErr = 1)
-			return NaN
-		endif
 		JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
 		JSON_Release(jsonIDy)
 
 		xFormula = formulaPairs[i][%FORMULA_X]
 		if(!IsEmpty(xFormula))
 			jsonIdx = SF_ParseFormulaToJSON(xFormula)
-			if(IsNaN(jsonIdx))
-				JSON_Release(jsonID, ignoreErr = 1)
-				return NaN
-			endif
 			JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
 			JSON_Release(jsonIDx)
 		endif
 	endfor
 End
 
-// returns jsonID or NaN is not successful
-static Function SF_ParseFormulaToJSON(string formula, [variable dontCatch])
+// returns jsonID or Aborts is not successful
+static Function SF_ParseFormulaToJSON(string formula)
 
-	variable jsonid
+	SFH_ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
+	SFH_ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
+	SFH_ASSERT(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
 
-	dontCatch = ParamIsDefault(dontCatch) ? 0 : !!dontCatch
+	formula = ReplaceString("...", formula, "…")
 
-	if(dontCatch)
-		return SF_FormulaParser(SF_FormulaPreParser(formula))
-	endif
-
-	// catch Abort from SFH_ASSERT called from SF_FormulaParser
-	try
-		jsonId = SF_FormulaParser(SF_FormulaPreParser(formula))
-	catch
-		JSON_Release(jsonId, ignoreErr = 1)
-		return NaN
-	endtry
-
-	return jsonId
+	return SF_FormulaParser(formula)
 End
 
 Function SF_Update(string graph)
@@ -4783,7 +4755,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	formula = SF_PreprocessInput(formula)
-	jsonId = SF_ParseFormulaToJSON(formula, dontCatch = 1)
+	jsonId = SF_ParseFormulaToJSON(formula)
 	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
@@ -5020,7 +4992,7 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 
 	numAssignments = DimSize(varAssignments, ROWS)
 	for(i = 0; i < numAssignments; i += 1)
-		jsonIdFormula = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION], dontCatch=1)
+		jsonIdFormula = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
 		jsonPath = "/Variable:" + varAssignments[i][%VARNAME]
 		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
 		JSON_Release(jsonIdFormula)
@@ -5047,7 +5019,7 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 	Redimension/N=(numAssignments) varStorage
 
 	for(i = 0; i < numAssignments; i += 1)
-		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION], dontCatch=1)
+		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
 		varStorage[i] = SF_FormulaExecutor(graph, jsonId)
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
 		JSON_Release(jsonId)
