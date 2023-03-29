@@ -2255,6 +2255,8 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
 
+	code = SF_CheckVariableAssignments(code, jsonID)
+
 	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
 	if(!WaveExists(formulaPairs))
@@ -4950,17 +4952,27 @@ static Function SF_CollectTraceData(variable &index, WAVE/WAVE graphData, string
 	index += 1
 End
 
-static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode, DFREF dfr)
+static Function [string varName, string formula] SF_SplitVariableAssignment(string line)
 
-	variable i, numLines, jsonId, varCnt
+	string regex = "^(?i)\\s*([A-Z]{1}[A-Z0-9_]*)\\s*=(.+)$"
+
+	SplitString/E=regex line, varName, formula
+	if(V_flag != 2)
+		return ["", ""]
+	endif
+
+	return [varName, formula]
+End
+
+static Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(string preProcCode)
+
+	variable i, numLines, varCnt, dimVarName
 	string line, varName, formula
 	string lineEnd = "\r"
 	string varPart = ""
-	string regex = "^(?i)\\s*([A-Z]{1}[A-Z0-9_]*)\\s*=(.+)$"
 
-	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
-	KillOrMoveToTrash(wv = varStorage)
-	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	WAVE/T varAssignments = GetSFVarAssignments()
+	dimVarName = FindDimlabel(varAssignments, COLS, "VARNAME")
 
 	numLines = ItemsInList(preProcCode, lineEnd)
 	for(i = 0; i < numLines; i += 1)
@@ -4969,22 +4981,77 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 			varPart += lineEnd
 			continue
 		endif
-		SplitString/E=regex line, varName, formula
-		if(V_flag != 2)
+		[varName, formula] = SF_SplitVariableAssignment(line)
+		if(IsEmpty(varName))
 			break
 		endif
 		SFH_ASSERT(IsValidObjectName(varName), "Invalid SF variable name")
-		SFH_ASSERT(FindDimLabel(varStorage, ROWS, varName) == -2, "Duplicate variable name.")
-		jsonId = SF_ParseFormulaToJSON(formula, dontCatch=1)
 		varPart += line + lineEnd
-		WAVE result = SF_FormulaExecutor(graph, jsonId)
-		EnsureLargeEnoughWave(varStorage, minimumSize=varCnt)
-		varStorage[varCnt] = result
-		SetDimLabel ROWS, varCnt, $varName, varStorage
+
+		EnsureLargeEnoughWave(varAssignments, minimumSize=varCnt)
+		varAssignments[varCnt][dimVarName] = varName
+		varAssignments[varCnt][%EXPRESSION] = formula
 
 		varCnt += 1
 	endfor
-	Redimension/N=(varCnt) varStorage
+	if(!varCnt)
+		return [$"", preProcCode]
+	endif
+	Redimension/N=(varCnt, -1) varAssignments
 
-	return ReplaceString(varPart, preProcCode, "")
+	if(varCnt > 1)
+		Duplicate/FREE/RMD=[][dimVarName] varAssignments, dupCheck
+		FindDuplicates/FREE/CI/DT=dups dupCheck
+		SFH_ASSERT(!DimSize(dups, ROWS), "Duplicate variable name.")
+	endif
+
+	return [varAssignments, ReplaceString(varPart, preProcCode, "")]
+End
+
+static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonId)
+
+	variable i, numAssignments, jsonIdFormula
+	string code, jsonPath
+
+	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
+	if(!WaveExists(varAssignments))
+		return code
+	endif
+
+	numAssignments = DimSize(varAssignments, ROWS)
+	for(i = 0; i < numAssignments; i += 1)
+		jsonIdFormula = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION], dontCatch=1)
+		jsonPath = "/Variable:" + varAssignments[i][%VARNAME]
+		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
+		JSON_Release(jsonIdFormula)
+	endfor
+
+	return code
+End
+
+static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode, DFREF dfr)
+
+	variable i, numAssignments, jsonId
+	string code
+
+	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	RemoveAllDimLabels(varStorage)
+	Redimension/N=(0, -1) varStorage
+
+	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
+	if(!WaveExists(varAssignments))
+		return code
+	endif
+
+	numAssignments = DimSize(varAssignments, ROWS)
+	Redimension/N=(numAssignments) varStorage
+
+	for(i = 0; i < numAssignments; i += 1)
+		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION], dontCatch=1)
+		varStorage[i] = SF_FormulaExecutor(graph, jsonId)
+		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
+		JSON_Release(jsonId)
+	endfor
+
+	return code
 End
