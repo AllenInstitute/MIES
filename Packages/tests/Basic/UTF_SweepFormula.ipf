@@ -158,8 +158,7 @@ End
 static Function DirectToFormulaParser(string code)
 
 	code = MIES_SF#SF_PreprocessInput(code)
-	code = MIES_SF#SF_FormulaPreParser(code)
-	return MIES_SF#SF_FormulaParser(code)
+	return MIES_SF#SF_ParseFormulaToJSON(code)
 End
 
 static Function primitiveOperations()
@@ -3150,4 +3149,48 @@ static Function TestArgSetup()
 	Make/FREE/T result = {"\s(T000000d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:normoversweepsavg ResultType:freq) data Sweeps 0-8,145 AD0", "\s(T000010d0_apfrequency_data_Sweep_0_AD0)apfrequency(Normalize:norminsweepsavg ResultType:time) data Sweeps 0-8,145 AD0"}
 	CHECK_EQUAL_VAR(SFH_EnrichAnnotations(wAnnotations, formulaArgSetup), 1)
 	CHECK_EQUAL_WAVES(result, wAnnotations, mode = WAVE_DATA)
+End
+
+static Function TestInputCodeCheck()
+
+	string formula, jsonRef, jsonTxt
+	DFREF dfr = :
+
+	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+
+	formula = "1"
+	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n}\n}"
+	MIES_SF#SF_CheckInputCode(formula, dfr)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
+	formula = "1 vs 1"
+	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1\n}\n}"
+	MIES_SF#SF_CheckInputCode(formula, dfr)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
+	formula = "1\rwith\r1 vs 1"
+	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1,\n\"formula_y_1\": 1\n}\n}"
+	MIES_SF#SF_CheckInputCode(formula, dfr)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
+	formula = "v = 1\r1"
+	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n},\n\"variable:v\": 1\n}"
+	MIES_SF#SF_CheckInputCode(formula, dfr)
+	jsonTxt = JSON_Dump(jsonId)
+	JSON_Release(jsonId)
+	CHECK_EQUAL_STR(jsonRef, jsonTxt)
+
+	formula = "[*]"
+	try
+		MIES_SF#SF_CheckInputCode(formula, dfr)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End

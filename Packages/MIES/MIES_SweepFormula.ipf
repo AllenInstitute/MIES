@@ -2240,8 +2240,8 @@ End
 /// @brief Checks input code, sets globals for jsonId and error string
 static Function SF_CheckInputCode(string code, DFREF dfr)
 
-	variable i, numGraphs, jsonIDy, jsonIDx
-	string jsonPath, xFormula
+	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
+	string jsonPath, xFormula, yFormula, yFormulasRemain, subPath
 
 	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
 	JSON_Release(jsonID, ignoreErr = 1)
@@ -2256,17 +2256,29 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 
 	numGraphs = DimSize(formulaPairs, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
-		jsonPath = "/Formula_" + num2istr(i)
+		subFormulaCnt = 0
+		yFormulasRemain = formulaPairs[i][%FORMULA_Y]
+		sprintf jsonPath, "/graph_%d", i
 		JSON_AddObjects(jsonID, jsonPath)
 
-		jsonIdy = SF_ParseFormulaToJSON(formulaPairs[i][%FORMULA_Y])
-		JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
-		JSON_Release(jsonIDy)
+		do
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
+			if(!V_flag)
+				break
+			endif
+
+			sprintf subPath, "/formula_y_%d", subFormulaCnt
+			jsonIdy = SF_ParseFormulaToJSON(yFormula)
+			JSON_AddJSON(jsonID, jsonPath + subPath, jsonIDy)
+			JSON_Release(jsonIDy)
+
+			subFormulaCnt += 1
+		while(1)
 
 		xFormula = formulaPairs[i][%FORMULA_X]
 		if(!IsEmpty(xFormula))
 			jsonIdx = SF_ParseFormulaToJSON(xFormula)
-			JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
+			JSON_AddJSON(jsonID, jsonPath + "/formula_x", jsonIDx)
 			JSON_Release(jsonIDx)
 		endif
 	endfor
@@ -4993,7 +5005,7 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 	numAssignments = DimSize(varAssignments, ROWS)
 	for(i = 0; i < numAssignments; i += 1)
 		jsonIdFormula = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		jsonPath = "/Variable:" + varAssignments[i][%VARNAME]
+		jsonPath = "/variable:" + varAssignments[i][%VARNAME]
 		JSON_AddJSON(jsonID, jsonPath, jsonIdFormula)
 		JSON_Release(jsonIdFormula)
 	endfor
