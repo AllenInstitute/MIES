@@ -69,6 +69,20 @@ For fast read-write-view cycles while writing the user documentation do the foll
 - Call ``make autobuild`` which opens a local webbrowser and rebuilds after
   every change. This time incremental updates work.
 
+Updating requirements files
+---------------------------
+
+All python package requirements.txt files we ship must have package hashes
+included for improved security.
+
+These files are generated from requirements.in via
+
+  .. code:: text
+
+    pip-compile --generate-hashes --resolver=backtracking requirements.in
+
+Therefore updates should be done directly in requirements.in and then calling pip-compile.
+
 Release Handling
 ----------------
 
