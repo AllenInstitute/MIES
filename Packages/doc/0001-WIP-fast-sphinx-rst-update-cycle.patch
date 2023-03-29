@@ -1,47 +1,48 @@
-From 22d1a496a45e6e7acc71304dceaf18b5a377ba00 Mon Sep 17 00:00:00 2001
+From d8bae7390a0dd02af065fb3a9c4be43be05af063 Mon Sep 17 00:00:00 2001
 From: Thomas Braun <thomas.braun@byte-physics.de>
-Date: Tue, 22 Feb 2022 18:39:44 +0100
-Subject: [PATCH 1/1] WIP: fast sphinx rst update cycle
+Date: Wed, 29 Mar 2023 18:18:04 +0200
+Subject: [PATCH 1/1] WIP: fast sphinx compilation without breathe
 
 ---
  Packages/doc/conf.py         |  6 +++---
- tools/build-documentation.sh | 20 ++++++++++----------
- 2 files changed, 13 insertions(+), 13 deletions(-)
+ tools/build-documentation.sh | 27 ---------------------------
+ 2 files changed, 3 insertions(+), 30 deletions(-)
 
 diff --git a/Packages/doc/conf.py b/Packages/doc/conf.py
-index ec47543d6..18430884b 100644
+index ad61b69d9..13385ff36 100644
 --- a/Packages/doc/conf.py
 +++ b/Packages/doc/conf.py
-@@ -16,18 +16,18 @@ def get_version():
+@@ -16,11 +16,11 @@ def get_version():
      return "({branch}) {version}".format(branch=branchString.decode('ascii'), version=revString.decode('ascii'))
-
+ 
  # sphinx config
 -extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', \
 +extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo',            \
                'sphinxcontrib.fulltoc', 'sphinxcontrib.images',    \
-               'sphinxembeddedvideos.youtube']
-
+               'sphinxcontrib.youtube']
+ 
 -master_doc = "index"
 +master_doc = "user"
  project= "MIES Igor"
-
+ 
  html_static_path = ['_static']
-
+@@ -28,7 +28,7 @@ html_static_path = ['_static']
+ html_copy_source = False
  html_show_sourcelink = False
-
+ 
 -exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications']
 +exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications', 'index.rst']
-
+ 
  cpp_id_attributes = [ 'threadsafe' ]
-
+ 
 diff --git a/tools/build-documentation.sh b/tools/build-documentation.sh
-index 4b2d2fd6d..8e9afc827 100755
+index 1ef95581d..f0ffe5619 100755
 --- a/tools/build-documentation.sh
 +++ b/tools/build-documentation.sh
-@@ -102,16 +102,16 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
- # bash "${top_level}/Packages/IPNWB/update_doc.sh"
- # cd "${top_level}/Packages/doc" # submodule rev-parse
-
+@@ -101,33 +101,6 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
+ # workaround https://github.com/sphinx-contrib/images/pull/31
+ mkdir _video_thumbnail
+ 
 -if hash breathe-apidoc 2>/dev/null; then
 -  echo "Start breathe-apidoc"
 -
@@ -52,19 +53,26 @@ index 4b2d2fd6d..8e9afc827 100755
 -  echo "breathe-apidoc could not be found" 1>&2
 -  Failed
 -fi
-+# if hash breathe-apidoc 2>/dev/null; then
-+#   echo "Start breathe-apidoc"
-+#
-+#   breathe-apidoc -f -o . xml
-+#
-+# else
-+#   echo "Errors building the documentation" 1>&2
-+#   echo "breathe-apidoc could not be found" 1>&2
-+#   Failed
-+# fi
-
- # Add labels to each group and each file
- # can be referenced via :ref:`Group LabnotebookQueryFunctions`
---
-2.35.1.windows.2.4.gbfc55a2345.20220215094111
+-
+-# Add labels to each group and each file
+-# can be referenced via :ref:`Group LabnotebookQueryFunctions`
+-# or :ref:`File MIES_Utilities.ipf`
+-
+-for i in `ls group/group_*.rst`
+-do
+-  name=$(sed -e '$!d' -e 's/.*doxygengroup:: \(.*\)$/\1/' $i)
+-  sed -i "1s/^/.. _Group ${name}:\n\n/" $i
+-done
+-
+-for i in `ls file/*.rst`
+-do
+-  name=$(sed -e '$!d' -e 's/.*doxygenfile:: \(.*\)$/\1/' $i)
+-  sed -i "1s/^/.. _File ${name}:\n\n/" $i
+-done
+-
+ # create rst substitutions for up-to-date IP nightly links
+ grep "IgorPro[0-9]Nightly" $top_level/Packages/MIES_Include.ipf \
+   | sed -e "s/^\/\/ //"                                         \
+-- 
+2.40.0.windows.1
 
