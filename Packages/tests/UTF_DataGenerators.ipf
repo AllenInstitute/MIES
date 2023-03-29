@@ -255,3 +255,33 @@ Function/WAVE TestOperationAPFrequency2Gen()
 
 	return wv
 End
+
+static Function/WAVE SF_TestVariablesGen()
+
+// note that data is called for d and e to test if variables get cleaned up, if they would, the assignment for e would fail
+// as c and s were removed by the first data call.
+	Make/FREE/T t1FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($c,$s)\re=data($c,$s)\r\r$d", "$d"}
+	Make/FREE/T t1DimLbl = {"c", "s", "d", "e"}
+
+// case-insensitivity
+	Make/FREE/T t2FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($C,$S)\r\r$D", "$D"}
+	Make/FREE/T t2DimLbl = {"c", "s", "d"}
+
+// result test
+	Make/FREE/T t3FormulaAndRest = {"d=1...3\r$d", "$d"}
+	Make/FREE/T t3DimLbl = {"d"}
+	Make/FREE/D t3Result = {1, 2}
+
+// result test
+	Make/FREE/T t4FormulaAndRest = {"b=1\ra$b=1", "a$b=1"}
+	Make/FREE/T t4DimLbl = {"b"}
+	Make/FREE/T t4Result = {"a$b=1"}
+
+	Make/FREE/WAVE t1 = {t1FormulaAndRest, t1DimLbl, $""}
+	Make/FREE/WAVE t2 = {t2FormulaAndRest, t2DimLbl, $""}
+	Make/FREE/WAVE t3 = {t3FormulaAndRest, t3DimLbl, t3Result}
+	Make/FREE/WAVE t4 = {t4FormulaAndRest, t4DimLbl, t4Result}
+
+	Make/FREE/WAVE wv = {t1, t2, t3, t4}
+	return wv
+End

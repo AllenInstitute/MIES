@@ -3194,3 +3194,97 @@ static Function TestInputCodeCheck()
 		PASS()
 	endtry
 End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestVariablesGen
+static Function TestVariables1([WAVE wv])
+
+	string win, device
+	string str, code
+	variable dim, i
+
+	WAVE/WAVE wRef = wv
+
+	[win, device] = CreateFakeDataBrowserWindow()
+	CreateFakeSweepData(win, device, sweepNo=0)
+	CreateFakeSweepData(win, device, sweepNo=1)
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T formulaAndRest = wRef[0]
+
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, formulaAndRest[0], dfr)
+	CHECK_EQUAL_STR(formulaAndRest[1], code)
+
+	WAVE/T dimLbl = wRef[1]
+	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	CHECK_EQUAL_VAR(DimSize(dimLbl, ROWS), DimSize(varStorage, ROWS))
+	i = 0
+	for(lbl : dimLbl)
+		dim = FindDimLabel(varStorage, ROWS, lbl)
+		CHECK_NEQ_VAR(dim, -2)
+		CHECK_LT_VAR(dim, DimSize(varStorage, ROWS))
+		CHECK_EQUAL_VAR(dim, i)
+		WAVE varContent = varStorage[dim]
+		WAVE data = MIES_SFH_HELPERS#SFH_ParseArgument(varContent)
+		CHECK_GT_VAR(DimSize(data, ROWS), 0)
+		i += 1
+	endfor
+
+	WAVE/Z refData = wRef[2]
+	if(WaveExists(refData))
+		code = MIES_SF#SF_ExecuteVariableAssignments(win, formulaAndRest[0], dfr)
+		WAVE/Z result = SF_ExecuteFormula(code, win, singleresult=1)
+		CHECK_WAVE(result, WaveType(refData, 1))
+		CHECK_EQUAL_WAVES(result, refData, mode = WAVE_DATA)
+	endif
+
+End
+
+static Function TestVariables2()
+
+	string win, device
+	string str, code
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo=0)
+	CreateFakeSweepData(win, device, sweepNo=1)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	// reuse of the same variable name
+	str = "c=cursors(A,B)\rC=select(channels(AD),[0,1],all)\rd=data($c,$C)\r\r$d"
+	try
+		code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// variable with invalid expression
+	str = "c=[*#]"
+	try
+		code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// No valid varName
+	str = "12c=cursors(A,B)"
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	CHECK_EQUAL_STR(str, code)
+
+	// No variables defined
+	str = "cursors(A,B)"
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	CHECK_EQUAL_STR(str, code)
+
+	// varName with all chars
+	str = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r"
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	CHECK_EQUAL_STR("", code)
+
+	// WhiteSpaces are ok
+	str = " \ta \t= \tcursors(A,B)\r"
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	CHECK_EQUAL_STR("", code)
+End
