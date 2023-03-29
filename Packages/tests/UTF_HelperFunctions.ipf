@@ -584,6 +584,8 @@ End
 
 Function TestBeginCommon()
 	RetrieveAllWindowsInCI()
+
+	MEN_ClearPackageSettings()
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
