@@ -98,6 +98,9 @@ ln -s "${top_level}/Packages/IPNWB" "${top_level}/Packages/doc/"
 rm -rf "${top_level}/Packages/doc/IPNWB/ndx-MIES"
 trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
 
+# workaround https://github.com/sphinx-contrib/images/pull/31
+mkdir _video_thumbnail
+
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
 
