@@ -4274,26 +4274,29 @@ End
 
 /// @brief Return true if not all wave entries are NaN, false otherwise.
 ///
-threadsafe Function HasOneValidEntry(wv)
-	WAVE wv
+/// UTF_NOINSTRUMENTATION
+threadsafe Function HasOneValidEntry(WAVE wv)
 
-	variable numEntries
+	string str
+	variable val
 
-	numEntries = numpnts(wv)
+	ASSERT_TS(numpnts(wv) > 0, "Expected non-empty wave")
 
-	if(IsNumericWave(wv))
-		ASSERT_TS(IsFloatingPointWave(wv), "Requires floating point type or text wave")
-		WAVE stats = wv
-	else
-		ASSERT_TS(IsTextWave(wv), "Expected a text wave")
+	if(IsFloatingPointWave(wv))
+		return numType(WaveMin(wv)) != 2
+	elseif(IsTextWave(wv))
 		WAVE/T wvText = wv
-		Make/FREE/N=(numEntries) stats = strlen(wvText[p]) == 0 ? NaN : 1
+
+		for(str : wvText)
+			if(strlen(str) > 0)
+				return 1
+			endif
+		endfor
+	else
+		ASSERT_TS(0, "Unsupported wave type")
 	endif
 
-	ASSERT_TS(numEntries > 0, "Empty wave")
-
-	WaveStats/Q/M=1 stats
-	return V_numNaNs != numEntries
+	return 0
 End
 
 /// @brief Merge two floating point waves labnotebook waves
