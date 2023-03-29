@@ -6805,6 +6805,10 @@ Function UploadCrashDumpsDaily()
 
 	variable lastWrite
 
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
+
 	AssertOnAndClearRTError()
 	try
 		NVAR JSONid = $GetSettingsJSONid()
@@ -6832,6 +6836,10 @@ End
 Function UploadLogFilesDaily()
 	string ts
 	variable lastWrite, now, first, last
+
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
 
 	AssertOnAndClearRTError()
 	try
