@@ -408,7 +408,7 @@ static Function/WAVE MSQ_SearchForSpikes(device, type, sweepWave, headstage, tot
 	DEBUGPRINT(msg)
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-	[minVal, maxVal] = WaveMinAndMaxWrapper(singleDA, x1 = totalOnsetDelay, x2 = inf)
+	[minVal, maxVal] = WaveMinAndMax(singleDA, totalOnsetDelay, inf)
 
 	if(minVal == 0 && maxVal == 0)
 		return spikeDetection

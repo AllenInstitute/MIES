@@ -56,7 +56,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string dev
 	DebugPrint(msg)
 
 	WAVE trialsLBNClean = ZapNaNs(trialsLBN)
-	[minTrials, maxTrials] = WaveMinAndMaxWrapper(trialsLBNClean)
+	[minTrials, maxTrials] = WaveMinAndMax(trialsLBNClean)
 
 	return [minTrials, maxTrials]
 End

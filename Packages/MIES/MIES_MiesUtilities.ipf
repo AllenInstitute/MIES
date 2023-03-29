@@ -523,7 +523,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			[firstRow, lastRow] = WaveMinAndMaxWrapper(indizesSetting)
+			[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
 			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = firstRow, endRow = lastRow)
 
 			// we don't have an entry source type in the labnotebook set
@@ -5936,7 +5936,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		first = totalOnsetDelay
 		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
 
-		[low, high] = WaveMinAndMaxWrapper(DA, x1 = first, x2 = last)
+		[low, high] = WaveMinAndMax(DA, first, last)
 
 		level = low + 0.1 * (high - low)
 

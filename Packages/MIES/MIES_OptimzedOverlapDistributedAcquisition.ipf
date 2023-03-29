@@ -21,7 +21,7 @@ static Function OOD_GetThresholdLevel(stimset)
 
 	variable minVal, maxVal
 
-	[minVal, maxVal] = WaveMinAndMaxWrapper(stimset)
+	[minVal, maxVal] = WaveMinAndMax(stimset)
 	return minVal + (maxVal - minVal) * OOD_SIGNAL_THRESHOLD
 End
 

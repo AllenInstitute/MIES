@@ -1907,7 +1907,7 @@ static Function WB_PSCSegment(pa)
 
 	MultiThread SegmentWave[] = pa.amplitude * ((1 - exp(-pa.TauRise * p)) + exp(-pa.TauDecay1 * p) * (1 - pa.TauDecay2Weight) + exp(-pa.TauDecay2 * p) * pa.TauDecay2Weight)
 
-	[baseline, peak] = WaveMinAndMaxWrapper(SegmentWave)
+	[baseline, peak] = WaveMinAndMax(SegmentWave)
 	MultiThread SegmentWave *= abs(pa.amplitude)/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
