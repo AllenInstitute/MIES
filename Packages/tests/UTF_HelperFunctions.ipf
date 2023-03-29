@@ -573,13 +573,17 @@ Function IsRunningInCI()
 	return !IsEmpty(GetEnvironmentVariable("bamboo_repository_git_branch"))
 End
 
-Function RetrieveAllWindowsInCI()
+static Function RetrieveAllWindowsInCI()
 
 	if(!IsRunningInCI())
 		return NaN
 	endif
 
 	DoIgorMenu "Control" "Retrieve All Windows"
+End
+
+Function TestBeginCommon()
+	RetrieveAllWindowsInCI()
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)

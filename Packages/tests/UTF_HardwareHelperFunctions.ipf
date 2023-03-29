@@ -49,7 +49,7 @@ Function TEST_BEGIN_OVERRIDE(name)
 
 	LoadStimsetsIfRequired()
 
-	RetrieveAllWindowsInCI()
+	TestBeginCommon()
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)

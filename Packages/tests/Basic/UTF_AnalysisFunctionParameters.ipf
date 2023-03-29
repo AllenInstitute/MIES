@@ -7,7 +7,7 @@ static Function TEST_SUITE_BEGIN_OVERRIDE(string name)
 
 	LoadStimsetsIfRequired()
 
-	RetrieveAllWindowsInCI()
+	TestBeginCommon()
 End
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string name)
