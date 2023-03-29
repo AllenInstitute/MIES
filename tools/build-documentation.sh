@@ -98,12 +98,6 @@ ln -s "${top_level}/Packages/IPNWB" "${top_level}/Packages/doc/"
 rm -rf "${top_level}/Packages/doc/IPNWB/ndx-MIES"
 trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
 
-# IPNWB script has dependencies. Disabling it for CI.
-#
-# cd "${top_level}/Packages/IPNWB"
-# bash "${top_level}/Packages/IPNWB/update_doc.sh"
-# cd "${top_level}/Packages/doc" # submodule rev-parse
-
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
 
