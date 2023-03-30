@@ -420,7 +420,7 @@
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
 static Function TEST_BEGIN_OVERRIDE(string name)
-	RetrieveAllWindowsInCI()
+	TestBeginCommon()
 End
 
 static Function TEST_CASE_END_OVERRIDE(string testcase)

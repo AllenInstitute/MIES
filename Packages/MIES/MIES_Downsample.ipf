@@ -304,7 +304,7 @@ static Function ApplyConstantRateChanges(win)
 
 	WAVE rate = GetDownsampleRateWave()
 
-	[minimumRate, maximumRate] = WaveMinAndMaxWrapper(rate)
+	[minimumRate, maximumRate] = WaveMinAndMax(rate)
 
 	if(minimumRate == maximumRate)
 		DisableControl(win, checkbox_equalize)
@@ -352,7 +352,7 @@ Function/S GetPopupMenuRates()
 		return NONE
 	endif
 
-	[minimum, maximum] = WaveMinAndMaxWrapper(rates)
+	[minimum, maximum] = WaveMinAndMax(rates)
 
 	if(minimum == maximum)
 		return ExpandRateToList(panel, minimum, constantRates=1)

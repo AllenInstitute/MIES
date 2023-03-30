@@ -1151,7 +1151,7 @@ static Function LBV_LimitXRangeToSelected(string browser)
 		Make/FREE selectedSweeps = {GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")}
 	endif
 
-	[minSweep, maxSweep] = WaveMinAndMaxWrapper(selectedSweeps)
+	[minSweep, maxSweep] = WaveMinAndMax(selectedSweeps)
 
 	// display one more sweep on both sides
 	minSweep = max(0, minSweep - 1)

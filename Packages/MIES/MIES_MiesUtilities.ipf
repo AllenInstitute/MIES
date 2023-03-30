@@ -523,7 +523,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			[firstRow, lastRow] = WaveMinAndMaxWrapper(indizesSetting)
+			[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
 			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = firstRow, endRow = lastRow)
 
 			// we don't have an entry source type in the labnotebook set
@@ -2120,6 +2120,8 @@ Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 End
 
 /// @brief Check if the given sweep number is valid
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsValidSweepNumber(sweepNo)
 	variable sweepNo
 
@@ -2240,6 +2242,8 @@ End
 /// @param[out] deviceType   returns the device type X
 /// @param[out] deviceNumber returns the device number Y
 /// @returns one on successfull parsing, zero on error
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 	string device
 	string &deviceType, &deviceNumber
@@ -5932,7 +5936,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		first = totalOnsetDelay
 		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
 
-		[low, high] = WaveMinAndMaxWrapper(DA, x1 = first, x2 = last)
+		[low, high] = WaveMinAndMax(DA, first, last)
 
 		level = low + 0.1 * (high - low)
 
@@ -6125,18 +6129,25 @@ End
 
 /// @brief Maps the labnotebook entry source type, one of @ref DataAcqModes, to
 ///        a valid wave index.
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function EntrySourceTypeMapper(entrySourceType)
+
 	variable entrySourceType
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
 
 /// @brief Rerverse the effect of EntrySourceTypeMapper()
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 	return	(mapped == 0 ? NaN : --mapped)
 End
 
 /// @brief constructs a fifo name for NI device ADC operations from the deviceID
+///
+/// UTF_NOINSTRUMENTATION
 Function/S GetNIFIFOName(deviceID)
 	variable deviceID
 
@@ -6144,6 +6155,8 @@ Function/S GetNIFIFOName(deviceID)
 End
 
 /// @brief Return the total onset delay of the given sweep from the labnotebook
+///
+/// UTF_NOINSTRUMENTATION
 Function GetTotalOnsetDelay(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
@@ -6155,6 +6168,8 @@ End
 /// @brief Return the total onset delay from the given device during DAQ
 ///
 /// @sa GetTotalOnsetDelay
+///
+/// UTF_NOINSTRUMENTATION
 Function GetTotalOnsetDelayFromDevice(string device)
 
 	WAVE TPSettingsCalculated = GetTPSettingsCalculated(device)
@@ -6163,6 +6178,8 @@ Function GetTotalOnsetDelayFromDevice(string device)
 End
 
 /// @brief Check if the given multiplier is a valid sampling interval multiplier
+///
+/// UTF_NOINSTRUMENTATION
 Function IsValidSamplingMultiplier(multiplier)
 	variable multiplier
 
@@ -6805,6 +6822,10 @@ Function UploadCrashDumpsDaily()
 
 	variable lastWrite
 
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
+
 	AssertOnAndClearRTError()
 	try
 		NVAR JSONid = $GetSettingsJSONid()
@@ -6832,6 +6853,10 @@ End
 Function UploadLogFilesDaily()
 	string ts
 	variable lastWrite, now, first, last
+
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
 
 	AssertOnAndClearRTError()
 	try

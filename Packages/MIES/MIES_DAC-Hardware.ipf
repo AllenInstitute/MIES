@@ -2215,7 +2215,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					WAVE NIChannel = NIDataWave[i]
 					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
 					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
-					[minimum, maximum] = WaveMinAndMaxWrapper(NIChannel)
+					[minimum, maximum] = WaveMinAndMax(NIChannel)
 					sprintf tempStr, "%10f", max(-10, minimum - 0.001)
 					wavegenStr += tempStr + ","
 					sprintf tempStr, "%10f", min(10, maximum + 0.001)

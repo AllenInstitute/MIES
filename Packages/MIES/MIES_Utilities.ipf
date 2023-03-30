@@ -656,12 +656,16 @@ threadsafe Function DataFolderExistsDFR(DFREF dfr)
 End
 
 /// @brief Check if the passed datafolder reference is a global/permanent datafolder
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsGlobalDataFolder(DFREF dfr)
 
 	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == DFREF_VALID
 End
 
 /// @brief Returns 1 if dfr is a valid free datafolder, 0 otherwise
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsFreeDatafolder(DFREF dfr)
 
 	return (DataFolderRefStatus(dfr) & (DFREF_VALID | DFREF_FREE)) == (DFREF_VALID | DFREF_FREE)
@@ -2487,6 +2491,8 @@ End
 /// info from `FuncRefInfo` and not the function reference itself.
 ///
 /// @return 1 if pointing to prototype function, 0 otherwise
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function FuncRefIsAssigned(funcInfo)
 	string funcInfo
 
@@ -3415,6 +3421,8 @@ End
 /// @brief Check if a name for an object adheres to the strict naming rules
 ///
 /// @see `DisplayHelpTopic "Standard Object Names"`
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsValidObjectName(string name)
 	return NameChecker(name, 0)
 End
@@ -3422,10 +3430,13 @@ End
 /// @brief Check if a name for an object adheres to the liberal naming rules
 ///
 /// @see `DisplayHelpTopic "Liberal Object Names"`
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsValidLiberalObjectName(string name)
 	return NameChecker(name, 1)
 End
 
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function NameChecker(string name, variable liberal)
 	// @todo remove the IsEmpty check once this is resolved upstream.
 	return !IsEmpty(name) && !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
@@ -3893,6 +3904,8 @@ Function KillWindows(list)
 End
 
 /// @brief str2num variant with no runtime error on invalid conversions
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function str2numSafe(string str)
 
 	variable var, err
@@ -4219,6 +4232,8 @@ Function GetMachineEpsilon(type)
 End
 
 /// @brief Return true if wv is a free wave, false otherwise
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsFreeWave(wv)
 	Wave wv
 
@@ -4228,6 +4243,8 @@ End
 /// @brief Return the modification count of the (permanent) wave
 ///
 /// Returns NaN when running in a preemptive thread
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function WaveModCountWrapper(WAVE wv)
 
 	if(MU_RunningInMainThread())
@@ -4257,26 +4274,29 @@ End
 
 /// @brief Return true if not all wave entries are NaN, false otherwise.
 ///
-threadsafe Function HasOneValidEntry(wv)
-	WAVE wv
+/// UTF_NOINSTRUMENTATION
+threadsafe Function HasOneValidEntry(WAVE wv)
 
-	variable numEntries
+	string str
+	variable val
 
-	numEntries = numpnts(wv)
+	ASSERT_TS(numpnts(wv) > 0, "Expected non-empty wave")
 
-	if(IsNumericWave(wv))
-		ASSERT_TS(IsFloatingPointWave(wv), "Requires floating point type or text wave")
-		WAVE stats = wv
-	else
-		ASSERT_TS(IsTextWave(wv), "Expected a text wave")
+	if(IsFloatingPointWave(wv))
+		return numType(WaveMin(wv)) != 2
+	elseif(IsTextWave(wv))
 		WAVE/T wvText = wv
-		Make/FREE/N=(numEntries) stats = strlen(wvText[p]) == 0 ? NaN : 1
+
+		for(str : wvText)
+			if(strlen(str) > 0)
+				return 1
+			endif
+		endfor
+	else
+		ASSERT_TS(0, "Unsupported wave type")
 	endif
 
-	ASSERT_TS(numEntries > 0, "Empty wave")
-
-	WaveStats/Q/M=1 stats
-	return V_numNaNs != numEntries
+	return 0
 End
 
 /// @brief Merge two floating point waves labnotebook waves
@@ -4354,6 +4374,8 @@ End
 ///    endtry
 ///
 /// \endrst
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function AssertOnAndClearRTError()
 
 	string msg
@@ -4370,6 +4392,8 @@ End
 /// @brief Helper function to unconditionally clear a RTE condition
 ///	        It is generally strongly recommended to use @sa AssertOnAndClearRTError
 ///        before critical code sections. For detailed description of the implications @sa AssertOnAndClearRTError
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function ClearRTError()
 
 	return GetRTError(1)
@@ -5320,6 +5344,8 @@ threadsafe Function/S GenerateRFC4122UUID()
 End
 
 /// @brief Convert a hexadecimal character into a number
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function HexToNumber(ch)
 	string ch
 
@@ -5334,6 +5360,8 @@ threadsafe Function HexToNumber(ch)
 End
 
 /// @brief Convert a number into hexadecimal
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S NumberToHex(var)
 	variable var
 
@@ -5349,6 +5377,8 @@ End
 /// @brief Convert a string in hex format to an unsigned binary wave
 ///
 /// This function works on a byte level so it does not care about endianess.
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/WAVE HexToBinary(str)
 	string str
 
@@ -5515,18 +5545,6 @@ Function [STRUCT RGBAColor result] ParseColorSpec(string str)
 	result.green = str2num(str2)
 	result.blue  = str2num(str3)
 	result.alpha = (V_Flag == 4) ? str2num(str4) : 655356
-End
-
-/// @brief Determine min and max
-threadsafe Function [variable minimum, variable maximum] WaveMinAndMaxWrapper(WAVE wv, [variable x1, variable x2])
-
-	if(ParamIsDefault(x1) && ParamIsDefault(x2))
-	   [minimum, maximum] = WaveMinAndMax(wv)
-	elseif(!ParamIsDefault(x1) && !ParamIsDefault(x2))
-	   [minimum, maximum] = WaveMinAndMax(wv, x1, x2)
-	else
-		ASSERT_TS(0, "Unsupported case")
-	endif
 End
 
 /// @brief Helper function to be able to index waves stored in wave reference
@@ -5746,7 +5764,7 @@ threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 		endif
 	endif
 
-	[minimum, maximum] = WaveMinAndMaxWrapper(wv)
+	[minimum, maximum] = WaveMinAndMax(wv)
 
 	return minimum == val && maximum == val
 End

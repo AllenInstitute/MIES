@@ -22,10 +22,12 @@ do
   branch=$(echo $remote_ref | cut -d "/" -f 3-)
   prefix=$(echo $branch | cut -d "/" -f 1)
   pr=$(echo $branch | cut -d "/" -f 2| cut -d "-" -f 1)
+  suffix=$(echo $branch | cut -d "/" -f 2| cut -d "-" -f 2-)
 
   # echo $branch
   # echo $prefix
   # echo $pr
+  # echo $suffix
 
   if [[ "$prefix" != "feature" && "$prefix" != "bugfix" ]]
   then
@@ -38,7 +40,14 @@ do
   nextFreePR=$($top_level/tools/nextFreePRNumber.sh)
   if [[ "$pr" != "$nextFreePR" ]]
   then
-    echo "The next free PR number is $nextFreePR, but this branch has $pr." > /dev/stderr
+    if [[ "$pr" == "XXXX" ]]
+    then
+      git branch -m $prefix/$nextFreePR-$suffix
+      echo "The branch was renamed, please try again." > /dev/stderr
+      exit 1
+    fi
+
+    echo "The naming of the branch \"$branch\" does not match the required naming scheme as the PR number \"$pr\" is wrong." > /dev/stderr
     exit 1
   fi
 

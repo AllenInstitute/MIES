@@ -1307,7 +1307,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 	else
 		// search pulse in DA and use the pulse as search region
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-		[minVal, maxVal] = WaveMinAndMaxWrapper(singleDA, x1 = offset, x2 = inf)
+		[minVal, maxVal] = WaveMinAndMax(singleDA, offset, inf)
 
 		if(minVal == 0 && maxVal == 0)
 			if(type == PSQ_SQUARE_PULSE)
@@ -3714,7 +3714,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	WAVE config = GetDAQConfigWave(device)
 	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, scaledDACWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 
-	[lowerValue, upperValue] = WaveMinAndMaxWrapper(singleAD, x1 = chirpStart, x2 = cycleEnd)
+	[lowerValue, upperValue] = WaveMinAndMax(singleAD, chirpStart, cycleEnd)
 
 	if(TestOverrideActive())
 		WAVE/SDFR=root: overrideResults

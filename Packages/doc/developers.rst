@@ -366,8 +366,9 @@ Scheme: ``$prefix/$pr-$text(-backport)?``
 Where ``$prefix`` is one of ``feature``/``bugfix``, ``$pr`` is the number of the soon-to-be-created pull request and
 ``$text`` a user defined descriptive text. ``-backport`` must be present for PRs against release branches only.
 
-Contributers are encouraged to install the ``pre-push`` git hook from the tools directory. The script
-``tools/nextFreePRNumber.sh`` can get the soon-to-be-created PR number on the commandline (requires curl and jq) as well.
+Contributers are encouraged to install the ``pre-push`` git hook from the tools
+directory. This hook handles inserting the correct PR number automatically if
+the current branch follows the naming scheme ``$prefix/XXXX-$text``
 
 Continuous Integration Hints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
