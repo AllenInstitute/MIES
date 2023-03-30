@@ -1303,6 +1303,51 @@ If the y-data contains different data units the y-axis will show all data units 
    and
    20...30
 
+Variables
+^^^^^^^^^
+
+Variables store results of expressions. In formulas variables are included as strings prefixed by `$`.
+They are specified in the lines before the formula expression. The format of a variable definition is
+`variableName = expression`. The variable name must start with a letter. Further allowed letters are alphanumeric and `_`.
+The variable names are treated case-insensitive.
+
+.. code-block:: bash
+
+   c = cursors(A,B)
+   s = select(channels(AD), sweeps(), all)
+
+   data($c, $s)
+
+The section containing the variable definition can contain empty lines. The first line that is not fulfilling the format for a variable definition is treated as the first line
+of the formula expression(s) section. Variable definitions can use variables that were defined in a preceding line.
+
+.. code-block:: bash
+
+   c = cursors(A,B)
+   s = select(channels(AD), sweeps(), all)
+   d = data($c, $s)
+
+   $d
+
+Previous variable content is discarded when the formula notebook is executed.
+
+Limitations of the current variable definition concept:
+  - The expression for a variable definition is resolved to a single wave reference wave
+  - A single variable can not replace multiple arguments of an operation as operation arguments are processed one-at-a-time.
+
+.. code-block:: bash
+
+   # This does NOT work
+   c = cursors(A,B)
+   s = select(channels(AD), sweeps(), all)
+   p = $c, $s # p is resolved to a single numerical array
+
+   data($p) # the data operation sees a single argument
+
+As a general rule of thumb the result of an operation is a single wave reference wave and thus valid for a variable assignment.
+
+Variables are stored in the Data/SweepBrowsers data folder in the `variableStorage` wave.
+
 Getting Quick Help
 ^^^^^^^^^^^^^^^^^^
 
