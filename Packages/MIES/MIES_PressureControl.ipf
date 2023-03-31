@@ -575,7 +575,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	variable refHeadstage
 
 	variable headStage, deviceID, hwType, flags
-	variable i, j, doDeRegister
+	variable i, j, doDeRegister, numLocked, numHeadstages
 	string ListOfHeadstageUsingDevice = ""
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 
@@ -590,10 +590,12 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 		doDeRegister = 1
 	endif
 
-	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(j = 0; j < numLocked; j += 1)
 		device = StringFromList(j, ListOfLockedDA_Ephys)
 		ListOfHeadstageUsingDevice = P_HeadstageUsingDevice(device, deviceToClose)
-		for(i = 0; i < ItemsInList(ListOfHeadstageUsingDevice); i += 1)
+		numHeadstages = ItemsInList(ListOfHeadstageUsingDevice)
+		for(i = 0; i < numHeadstages; i += 1)
 			if(cmpstr("",ListOfHeadstageUsingDevice) != 0)
 				headStage = str2num(StringFromList(i, ListOfHeadstageUsingDevice))
 				deviceID = PressureDataWv[headstage][%DAC_DevID]
