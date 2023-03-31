@@ -2054,7 +2054,7 @@ End
 
 /// @brief Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 static Function P_Enable()
-	variable i, j, headstage, numPressureDevices
+	variable i, j, headstage, numPressureDevices, numLocked
 	string lockedDevice, listOfPressureCtrlDevices, device
 	string listOfLockedDA_Ephys = GetListOfLockedDevices()
 
@@ -2062,7 +2062,8 @@ static Function P_Enable()
 	// handles mistmatch between GUI controls and hardware state
 	P_Disable()
 
-	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(i = 0; i < numLocked; i += 1)
 		lockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		listOfPressureCtrlDevices = P_GetListOfPressureCtrlDevices(lockedDevice)
 		numPressureDevices = ItemsInList(listOfPressureCtrlDevices)
