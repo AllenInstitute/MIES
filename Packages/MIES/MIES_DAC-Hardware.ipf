@@ -1169,10 +1169,10 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 			endif
 		endif
 
-		WAVE/Z DACs = GetDACListFromConfig(config)
+		WAVE DACs = GetDACListFromConfig(config)
 
-		numEntries = WaveExists(DACs) ? DimSize(DACs, ROWS) : 0
-		for(i = 0; i < DimSize(DACs, ROWS); i += 1)
+		numEntries = DimSize(DACs, ROWS)
+		for(i = 0; i < numEntries; i += 1)
 			HW_ITC_WriteDAC(deviceID, DACs[i], 0, flags = flags)
 		endfor
 	endif
