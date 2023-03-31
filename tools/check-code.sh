@@ -118,6 +118,16 @@ then
   ret=1
 fi
 
+# U means non-greedy matching
+matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*\(.*\).*\)' --and --not -e '//[[:space:]]*NOLINT$' '*/MIES_*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "Function call in a foor loop statement check failed (use \`// NOLINT\` to suppress if appropriate):"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst')
