@@ -2097,10 +2097,11 @@ End
 /// @brief Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
-	variable i, numPressureDevices
+	variable i, numPressureDevices, numLocked
 	string lockedDevice, listOfPressureCtrlDevices, device
 
-	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(i = 0; i < numLocked; i += 1)
 		lockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		listOfPressureCtrlDevices = P_GetListOfPressureCtrlDevices(lockedDevice)
 		numPressureDevices = ItemsInList(listOfPressureCtrlDevices)
