@@ -254,3 +254,42 @@ Function WB_SaveErrorsDontDeleteExistingStimSets()
 	// saved stimset was not changed
 	CHECK_EQUAL_VAR(modCount, WaveMOdCount(stimset))
 End
+
+/// UTF_TD_GENERATOR GetChannelTypes
+Function ExportAndLoadOfCustomWaves([variable var])
+
+	string setName, path, filename, history
+	variable historyRef
+
+	setName = ST_CreateStimSet("setA", var)
+
+	DFREF dfr = GetSetFolder(var)
+	Make/D dfr:myCustomWave/WAVE=customWave
+	customWave = p
+
+	ST_SetStimsetParameter(setName, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setName, "Type of Epoch 0", var = EPOCH_TYPE_CUSTOM)
+	ST_SetStimsetParameter(setName, "Custom epoch wave name", epochIndex = 0, str = GetWavesDataFolder(customWave, 2))
+
+	historyRef = CaptureHistoryStart()
+
+	PathInfo home
+	CHECK_PROPER_STR(S_path)
+	filename = UniqueFileOrFolder("home", "customWaveExportTest")
+	path = S_path  + filename
+	NWB_ExportAllStimsets(NWB_VERSION_LATEST, overrideFilePath = path)
+
+	// check that we don't got a recreation error warning
+	history = CaptureHistory(historyRef, 1)
+	CHECK_EQUAL_STR(history, "Please be patient while we export all existing stimsets to NWB\r")
+
+	WAVE customWaveRef = MakeWaveFree(customWave)
+	KillOrMoveToTrash(dfr = GetWaveBuilderPath())
+
+	// now read the file again and compare it's contents
+	NWB_LoadAllStimsets(filename = path)
+
+	DFREF dfr = GetSetFolder(var)
+	WAVE/Z/SDFR=dfr customWave = myCustomWave
+	CHECK_EQUAL_WAVES(customWaveRef, customWave)
+End

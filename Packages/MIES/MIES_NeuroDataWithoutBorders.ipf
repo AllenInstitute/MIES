@@ -887,18 +887,19 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 
 	AddModificationTimeEntry(locationID, nwbVersion)
 
+	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimsets)
+
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
-		NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, StringFromList(i, stimsets), compressionMode)
+		NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, StringFromList(i, stimsets), customWaves, compressionMode)
 	endfor
 
 	// process custom waves
-	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsets)
-	numWaves = DimSize(wv, ROWS)
+	numWaves = DimSize(customWaves, ROWS)
 	for(i = 0; i < numWaves; i += 1)
-		NWB_WriteStimsetCustomWave(nwbVersion, locationID, wv[i], compressionMode)
+		NWB_WriteStimsetCustomWave(nwbVersion, locationID, customWaves[i], compressionMode)
 	endfor
 End
 
@@ -1320,9 +1321,10 @@ static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, 
 	HDF5CloseGroup groupID
 End
 
-static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, compressionMode)
+static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, customWaves, compressionMode)
 	variable nwbVersion, locationID
 	string stimSet
+	WAVE/WAVE customWaves
 	variable compressionMode
 
 	variable groupID
@@ -1343,9 +1345,24 @@ static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, c
 		WAVE/Z stimSetWave = WB_CreateAndGetStimSet(stimSet)
 
 		if(!WaveExists(stimSetWave))
+			HDF5CloseGroup groupID
+
+			// now that is either a custom wave located in root:MIES:WaveBuilder:SavedStimulusSets:(DA/TTL):
+			DFREF dfr = GetWBSvdStimSetDAPath()
+			WAVE/Z/SDFR=dfr customDA = $stimset
+			if(!WaveExists(customDA) || IsFinite(GetRowIndex(customWaves, refWave = customDA)))
+				return NaN
+			endif
+
+			DFREF dfr = GetWBSvdStimSetTTLPath()
+			WAVE/Z/SDFR=dfr customTTL = $stimset
+			if(!WaveExists(customTTL) || IsFinite(GetRowIndex(customWaves, refWave = customTTL)))
+				return NaN
+			endif
+
+			// or a stimset which can not be recreated anymore
 			printf "The stimset \"%s\" can not be exported as it can not be recreated.\r", stimset
 			ControlWindowToFront()
-			HDF5CloseGroup groupID
 			return NaN
 		endif
 
