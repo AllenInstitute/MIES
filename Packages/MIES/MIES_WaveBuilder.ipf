@@ -1768,6 +1768,11 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 	ASSERT(pa.poisson + pa.mixedFreq <= 1, "Only one of Mixed Frequency or poisson can be checked")
 
+	if(!(pa.pulseDuration > 0))
+		printf "Resetting invalid pulse duration of %gms to 1ms\r", pa.pulseDuration
+		pa.pulseDuration = 1.0
+	endif
+
 	if(!pa.mixedFreq)
 		if(!(pa.frequency > 0))
 			printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
