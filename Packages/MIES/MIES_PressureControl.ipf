@@ -508,7 +508,7 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	string mainDevice, pressureDevice
 
 	variable hwType
-	variable headStage, i, j, numEntries, deviceID
+	variable headStage, i, j, numEntries, deviceID, numLocked
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string listOfHeadstageUsingDevice = ""
 
@@ -522,7 +522,8 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	printf "Device used for pressure regulation: %s (%s)\r", pressureDevice, StringFromList(hwType, HARDWARE_DAC_TYPES)
 
 	// update pressure data wave with locked device info
-	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(j = 0; j < numLocked; j += 1)
 		mainDevice = StringFromList(j, ListOfLockedDA_Ephys)
 		listOfHeadstageUsingDevice = P_HeadstageUsingDevice(mainDevice, pressureDevice)
 		numEntries = ItemsInList(listOfHeadstageUsingDevice)
