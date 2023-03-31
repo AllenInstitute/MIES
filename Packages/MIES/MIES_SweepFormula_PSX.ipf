@@ -2236,7 +2236,7 @@ static Function/WAVE PSX_GetEventsFromResults(string comboKey)
 
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
-	sprintf name, "Sweep Formula %s [%s]", SFH_ResultTypeToString(SFH_RESULT_TYPE_PSX_EVENTS), comboKey
+	name = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_EVENTS, comboKey)
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_PSX)
 
 	if(IsEmpty(entry))
