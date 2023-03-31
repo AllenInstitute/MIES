@@ -895,7 +895,7 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 	endfor
 
 	// process custom waves
-	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
+	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsets)
 	numWaves = DimSize(wv, ROWS)
 	for(i = 0; i < numWaves; i += 1)
 		NWB_WriteStimsetCustomWave(nwbVersion, locationID, wv[i], compressionMode)
@@ -1689,7 +1689,7 @@ Function NWB_LoadCustomWaves(groupID, stimsets, overwrite)
 	variable numWaves, i
 
 	stimsets = WB_StimsetRecursionForList(stimsets)
-	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsets)
 
 	numWaves = DimSize(cw, ROWS)
 	for(i = 0; i < numWaves; i += 1)

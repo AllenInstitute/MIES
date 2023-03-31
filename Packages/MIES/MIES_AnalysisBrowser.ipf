@@ -2262,7 +2262,7 @@ static Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 	variable numWaves, numStimsets, i, j, valid
 	string loadedStimsets = ""
 
-	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsets)
 
 	numWaves = DimSize(cw, ROWS)
 	Make/FREE/I/N=(numWaves) loaded = 1
@@ -2299,7 +2299,7 @@ static Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 	for(i = 0; i < numStimsets; i += 1)
 		valid = 1
 		stimset = StringFromList(i, stimsets)
-		WAVE/T single_cw = WB_CustomWavesPathFromStimSet(stimsetList = stimset)
+		WAVE/T single_cw = WB_CustomWavesPathFromStimSet(stimset)
 		numWaves = DimSize(single_cw, 0)
 		for(j = 0; j < numWaves; j += 1)
 			FindValue/TEXT=(single_cw[j]) cw
