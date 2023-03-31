@@ -533,6 +533,9 @@ End
 Function SFH_CleanUpInput(WAVE input)
 
 #ifndef SWEEPFORMULA_DEBUG
+	if(JWN_GetNumberFromWaveNote(input, SF_VARIABLE_MARKER) == 1)
+		return NaN
+	endif
 	KillOrMoveToTrash(wv = input)
 #endif
 End

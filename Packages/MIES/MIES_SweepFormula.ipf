@@ -5032,7 +5032,10 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 
 	for(i = 0; i < numAssignments; i += 1)
 		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
-		varStorage[i] = SF_FormulaExecutor(graph, jsonId)
+		WAVE dataRef = SF_FormulaExecutor(graph, jsonId)
+		WAVE data = SFH_ParseArgument(dataRef)
+		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
+		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
 		JSON_Release(jsonId)
 	endfor
