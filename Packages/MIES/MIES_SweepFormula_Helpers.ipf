@@ -795,6 +795,11 @@ Function/S SFH_ResultTypeToString(variable resultType)
 	endswitch
 End
 
+Function/S SFH_FormatResultsKey(variable resultType, string name)
+
+	return "Sweep Formula " + SFH_ResultTypeToString(resultType) + " [" + name + "]"
+End
+
 Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [variable serializationMode, WAVE data, string name, variable resultType])
 
 	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
@@ -825,7 +830,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	if(hasStoreEntry)
 		SFH_ASSERT(!ParamIsDefault(resultType), "Missing type")
 		SFH_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
-		keys[0][numEntries - 1] = "Sweep Formula " + SFH_ResultTypeToString(resultType) + " [" + name + "]"
+		keys[0][numEntries - 1] = SFH_FormatResultsKey(resultType, name)
 	endif
 
 	LBN_SetDimensionLabels(keys, values)
