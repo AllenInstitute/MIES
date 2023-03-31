@@ -1441,7 +1441,7 @@ End
 ///
 /// @returns valid indizes wave on success
 static Function/WAVE AB_GetExpandedIndices()
-	variable i, row
+	variable i, row, numEntries
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	// Our mode for the listbox stores the selection bit only in the first column
@@ -1454,7 +1454,8 @@ static Function/WAVE AB_GetExpandedIndices()
 	// expand all selected treeviews
 	// as indizes might change during the loop run we have to determine the
 	// dimension size in the loop condition
-	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+	numEntries = DimSize(wv, ROWS)
+	for(i = 0; i < numEntries; i += 1)
 		row = wv[i]
 
 		// we have to refetch the selected entries
