@@ -4771,7 +4771,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable si
 	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
-	WAVE/WAVE out = SFH_ParseArgument(databrowser, result, "FormulaExecution")
+	WAVE/WAVE out = SFH_ParseArgument(result)
 	if(singleResult)
 		SFH_ASSERT(DimSize(out, ROWS) == 1, "Expected only a single dataSet")
 		WAVE/Z data = out[0]
@@ -4814,7 +4814,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 		WAVE wv = SFH_GetOutputForExecutorSingle(data, graph, opShort + "_zeroSizedInput")
 	endif
 
-	WAVE/WAVE input = SFH_ParseArgument(graph, wv, opShort + "_argTop")
+	WAVE/WAVE input = SFH_ParseArgument(wv)
 
 	return input
 End

@@ -133,7 +133,7 @@ Function/WAVE GetMultipleResults(string formula, string win)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
+	return MIES_SFH_HELPERS#SFH_ParseArgument(wTextRef)
 End
 
 Function/WAVE GetSingleResult(string formula, string win)
@@ -2978,7 +2978,7 @@ static Function ZeroSizedSubArrayTest()
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	WAVE/WAVE wRefResult = MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
+	WAVE/WAVE wRefResult = MIES_SFH_HELPERS#SFH_ParseArgument(wTextRef)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
 	WAVE wv = wRefResult[0]

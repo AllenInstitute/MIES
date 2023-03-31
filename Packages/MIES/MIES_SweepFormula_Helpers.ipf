@@ -208,17 +208,12 @@ End
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
 Function/WAVE SFH_GetArgument(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
-	string opSpec, argStr
+	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
 
-	argStr = num2istr(argNum)
-	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + argStr)
-	opSpec = "_arg" + argStr
-	WAVE/WAVE input = SFH_ParseArgument(graph, wv, opShort + opSpec)
-
-	return input
+	return SFH_ParseArgument(wv)
 End
 
-Function/WAVE SFH_ParseArgument(string win, WAVE input, string opShort)
+Function/WAVE SFH_ParseArgument(WAVE input)
 
 	string wName, tmpStr
 
