@@ -1210,8 +1210,10 @@ static Function P_FindDeviceExecutingPP(device, deviceID, headStage)
 	variable &deviceID, &headStage
 
 	string ListOfLockedDevices = GetListOfLockedDevices()
-	variable i
-	for(i = 0; i < ItemsInList(ListOfLockedDevices); i += 1)
+	variable i, numLocked
+
+	numLocked = ItemsInList(ListOfLockedDevices)
+	for(i = 0; i < numLocked; i += 1)
 		device = StringFromList(i, ListOfLockedDevices)
 		Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(device)
 		for(headStage = 0; headstage < NUM_HEADSTAGES; headStage += 1)
