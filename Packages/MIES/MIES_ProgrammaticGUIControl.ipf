@@ -140,7 +140,8 @@ End
 /// Therefore interacting with disabled controls results in an assertion. See `mode`
 /// for a way to avoid that.
 ///
-/// @param win       Window
+/// @param win       window name or path, when referring to subwindows in a window hierarchy
+///                  a full subwindow specification with `#` is required
 /// @param control   GUI control
 /// @param val       [optionality depends on control type] Numeric value to set
 /// @param str       [optionality depends on control type] String value to set
