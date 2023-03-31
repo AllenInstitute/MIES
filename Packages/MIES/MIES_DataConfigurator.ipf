@@ -704,7 +704,8 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 				break
 			case HARDWARE_NI_DAC:
 				WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
-				for(i = 0; i < numpnts(statusTTL); i += 1)
+				numEntries = numpnts(statusTTL)
+				for(i = 0; i < numEntries; i += 1)
 					if(statusTTL[i])
 						DAQConfigWave[j][%ChannelType] = XOP_CHANNEL_TYPE_TTL
 						DAQConfigWave[j][%ChannelNumber] = i
