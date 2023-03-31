@@ -134,11 +134,10 @@ Function PGC_SetAndActivateControlVar(win, control, var)
 	return PGC_SetAndActivateControl(win, control, val=var)
 End
 
-/// @brief Set the control's value and execute the control procedure
-/// of the given control (if it exists).
+/// @brief Set the control's value and execute the control procedure of the given control
 ///
 /// The function tries to mimick interactive operation as closely as possible.
-/// Therefore interacting with disabled controls results in an assertion. See `ignoreDisabledState`
+/// Therefore interacting with disabled controls results in an assertion. See `mode`
 /// for a way to avoid that.
 ///
 /// @param win       Window
