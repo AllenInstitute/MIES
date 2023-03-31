@@ -32,7 +32,7 @@ Function DQM_FIFOMonitor(s)
 		s.lastReceivedFifoPos = HARDWARE_ITC_FIFO_ERROR
 	endif
 
-	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
+	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1) // NOLINT
 		deviceID   = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		device = HW_GetMainDeviceName(hardwareType, deviceID)
@@ -382,7 +382,7 @@ Function DQM_Timer(s)
 	string device
 	variable TimeLeft
 
-	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
+	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1) // NOLINT
 		ActiveDevTimeParam[i][4] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][1])
 		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
 		device = TimerFunctionListWave[i][0]
