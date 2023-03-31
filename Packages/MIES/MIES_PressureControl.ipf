@@ -484,10 +484,11 @@ static Function P_CloseDevice(device)
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string DeviceToClose
 	string ListOfHeadstagesUsingDevice
-	variable headStage
+	variable headStage, numDevices
 	variable i, j
 
-	for(i = 0; i < ItemsInList(ListOfDevicesToClose); i += 1) // for all the devices used for pressure regulation
+	numDevices = ItemsInList(ListOfDevicesToClose)
+	for(i = 0; i < numDevices; i += 1) // for all the devices used for pressure regulation
 		// find device ID
 		do
 			device = StringFromList(j, ListOfLockedDA_Ephys)
