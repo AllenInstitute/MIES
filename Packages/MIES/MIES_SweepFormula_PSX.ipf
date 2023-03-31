@@ -121,6 +121,8 @@ static StrConstant PSX_GLOBAL_AVERAGE_SUFFIX     = "_global"
 static StrConstant PSX_TUD_AVERAGE_ALL_COMBO_KEY = "allCombos"
 static Constant PSX_TUD_AVERAGE_ALL_COMBO_INDEX  = NaN
 
+static StrConstant PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP = "No fit results available for average accept"
+
 static Constant PSX_DEFAULT_PEAK_SEARCH_RANGE_MS = 5
 
 Menu "GraphMarquee"
@@ -1368,8 +1370,8 @@ End
 /// @brief Update the contents of the average waves for the all event graph
 static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces, WAVE/T comboIndizesFromTraces, WAVE stateNew, WAVE indexMapper, WAVE/DF comboFolders)
 
-	variable i, idx, numEvents, eventState
-	variable acceptIndex, rejectIndex, undetIndex
+	variable i, idx, numEvents, eventState, start, stop
+	variable acceptIndex, rejectIndex, undetIndex, extractStartAbs, extractStopAbs, fitStartAbs
 	string extAllGraph, name
 
 	extAllGraph = PSX_GetAllEventGraph(win)
@@ -1377,11 +1379,14 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	numEvents = DimSize(eventIndexFromTraces, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
+	Make/FREE/D/N=(numEvents) eventStartTime, eventStopTime
 
 	for(i = 0; i < numEvents; i += 1)
 		idx = str2num(eventIndexFromTraces[i])
 
-		DFREF singleEventDFR = GetPSXSingleEventFolder(comboFolders[str2num(comboIndizesFromTraces[i])])
+		DFREF comboDFR = comboFolders[str2num(comboIndizesFromTraces[i])]
+
+		DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
 
 		name = PSX_FormatSingleEventWaveName(idx)
 
@@ -1390,6 +1395,18 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 		switch(stateNew[i])
 			case PSX_ACCEPT:
 				contAverageAccept[acceptIndex] = singleEvent
+
+				WAVE sweepDataFiltOff = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
+				WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+
+				// single event waves are zeroed in x-direction to extractStartAbs
+				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, idx)
+				fitStartAbs = psxEvent[idx][%dc_peak_time]
+				ASSERT(fitStartAbs > extractStartAbs, "Unexpected fit/extraction start positions")
+
+				eventStartTime[acceptIndex] = fitStartAbs    - extractStartAbs
+				eventStopTime[acceptIndex]  = extractStopAbs - extractStartAbs
+
 				acceptIndex += 1
 				break
 			case PSX_REJECT:
@@ -1413,6 +1430,9 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	PSX_UpdateAverageWave(contAverageReject, rejectIndex, averageDFR, PSX_REJECT)
 	PSX_UpdateAverageWave(contAverageUndet, undetIndex, averageDFR, PSX_UNDET)
 	PSX_UpdateAverageWave(contAverageAll, numEvents, averageDFR, PSX_ALL)
+
+	Redimension/N=(acceptIndex) eventStartTime, eventStopTime
+	PSX_FitAcceptAverage(win, averageDFR, eventStartTime, eventStopTime)
 End
 
 /// @brief Helper function to update the average waves for the all event graph
@@ -1434,6 +1454,67 @@ static Function/DF PSX_GetAverageFolder(string win)
 	else
 		return PSX_GetWorkingFolder(win)
 	endif
+End
+
+static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStartTime, WAVE eventStopTime)
+
+	string specialEventPanel, str, htmlStr, rawCode, browser, msg
+	variable err, numAveragePoints, start, stop
+
+	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
+
+	specialEventPanel = PSX_GetSpecialPanel(win)
+
+	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP)
+
+	if(!GetCheckBoxState(specialEventPanel, "checkbox_average_events_fit"))
+		FastOp acceptedAverageFit = (NaN)
+		return NaN
+	endif
+
+	WAVE average = GetPSXAverageWave(averageDFR, PSX_ACCEPT)
+	numAveragePoints = DimSize(average, ROWS)
+
+	if(numAveragePoints == 0 || !HasOneValidEntry(average))
+		FastOp acceptedAverageFit = (NaN)
+		return NaN
+	endif
+
+	Make/FREE/D/N=5 coefWave
+
+	Redimension/N=(numAveragePoints) acceptedAverageFit
+	FastOp acceptedAverageFit = (NaN)
+	CopyScales average, acceptedAverageFit
+
+	start = max(0, mean(eventStartTime))
+	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), mean(eventStopTime))
+
+	AssertOnAndClearRTError()
+	CurveFit/M=0/Q/N=2 dblexp_peak, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
+
+	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", start, stop, err, GetErrMessage(err)
+	DEBUGPRINT(msg)
+
+	if(err)
+		return NaN
+	endif
+
+	Make/FREE/T/N=(9, 2) input
+
+	Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
+
+	input[0][0,1]    = {{"Function"}, {"dblexp_peak"}}
+	input[1][0,1]    = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	input[2, 6][0]   = coeffNames[p - 2]
+	input[2, 6][1]   = num2strHighPrec(coefWave[p - 2])
+	input[7][0,1]    = {{"State source"},{PSX_GetStateTypeFromSpecialPanel(win)}}
+	input[8][0,1]    = {{"Current combo"},{ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+
+	str = FormatTextWaveForLegend(input)
+	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", str)
+
+	browser = SFH_GetBrowserForFormulaGraph(win)
+	PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_MISC, input, "accepted average fit results")
 End
 
 static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WAVE data, string name)
@@ -1650,10 +1731,17 @@ static Function PSX_AppendTracesToAllEventGraph(string win)
 	idx = PSX_AppendAverageTraces(extAllGraph, workDFR, PSX_GLOBAL_AVERAGE_SUFFIX, idx, PSX_TUD_AVERAGE_ALL_COMBO_KEY, PSX_TUD_AVERAGE_ALL_COMBO_INDEX, traceUserDataKeys, states, acceptColors, rejectColors, undetColors)
 End
 
+static Function/S PSX_GetAverageTraceName(variable idx, string basename, variable comboIndex, string traceSuffix)
+
+	string trace
+
+	sprintf trace, "%s_%s%s%s", GetTraceNamePrefix(idx), basename, SelectString(IsFinite(comboIndex), "",  "_ComboIndex" + num2str(comboIndex)), traceSuffix
+
+	return trace
+End
+
 /// @brief Helper function to append the average traces to the all event graph
-///
-/// `traceSuffix` determines if the add the per-combo or the global average waves
-static Function PSX_AppendAverageTraces(string extAllGraph, DFREF comboDFR, string traceSuffix, variable idx, string comboKey, variable comboIndex, WAVE traceUserDataKeys, WAVE states, WAVE acceptColors, WAVE rejectColors, WAVE undetColors)
+static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, string traceSuffix, variable idx, string comboKey, variable comboIndex, WAVE traceUserDataKeys, WAVE states, WAVE acceptColors, WAVE rejectColors, WAVE undetColors)
 
 	variable state
 	string trace
@@ -1666,8 +1754,8 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF comboDFR, stri
 			Make/FREE/N=4 colors = PSX_SelectColor(state, acceptColors, rejectColors, undetColors)[p]
 		endif
 
-		WAVE average = GetPSXAverageWave(comboDFR, state)
-		sprintf trace, "%s_%s%s%s", GetTraceNamePrefix(idx), NameOfWave(average), SelectString(IsFinite(comboIndex), "",  "_ComboIndex" + num2str(comboIndex)), traceSuffix
+		WAVE average = GetPSXAverageWave(averageDFR, state)
+		trace = PSX_GetAverageTraceName(idx, NameOfWave(average), comboIndex, traceSuffix)
 
 		// don't use any transparency for the average
 		AppendToGraph/W=$extAllGraph/C=(colors[0], colors[1], colors[2]) average/TN=$trace
@@ -1677,6 +1765,16 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF comboDFR, stri
 	   	                         {"NaN", num2str(state), num2str(state), "0", PSX_TUD_TYPE_AVERAGE, comboKey, num2str(comboIndex)})
 	   	idx += 1
 	endfor
+	
+	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
+
+	trace = PSX_GetAverageTraceName(idx, "acceptAverageFit", comboIndex, traceSuffix)
+	idx += 1
+
+	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$trace
+	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                         \
+	                         traceUserDataKeys,                                                                                          \
+	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, num2str(comboIndex)})
 
 	return idx
 End
@@ -2747,6 +2845,12 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	CheckBox checkbox_restrict_events_to_current_combination,value=0
 	PopupMenu popupmenu_state_type,pos={6.00,223.00},size={80.00,19.00},proc=PSX_PopupMenuState
 	PopupMenu popupmenu_state_type,mode=1,popvalue="Event State",value=#"PSX_GetEventStateNames()"
+	CheckBox checkbox_average_events_fit,pos={20.00,167.00},size={29.00,15.00},proc=PSX_CheckboxProcFitAcceptAverage
+	CheckBox checkbox_average_events_fit,title="Fit"
+	CheckBox checkbox_average_events_fit,help={"Fit the accept average with a double exponential and store the outcome in the results wave"}
+	CheckBox checkbox_average_events_fit,value=0
+	Button button_fit_results,pos={53.00,167.00},size={18.00,16.00},proc=PSX_CopyHelpToClipboard
+	Button button_fit_results,title="i",help={PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP},userdata=""
 
 	ModifyPanel/W=$extSubWin fixedSize=0
 
@@ -2802,8 +2906,8 @@ End
 static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
 	variable jsonID, value, type, i, j, numOperations, numParameters
-	string line, op, param, prefix, opNice, mainWindow, jsonPathOp, jsonPathParam, htmlStr
-	string str = ""
+	string line, op, param, prefix, opNice, mainWindow, jsonPathOp, jsonPathParam
+	string str
 	string sep = ", "
 
 	jsonID = JWN_GetWaveNoteAsJSON(results)
@@ -2867,12 +2971,8 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 	JSON_Release(jsonID)
 
 	str = FormatTextWaveForLegend(input)
-	htmlStr = "<pre>" + str + "</pre>"
-
 	mainWindow = GetMainWindow(win)
-	// use the unnamed userdata here as that is passed into the GUI control procedure
-	// see PSX_CopyHelpToClipboard
-	Button button_psx_info win=$mainWindow,help={htmlStr},userdata=str
+	UpdateInfoButtonHelp(mainWindow, "button_psx_info", str)
 End
 
 /// @brief Return the current event and combo index
@@ -3850,6 +3950,15 @@ Function PSX_CheckboxProcAllEventPlotUpdate(STRUCT WMCheckboxAction &cba) : Chec
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+	endswitch
+End
+
+Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : CheckboxControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
 			break
 	endswitch
 End

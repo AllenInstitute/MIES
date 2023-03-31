@@ -1317,17 +1317,20 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	Make/FREE/T allTracesRef = {"T000000", "T000001",                                                        \
 	                            "T000002_averageAccept_ComboIndex0", "T000003_averageReject_ComboIndex0",    \
 	                            "T000004_averageUndetermined_ComboIndex0", "T000005_averageAll_ComboIndex0", \
-	                            "T000006",                                                                   \
-	                            "T000007_averageAccept_ComboIndex1", "T000008_averageReject_ComboIndex1",    \
-	                            "T000009_averageUndetermined_ComboIndex1", "T000010_averageAll_ComboIndex1", \
-	                            "T000011_averageAccept_global", "T000012_averageReject_global",              \
-	                            "T000013_averageUndetermined_global","T000014_averageAll_global"}
+	                            "T000006_acceptAverageFit_ComboIndex0",                                      \
+	                            "T000007",                                                                   \
+	                            "T000008_averageAccept_ComboIndex1", "T000009_averageReject_ComboIndex1",    \
+	                            "T000010_averageUndetermined_ComboIndex1", "T000011_averageAll_ComboIndex1", \
+	                            "T000012_acceptAverageFit_ComboIndex1",                                      \
+	                            "T000013_averageAccept_global", "T000014_averageReject_global",              \
+	                            "T000015_averageUndetermined_global","T000016_averageAll_global",            \
+	                            "T000017_acceptAverageFit_global"}
 
 	CHECK_EQUAL_TEXTWAVES(allTracesRef, allTraces)
 
 	// currently shown traces
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000",  "T000001", "T000006"}
+	Make/FREE/T dispTracesRef = {"T000000",  "T000001", "T000007"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1357,7 +1360,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000013_averageUndetermined_global"}
+	Make/FREE/T dispTracesRef = {"T000015_averageUndetermined_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1367,7 +1370,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000014_averageAll_global"}
+	Make/FREE/T dispTracesRef = {"T000016_averageAll_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
@@ -1375,7 +1378,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	// restrict to current combo
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_restrict_events_to_current_combination", val = 1)
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000010_averageAll_ComboIndex1"}
+	Make/FREE/T dispTracesRef = {"T000011_averageAll_ComboIndex1"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
@@ -1385,7 +1388,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	// combo1
 
 	// all
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000010_averageAll_ComboIndex1")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000011_averageAll_ComboIndex1")
 
 	DFREF comboDFR = MIES_PSX#PSX_GetCurrentComboFolder(win)
 	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
@@ -1398,7 +1401,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 0)
 
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000009_averageUndetermined_ComboIndex1")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000010_averageUndetermined_ComboIndex1")
 	CHECK_EQUAL_WAVES(singleEventWaves[0], averageWaveFromTrace, mode = WAVE_DATA)
 
 	// combo0
@@ -2124,4 +2127,41 @@ static Function NoEventsAtAll()
 	catch
 		PASS()
 	endtry
+End
+
+static Function CheckResultsWavesForAverageFitResult()
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
+
+	REQUIRE(WindowExists(psxGraph))
+
+	SetActiveSubwindow $psxGraph
+
+	// mark event as passed
+	SendKey(psxGraph, UP_KEY)
+
+	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_accept", val = 1)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_fit", val = 1)
+	// our data makes the fit fail
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
+
+	name = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, "accepted average fit results")
+	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_RESULT)
+	CHECK_EMPTY_STR(entry)
 End

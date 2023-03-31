@@ -8068,4 +8068,17 @@ Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
 	return wv
 End
 
+Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
+
+	WAVE/D/SDFR=dfr/Z wv = acceptedAverageFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:acceptedAverageFit/WAVE=wv
+
+	return wv
+End
+
 /// @}

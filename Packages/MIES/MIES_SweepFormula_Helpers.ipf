@@ -818,6 +818,8 @@ Function/S SFH_ResultTypeToString(variable resultType)
 			return "store"
 		case SFH_RESULT_TYPE_PSX_EVENTS:
 			return "psx events"
+		case SFH_RESULT_TYPE_PSX_MISC:
+			return "psx misc"
 		default:
 			ASSERT(0, "Invalid resultType")
 	endswitch

@@ -2019,6 +2019,7 @@ StrConstant SFH_USER_DATA_BROWSER = "browser"
 /// @{
 Constant SFH_RESULT_TYPE_STORE      = 0x01
 Constant SFH_RESULT_TYPE_PSX_EVENTS = 0x02
+Constant SFH_RESULT_TYPE_PSX_MISC   = 0x04
 /// @}
 
 /// @name Constants used in the wave note JSON support
