@@ -769,7 +769,7 @@ End
 ///         Does not include devices which are already open.
 Function/S HW_ITC_ListDevices()
 
-	variable i, j, deviceID, tries
+	variable i, j, deviceID, tries, numTypes, numberPerType
 	string type, number, msg, device
 	string list = ""
 
@@ -781,7 +781,10 @@ Function/S HW_ITC_ListDevices()
 #endif
 #endif
 
-	for(i=0; i < ItemsInList(DEVICE_TYPES_ITC); i+=1)
+	numTypes      = ItemsInList(DEVICE_TYPES_ITC)
+	numberPerType = ItemsInList(DEVICE_NUMBERS)
+
+	for(i=0; i < numTypes; i+=1)
 		type = StringFromList(i, DEVICE_TYPES_ITC)
 
 		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
@@ -800,7 +803,7 @@ Function/S HW_ITC_ListDevices()
 		while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
 
 		if(V_Value > 0)
-			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
+			for(j=0; j < numberPerType; j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
 				device = HW_ITC_BuildDeviceString(type,number)
 
