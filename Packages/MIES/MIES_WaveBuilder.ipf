@@ -229,7 +229,7 @@ static Function WB_StimsetNeedsUpdate(setName)
 
 	// check if custom waves were modified
 	lastModStimSet = WB_GetLastModStimSet(setName)
-	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimSetList = stimsets)
+	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimsets)
 	numWaves = DimSize(customWaves, ROWS)
 	for(i = 0; i < numWaves; i += 1)
 		ASSERT(WaveExists(customWaves[i]), "customWaves should not contain non-existing wave ref")
@@ -2187,18 +2187,12 @@ End
 /// used by WaveBuilder and NeuroDataWithoutBorders
 ///
 /// @returns a wave of wave references
-Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
-	string stimsetList
+Function/WAVE WB_CustomWavesFromStimSet(string stimsetList)
 
 	variable i, j, numStimsets
 
-	if(ParamIsDefault(stimsetList))
-		WB_UpgradeCustomWaves()
-		WAVE/T cw = WB_CustomWavesPathFromStimSet()
-	else
-		WB_UpgradeCustomWaves(stimsetList = stimsetList)
-		WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsetList)
-	endif
+	WB_UpgradeCustomWaves(stimsetList)
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList)
 
 	numStimSets = Dimsize(cw, ROWS)
 	Make/FREE/WAVE/N=(numStimSets) wv
@@ -2221,29 +2215,19 @@ End
 /// @brief Get all custom waves that are used by the supplied stimset.
 ///
 /// @returns a text wave with paths to custom waves.
-Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
-	string stimsetList
+Function/WAVE WB_CustomWavesPathFromStimSet(string stimsetList)
 
 	variable numStimSets, i, j, k, numEpochs
 	string stimset
 
-	if(ParamIsDefault(stimsetList))
-		numStimsets = 1
-	else
-		numStimsets = ItemsInList(stimsetList)
-	endif
+	numStimsets = ItemsInList(stimsetList)
 
 	Make/N=(numStimsets * WB_TOTAL_NUMBER_OF_EPOCHS)/FREE/T customWaves
 
 	for(i = 0; i < numStimsets; i += 1)
-		if(ParamIsDefault(stimsetList))
-			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
-			WAVE/Z SegWvType = GetSegmentTypeWave()
-		else
-			stimset = StringFromList(i, stimsetList)
-			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
-			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
-		endif
+		stimset = StringFromList(i, stimsetList)
+		WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
+		WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 		if(!WaveExists(WPT) || !WaveExists(SegWvType))
 			continue
@@ -2269,29 +2253,18 @@ End
 /// do not try to upgrade when loading stimsets. The custom waves have to be loaded first.
 ///
 /// @returns a text wave with paths to custom waves.
-static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
-	string stimsetList
+static Function/WAVE WB_UpgradeCustomWaves(string stimsetList)
 
 	variable channelType, numStimsets, numEpochs, i, j
 	string stimset
 
-	if(ParamIsDefault(stimsetList))
-		numStimsets = 1
-	else
-		numStimsets = ItemsInList(stimsetList)
-	endif
+	numStimsets = ItemsInList(stimsetList)
 
 	for(i = 0; i < numStimsets; i += 1)
-		if(ParamIsDefault(stimsetList))
-			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
-			WAVE/Z SegWvType = GetSegmentTypeWave()
-			channelType    = WBP_GetStimulusType()
-		else
-			stimset = StringFromList(i, stimsetList)
-			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
-			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
-			channelType    = GetStimSetType(stimSet)
-		endif
+		stimset = StringFromList(i, stimsetList)
+		WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
+		WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+		channelType    = GetStimSetType(stimSet)
 
 		if(!WaveExists(WPT) || !WaveExists(SegWvType))
 			continue
