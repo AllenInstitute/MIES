@@ -193,7 +193,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 	// works through list of active devices
 	// update parameters for a particular active device
-	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1)
+	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1) // NOLINT
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		device = HW_GetMainDeviceName(hardwareType, deviceID)

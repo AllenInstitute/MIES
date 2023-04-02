@@ -952,7 +952,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	variable channelIndex, channelType, channelControl
-	variable i, isCustomSearchString
+	variable i, isCustomSearchString, numSuppChannels
 	string ctrl, searchString, str
 	string popupValue, listOfWaves
 	string device, varstr, sel
@@ -989,7 +989,8 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			PopupMenu $ctrl win=$device, popmatch=sel
 
 			if(DAP_IsAllControl(channelIndex))
-				for(i = 0; i < GetNumberFromType(var=channelType); i += 1)
+				numSuppChannels = GetNumberFromType(var=channelType)
+				for(i = 0; i < numSuppChannels; i += 1)
 
 					if(!DAP_DACHasExpectedClampMode(device, channelIndex, i, channelType))
 						continue

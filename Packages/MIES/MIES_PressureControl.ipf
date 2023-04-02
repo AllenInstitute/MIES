@@ -484,10 +484,11 @@ static Function P_CloseDevice(device)
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string DeviceToClose
 	string ListOfHeadstagesUsingDevice
-	variable headStage
+	variable headStage, numDevices
 	variable i, j
 
-	for(i = 0; i < ItemsInList(ListOfDevicesToClose); i += 1) // for all the devices used for pressure regulation
+	numDevices = ItemsInList(ListOfDevicesToClose)
+	for(i = 0; i < numDevices; i += 1) // for all the devices used for pressure regulation
 		// find device ID
 		do
 			device = StringFromList(j, ListOfLockedDA_Ephys)
@@ -507,7 +508,7 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	string mainDevice, pressureDevice
 
 	variable hwType
-	variable headStage, i, j, numEntries, deviceID
+	variable headStage, i, j, numEntries, deviceID, numLocked
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string listOfHeadstageUsingDevice = ""
 
@@ -521,7 +522,8 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	printf "Device used for pressure regulation: %s (%s)\r", pressureDevice, StringFromList(hwType, HARDWARE_DAC_TYPES)
 
 	// update pressure data wave with locked device info
-	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(j = 0; j < numLocked; j += 1)
 		mainDevice = StringFromList(j, ListOfLockedDA_Ephys)
 		listOfHeadstageUsingDevice = P_HeadstageUsingDevice(mainDevice, pressureDevice)
 		numEntries = ItemsInList(listOfHeadstageUsingDevice)
@@ -573,7 +575,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	variable refHeadstage
 
 	variable headStage, deviceID, hwType, flags
-	variable i, j, doDeRegister
+	variable i, j, doDeRegister, numLocked, numHeadstages
 	string ListOfHeadstageUsingDevice = ""
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 
@@ -588,10 +590,12 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 		doDeRegister = 1
 	endif
 
-	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(j = 0; j < numLocked; j += 1)
 		device = StringFromList(j, ListOfLockedDA_Ephys)
 		ListOfHeadstageUsingDevice = P_HeadstageUsingDevice(device, deviceToClose)
-		for(i = 0; i < ItemsInList(ListOfHeadstageUsingDevice); i += 1)
+		numHeadstages = ItemsInList(ListOfHeadstageUsingDevice)
+		for(i = 0; i < numHeadstages; i += 1)
 			if(cmpstr("",ListOfHeadstageUsingDevice) != 0)
 				headStage = str2num(StringFromList(i, ListOfHeadstageUsingDevice))
 				deviceID = PressureDataWv[headstage][%DAC_DevID]
@@ -1206,8 +1210,10 @@ static Function P_FindDeviceExecutingPP(device, deviceID, headStage)
 	variable &deviceID, &headStage
 
 	string ListOfLockedDevices = GetListOfLockedDevices()
-	variable i
-	for(i = 0; i < ItemsInList(ListOfLockedDevices); i += 1)
+	variable i, numLocked
+
+	numLocked = ItemsInList(ListOfLockedDevices)
+	for(i = 0; i < numLocked; i += 1)
 		device = StringFromList(i, ListOfLockedDevices)
 		Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(device)
 		for(headStage = 0; headstage < NUM_HEADSTAGES; headStage += 1)
@@ -2048,7 +2054,7 @@ End
 
 /// @brief Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 static Function P_Enable()
-	variable i, j, headstage, numPressureDevices
+	variable i, j, headstage, numPressureDevices, numLocked
 	string lockedDevice, listOfPressureCtrlDevices, device
 	string listOfLockedDA_Ephys = GetListOfLockedDevices()
 
@@ -2056,7 +2062,8 @@ static Function P_Enable()
 	// handles mistmatch between GUI controls and hardware state
 	P_Disable()
 
-	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(i = 0; i < numLocked; i += 1)
 		lockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		listOfPressureCtrlDevices = P_GetListOfPressureCtrlDevices(lockedDevice)
 		numPressureDevices = ItemsInList(listOfPressureCtrlDevices)
@@ -2090,10 +2097,11 @@ End
 /// @brief Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
-	variable i, numPressureDevices
+	variable i, numPressureDevices, numLocked
 	string lockedDevice, listOfPressureCtrlDevices, device
 
-	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)
+	numLocked = ItemsInList(ListOfLockedDA_Ephys)
+	for(i = 0; i < numLocked; i += 1)
 		lockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		listOfPressureCtrlDevices = P_GetListOfPressureCtrlDevices(lockedDevice)
 		numPressureDevices = ItemsInList(listOfPressureCtrlDevices)

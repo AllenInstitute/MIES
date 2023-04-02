@@ -394,16 +394,19 @@ End
 
 /// @brief Compare epoch and calculated pulse infos
 static Function PA_DiffPulseInfos(WAVE numericalValues, variable sweepNo, WAVE/Z pulseInfosEpochs, WAVE/Z pulseInfosCalc)
-	variable i, j
+	variable i, j, numRowsEpochs, numColsEpochs
 
 	variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
 
 	if(WaveExists(pulseInfosEpochs) && WaveExists(pulseInfosCalc))
-		if(DimSize(pulseInfosEpochs, ROWS) != DimSize(pulseInfosCalc, ROWS))
+		numRowsEpochs = DimSize(pulseInfosEpochs, ROWS)
+		numColsEpochs = DimSize(pulseInfosEpochs, COLS)
+
+		if(numRowsEpochs != DimSize(pulseInfosCalc, ROWS))
 			print/D "Warn: Differing dimensions in pulse infos from epochs:\r", pulseInfosEpochs, "\r from Calculation:\r", pulseInfosCalc
 		else
-			for(i = 0; i < DimSize(pulseInfosEpochs, ROWS); i += 1)
-				for(j = 0; j < DimSize(pulseInfosEpochs, COLS); j += 1)
+			for(i = 0; i < numRowsEpochs; i += 1)
+				for(j = 0; j < numColsEpochs; j += 1)
 					if(abs(pulseInfosEpochs[i][j] - pulseInfosCalc[i][j]) > warnDiffms                          \
 					   && j == DimSize(pulseInfosEpochs, COLS) - 1 && i == DimSize(pulseInfosEpochs, ROWS) - 1)
 						print/D "Warn: Differing pulse infos in [" + num2str(i) + ", " + GetDimLabel(pulseInfosEpochs, COLS, j) + "], from epochs:\r", pulseInfosEpochs, "from Calculation:\r", pulseInfosCalc

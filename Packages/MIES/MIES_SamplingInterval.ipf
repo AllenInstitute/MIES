@@ -118,14 +118,14 @@ static Function SI_CompressWave(wv)
 	CreateBackupWave(wv, forceCreation = 1)
 	SI_SortWave(wv)
 
-	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+	for(i = 0; i < DimSize(wv, ROWS); i += 1) // NOLINT
 		if(wv[i][%minSampInt] <= 0)
 			DeletePoints/M=(ROWS) i, 1, wv
 			i -= 1
 			continue
 		endif
 
-		for(j = i + 1; j < DimSize(wv, ROWS); j += 1)
+		for(j = i + 1; j < DimSize(wv, ROWS); j += 1) // NOLINT
 			if(wv[i][0] == wv[j][0] && wv[i][1] == wv[j][1] && wv[i][2] == wv[j][2])
 				if(wv[i][3] == wv[j][3] && wv[i][4] == wv[j][4] && wv[i][5] == wv[j][5])
 					if(wv[i][%minSampInt] == wv[j][%minSampInt])
