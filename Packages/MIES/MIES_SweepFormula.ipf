@@ -1039,10 +1039,10 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	WAVE/WAVE/Z wvXRef = $""
 	if(!IsEmpty(xFormula))
-		WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph)
+		WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph, useVariables=0)
 		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
 	endif
-	WAVE/WAVE wvYRef = SF_ExecuteFormula(yFormula, graph)
+	WAVE/WAVE wvYRef = SF_ExecuteFormula(yFormula, graph, useVariables=0)
 	SFH_ASSERT(WaveExists(wvYRef), "y part of formula returned no result.")
 	numResultsY = DimSize(wvYRef, ROWS)
 	if(WaveExists(wvXRef))
@@ -4035,8 +4035,8 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numArgs)
-		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1)
-		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
+		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1, useVariables=0)
+		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1, useVariables=0)
 	else
 		SFH_ASSERT(numArgs >= 2 && numArgs <= 4, "Function requires None, 2 or 3 arguments.")
 		WAVE channels = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
@@ -4755,20 +4755,27 @@ Function SF_SetFormula(string databrowser, string formula)
 End
 
 /// @brief Executes a given formula without changing the current SweepFormula notebook
+///        supports by default variable assignments
+///        does not support "with" and "and" keywords
 /// @param formula formula string to execute
-/// @param databrowser name of databrowser window
+/// @param graph name of databrowser window
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
 /// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
-Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable singleResult, variable checkExist])
+/// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
+Function/WAVE SF_ExecuteFormula(string formula, string graph[, variable singleResult, variable checkExist, variable useVariables])
 
 	variable jsonId
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	useVariables = ParamIsDefault(useVariables) ? 1 : !!useVariables
 
 	formula = SF_PreprocessInput(formula)
+	if(useVariables)
+		formula = SF_ExecuteVariableAssignments(graph, formula)
+	endif
 	jsonId = SF_ParseFormulaToJSON(formula)
-	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
+	WAVE/Z result = SF_FormulaExecutor(graph, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
 	WAVE/WAVE out = SFH_ParseArgument(result)

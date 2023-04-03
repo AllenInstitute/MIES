@@ -202,7 +202,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
 	SFH_ASSERT(!checkExist, msg)
 
-	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult)
+	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables=0)
 End
 
 /// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
@@ -839,7 +839,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1, useVariables=0)
 	if(WaveExists(selectData))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
