@@ -426,8 +426,17 @@ End
 Function/S PEXT_PopupMenuItems(subMenuNr)
 	variable subMenuNr
 
+	variable modifiedBefore
+
+	ExperimentModified
+	modifiedBefore = V_flag
+
 	WAVE/T itemListWave = GetPopupExtMenuWave()
 	variable subMenuCnt = DimSize(itemListWave, ROWS)
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
 
 	if(subMenuNr >= subMenuCnt)
 		return ""
