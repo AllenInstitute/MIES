@@ -3162,42 +3162,45 @@ End
 
 static Function TestInputCodeCheck()
 
+	string win, device
 	string formula, jsonRef, jsonTxt
-	DFREF dfr = :
 
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	DFREF dfr = SF_GetBrowserDF(win)
 	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
 
 	formula = "1"
 	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n}\n}"
-	MIES_SF#SF_CheckInputCode(formula, dfr)
+	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "1 vs 1"
 	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1\n}\n}"
-	MIES_SF#SF_CheckInputCode(formula, dfr)
+	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "1\rwith\r1 vs 1"
 	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1,\n\"formula_y_1\": 1\n}\n}"
-	MIES_SF#SF_CheckInputCode(formula, dfr)
+	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "v = 1\r1"
 	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n},\n\"variable:v\": 1\n}"
-	MIES_SF#SF_CheckInputCode(formula, dfr)
+	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "[*]"
 	try
-		MIES_SF#SF_CheckInputCode(formula, dfr)
+		MIES_SF#SF_CheckInputCode(formula, win)
 		FAIL()
 	catch
 		PASS()
@@ -3217,14 +3220,13 @@ static Function TestVariables1([WAVE wv])
 	CreateFakeSweepData(win, device, sweepNo=0)
 	CreateFakeSweepData(win, device, sweepNo=1)
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE/T formulaAndRest = wRef[0]
 
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, formulaAndRest[0], dfr)
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, formulaAndRest[0])
 	CHECK_EQUAL_STR(formulaAndRest[1], code)
 
 	WAVE/T dimLbl = wRef[1]
-	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	WAVE/WAVE varStorage = GetSFVarStorage(win)
 	CHECK_EQUAL_VAR(DimSize(dimLbl, ROWS), DimSize(varStorage, ROWS))
 	i = 0
 	for(lbl : dimLbl)
@@ -3261,7 +3263,7 @@ static Function TestVariables2()
 	// reuse of the same variable name
 	str = "c=cursors(A,B)\rC=select(channels(AD),[0,1],all)\rd=data($c,$C)\r\r$d"
 	try
-		code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+		code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 		FAIL()
 	catch
 		PASS()
@@ -3270,7 +3272,7 @@ static Function TestVariables2()
 	// variable with invalid expression
 	str = "c=[*#]"
 	try
-		code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+		code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 		FAIL()
 	catch
 		PASS()
@@ -3278,21 +3280,21 @@ static Function TestVariables2()
 
 	// No valid varName
 	str = "12c=cursors(A,B)"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR(str, code)
 
 	// No variables defined
 	str = "cursors(A,B)"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR(str, code)
 
 	// varName with all chars
 	str = "abcdefghijklmnopqrstuvwxyz0123456789_=cursors(A,B)\r"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR("", code)
 
 	// WhiteSpaces are ok
 	str = " \ta \t= \tcursors(A,B)\r"
-	code = MIES_SF#SF_ExecuteVariableAssignments(win, str, dfr)
+	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR("", code)
 End

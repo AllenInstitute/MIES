@@ -701,8 +701,7 @@ static Function/WAVE SF_FormulaExecutorStringOrVariable(string graph, variable j
 
 	str = JSON_GetString(jsonID, jsonPath)
 	if(strlen(str) > 1 && char2num(str[0]) == SF_VARIABLE_PREFIX)
-		DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
-		WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+		WAVE/WAVE varStorage = GetSFVarStorage(graph)
 		dim = FindDimLabel(varStorage, ROWS, str[1, inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, inf])
 		return varStorage[dim]
@@ -2204,18 +2203,16 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb, mode=2)
 
-			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+			NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(mainPanel))
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
 
 			try
-				SF_CheckInputCode(formula, dfr)
+				SF_CheckInputCode(formula, mainPanel)
 			catch
 				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
 				JSON_Release(jsonID, ignoreErr = 1)
@@ -2238,12 +2235,12 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 /// @brief Checks input code, sets globals for jsonId and error string
-static Function SF_CheckInputCode(string code, DFREF dfr)
+static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
 	string jsonPath, xFormula, yFormula, yFormulasRemain, subPath
 
-	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
@@ -2341,7 +2338,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				break
 			endif
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+			DFREF dfr = SF_GetBrowserDF(mainPanel)
 
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
@@ -2351,7 +2348,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 			// catch Abort from SFH_ASSERT
 			try
-				preProcCode = SF_ExecuteVariableAssignments(mainPanel, preProcCode, dfr)
+				preProcCode = SF_ExecuteVariableAssignments(mainPanel, preProcCode)
 				if(IsEmpty(preProcCode))
 					break
 				endif
@@ -5020,12 +5017,12 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 	return code
 End
 
-static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode, DFREF dfr)
+static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	variable i, numAssignments, jsonId
 	string code
 
-	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
 	RemoveAllDimLabels(varStorage)
 	Redimension/N=(0, -1) varStorage
 
@@ -5048,4 +5045,9 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 	endfor
 
 	return code
+End
+
+Function/DF SF_GetBrowserDF(string graph)
+
+	return BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
 End

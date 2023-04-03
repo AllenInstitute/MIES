@@ -513,9 +513,7 @@ End
 
 Function/DF SFH_GetWorkingDF(string win)
 
-	DFREF dfr = BSP_GetFolder(GetMainWindow(win), MIES_BSP_PANEL_FOLDER)
-
-	return createDFWithAllParents(GetDataFolder(1, dfr) + SFH_WORKING_DF)
+	return createDFWithAllParents(GetDataFolder(1, SF_GetBrowserDF(win)) + SFH_WORKING_DF)
 End
 
 Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
