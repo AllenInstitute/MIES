@@ -21,24 +21,6 @@ static Function GlobalPreInit(string device)
 	PASS()
 End
 
-static Function/WAVE GetMultipleResults(string formula, string win)
-
-	WAVE wTextRef = SF_FormulaExecutor(win, DirectToFormulaParser(formula))
-	CHECK(IsTextWave(wTextRef))
-	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
-	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SFH_HELPERS#SFH_ParseArgument(wTextRef)
-End
-
-static Function/WAVE GetSingleResult(string formula, string win)
-
-	WAVE/WAVE wRefResult = GetMultipleResults(formula, win)
-	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
-	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
-
-	return wRefResult[0]
-End
-
 static Function	TestSweepFormulaButtons(string device)
 
 	string graph, dbPanel, sfPanel, jsonStr, win
@@ -286,7 +268,7 @@ static Function	TestSweepFormulaTP(string device)
 	// invalid number of args
 	formula = "tp()"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -295,7 +277,7 @@ static Function	TestSweepFormulaTP(string device)
 	// invalid mode
 	formula = "tp(unknown_mode, select(channels(AD), sweeps()))"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -304,7 +286,7 @@ static Function	TestSweepFormulaTP(string device)
 	// unknown channel name
 	formula = "tp(tpss(), select(channels(unknown), sweeps()))"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -313,7 +295,7 @@ static Function	TestSweepFormulaTP(string device)
 	// invalid argument for ignored TPs
 	formula = "tp(tpss(), select(channels(AD), sweeps()), INVALID)"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -322,7 +304,7 @@ static Function	TestSweepFormulaTP(string device)
 	// invalid argument for ignored TPs
 	formula = "tp(tpss(), select(channels(AD), sweeps()), [inf])"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -331,7 +313,7 @@ static Function	TestSweepFormulaTP(string device)
 	// invalid argument for ignored TPs
 	formula = "tp(tpss(), select(channels(AD), sweeps()), 1)"
 	try
-		WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 		FAIL()
 	catch
 		PASS()
@@ -339,27 +321,27 @@ static Function	TestSweepFormulaTP(string device)
 
 	// sweep does not exist -> zero results
 	formula = "tp(tpss(), select(channels(AD), 3))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
 
 	// we setup only one TP per sweep, but we ignore TP 0 here, so we have zero results
 	formula = "tp(tpss(), select(channels(AD), sweeps()), 0)"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
 
 	// expect for 3 sweeps displayed with 2 AD channels each, 6 results
 	formula = "tp(tpss(), select(channels(AD), sweeps()))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
 	// same with shortened select()
 	formula = "tp(tpss(), select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
 	// same with omitted select()
 	formula = "tp(tpss())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 6)
 
 	Make/FREE/D wRef = {1000}
@@ -369,13 +351,13 @@ static Function	TestSweepFormulaTP(string device)
 
 	// Test static state resistance and instantaneous resistance that should be the same here (1000)
 	formula = "tp(tpss(), select(channels(DA), sweeps()))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	for(data : tpResult)
 		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
 	endfor
 
 	formula = "tp(tpinst(), select(channels(DA), sweeps()))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	for(data : tpResult)
 		CHECK_EQUAL_WAVES(wRef, data, tol = 1e-12, mode = ~WAVE_NOTE)
 	endfor
@@ -384,7 +366,7 @@ static Function	TestSweepFormulaTP(string device)
 	wRef = 0
 	Make/FREE/T units = {"pA", "mV", "pA", "mV", "pA", "mV"}
 	formula = "tp(tpbase(), select(channels(DA), sweeps()))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	i = 0
 	for(data : tpResult)
 		SetScale d, 0, 0, units[i], wRef
@@ -395,21 +377,21 @@ static Function	TestSweepFormulaTP(string device)
 	// Check also units for AD channel
 	SetScale d, 0, 0, "mV", wRef
 	formula = "tp(tpbase(), select(channels(AD1), 0))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 1)
 	WAVE data0 = tpResult[0]
 	CHECK_EQUAL_WAVES(wRef, data0, mode= ~(WAVE_NOTE | WAVE_DATA))
 
 	SetScale d, 0, 0, "pA", wRef
 	formula = "tp(tpbase(), select(channels(AD2), 0))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 1)
 	WAVE data0 = tpResult[0]
 	CHECK_EQUAL_WAVES(wRef, data0, mode= ~(WAVE_NOTE | WAVE_DATA))
 
 	// Check Meta Data
 	formula = "tp(tpss())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	dataType = JWN_GetStringFromWaveNote(tpResult, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_TP
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -432,7 +414,7 @@ static Function	TestSweepFormulaTP(string device)
 	endfor
 
 	formula = "tp(tpfit(doubleexp, tausmall, 500), select(channels(AD1), sweeps(), all))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	dataType = JWN_GetStringFromWaveNote(tpResult, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_TP
 	CHECK_EQUAL_STR(strRef, dataType)
@@ -474,7 +456,7 @@ static Function SF_TPTest2_REENTRY([str])
 	dbPanel = BSP_GetPanel(graph)
 
 	formula = "tp(tpfit(exp,tau),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -497,7 +479,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,tau),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -508,7 +490,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,tausmall),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -519,7 +501,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,amp),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -530,7 +512,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,minabsamp),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -541,7 +523,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,fitq),select())"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 2)
 	WAVE/Z data = tpResult[0]
 	CHECK(WaveExists(data))
@@ -705,20 +687,20 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 
 	// HS0
 	formula = "tp(tpss(), select(channels(AD0), sweeps()), [1, 2, 3])"
-	WAVE steadyStateInsertedHS0 = GetSingleResult(formula, graph)
+	WAVE steadyStateInsertedHS0 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 
 	CHECK_WAVE(steadyStateInsertedHS0, NUMERIC_WAVE)
 
 	formula = "tp(tpinst(), select(channels(AD0), sweeps()), [1, 2, 3])"
-	WAVE instInsertedHS0 = GetSingleResult(formula, graph)
+	WAVE instInsertedHS0 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(instInsertedHS0, NUMERIC_WAVE)
 
 	formula = "tp(tpss(), select(channels(AD0), sweeps()), [0])"
-	WAVE steadyStateOthersHS0 = GetSingleResult(formula, graph)
+	WAVE steadyStateOthersHS0 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(steadyStateOthersHS0, NUMERIC_WAVE)
 
 	formula = "tp(tpinst(), select(channels(AD0), sweeps()), [0])"
-	WAVE instOthersHS0 = GetSingleResult(formula, graph)
+	WAVE instOthersHS0 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(instOthersHS0, NUMERIC_WAVE)
 
 	CHECK_EQUAL_WAVES(steadyStateInsertedHS0, steadyStateOthersHS0, mode = WAVE_DATA, tol = 50^2)
@@ -726,19 +708,19 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 
 	// HS1
 	formula = "tp(tpss(), select(channels(AD1), sweeps()), [1, 2, 3])"
-	WAVE steadyStateInsertedHS1 = GetSingleResult(formula, graph)
+	WAVE steadyStateInsertedHS1 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(steadyStateInsertedHS1, NUMERIC_WAVE)
 
 	formula = "tp(tpinst(), select(channels(AD1), sweeps()), [1, 2, 3])"
-	WAVE instInsertedHS1 = GetSingleResult(formula, graph)
+	WAVE instInsertedHS1 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(instInsertedHS1, NUMERIC_WAVE)
 
 	formula = "tp(tpss(), select(channels(AD1), sweeps()), [0])"
-	WAVE steadyStateOthersHS1 = GetSingleResult(formula, graph)
+	WAVE steadyStateOthersHS1 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(steadyStateOthersHS1, NUMERIC_WAVE)
 
 	formula = "tp(tpinst(), select(channels(AD1), sweeps()), [0])"
-	WAVE instOthersHS1 = GetSingleResult(formula, graph)
+	WAVE instOthersHS1 = SF_ExecuteFormula(formula, graph, singleResult=1, useVariables=0)
 	CHECK_WAVE(instOthersHS1, NUMERIC_WAVE)
 
 	CHECK_EQUAL_WAVES(steadyStateInsertedHS1, steadyStateOthersHS1, mode = WAVE_DATA, tol = 0.1)
