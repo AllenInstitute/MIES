@@ -55,37 +55,18 @@ Function/WAVE DeviceNameGeneratorMD1()
 	variable i
 
 #ifdef TESTS_WITH_NI_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-#define *** NI Hardware has no Yoking support
-#else
 	devList = AddListItem("Dev1", devList, ":")
 	lblList = AddListItem("NI", lblList)
 #endif
 
-#endif
-
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-#define *** ITC18USB has no Yoking support
-#else
 	devList = AddListItem("ITC18USB_Dev_0", devList, ":")
 	lblList = AddListItem("ITC", lblList)
 #endif
 
-#endif
-
 #ifdef TESTS_WITH_ITC1600_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	devList = AddListItem("ITC1600_Dev_0;ITC1600_Dev_1", devList, ":")
-	lblList = AddListItem("ITC600_YOKED", lblList)
-#else
 	devList = AddListItem("ITC1600_Dev_1", devList, ":")
 	lblList = AddListItem("ITC1600", lblList)
-#endif
-
 #endif
 
 	WAVE data = ListToTextWave(devList, ":")
@@ -105,27 +86,11 @@ Function/WAVE DeviceNameGeneratorMD0()
 #endif
 
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/T/N=0 data
-	return data
-#else
 	return DeviceNameGeneratorMD1()
-#endif
-
 #endif
 
 #ifdef TESTS_WITH_ITC1600_HARDWARE
-
-#ifdef TESTS_WITH_YOKING
-	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/T/N=0 data
-	return data
-#else
 	return DeviceNameGeneratorMD1()
-#endif
-
 #endif
 
 End

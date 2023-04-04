@@ -1527,15 +1527,6 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 
 	device = devices
 
-#ifdef TESTS_WITH_YOKING
-	PGC_SetAndActivateControl(device, "button_Hardware_Lead1600")
-	PGC_SetAndActivateControl(device, "popup_Hardware_AvailITC1600s", val=0)
-	PGC_SetAndActivateControl(device, "button_Hardware_AddFollower")
-
-	ARDLaunchSeqPanel()
-	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
-#endif
-
 	s.preAcquireFunc(device)
 	s.globalPreAcquireFunc(device)
 
