@@ -462,8 +462,6 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 		Duplicate/O data, root:Res_AutoTPDebuggingData/WAVE=residuals
 
 		if(!WindowExists("AutoTPDebugging"))
-			// @todo move away from manual layouting when /AR, /AD, /R=wv are fixed
-
 			Display/K=1/N=AutoTPDebugging displayedData
 
 			AppendToGraph/W=AutoTPDebugging/L=res residuals
