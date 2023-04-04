@@ -2565,7 +2565,7 @@ static Function SF_GetTPFitQuality(WAVE residuals, WAVE sweepData, variable begi
 	return sum(residuals, beginTrail, endTrail) / (endTrailIndex - beginTrailIndex)
 End
 
-static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z selectData, WAVE/Z ignoreTPs, string opShort)
+static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z selectDataPreFilter, WAVE/Z ignoreTPs, string opShort)
 
 	variable i, j, numSelected, sweepNo, chanNr, chanType, dacChannelNr, settingsIndex, headstage, tpBaseLinePoints, index, err, maxTrailLength
 	string unitKey, epShortName, baselineUnit, xAxisLabel, yAxisLabel, debugGraph, dataType
@@ -2583,6 +2583,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	endif
 #endif
 
+	WAVE/Z selectData = SFH_FilterSelect(selectDataPreFilter, XOP_CHANNEL_TYPE_ADC)
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		return output

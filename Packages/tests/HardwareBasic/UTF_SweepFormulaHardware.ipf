@@ -337,6 +337,11 @@ static Function	TestSweepFormulaTP(string device)
 		PASS()
 	endtry
 
+	// ignore channels that are not AD
+	formula = "tp(tpss(), select(channels(DA), sweeps()))"
+	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
+
 	// sweep does not exist -> zero results
 	formula = "tp(tpss(), select(channels(AD), 3))"
 	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
@@ -413,9 +418,9 @@ static Function	TestSweepFormulaTP(string device)
 	dataType = JWN_GetStringFromWaveNote(tpResult, SF_META_DATATYPE)
 	strRef = SF_DATATYPE_TP
 	CHECK_EQUAL_STR(strRef, dataType)
-	Make/FREE sweepNums = {0, 0, 0 ,0 ,1, 1, 1, 1, 2, 2, 2, 2}
-	Make/FREE channelTypes = {0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1}
-	Make/FREE channelNums = {1, 2, 0, 1, 1, 2, 0, 1, 1, 2, 0, 1}
+	Make/FREE sweepNums = {0, 0 ,1, 1, 2, 2}
+	Make/FREE channelTypes = {0, 0, 0, 0, 0, 0}
+	Make/FREE channelNums = {1, 2, 1, 2, 1, 2}
 	i = 0
 	for(data : tpResult)
 		sweep = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)

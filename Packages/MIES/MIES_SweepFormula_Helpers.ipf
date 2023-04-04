@@ -1183,3 +1183,30 @@ Function SFH_GetPlotLineCodeSelection(variable count)
 
 	return wv[mod(count, DimSize(wv, ROWS))]
 End
+
+/// @brief filters data from select, currently supports only one option:
+///        - specify a channel type to keep
+Function/WAVE SFH_FilterSelect(WAVE/Z selectData, variable keepChanType)
+
+	variable i, numSelected, idx
+
+	if(!WaveExists(selectData))
+		return $""
+	endif
+
+	Duplicate/FREE selectData, selectDataFiltered
+
+	numSelected = DimSize(selectData, ROWS)
+	for(i = 0; i < numSelected; i += 1)
+		if(selectData[i][%CHANNELTYPE] == keepChanType)
+			selectDataFiltered[idx][] = selectData[i][q]
+			idx += 1
+		endif
+	endfor
+	if(!idx)
+		return $""
+	endif
+	Redimension/N=(idx, -1) selectDataFiltered
+
+	return selectDataFiltered
+End
