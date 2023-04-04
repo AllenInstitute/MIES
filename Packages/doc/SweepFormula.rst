@@ -1033,6 +1033,7 @@ See specific subsections for more details.
 The second argument is a selection of sweeps and channels where the test pulse information is retrieved from.
 It must be specified through the `select` operation.
 When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+The `tp` operation pre-filters the selected sweeps, only sweeps with channel type `AD` are used.
 
 The optional argument ``ignoreTPs`` allows to ignore some of the found test-pulses. The indices are zero-based and identify the
 test-pulses by ascending starting time.
