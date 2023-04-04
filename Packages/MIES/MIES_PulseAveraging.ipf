@@ -3665,17 +3665,6 @@ static Function PA_SetColorScale(string win, string colScale)
 			image = StringFromList(j, images)
 			ModifyImage/W=$graph $image ctab={,,$colScale,0}
 		endfor
-
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36300)
-		// workaround IP bug where the color scale is not updated
-		colorScaleGraph = PA_GetColorScaleGraph(graph)
-		colorScales = AnnotationList(colorScaleGraph)
-		numAnnotations = ItemsInList(colorScales)
-		for(j = 0; j < numAnnotations; j += 1)
-			str = StringFromList(j, colorScales)
-			ColorScale/C/N=$str/W=$colorScaleGraph
-		endfor
-#endif
 	endfor
 End
 

@@ -1364,9 +1364,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endfor
 	endif
 
-	// @todo IP9: workaround IP bug as plotGraphs can not be used directly in the range-based for loop
-	WAVE/T localPlotGraphs = plotGraphs
-	for(win : localPlotGraphs)
+	for(win : plotGraphs)
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
 	endfor
@@ -1425,10 +1423,6 @@ static Function/S SF_CombineYUnits(WAVE/T units)
 
 	WAVE/T unique = GetUniqueEntries(units, dontDuplicate=1)
 	for(unit : unique)
-		// @todo Remove if part when "null string for empty string wave elment" bug in IP9 is fixed
-		if(IsNull(unit))
-			unit = ""
-		endif
 		result += unit + separator
 	endfor
 
