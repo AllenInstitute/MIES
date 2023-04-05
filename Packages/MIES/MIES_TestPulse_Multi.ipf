@@ -151,7 +151,7 @@ static Function TPM_BkrdTPMD(device, [triggerMode])
 		case HARDWARE_ITC_DAC:
 			HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID, triggerMode)
+			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
 			break
 		case HARDWARE_NI_DAC:
 			HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
@@ -257,21 +257,7 @@ Function TPM_BkrdTPFuncMD(s)
 			WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
 			NVAR tgID = $GetThreadGroupIDFIFO(device)
-			if(DeviceHasFollower(device))
-				WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"}, timeout_tries = THREAD_QUEUE_TRIES)
-
-				if(WaveExists(result))
-					fifoPos = result[%fifoPos]
-
-					if(IsFinite(result[%startSequence]))
-						ARDStartSequence()
-					endif
-				else
-					fifoPos = NaN
-				endif
-			else
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
-			endif
+			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
 
 			// should never be hit
 			if(!IsFinite(fifoPos))

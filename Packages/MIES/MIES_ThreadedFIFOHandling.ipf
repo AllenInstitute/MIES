@@ -19,10 +19,10 @@ static Constant TFH_STOP_ACQ    = 0x2 ///< DAQ stopping
 ///@}
 
 /// @brief Start the FIFO reset daemon used for TP MD
-Function TFH_StartFIFOResetDeamon(hwType, deviceID, triggerMode)
-	variable hwType, deviceID, triggerMode
+Function TFH_StartFIFOResetDeamon(hwType, deviceID)
+	variable hwType, deviceID
 
-	TFH_StartFIFODeamonInternal(hwType, deviceID, TFH_RESTART_ACQ, triggerMode = triggerMode)
+	TFH_StartFIFODeamonInternal(hwType, deviceID, TFH_RESTART_ACQ)
 End
 
 /// @brief Start the FIFO stop daemon used for DAQ MD
@@ -35,14 +35,10 @@ End
 /// @brief Start the FIFO reset daemon used for TP MD
 ///
 /// We create one thread group for each device.
-static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode])
-	variable hwType, deviceID, mode, triggerMode
+static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode)
+	variable hwType, deviceID, mode
 
 	string device
-
-	if(ParamIsDefault(triggerMode))
-		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
-	endif
 
 	device = HW_GetMainDeviceName(hwType, deviceID)
 
@@ -59,7 +55,7 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode
 #ifdef THREADING_DISABLED
 	BUG("Data acquisition with ITC hardware and no threading is not supported.")
 #else
-	ThreadStart tgID, 0, TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+	ThreadStart tgID, 0, TFH_FifoLoop(config, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
 #endif
 
 End
@@ -91,11 +87,9 @@ End
 ///
 /// Pushes the following entries into the thread queue:
 /// - fifoPos:       fifo position (relative to offset)
-/// - startSequence: (yoking only) inform the main thread
-///                  that ARDStartSequence() commmand should be called
-threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+threadsafe static Function TFH_FifoLoop(config, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
 	WAVE config
-	variable triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode
+	variable deviceID, stopCollectionPoint, ADChannelToMonitor, mode
 
 	variable flags, moreData, fifoPos
 
@@ -119,11 +113,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 
 					HW_ITC_StopAcq_TS(deviceID, prepareForDAQ = 1, flags = flags)
 					HW_ITC_ResetFifo_TS(deviceID, config, flags = flags)
-					HW_ITC_StartAcq_TS(deviceID, triggerMode, flags = flags)
-
-					if(triggerMode != HARDWARE_DAC_DEFAULT_TRIGGER)
-						TS_ThreadGroupPutVariable(MAIN_THREAD, "startSequence", 1)
-					endif
+					HW_ITC_StartAcq_TS(deviceID, HARDWARE_DAC_DEFAULT_TRIGGER, flags = flags)
 					break
 				case TFH_STOP_ACQ:
 
