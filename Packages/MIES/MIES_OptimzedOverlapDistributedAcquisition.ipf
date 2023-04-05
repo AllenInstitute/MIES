@@ -173,15 +173,14 @@ static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
 	WAVE/WAVE setRegions
 
 	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
-	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
+	variable bStart, bEnd, rStart, rEnd, overlap
 	variable numSets = DimSize(setRegions, ROWS)
 
 	Make/FREE/D/N=(numSets) offsets
 
 	Duplicate/FREE setRegions[0], baseRegions
-	noInitialRegion = 1
 
-	for(setNr = noInitialRegion; setNr < numSets; setNr += 1)
+	for(setNr = 1; setNr < numSets; setNr += 1)
 
 		baseRegCnt = DimSize(baseRegions, ROWS)
 		WAVE regions = setRegions[setNr]
