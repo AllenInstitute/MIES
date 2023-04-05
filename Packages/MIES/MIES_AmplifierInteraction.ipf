@@ -259,9 +259,7 @@ Function AI_UpdateAmpModel(device, ctrl, headStage, [value, sendToAll, checkBefo
 	strswitch(ctrl)
 		case "button_DataAcq_AutoPipOffset_IC":
 		case "button_DataAcq_AutoPipOffset_VC":
-			if(!DeviceHasFollower(device))
-				runMode = TP_StopTestPulseFast(device)
-			endif
+			runMode = TP_StopTestPulseFast(device)
 		default:
 			// do nothing
 	endswitch
@@ -473,9 +471,7 @@ Function AI_UpdateAmpModel(device, ctrl, headStage, [value, sendToAll, checkBefo
 		endif
 	endfor
 
-	if(!DeviceHasFollower(device))
-		TP_RestartTestPulse(device, runMode, fast = 1)
-	endif
+	TP_RestartTestPulse(device, runMode, fast = 1)
 
 	return 0
 End
