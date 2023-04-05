@@ -8,8 +8,6 @@
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 
-static StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
-
 Constant PSQ_TEST_HEADSTAGE = 2
 
 /// @file UTF_HardwareHelperFunctions.ipf
@@ -151,32 +149,30 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 		CheckEpochs(dev)
 
-		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
-			// ascending sweep numbers in both labnotebooks
-			WAVE numericalValues = GetLBNumericalValues(dev)
-			WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+		// ascending sweep numbers in both labnotebooks
+		WAVE numericalValues = GetLBNumericalValues(dev)
+		WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
-			if(!WaveExists(sweeps))
-				PASS()
-				continue
-			endif
-
-			Duplicate/FREE sweeps, unsortedSweeps
-			Sort sweeps, sweeps
-			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
-
-			WAVE textualValues = GetLBTextualValues(dev)
-			WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "SweepNum")
-
-			if(!WaveExists(sweeps))
-				PASS()
-				continue
-			endif
-
-			Duplicate/FREE sweeps, unsortedSweeps
-			Sort sweeps, sweeps
-			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
 		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+		WAVE textualValues = GetLBTextualValues(dev)
+		WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "SweepNum")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 
 		CheckLBIndexCache_IGNORE(dev)
 		CheckLBRowCache_IGNORE(dev)
