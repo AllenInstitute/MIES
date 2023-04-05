@@ -1987,14 +1987,13 @@ End
 threadsafe Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
-	variable actual, rollbackCount, sweepNo, first, last
+	variable actual, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
-	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
@@ -2006,7 +2005,7 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 			return wv
 		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
-		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
+		else
 			// new entries were added so we need to propagate all entries to uncached values
 			// for sweep numbers >= than the currently acquired sweep
 
@@ -2036,7 +2035,6 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 	Multithread wv = LABNOTEBOOK_UNCACHED_VALUE
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
