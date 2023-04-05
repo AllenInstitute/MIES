@@ -12,13 +12,6 @@
 static Constant DATA_ACQU_TAB_NUM         = 0
 static Constant HARDWARE_TAB_NUM          = 6
 
-static StrConstant YOKE_LIST_OF_CONTROLS  = "group_Hardware_YokeInner;button_Hardware_Lead1600;button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
-static StrConstant YOKE_CONTROLS_DISABLE  = "StartTestPulseButton;DataAcquireButton;Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward"
-/// Synced with `desc` in DAP_CheckSettingsAcrossYoked()
-static StrConstant YOKE_CONTROLS_DISABLE_AND_LINK = "Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI;Setvar_DataAcq_dDAQOptOvPre;Setvar_DataAcq_dDAQOptOvPost;Check_DataAcq1_dDAQOptOv;setvar_DataAcq_dDAQOptOvRes"
-static StrConstant FOLLOWER               = "Follower"
-static StrConstant LEADER                 = "Leader"
-
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
@@ -589,13 +582,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Unit_AD_14 WIN = $device,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_15 WIN = $device,limits={0,inf,1},value= _STR:""
 
-	PopupMenu popup_Hardware_AvailITC1600s WIN = $device,mode=1
-	PopupMenu popup_Hardware_YokedDACs WIN = $device,mode=1
-
-	SetVariable SetVar_Hardware_Status WIN = $device,value= _STR:"Independent",noedit= 1
-	SetVariable SetVar_Hardware_YokeList WIN = $device,value= _STR:"No Yoked Devices",noedit= 1
-	PopupMenu popup_Hardware_YokedDACs WIN = $device, mode=0,value=DAP_GUIListOfYokedDevices()
-
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $device, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $device, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_IC WIN = $device, value= _NUM:0
@@ -834,84 +820,6 @@ Function/S DAP_FormatStimSetPopupValue(variable channelType, [string searchStrin
 	return str
 End
 
-/// @brief Check by querying the GUI if the device is a leader
-///
-/// Outside callers should use DeviceHasFollower() instead.
-static Function DAP_DeviceIsLeader(device)
-	string device
-
-	return cmpstr(DAG_GetTextualValue(device, "setvar_Hardware_Status"),LEADER) == 0
-End
-
-/// @brief Updates the yoking controls on all locked/unlocked panels
-static Function DAP_UpdateAllYokeControls()
-
-	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
-	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
-	string   ListOfLockedITC        = GetListOfLockedDevices()
-	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC)
-
-	string device
-	variable i
-	for(i=0; i<ListOfLockedITCNum; i+=1)
-		device = StringFromList(i,ListOfLockedITC)
-
-		// don't touch the current leader
-		if(DAP_DeviceIsLeader(device))
-			continue
-		endif
-
-		DisableControls(device,YOKE_LIST_OF_CONTROLS)
-		DAP_UpdateYokeControls(device)
-
-		if(ListOfLockedITC1600Num >= 2 && DeviceCanLead(device))
-			// ensures yoking controls are only enabled on the ITC1600_Dev_0
-			// a requirement of the ITC XOP
-			EnableControl(device,"button_Hardware_Lead1600")
-		endif
-	endfor
-
-	string   ListOfUnlockedITC     = GetListOfUnlockedDevices()
-	variable ListOfUnlockedITCNum  = ItemsInList(ListOfUnlockedITC)
-
-	for(i=0; i<ListOfUnLockedITCNum; i+=1)
-		device = StringFromList(i,ListOfUnLockedITC)
-		DisableControls(device,YOKE_LIST_OF_CONTROLS)
-	endfor
-End
-
-Function/S DAP_GUIListOfYokedDevices()
-	string devicePath
-
-	// avoid creating the whole device path just for checking
-	if(DataFolderExists(GetDevicePathAsString(ITC1600_FIRST_DEVICE)))
-		SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
-		if(cmpstr(listOfFollowerDevices, "") != 0)
-			return listOfFollowerDevices
-		endif
-	endif
-
-	return "No Yoked Devices"
-End
-
-Function DAP_UpdateYokeControls(device)
-	string device
-
-	if(GetTabID(device, "ADC") != HARDWARE_TAB_NUM)
-		return NaN
-	endif
-
-	if(!DeviceCanFollow(device))
-		HideControls(device,YOKE_LIST_OF_CONTROLS)
-		SetVariable setvar_Hardware_YokeList win = $device, value = _STR:"Device is not yokeable"
-	elseif(DeviceIsFollower(device))
-		HideControls(device,YOKE_LIST_OF_CONTROLS)
-	else
-		ShowControls(device,YOKE_LIST_OF_CONTROLS)
-		SetVariable setvar_Hardware_YokeList win = $device, value = _STR:DAP_GUIListOfYokedDevices()
-	endif
-End
-
 static Function DAP_UpdateDrawElements(string device, variable tab)
 	SetDrawLayer/W=$device/K ProgBack
 
@@ -936,8 +844,6 @@ Function DAP_TabControlFinalHook(tca)
 	win = tca.win
 
 	DAP_UpdateDrawElements(win, tca.tab)
-
-	DAP_UpdateYokeControls(win)
 
 	if(DAP_DeviceIsUnLocked(win))
 		print "Please lock the panel to a DAC in the Hardware tab"
@@ -1241,19 +1147,12 @@ static Function DAP_AdaptAssocHeadstageState(device, checkboxCtrl)
 End
 
 /// @brief Return the repeated acquisition cycle ID for the given devide.
-///
-/// Follower and leader will have the same repeated acquisition cycle ID.
 static Function DAP_GetRAAcquisitionCycleID(device)
 	string device
 
 	DAP_AbortIfUnlocked(device)
 
-	if(DeviceIsFollower(device))
-		NVAR raCycleIDLead = $GetRepeatedAcquisitionCycleID(ITC1600_FIRST_DEVICE)
-		return raCycleIDLead
-	else
-		return GetNextRandomNumberForDevice(device)
-	endif
+	return GetNextRandomNumberForDevice(device)
 End
 
 /// @brief One time initialization before data acquisition
@@ -1571,22 +1470,13 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	endswitch
 End
 
-/// @brief Update the ITI for the given device, takes care of handling yoked devices
+/// @brief Update the ITI for the given device
 Function DAP_UpdateITIAcrossSets(device, maxITI)
 	string device
 	variable maxITI
 
-	if(DeviceIsFollower(device) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
-		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE, maxITI)
-		return NaN
-	endif
-
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Get_Set_ITI"))
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = maxITI)
-	endif
-
-	if(DAP_DeviceIsLeader(device))
-		DAP_SyncGuiFromLeaderToFollower(device)
 	endif
 End
 
@@ -1760,10 +1650,7 @@ End
 
 static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial])
 
-	string panelList
-	variable sweep, nextSweep, maxNextSweep, numPanels, i, noEditDefault
-
-	panelList = GetListofLeaderAndPossFollower(device)
+	variable sweep, noEditDefault
 
 	if(ParamIsDefault(initial))
 		initial = 0
@@ -1772,53 +1659,22 @@ static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial
 	endif
 
 	if(initial)
-		// we are not implementing sweep adjustment for yoked devices
-		if(!DeviceHasFollower(device) && !DeviceIsFollower(device))
-			sweep = AFH_GetLastSweepAcquired(device) + 1
-			if(IsFinite(sweep))
-				SetSetVariable(device, "SetVar_Sweep", sweep)
-				DAG_Update(device, "SetVar_Sweep", val = sweep)
-			endif
-		else
-			sweep = NaN
+		sweep = AFH_GetLastSweepAcquired(device) + 1
+		if(IsFinite(sweep))
+			SetSetVariable(device, "SetVar_Sweep", sweep)
+			DAG_Update(device, "SetVar_Sweep", val = sweep)
 		endif
 	else
-		if(DAP_DeviceIsLeader(device))
-			sweep = DAG_GetNumericalValue(device, "SetVar_Sweep")
-		else
-			sweep = NaN
-		endif
+		sweep = DAG_GetNumericalValue(device, "SetVar_Sweep")
 	endif
 
-	// query maximum next sweep
-	maxNextSweep = 0
-	numPanels = ItemsInList(panelList)
-	for(i = 0; i < numPanels; i += 1)
-		device = StringFromList(i, panelList)
+	noEditDefault = GetControlSettingVar(device, "SetVar_Sweep", "noEdit", defValue = 0)
 
-		if(IsFinite(sweep) && DeviceIsFollower(device))
-			PGC_SetAndActivateControl(device, "SetVar_Sweep", val = sweep)
-		endif
+	SetVariable SetVar_Sweep win = $device, noEdit=noEditDefault
 
-		nextSweep = AFH_GetLastSweepAcquired(device) + 1
-		if(IsFinite(nextSweep))
-			maxNextSweep = max(maxNextSweep, nextSweep)
-		endif
-	endfor
-
-	noEditDefault = GetControlSettingVar(StringFromList(0, device), "SetVar_Sweep", "noEdit", defValue = 0)
-
-	for(i = 0; i < numPanels; i += 1)
-		device = StringFromList(i, panelList)
-
-		SetVariable SetVar_Sweep win = $device, noEdit=noEditDefault
-
-		if(DeviceIsFollower(device))
-			SetVariable SetVar_Sweep win = $device, limits = {0, maxNextSweep, 0}
-		elseif(!noEditDefault)
-			SetVariable SetVar_Sweep win = $device, limits = {0, maxNextSweep, 1}
-		endif
-	endfor
+	if(!noEditDefault)
+		SetVariable SetVar_Sweep win = $device, limits = {0, sweep, 1}
+	endif
 End
 
 /// @brief Return the sampling interval in μs with taking the mode,
@@ -1862,7 +1718,6 @@ Function DAP_GetSampInt(device, dataAcqOrTP, [valid])
 	endif
 End
 
-/// @todo display correct values for yoked devices
 Function DAP_UpdateSweepSetVariables(device)
 	string device
 
@@ -1897,7 +1752,6 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 			device = sva.win
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_UpdateSweepSetVariables(device)
-			DAP_SyncGuiFromLeaderToFollower(device)
 			break
 	endswitch
 
@@ -2100,64 +1954,6 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Check the settings across yoked devices
-static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
-	string listOfFollowerDevices
-	variable mode
-
-	string device, leaderSampInt
-	variable i, j, numEntries, numCtrls
-
-	if(mode == TEST_PULSE_MODE)
-		return 0
-	endif
-
-	leaderSampInt = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
-
-	Make/T/FREE desc = {"Repeated Acquisition", "Distributed Acquisition", "Distributed DAQ delay",            \
-						"Indexing", "ITI", "Number of repetitions", "Get ITI from stimset",                    \
-						"Optimized overlap dDAQ pre feature time", "Optimized overlap dDAQ post feature time", \
-						"Optimized overlap dDAQ", "Optimized overlap dDAQ resolution"}
-
-	numCtrls = DimSize(desc, ROWS)
-	ASSERT(ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK) == numCtrls, "Mismatched yoke linking lists")
-
-	Make/FREE/T/N=(numCtrls) leadEntries = GetGuiControlValue(ITC1600_FIRST_DEVICE, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
-
-	numEntries = ItemsInList(listOfFollowerDevices)
-	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, listOfFollowerDevices)
-
-		if(cmpstr(leaderSampInt, GetValDisplayAsString(device, "ValDisp_DataAcq_SamplingInt")))
-			// this is no fatal error, we just inform the user
-			printf "(%s) Sampling interval does not match leader panel\r", device
-			ValDisplay ValDisp_DataAcq_SamplingInt win=$device, valueBackColor=(0,65280,33024)
-			ControlWindowToFront()
-		else
-			ValDisplay ValDisp_DataAcq_SamplingInt win=$device, valueBackColor=(0,0,0)
-		endif
-
-		Make/FREE/T/N=(numCtrls) followerEntries = GetGuiControlValue(device, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
-
-		if(EqualWaves(leadEntries, followerEntries, 1))
-			continue
-		endif
-
-		// find the differing control
-		for(j = 0; j < numEntries; j +=1)
-			if(!cmpstr(leadEntries[j], followerEntries[j]))
-				continue
-			endif
-
-			printf "(%s) %s setting does not match leader panel\r", device, desc[i]
-			ControlWindowToFront()
-			return 1
-		endfor
-	endfor
-
-	return 0
-End
-
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
@@ -2255,367 +2051,339 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	list = device
-
-	if(DeviceHasFollower(device))
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
-			return 1
-		endif
-		list = AddListItem(list, listOfFollowerDevices, ";", inf)
-
-		// indexing and locked indexing are currently not implemented correctly for yoked devices
-		if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing") || DAG_GetNumericalValue(device, "Check_DataAcq1_IndexingLocked"))
-			printf "(%s) Indexing (locked and unlocked) is currently not usable with yoking.\r", device
-			ControlWindowToFront()
-			return 1
-		elseif(DAG_GetNumericalValue(device, "check_Settings_TPAfterDAQ"))
-			printf "(%s) TP after DAQ is currently not usable with yoking.\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	if(DAP_DeviceIsUnlocked(device))
+		printf "(%s) Device is unlocked. Please lock the device.\r", device
+		ControlWindowToFront()
+		return 1
 	endif
-	DEBUGPRINT("Checking the device list: ", str=list)
 
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-
-		device = StringFromList(i, list)
-
-		if(DAP_DeviceIsUnlocked(device))
-			printf "(%s) Device is unlocked. Please lock the device.\r", device
-			ControlWindowToFront()
-			return 1
-		endif
-
-		NVAR deviceID = $GetDAQDeviceID(device)
-		hardwareType = GetHardwareType(device)
+	NVAR deviceID = $GetDAQDeviceID(device)
+	hardwareType = GetHardwareType(device)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_MESSAGE))
-			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_MESSAGE))
+		printf "(%s) Device can not be selected. Please unlock and lock the device.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
-		if(hardwareType == HARDWARE_NI_DAC && !DAG_GetNumericalValue(device, "check_Settings_MD"))
-			printf "(%s) NI hardware can only be used in multi device mode.\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	if(hardwareType == HARDWARE_NI_DAC && !DAG_GetNumericalValue(device, "check_Settings_MD"))
+		printf "(%s) NI hardware can only be used in multi device mode.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 #endif
-		if(!HasPanelLatestVersion(device, DA_EPHYS_PANEL_VERSION))
-			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	if(!HasPanelLatestVersion(device, DA_EPHYS_PANEL_VERSION))
+		printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
-		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-		numHS = sum(statusHS)
-		if(!numHS)
-			printf "(%s) Please activate at least one headstage\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	numHS = sum(statusHS)
+	if(!numHS)
+		printf "(%s) Please activate at least one headstage\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
-		WAVE statusDA = DAG_GetChannelState(device, CHANNEL_TYPE_DAC)
-		numDACs = sum(statusDA)
-		if(!numDACS)
-			printf "(%s) Please activate at least one DA channel\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	WAVE statusDA = DAG_GetChannelState(device, CHANNEL_TYPE_DAC)
+	numDACs = sum(statusDA)
+	if(!numDACS)
+		printf "(%s) Please activate at least one DA channel\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
-		WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
-		numADCs = sum(statusAD)
-		if(!numADCs)
-			printf "(%s) Please activate at least one AD channel\r", device
-			ControlWindowToFront()
-			return 1
-		endif
+	WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+	numADCs = sum(statusAD)
+	if(!numADCs)
+		printf "(%s) Please activate at least one AD channel\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
-		if(mode == DATA_ACQUISITION_MODE)
+	if(mode == DATA_ACQUISITION_MODE)
 
-			if(DAG_GetNumericalValue(device, "Check_Settings_ITImanualStart"))
-				WAVE numericalValues = GetLBNumericalValues(device)
-				WAVE textualValues   = GetLBTextualValues(device)
-				lastITI   = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
+		if(DAG_GetNumericalValue(device, "Check_Settings_ITImanualStart"))
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+			lastITI   = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
 
-				if(IsFinite(lastITI))
-					lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
+			if(IsFinite(lastITI))
+				lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
 
-					if(IsFinite(lastITI) && !IsEmpty(lastStart))
-						lastStartSeconds = ParseISO8601TimeStamp(lastStart)
-						nextStart        = DateTimeInUTC()
-						leftTime         = lastStartSeconds + lastITI - nextStart
+				if(IsFinite(lastITI) && !IsEmpty(lastStart))
+					lastStartSeconds = ParseISO8601TimeStamp(lastStart)
+					nextStart        = DateTimeInUTC()
+					leftTime         = lastStartSeconds + lastITI - nextStart
 
-						if(leftTime > 0)
-							printf "(%s) The next sweep can not be started as that would break the required inter trial interval. Please wait another %g seconds.\r", device, leftTime
-							ControlWindowToFront()
-							return 1
-						endif
-					endif
-				endif
-			endif
-
-			// check all selected TTLs
-			WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_TTL)
-			numEntries = DimSize(statusTTLFiltered, ROWS)
-			for(i=0; i < numEntries; i+=1)
-				if(!statusTTLFiltered[i])
-					continue
-				endif
-
-				if(DAP_CheckStimset(device, CHANNEL_TYPE_TTL, i, NaN))
-					return 1
-				endif
-			endfor
-
-			if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq") && DAG_GetNumericalValue(device, "check_DataAcq_RepAcqRandom") && DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
-				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", device
-				printf "(%s) If you need this feature please contact the MIES developers.\r", device
-				ControlWindowToFront()
-				return 1
-			endif
-
-			if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") && DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
-				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", device
-				ControlWindowToFront()
-				return 1
-			endif
-
-			// classic distributed acquisition requires that all stim sets are the same
-			// oodDAQ allows different stim sets
-			refDacWave = ""
-			if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") || DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
-				WAVE statusDAFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_DAC)
-				numEntries = DimSize(statusDAFiltered, ROWS)
-				for(i=0; i < numEntries; i+=1)
-					if(!statusDAFiltered[i])
-						continue
-					endif
-
-					if(!IsFinite(AFH_GetHeadstagefromDAC(device, i)))
-						printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", device, i
-						ControlWindowToFront()
-						return 1
-					endif
-
-					if(DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
-						continue
-					endif
-
-					dacWave = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = i)
-					if(isEmpty(refDacWave))
-						refDacWave = dacWave
-					elseif(CmpStr(refDacWave, dacWave))
-						printf "(%s) Please select the same stim sets for all DACs when distributed acquisition is used\r", device
-						ControlWindowToFront()
-						return 1
-					endif
-				endfor
-			endif
-
-			WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
-			WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
-
-			for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
-
-				if(!statusAsync[i])
-					continue
-				endif
-
-				hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
-
-				// AD channel already used
-				if(hwChannel < NUM_ASYNC_CHANNELS && statusAD[hwChannel])
-					printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
-					ControlWindowToFront()
-					return 1
-				endif
-
-				// active async channel
-
-				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-				if(!IsFinite(DAG_GetNumericalValue(device, ctrl, index = i)))
-					printf "(%s) Please select a finite gain value for async channel %d\r", device, i
-					ControlWindowToFront()
-					return 1
-				endif
-
-				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-				if(!DAG_GetNumericalValue(device, ctrl, index = i))
-					continue
-				endif
-
-				// with alarm enabled
-
-				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-				minValue = DAG_GetNumericalValue(device, ctrl, index = i)
-				if(!IsFinite(minValue))
-					printf "(%s) Please select a finite minimum value for async channel %d\r", device, i
-					ControlWindowToFront()
-					return 1
-				endif
-
-				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-				maxValue = DAG_GetNumericalValue(device, ctrl, index = i)
-				if(!IsFinite(maxValue))
-					printf "(%s) Please select a finite maximum value for async channel %d\r", device, i
-					ControlWindowToFront()
-					return 1
-				endif
-
-				if(!(minValue < maxValue))
-					printf "(%s) Please select a minimum value which is strictly smaller than the maximum value for async channel %d\r", device, i
-					ControlWindowToFront()
-					return 1
-				endif
-
-				if(DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
-					if(!DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
-						printf "(%s) Repeat sweep on async alarm can only be used with repeated acquisition enabled\r", device
+					if(leftTime > 0)
+						printf "(%s) The next sweep can not be started as that would break the required inter trial interval. Please wait another %g seconds.\r", device, leftTime
 						ControlWindowToFront()
 						return 1
 					endif
 				endif
-			endfor
-		endif
-
-		// avoid having different headstages reference the same amplifiers
-		// and/or DA/AD channels in the "DAC Channel and Device Associations" menu
-		Make/FREE/N=(NUM_HEADSTAGES) DACs, ADCs
-		Make/FREE/N=(NUM_HEADSTAGES)/T ampSpec
-
-		WAVE chanAmpAssign = GetChanAmpAssign(device)
-
-		for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-			if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-				ampSpec[i] = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-			else
-				// add a unique alternative entry
-				ampSpec[i] = num2str(i)
 			endif
-
-			clampMode  = DAG_GetHeadstageMode(device, i)
-
-			if(clampMode == V_CLAMP_MODE)
-				DACs[i] = ChanAmpAssign[%VC_DA][i]
-				ADCs[i] = ChanAmpAssign[%VC_AD][i]
-			elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-				DACs[i] = ChanAmpAssign[%IC_DA][i]
-				ADCs[i] = ChanAmpAssign[%IC_AD][i]
-			else
-				printf "(%s) Unhandled mode %d\r", device, clampMode
-				ControlWindowToFront()
-				return 1
-			endif
-		endfor
-
-		if(SearchForDuplicates(DACs))
-			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same DA channels.\r", device
-			printf "Please clear the associations for unused headstages.\r"
-			ControlWindowToFront()
-			return 1
 		endif
 
-		if(SearchForDuplicates(ADCs))
-			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same AD channels.\r", device
-			printf "Please clear the associations for unused headstages.\r"
-			ControlWindowToFront()
-			return 1
-		endif
-
-		if(SearchForDuplicates(ampSpec))
-			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", device
-			printf "Please clear the associations for unused headstages.\r"
-			ControlWindowToFront()
-			return 1
-		endif
-
-		// check all active headstages
-		numEntries = DimSize(statusHS, ROWS)
+		// check all selected TTLs
+		WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_TTL)
+		numEntries = DimSize(statusTTLFiltered, ROWS)
 		for(i=0; i < numEntries; i+=1)
-			if(!statusHS[i])
+			if(!statusTTLFiltered[i])
 				continue
 			endif
 
-			ret = DAP_CheckHeadStage(device, i, mode)
-
-			switch(ret)
-				case 0:
-					// passed, do nothing
-					break
-				case 1: // non-recoverable error
-					return 1
-				case 2: // recoverable error, try again once
-					if(DAP_CheckHeadStage(device, i, mode))
-						return 1
-					endif
-					break
-				default:
-					ASSERT(0, "Unexpected value")
-			endswitch
+			if(DAP_CheckStimset(device, CHANNEL_TYPE_TTL, i, NaN))
+				return 1
+			endif
 		endfor
 
-		if(DAG_GetNumericalValue(device, "SetVar_DataAcq_TPDuration") <= 0)
-			print "The testpulse duration must be greater than 0 ms"
+		if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq") && DAG_GetNumericalValue(device, "check_DataAcq_RepAcqRandom") && DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
+			printf "(%s) Repeated random acquisition can not be combined with indexing.\r", device
+			printf "(%s) If you need this feature please contact the MIES developers.\r", device
 			ControlWindowToFront()
 			return 1
 		endif
 
-		if(mode == DATA_ACQUISITION_MODE)
-			WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
-			numEntries = DimSize(statusDAFiltered, ROWS)
-			for(i = 0; i < numEntries; i += 1)
+		if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") && DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
+			printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", device
+			ControlWindowToFront()
+			return 1
+		endif
 
+		// classic distributed acquisition requires that all stim sets are the same
+		// oodDAQ allows different stim sets
+		refDacWave = ""
+		if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") || DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
+			WAVE statusDAFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_DAC)
+			numEntries = DimSize(statusDAFiltered, ROWS)
+			for(i=0; i < numEntries; i+=1)
 				if(!statusDAFiltered[i])
 					continue
 				endif
 
-				if(GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet") == 0 \
-				   && CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
-					printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", device
+				if(!IsFinite(AFH_GetHeadstagefromDAC(device, i)))
+					printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", device, i
 					ControlWindowToFront()
 					return 1
 				endif
 
-				headstage = AFH_GetHeadstageFromDAC(device, i)
+				if(DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
+					continue
+				endif
 
-				if(IsFinite(headstage) && DAG_GetHeadstageMode(device, headstage) == I_EQUAL_ZERO_MODE \
-				   && !cmpstr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
-					printf "(%s) When TP while DAQ is used the channel clamp mode for headstage %d can not be I=0.\r", device, headstage
+				dacWave = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = i)
+				if(isEmpty(refDacWave))
+					refDacWave = dacWave
+				elseif(CmpStr(refDacWave, dacWave))
+					printf "(%s) Please select the same stim sets for all DACs when distributed acquisition is used\r", device
 					ControlWindowToFront()
 					return 1
 				endif
 			endfor
+		endif
 
-			if(DC_GotTPChannelWhileDAQ(device))
-				if(DAG_GetNumericalValue(device, "Popup_Settings_SampIntMult") > 0)
-					printf "(%s) When TP while DAQ is used only sample multiplier of 1 is supported.\r", device
-					ControlWindowToFront()
-					return 1
-				endif
-				if(DAG_GetNumericalValue(device, "Popup_Settings_FixedFreq") > 0)
-					printf "(%s) When TP while DAQ is used no fixed frequency acquisition is supported.\r", device
+		WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
+		WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+
+		for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
+
+			if(!statusAsync[i])
+				continue
+			endif
+
+			hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
+
+			// AD channel already used
+			if(hwChannel < NUM_ASYNC_CHANNELS && statusAD[hwChannel])
+				printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
+				ControlWindowToFront()
+				return 1
+			endif
+
+			// active async channel
+
+			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+			if(!IsFinite(DAG_GetNumericalValue(device, ctrl, index = i)))
+				printf "(%s) Please select a finite gain value for async channel %d\r", device, i
+				ControlWindowToFront()
+				return 1
+			endif
+
+			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+			if(!DAG_GetNumericalValue(device, ctrl, index = i))
+				continue
+			endif
+
+			// with alarm enabled
+
+			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+			minValue = DAG_GetNumericalValue(device, ctrl, index = i)
+			if(!IsFinite(minValue))
+				printf "(%s) Please select a finite minimum value for async channel %d\r", device, i
+				ControlWindowToFront()
+				return 1
+			endif
+
+			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+			maxValue = DAG_GetNumericalValue(device, ctrl, index = i)
+			if(!IsFinite(maxValue))
+				printf "(%s) Please select a finite maximum value for async channel %d\r", device, i
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(!(minValue < maxValue))
+				printf "(%s) Please select a minimum value which is strictly smaller than the maximum value for async channel %d\r", device, i
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
+				if(!DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
+					printf "(%s) Repeat sweep on async alarm can only be used with repeated acquisition enabled\r", device
 					ControlWindowToFront()
 					return 1
 				endif
 			endif
+		endfor
+	endif
+
+	// avoid having different headstages reference the same amplifiers
+	// and/or DA/AD channels in the "DAC Channel and Device Associations" menu
+	Make/FREE/N=(NUM_HEADSTAGES) DACs, ADCs
+	Make/FREE/N=(NUM_HEADSTAGES)/T ampSpec
+
+	WAVE chanAmpAssign = GetChanAmpAssign(device)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
+		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
+			ampSpec[i] = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+		else
+			// add a unique alternative entry
+			ampSpec[i] = num2str(i)
 		endif
 
-		// unlock DAQDataWave, this happens if user functions error out and we don't catch it
-		WAVE DAQDataWave = GetDAQDataWave(device, mode)
-		if(GetLockState(DAQDataWave))
-			sprintf msg, "(%s) Removing leftover lock on %s.\r", device, GetWavesDataFolder(DAQDataWave, 2)
-			BUG(msg)
-			ChangeWaveLock(DAQDataWave, 0)
+		clampMode  = DAG_GetHeadstageMode(device, i)
+
+		if(clampMode == V_CLAMP_MODE)
+			DACs[i] = ChanAmpAssign[%VC_DA][i]
+			ADCs[i] = ChanAmpAssign[%VC_AD][i]
+		elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
+			DACs[i] = ChanAmpAssign[%IC_DA][i]
+			ADCs[i] = ChanAmpAssign[%IC_AD][i]
+		else
+			printf "(%s) Unhandled mode %d\r", device, clampMode
+			ControlWindowToFront()
+			return 1
 		endif
 	endfor
+
+	if(SearchForDuplicates(DACs))
+		printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same DA channels.\r", device
+		printf "Please clear the associations for unused headstages.\r"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(SearchForDuplicates(ADCs))
+		printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same AD channels.\r", device
+		printf "Please clear the associations for unused headstages.\r"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(SearchForDuplicates(ampSpec))
+		printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", device
+		printf "Please clear the associations for unused headstages.\r"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	// check all active headstages
+	numEntries = DimSize(statusHS, ROWS)
+	for(i=0; i < numEntries; i+=1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		ret = DAP_CheckHeadStage(device, i, mode)
+
+		switch(ret)
+			case 0:
+				// passed, do nothing
+				break
+			case 1: // non-recoverable error
+				return 1
+			case 2: // recoverable error, try again once
+				if(DAP_CheckHeadStage(device, i, mode))
+					return 1
+				endif
+				break
+			default:
+				ASSERT(0, "Unexpected value")
+		endswitch
+	endfor
+
+	if(DAG_GetNumericalValue(device, "SetVar_DataAcq_TPDuration") <= 0)
+		print "The testpulse duration must be greater than 0 ms"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(mode == DATA_ACQUISITION_MODE)
+		WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+		numEntries = DimSize(statusDAFiltered, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+
+			if(!statusDAFiltered[i])
+				continue
+			endif
+
+			if(GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet") == 0 \
+			   && CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+				printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			headstage = AFH_GetHeadstageFromDAC(device, i)
+
+			if(IsFinite(headstage) && DAG_GetHeadstageMode(device, headstage) == I_EQUAL_ZERO_MODE \
+			   && !cmpstr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+				printf "(%s) When TP while DAQ is used the channel clamp mode for headstage %d can not be I=0.\r", device, headstage
+				ControlWindowToFront()
+				return 1
+			endif
+		endfor
+
+		if(DC_GotTPChannelWhileDAQ(device))
+			if(DAG_GetNumericalValue(device, "Popup_Settings_SampIntMult") > 0)
+				printf "(%s) When TP while DAQ is used only sample multiplier of 1 is supported.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+			if(DAG_GetNumericalValue(device, "Popup_Settings_FixedFreq") > 0)
+				printf "(%s) When TP while DAQ is used no fixed frequency acquisition is supported.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endif
+
+	// unlock DAQDataWave, this happens if user functions error out and we don't catch it
+	WAVE DAQDataWave = GetDAQDataWave(device, mode)
+	if(GetLockState(DAQDataWave))
+		sprintf msg, "(%s) Removing leftover lock on %s.\r", device, GetWavesDataFolder(DAQDataWave, 2)
+		BUG(msg)
+		ChangeWaveLock(DAQDataWave, 0)
+	endif
 
 	if(DAP_CheckPressureSettings(device))
 		return 1
@@ -3698,223 +3466,6 @@ Function DAP_ToggleTestpulseButton(device, mode)
 	Button StartTestPulseButton title=text, win = $device
 End
 
-/// Returns the list of potential followers for yoking.
-///
-/// Used by popup_Hardware_AvailITC1600s from the hardware tab
-Function /s DAP_ListOfITCDevices()
-
-	string listOfPotentialFollowerDevices = RemoveFromList(ITC1600_FIRST_DEVICE,GetListOfLockedITC1600Devices())
-	return SortList(listOfPotentialFollowerDevices, ";", 16)
-End
-
-/// @brief The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
-Function DAP_ButtonProc_Lead(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string device
-
-	switch(ba.eventcode)
-		case 2:
-			device = ba.win
-			ASSERT(DeviceCanLead(device),"This device can not lead")
-
-			EnableControls(device,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
-			DisableControl(device,"button_Hardware_Lead1600")
-			PGC_SetAndActivateControl(device, "setvar_Hardware_Status", str = LEADER)
-			break
-	endswitch
-
-	return 0
-End
-
-Function DAP_ButtonProc_Independent(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string device
-
-	switch(ba.eventcode)
-		case 2:
-			device = ba.win
-
-			DisableControls(device,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
-			EnableControl(device,"button_Hardware_Lead1600")
-			PGC_SetAndActivateControl(device, "setvar_Hardware_Status", str = "Independent")
-
-			DAP_RemoveAllYokedDACs(device)
-			DAP_UpdateAllYokeControls()
-			break
-	endswitch
-
-	return 0
-End
-
-Function DAP_ButtonProc_Follow(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string leadPanel, panelToYoke
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-
-			leadPanel = ba.win
-
-			ControlUpdate/W=$leadPanel popup_Hardware_AvailITC1600s
-			ControlInfo/W=$leadPanel popup_Hardware_AvailITC1600s
-			if(V_flag > 0 && V_Value >= 1)
-				panelToYoke = S_Value
-			endif
-
-			if(!windowExists(panelToYoke))
-				break
-			endif
-
-			ASSERT(CmpStr(panelToYoke, ITC1600_FIRST_DEVICE) != 0, "Can't follow the lead device")
-
-			DAP_SetITCDACasFollower(leadPanel, panelToYoke)
-			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
-			PGC_SetAndActivateControl(leadPanel, "check_Settings_MD", val = 1)
-			PGC_SetAndActivateControl(panelToYoke, "check_Settings_MD", val = 1)
-			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
-			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
-			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
-			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
-			EnableControl(leadPanel, "title_hardware_Release")
-			break
-	endswitch
-
-	return 0
-End
-
-static Function DAP_SyncGuiFromLeaderToFollower(device)
-	string device
-
-	variable numPanels, numEntries
-	string panelList
-
-	if(!windowExists(device) || !DAP_DeviceIsLeader(device))
-		return NaN
-	endif
-
-	panelList = GetListofLeaderAndPossFollower(device)
-	DAP_UpdateSweepLimitsAndDisplay(device)
-
-	numPanels = ItemsInList(panelList)
-
-	if(!numPanels)
-		return NaN
-	endif
-
-	numEntries = ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK)
-
-	Make/FREE/T/N=(numEntries) leadEntries    = GetGuiControlValue(device, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
-	Make/FREE/N=(numPanels, numEntries) dummy = SetGuiControlValue(StringFromList(p, panelList), StringFromList(q, YOKE_CONTROLS_DISABLE_AND_LINK), leadEntries[q])
-End
-
-Function DAP_ButtonProc_YokeRelease(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string device
-	string panelToDeYoke
-
-	switch(ba.eventcode)
-		case 2:
-			device = ba.win
-
-			ControlUpdate/W=$device popup_Hardware_YokedDACs
-			ControlInfo/W=$device popup_Hardware_YokedDACs
-			if(V_flag > 0 && V_Value >= 1)
-				panelToDeYoke = S_Value
-			endif
-
-			if(!windowExists(panelToDeYoke))
-				return 0
-			endif
-
-			DAP_RemoveYokedDAC(panelToDeYoke)
-			DAP_UpdateYokeControls(panelToDeYoke)
-			break
-	endswitch
-
-	return 0
-End
-
-Function DAP_RemoveYokedDAC(panelToDeYoke)
-	string panelToDeYoke
-
-	string leadPanel = ITC1600_FIRST_DEVICE
-	string str
-
-	if(!windowExists(leadPanel))
-		return 0
-	endif
-
-	SVAR listOfFollowerDevices = $GetFollowerList(leadPanel)
-	if(ItemsInList(listOfFollowerDevices) == 0)
-		return 0
-	endif
-
-	if(WhichListItem(panelToDeYoke, listOfFollowerDevices) == -1)
-		return 0
-	endif
-
-	listOfFollowerDevices = RemoveFromList(panelToDeYoke, listOfFollowerDevices)
-
-	str = listOfFollowerDevices
-	if(ItemsInList(listOfFollowerDevices) == 0 )
-		// there are no more followers, disable the release button and its popup menu
-		DisableControl(leadPanel,"popup_Hardware_YokedDACs")
-		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
-		str = "No Yoked Devices"
-	endif
-
-	PGC_SetAndActivateControl(leadPanel, "setvar_Hardware_YokeList", str = str)
-	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_Status", str = "Independent")
-
-	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE)
-	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
-
-	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_YokeList", str = "None")
-
-	NVAR followerdeviceID = $GetDAQDeviceID(panelToDeYoke)
-	HW_DisableYoking(HARDWARE_ITC_DAC, followerdeviceID)
-End
-
-Function DAP_RemoveAllYokedDACs(device)
-	string device
-
-	string panelToDeYoke, list
-	variable i, listNum
-
-	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
-	if(ItemsInList(listOfFollowerDevices) == 0)
-		return 0
-	endif
-
-	list = listOfFollowerDevices
-
-	// we have to operate on a copy of ListOfFollowerITC1600s as
-	// DAP_RemoveYokedDAC modifies it.
-
-	listNum = ItemsInList(list)
-
-	for(i=0; i < listNum; i+=1)
-		panelToDeYoke =  StringFromList(i, list)
-		DAP_RemoveYokedDAC(panelToDeYoke)
-	endfor
-End
-
-/// Sets the lists and buttons on the follower device actively being yoked
-Function DAP_UpdateFollowerControls(device, panelToYoke)
-	string device, panelToYoke
-
-	PGC_SetAndActivateControl(panelToYoke, "setvar_Hardware_Status", str = FOLLOWER)
-
-	EnableControl(panelToYoke,"setvar_Hardware_YokeList")
-	PGC_SetAndActivateControl(panelToYoke, "setvar_Hardware_YokeList", str = "Lead device = " + device)
-	DAP_UpdateYokeControls(panelToYoke)
-End
-
 Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	struct WMButtonAction &ba
 
@@ -4170,13 +3721,6 @@ Function DAP_UnlockAllDevices()
 	string win
 	variable i, numItems
 
-	// unlock the first ITC1600 device as that might be yoking other devices
-	if(WhichListItem(ITC1600_FIRST_DEVICE,list) != -1)
-		DAP_UnlockDevice(ITC1600_FIRST_DEVICE)
-	endif
-
-	// refetch the, possibly changed, list of locked devices and unlock them all
-	list = GetListOfLockedDevices()
 	numItems = ItemsInList(list)
 	for(i=0; i < numItems; i+=1)
 		win = StringFromList(i, list)
@@ -4191,7 +3735,6 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			DAP_UpdateSweepSetVariables(cba.win)
-			DAP_SyncGuiFromLeaderToFollower(cba.win)
 			break
 	endswitch
 
@@ -4229,8 +3772,6 @@ Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 			endif
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			DAP_SyncGuiFromLeaderToFollower(cba.win)
-
 			break
 	endswitch
 
@@ -4245,7 +3786,6 @@ Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-			DAP_SyncGuiFromLeaderToFollower(sva.win)
 			break
 	endswitch
 
@@ -4893,7 +4433,6 @@ Function DAP_LockDevice(string win)
 	DAP_SyncDeviceAssocSettToGUI(deviceLocked, headstage)
 
 	DAP_UpdateDAQControls(deviceLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
-	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(deviceLocked)
 	DAP_UpdateDaEphysStimulusSetPopups(device=deviceLocked)
@@ -5125,16 +4664,9 @@ static Function DAP_UnlockDevice(device)
 		PGC_SetAndActivateControl(device, "button_Hardware_PUser_Disable")
 	endif
 
-	if(DeviceHasFollower(device))
-		DAP_RemoveALLYokedDACs(device)
-	else
-		DAP_RemoveYokedDAC(device)
-	endif
-
 	EnableControls(device,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	DisableControl(device,"button_SettingsPlus_unLockDevic")
 	EnableControls(device, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
-	SetVariable setvar_Hardware_Status Win = $device, value= _STR:"Independent"
 	DAP_ResetGUIAfterDAQ(device)
 	DAP_ToggleTestpulseButton(device, TESTPULSE_BUTTON_TO_START)
 
@@ -5166,9 +4698,7 @@ static Function DAP_UnlockDevice(device)
 	HW_ResetDevice(hardwareType, deviceID, flags=flags)
 	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)
 
-	DAP_UpdateYokeControls(unlockedDevice)
 	DAP_UpdateListOfLockedDevices()
-	DAP_UpdateAllYokeControls()
 
 	// reset our state variables to safe defaults
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -5194,11 +4724,6 @@ static Function DAP_UnlockDevice(device)
 		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
 		DAP_ClearWaveIfExists(ActiveDevTimeParam)
 		DAP_ClearWaveIfExists(TimerFunctionListWave)
-
-		if(DataFolderExists(GetDevicePathAsString(ITC1600_FIRST_DEVICE)))
-			SVAR listOfFollowers = $GetFollowerList(ITC1600_FIRST_DEVICE)
-			listOfFollowers = ""
-		endif
 
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
@@ -5311,22 +4836,6 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 	else
 		Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
 	endif
-End
-
-/// This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600
-static Function DAP_SetITCDACasFollower(leadDAC, followerDAC)
-	string leadDAC, followerDAC
-
-	SVAR listOfFollowerDevices = $GetFollowerList(leadDAC)
-	NVAR followerdeviceID = $GetDAQDeviceID(followerDAC)
-
-	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
-		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		HW_EnableYoking(HARDWARE_ITC_DAC, followerdeviceID)
-		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
-	endif
-	// TB: what does this comment mean?
-	// set the internal clock of the device
 End
 
 /// @brief Helper function to update all DAQ related controls after something changed.
