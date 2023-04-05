@@ -201,7 +201,6 @@ Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeat
 	ASSERT(postFeatureTime >= 0, "Unexpected post feature time")
 	ASSERT(DimSize(stimSets, ROWS) == DimSize(setColumns, ROWS), "Mismatched simtSets and setColumns sizes")
 
-	WaveClear params.preload
 	WaveClear params.offsets
 	WaveClear params.regions
 
@@ -213,12 +212,6 @@ End
 
 /// @brief Helper structure for Optimized overlap distributed acquisition (oodDAQ) functions
 Structure OOdDAQParams
-	///@name Temporaries
-	///@{
-	WAVE preload                       ///< Data used for prefilling the optimization wave.
-	                                   ///< Allows to take previous runs into account.
-	///@}
-
 	///@name Input
 	///@{
 	WAVE/WAVE stimSets         ///< Wave ref wave with different stimsets
