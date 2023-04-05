@@ -2108,26 +2108,6 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	string device, leaderSampInt
 	variable i, j, numEntries, numCtrls
 
-	if(!WindowExists("ArduinoSeq_Panel"))
-		ARDLaunchSeqPanel()
-
-		if(!WindowExists("ArduinoSeq_Panel"))
-			printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
-			ControlWindowToFront()
-			return 1
-		endif
-	endif
-
-	if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
-		PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
-
-		if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
-			printf "(%s) The Arduino sequencer panel has a disabled \"Start\" button. Is it connected? Have you loaded the default sequence?\r", ITC1600_FIRST_DEVICE
-			ControlWindowToFront()
-			return 1
-		endif
-	endif
-
 	if(mode == TEST_PULSE_MODE)
 		return 0
 	endif
@@ -3741,7 +3721,6 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 			EnableControls(device,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(device,"button_Hardware_Lead1600")
 			PGC_SetAndActivateControl(device, "setvar_Hardware_Status", str = LEADER)
-			createDFWithAllParents("root:ImageHardware:Arduino")
 			break
 	endswitch
 

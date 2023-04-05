@@ -134,7 +134,6 @@ do
     continue
   fi
 
-  cp -r  "$base_folder"/Packages/Arduino  "$user_proc"
   cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES_Include.ipf  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES  "$user_proc"

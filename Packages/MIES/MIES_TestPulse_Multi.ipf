@@ -20,7 +20,6 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 /// @brief Start the test pulse when MD support is activated.
 ///
 /// Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger.
-/// The external trigger is assumed to be a arduino device using the arduino squencer.
 Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	string device
 	variable runModifier
@@ -79,9 +78,6 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 		followerDevice = StringFromList(i, listOfFollowerDevices)
 		TPM_BkrdTPMD(followerDevice, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
-
-	// trigger
-	ARDStartSequence()
 End
 
 /// @brief Start a multi device test pulse, always done in background mode

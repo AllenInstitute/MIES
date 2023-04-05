@@ -315,9 +315,6 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)
 	endif
-
-	// trigger
-	ARDStartSequence()
 End
 
 /// @brief Call a function for a device and if this device is a leader with followers

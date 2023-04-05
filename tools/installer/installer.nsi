@@ -613,8 +613,6 @@ ProcInst_${CREALNKSID}:
     CreateShortCut "$IGORBASEPATH\Igor Procedures\MIES_Include.lnk" "$INSTDIR\Packages\MIES_Include.ipf"
     FileWrite $FILEHANDLE "$IGORBASEPATH\Igor Procedures\MIES_Include.lnk$\n"
 
-    CreateShortCut "$IGORBASEPATH\User Procedures\Arduino.lnk" "$INSTDIR\Packages\Arduino"
-    FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\Arduino.lnk$\n"
     CreateShortCut "$IGORBASEPATH\User Procedures\IPNWB.lnk" "$INSTDIR\Packages\IPNWB"
     FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\IPNWB.lnk$\n"
     CreateShortCut "$IGORBASEPATH\User Procedures\MIES.lnk" "$INSTDIR\Packages\MIES"

@@ -11,41 +11,6 @@ Latest development version from main branch
 -  ``./tools/initial-repo-config.sh`` (Requires a Git Bash shell, named
    Git terminal in SourceTree)
 
-Arduino
--------
-
-Setup
-~~~~~
-
-Advanced measurement modes like Yoking require an Arduino for triggering
-the DAC hardware. The following steps have to be performed in order to
-get a working setup:
-
--  Get an `Arduino
-   UNO <https://www.arduino.cc/en/Main/ArduinoBoardUno>`__, for easier
-   PIN access a `screw
-   shield <http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html>`__
-   comes in handy too
--  Connect the device to the PC via USB
--  Install the Arduino studio from
-   "Packages\\Arduino\\arduino-1.6.8-windows.exe"
--  Extract "Packages\\Arduino\\Arduino-libraries-and-sequencer.zip" into
-   "C:\\Users\\$username\\Documents\\Arduino"
--  Start Arduino studio and try connecting to the device
--  Load and compile the installed sequence "Igor\_Sequencer3.ino"
--  Connect Pin 12 and GND to the trigger input of the DAC hardware
-
-Usage
-~~~~~
-
--  Connect Arduino
--  Start Arduino studio and upload "Igor\_Sequencer3.ino"
--  Start Igor Pro
--  Open the panel from the Arduino menu
--  Connect
--  Upload Sequence
--  The start of DAQ is done by MIES itself
-
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 

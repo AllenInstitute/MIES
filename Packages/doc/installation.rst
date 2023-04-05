@@ -156,7 +156,6 @@ package for 64bit (x64) in English.
 
    -  In ``User Procedures`` a shortcut pointing to
 
-      -  ``Packages\Arduino``
       -  ``Packages\IPNWB``
       -  ``Packages\MIES``
 
@@ -180,7 +179,6 @@ hardware related XOPs present.
 
    -  In ``User Procedures`` a shortcut pointing to
 
-      -  ``Packages\Arduino``
       -  ``Packages\IPNWB``
       -  ``Packages\MIES``
 
