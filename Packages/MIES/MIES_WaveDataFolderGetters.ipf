@@ -2087,8 +2087,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 			// update all RAC/SCI cycles which got changed by the new data
 			// and that is not so easy
 		endif
-	elseif(WaveExists(wv))
-		// handle upgrade
 	else
 		Make/FREE/N=(MINIMUM_WAVE_SIZE, 2, NUM_HEADSTAGES)/WAVE wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
