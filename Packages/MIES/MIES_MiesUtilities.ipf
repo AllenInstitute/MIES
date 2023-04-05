@@ -5457,18 +5457,6 @@ Function SearchForDuplicates(wv)
 	return WaveExists(idx) && DimSize(idx, ROWS) > 0
 End
 
-/// @brief Check that the device can act as a follower
-Function DeviceCanFollow(device)
-	string device
-
-	string deviceType, deviceNumber
-	if(!ParseDeviceString(device, deviceType, deviceNumber))
-		return 0
-	endif
-
-	return !cmpstr(deviceType, "ITC1600")
-End
-
 /// @brief Check that the device is of type ITC1600
 Function IsITC1600(device)
 	string device
@@ -5480,54 +5468,6 @@ Function IsITC1600(device)
 	ASSERT(ret, "Could not parse device")
 
 	return !cmpstr(deviceType, "ITC1600")
-End
-
-/// @brief Check that the device is a follower
-Function DeviceIsFollower(device)
-	string device
-
-	if(!DeviceCanFollow(device))
-		return 0
-	endif
-
-	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
-
-	return WhichListItem(device, listOfFollowerDevices) != -1
-End
-
-/// @brief Check that the device can act as a leader
-Function DeviceCanLead(device)
-	string device
-
-	return !cmpstr(device, ITC1600_FIRST_DEVICE)
-End
-
-/// @brief Check that the device is a leader and has followers
-Function DeviceHasFollower(device)
-	string device
-
-	if(!DeviceCanLead(device))
-		return 0
-	endif
-
-	SVAR listOfFollowerDevices = $GetFollowerList(device)
-
-	return ItemsInList(listOfFollowerDevices) > 0
-End
-
-/// @brief Convenience wrapper for GetFollowerList()
-///
-/// For iterating over a list of all followers and the leader. Returns just
-/// device if the device can not lead.
-Function/S GetListofLeaderAndPossFollower(device)
-	string device
-
-	if(!DeviceCanLead(device))
-		return device
-	endif
-
-	SVAR followerList = $GetFollowerList(device)
-	return AddListItem(device, followerList, ";", 0)
 End
 
 /// @brief Return a path to the program folder with trailing dir separator

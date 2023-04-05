@@ -267,15 +267,6 @@ Function/S GetDataAcqRunMode(device)
 	return GetNVARAsString(GetDevicePath(device), "runMode", initialValue=DAQ_NOT_RUNNING)
 End
 
-/// @brief Return the list of follower devices of a lead device
-///
-/// @sa GetListofLeaderAndPossFollower()
-Function/S GetFollowerList(leadPanel)
-	string leadPanel
-
-	return GetSVARAsString(GetDevicePath(leadPanel), "ListOfFollowerITC1600s", initialValue="")
-End
-
 /// @brief Returns the absolute path to the device ID
 Function/S GetDAQDeviceID(device)
 	string device

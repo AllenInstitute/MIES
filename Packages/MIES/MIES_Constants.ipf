@@ -85,7 +85,6 @@ StrConstant ITC_DEVICE_REGEXP = "^ITC.*"
 StrConstant DEVICE_TYPES_ITC = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
-StrConstant ITC1600_FIRST_DEVICE = "ITC1600_Dev_0"
 StrConstant BASE_WINDOW_NAME    = "DA_Ephys"
 StrConstant DATABROWSER_WINDOW_NAME = "DataBrowser"
 StrConstant SWEEPBROWSER_WINDOW_NAME = "SweepBrowser"
@@ -721,7 +720,7 @@ StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
 
 /// @name Trigger modes
-/// External trigger is used for yoking multiple ITC 1600 devices
+/// External trigger is used for yoking multiple ITC 1600 devices (not supported anymore)
 /// @anchor TriggerModeStartAcq
 /// @{
 Constant HARDWARE_DAC_DEFAULT_TRIGGER  = 0x0
