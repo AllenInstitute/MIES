@@ -27,7 +27,7 @@ static Function/WAVE GetMultipleResults(string formula, string win)
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	return MIES_SFH_HELPERS#SFH_ParseArgument(win, wTextRef, "TestRun")
+	return MIES_SFH_HELPERS#SFH_ParseArgument(wTextRef)
 End
 
 static Function/WAVE GetSingleResult(string formula, string win)
@@ -449,8 +449,7 @@ End
 static Function DirectToFormulaParser(string code)
 
 	code = MIES_SF#SF_PreprocessInput(code)
-	code = MIES_SF#SF_FormulaPreParser(code)
-	return MIES_SF#SF_FormulaParser(code)
+	return MIES_SF#SF_ParseFormulaToJSON(code)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1

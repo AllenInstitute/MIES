@@ -7695,3 +7695,30 @@ Function/WAVE GetFormulaGatherWave()
 
 	return formulaResults
 End
+
+/// @brief Returns variable storage of data browser referenced by dfr
+Function/WAVE GetSFVarStorage(DFREF dfr)
+
+	string name = "VariableStorage"
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/WAVE wv = dfr:$name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/WAVE/N=0 dfr:$name/WAVE=wv
+
+	return wv
+End
+
+/// @brief Returns a wave where variable assignments are collected into
+Function/WAVE GetSFVarAssignments()
+
+	Make/FREE/T/N=(0, 2) varAssignments
+	SetDimLabel COLS, 0, VARNAME, varAssignments
+	SetDimLabel COLS, 1, EXPRESSION, varAssignments
+
+	return varAssignments
+End

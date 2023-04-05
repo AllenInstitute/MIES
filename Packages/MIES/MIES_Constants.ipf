@@ -1937,6 +1937,7 @@ StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
 
 StrConstant SF_WREF_MARKER = "\"WREF@\":"
+StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 /// @}
 
 /// @name Available source options for RA_SkipSweeps()
