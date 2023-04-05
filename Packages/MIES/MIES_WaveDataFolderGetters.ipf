@@ -1189,7 +1189,6 @@ Function/Wave GetLBTextualValues(device)
 	SetDimLabel COLS, 3, EntrySourceType           , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 
 	return wv
 End
@@ -1369,8 +1368,7 @@ static Function UpgradeLabNotebook(device)
 	endif
 
 	if(WaveVersionIsSmaller(numericalKeys, 39))
-		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
-		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+		// nothing to do
 	endif
 
 	// BEGIN acquisition state
@@ -1418,6 +1416,9 @@ static Function UpgradeLabNotebook(device)
 		Redimension/N=(6, -1) textualKeys
 	endif
 	// END extending rows
+
+	// we don't remove the wavenote entry as we might need to adapt the reading code
+	// in the future to handle labnotebooks with sweep rollback specially.
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1703,7 +1704,6 @@ Function/Wave GetLBNumericalValues(device)
 		SetDimLabel COLS, 3, EntrySourceType           , wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-		SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
 
 	return wv
