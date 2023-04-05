@@ -239,8 +239,7 @@ Function IDX_MaxNoOfSweeps(device, IndexOverRide)
 	variable IndexOverRide
 
 	variable MaxNoOfSweeps
-	variable i, numFollower
-	string followerDevice
+	variable i
 
 	WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
@@ -263,16 +262,6 @@ Function IDX_MaxNoOfSweeps(device, IndexOverRide)
 
 		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(device, i, CHANNEL_TYPE_TTL, IndexOverRide))
 	endfor
-
-	if(DeviceHasFollower(device))
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-
-			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_MaxNoOfSweeps(followerDevice, IndexOverRide))
-		endfor
-	endif
 
 	// Handle "TP during DAQ" DA channels being the only active ones
 	if(Sum(statusDAFiltered) == 0 && Sum(statusTTLFiltered) == 0)
@@ -582,8 +571,7 @@ End
 
 Function IDX_HandleIndexing(string device)
 
-	variable i, indexing, indexingLocked, activeSetCountMax, numFollower, followerActiveSetCount
-	string followerDevice
+	variable indexing, indexingLocked
 
 	indexing = DAG_GetNumericalValue(device, "Check_DataAcq_Indexing")
 
@@ -600,46 +588,5 @@ Function IDX_HandleIndexing(string device)
 		IDX_IndexingDoIt(device)
 	elseif(!indexingLocked)
 		IDX_ApplyUnLockedIndexing(device, count)
-	endif
-
-	if(DeviceHasFollower(device))
-
-		activeSetCountMax = activeSetCount
-
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-			NVAR followerCount = $GetCount(followerDevice)
-			followerCount += 1
-
-			RA_StepSweepsRemaining(followerDevice)
-
-			if(indexing)
-				if(indexingLocked && activeSetCount == 0)
-					IDX_IndexingDoIt(followerDevice)
-					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerDevice)
-					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				elseif(!indexingLocked)
-					// channel indexes when set has completed all its steps
-					IDX_ApplyUnLockedIndexing(followerDevice, count)
-					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerDevice)
-					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				endif
-			endif
-		endfor
-
-		if(indexing)
-			// set maximum on leader and all followers
-			NVAR activeSetCount = $GetActiveSetCount(device)
-			activeSetCount = activeSetCountMax
-
-			for(i = 0; i < numFollower; i += 1)
-				followerDevice = StringFromList(i, listOfFollowerDevices)
-
-				NVAR activeSetCount = $GetActiveSetCount(followerDevice)
-				activeSetCount = activeSetCountMax
-			endfor
-		endif
 	endif
 End
