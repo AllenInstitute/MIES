@@ -18,7 +18,7 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 58
+Constant DA_EPHYS_PANEL_VERSION           = 59
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 45
 Constant WAVEBUILDER_PANEL_VERSION        = 13
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
@@ -994,7 +994,6 @@ StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 
 StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
 StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
-StrConstant SWEEP_ROLLBACK_KEY       = "Sweep Rollback"
 StrConstant SKIP_SWEEPS_KEY          = "Skip Sweeps"
 StrConstant SKIP_SWEEPS_SOURCE_KEY   = "Skip Sweeps source"
 

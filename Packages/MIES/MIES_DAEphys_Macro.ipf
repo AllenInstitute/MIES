@@ -912,14 +912,14 @@ Window DA_Ephys() : Panel
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueBackColor=(0,0,0)
 	ValDisplay ValDisp_DataAcq_SamplingInt,limits={0,0,0},barmisc={0,1000}
 	ValDisplay ValDisp_DataAcq_SamplingInt,value=_NUM:0
-	SetVariable SetVar_Sweep,pos={210.00,534.00},size={75.00,35.00},bodyWidth=75,disable=1,proc=DAP_SetVarProc_NextSweepLimit
-	SetVariable SetVar_Sweep,help={"The up/down arrows allow to adjust the current and next sweep number.<p style=\"color:Red;\"><strong>WARNING!</strong></p>This is an advanced feature that overwrites acquired data. Data will be permanently lost."}
+	SetVariable SetVar_Sweep,pos={210.00,534.00},size={75.00,35.00},bodyWidth=75,disable=1,noEdit=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable SetVar_Sweep,help={"Shows the sweep number of the next acquired sweep. Can not be changed."}
 	SetVariable SetVar_Sweep,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)=A"!!,Gc!!#Cj!!#?O!!#=oz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
-	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,0,1},value=_NUM:0
+	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,inf,0},value=_NUM:0
 	CheckBox Check_Settings_UseDoublePrec,pos={246.00,258.00},size={161.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox Check_Settings_UseDoublePrec,title="Use Double Precision Floats"
 	CheckBox Check_Settings_UseDoublePrec,help={"Enable the saving of the raw data in double precision. If unchecked the raw data will be saved in single precision, which should be good enough for most use cases"}
