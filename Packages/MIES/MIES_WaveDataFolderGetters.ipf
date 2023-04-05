@@ -57,7 +57,7 @@ Function/Wave GetChanAmpAssign(device)
 		wv = NaN
 
 		// we don't have dimension labels yet
-		if(DeviceCanLead(device) || DeviceCanFollow(device))
+		if(IsITC1600(device))
 			// Use AD channels 0-3 and then 8-11 so that
 			// they are all on the same rack
 			wv[0][0, 7] = q
