@@ -18,8 +18,6 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 /// @brief __TPM__ Multi device background test pulse functionality
 
 /// @brief Start the test pulse when MD support is activated.
-///
-/// Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger.
 Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	string device
 	variable runModifier
@@ -31,9 +29,7 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 		fast = !!fast
 	endif
 
-	variable i, TriggerMode
-	variable runMode, numFollower
-	string followerDevice
+	variable runMode
 
 	runMode = TEST_PULSE_BG_MULTI_DEVICE
 
@@ -41,43 +37,13 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 		runMode = runMode | runModifier
 	endif
 
-	if(!DeviceHasFollower(device))
-		try
-			TP_Setup(device, runMode, fast = fast)
-		catch
-			return NaN
-		endtry
-
-		TPM_BkrdTPMD(device)
-
-		return NaN
-	else
-		ASSERT(!fast, "fast mode does not work with yoking")
-	endif
-
-	SVAR listOfFollowerDevices = $GetFollowerList(device)
-	numFollower = ItemsInList(listOfFollowerDevices)
-
 	try
-		// configure all followers
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-			TP_Setup(followerDevice, runMode)
-		endfor
-
-		TP_Setup(device, runMode)
+		TP_Setup(device, runMode, fast = fast)
 	catch
 		return NaN
 	endtry
 
-	// Sets lead board in wait for trigger
-	TPM_BkrdTPMD(device, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
-
-	// set followers in wait for trigger
-	for(i = 0; i < numFollower; i += 1)
-		followerDevice = StringFromList(i, listOfFollowerDevices)
-		TPM_BkrdTPMD(followerDevice, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
-	endfor
+	TPM_BkrdTPMD(device)
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
@@ -109,35 +75,10 @@ Function TPM_StartTestPulseMultiDevice(device, [fast])
 	P_InitBeforeTP(device)
 End
 
-/// @brief Stop the TP on yoked devices simultaneously
-///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function TPM_StopTestPulseMultiDevice(device, [fast])
+static Function TPM_BkrdTPMD(device)
 	string device
-	variable fast
-
-	if(ParamIsDefault(fast))
-		fast = 0
-	else
-		fast = !!fast
-	endif
-
-	if(fast)
-		DQM_CallFuncForDevicesYoked(device, TPM_StopTPMDFast)
-	else
-		DQM_CallFuncForDevicesYoked(device, TPM_StopTPMD)
-	endif
-End
-
-static Function TPM_BkrdTPMD(device, [triggerMode])
-	string device
-	variable triggerMode
 
 	variable hardwareType = GetHardwareType(device)
-
-	if(ParamIsDefault(triggerMode))
-		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
-	endif
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 
@@ -146,11 +87,11 @@ static Function TPM_BkrdTPMD(device, [triggerMode])
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
 			break
 		case HARDWARE_NI_DAC:
-			HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
+			HW_StartAcq(HARDWARE_NI_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
 			NVAR tpCounter = $GetNITestPulseCounter(device)
 			tpCounter = 0
 			break
@@ -299,21 +240,7 @@ Function TPM_BkrdTPFuncMD(s)
 	return 0
 End
 
-/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
-static Function TPM_StopTPMD(device)
-	string device
-
-	return TPM_StopTPMDWrapper(device, fast = 0)
-End
-
-/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
-static Function TPM_StopTPMDFast(device)
-	string device
-
-	return TPM_StopTPMDWrapper(device, fast = 1)
-End
-
-static Function TPM_StopTPMDWrapper(device, [fast])
+Function TPM_StopTestPulseMultiDevice(device, [fast])
 	string device
 	variable fast
 
