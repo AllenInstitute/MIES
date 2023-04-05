@@ -2057,7 +2057,7 @@ End
 threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	WAVE numericalValues
 
-	variable actual, rollbackCount
+	variable actual
 	string key, name
 
 	variable versionOfNewWave = 3
@@ -2066,7 +2066,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 
 	actual        = WaveModCountWrapper(numericalValues)
 	name          = GetWavesDataFolder(numericalValues, 2)
-	rollbackCount = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
@@ -2091,7 +2090,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	wv = $""
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY     , wv
