@@ -1327,7 +1327,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			win = winNameTemplate + num2istr(i)
 
 			if(!WindowExists(win))
-				Display/N=$win/K=1 as win
+				Display/N=$win/K=1/W=(150, 400, 1000, 700) as win
 				win = S_name
 			endif
 
@@ -1337,7 +1337,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
 		KillWindow/Z $winNameTemplate
-		NewPanel/N=$winNameTemplate/K=1
+		NewPanel/N=$winNameTemplate/K=1/W=(150, 400, 1000, 700)
 		winNameTemplate = S_name
 
 		SF_CommonWindowSetup(winNameTemplate, graph)
@@ -1771,7 +1771,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					MoveWave customMarkerAsFree, dfrWork:$wvName
 					WAVE/SDFR=dfrWork customMarker = $wvName
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
-					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
+					ModifyGraph/W=$win mode($trace)=3,zmrkNum($trace)={customMarker}
 
 				elseif(formulasAreDifferent)
 					ModifyGraph/W=$win lStyle($trace)=lineCode
