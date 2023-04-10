@@ -166,32 +166,21 @@ End
 
 /// @brief Calculates offsets for each stimset for OOD
 ///
-/// @param[in]      setRegions wave reference wave of 2D region waves for each stimset
-/// @param[in, out] baseRegions 2D region wave that contains initial reserved regions,
-///                 e.g. when using with yoking the caller function can preload from the previous device
-///                 For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
-/// @param[in]      yoked 1 if yoked operation, 0 if not
-///
+/// @param setRegions wave reference wave of 2D region waves for each stimset
+//
 /// @return 1D wave with offsets for each stimset in points
-static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
+static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
 	WAVE/WAVE setRegions
-	WAVE &baseRegions
-	variable yoked
 
 	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
-	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
+	variable bStart, bEnd, rStart, rEnd, overlap
 	variable numSets = DimSize(setRegions, ROWS)
-
-	yoked = !!yoked
 
 	Make/FREE/D/N=(numSets) offsets
 
-	if(DimSize(baseRegions, ROWS) == 0)
-		Duplicate/FREE setRegions[0], baseRegions
-		noInitialRegion = 1
-	endif
+	Duplicate/FREE setRegions[0], baseRegions
 
-	for(setNr = noInitialRegion; setNr < numSets; setNr += 1)
+	for(setNr = 1; setNr < numSets; setNr += 1)
 
 		baseRegCnt = DimSize(baseRegions, ROWS)
 		WAVE regions = setRegions[setNr]
@@ -222,7 +211,7 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 			endfor
 		while(overlap)
 
-		if(yoked || setNr < numSets - 1)
+		if(setNr < numSets - 1)
 			Redimension/N=(baseRegCnt + regCnt, -1) baseRegions
 			baseRegions[baseRegCnt,][] = regions[p - baseRegCnt][q] + offsets[setNr]
 			SortColumns/KNDX={0} sortWaves={baseRegions}
@@ -234,37 +223,19 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	return offsets
 End
 
-/// @brief Calculated the offsets for normal acquisition and yoked mode
+/// @brief Calculated the offsets for normal acquisition
+///
 /// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with oodDAQ setup data
-static Function OOD_CalculateOffsetsYoked(device, params)
+static Function OOD_CalculateOffsets(device, params)
 	string device
 	STRUCT OOdDAQParams &params
 
-	variable resolution
-
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
-	Make/FREE/N=0 preload
 
-	// normal acquisition
-	if(!DeviceHasFollower(device) && !DeviceIsFollower(device))
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 0)
+	WAVE params.offsets = OOD_CalculateOffsetsImpl(setRegions)
 
-	else
-
-		if(DeviceHasFollower(device))
-			KillOrMoveToTrash(dfr=GetDistDAQFolder())
-		elseif(DeviceIsFollower(device))
-			OOD_LoadPreload(device, params)
-		else
-			ASSERT(0, "Impossible case")
-		endif
-
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 1)
-		OOD_StorePreload(device, preload)
-	endif
 	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)
-	WAVE params.preload = preload
 
 #if defined(DEBUGGING_ENABLED)
 	if(DP_DebuggingEnabledForCaller())
@@ -272,36 +243,6 @@ static Function OOD_CalculateOffsetsYoked(device, params)
 	endif
 #endif
 
-End
-
-/// @brief Load the preload data into `params.preload`
-/// @param[in] device title of the device panel
-/// @param[in] params     OOdDAQParams structure where the data is preloaded into
-static Function OOD_LoadPreload(device, params)
-	string device
-	STRUCT OOdDAQParams &params
-
-	DFREF dfr = GetDistDAQFolder()
-	WAVE params.preload = GetDistDAQPreloadWave(device)
-End
-
-/// @brief Store the preload data so that the next device can use it.
-/// @param[in] device title of the device panel
-/// @param[in] preload    wave that is stored containing the preload data
-static Function OOD_StorePreload(device, preload)
-	string device
-	WAVE preload
-
-	string deviceNumberStr, deviceType, nextDevice
-	variable deviceNumber
-
-	ParseDeviceString(device, deviceType, deviceNumberStr)
-	deviceNumber = str2num(deviceNumberStr) + 1
-	nextDevice = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
-
-	WAVE preloadPerm = GetDistDAQPreloadWave(nextDevice)
-
-	Duplicate/O preload, preloadPerm
 End
 
 /// @brief Return a list with `$first-$last` added at the end with `;` as separator
@@ -353,8 +294,6 @@ static Function OOD_Debugging(params)
 	print params.regions
 	printf "setColumns\r"
 	print params.setColumns
-	printf "preload\r"
-	print params.preload
 End
 
 /// @brief Return the oodDAQ optimized stimsets
@@ -381,7 +320,7 @@ Function/WAVE OOD_GetResultWaves(device, params)
 		return cache[%stimSetsWithOffset]
 	endif
 
-	OOD_CalculateOffsetsYoked(device, params)
+	OOD_CalculateOffsets(device, params)
 	WAVE stimSetsWithOffset = OOD_CreateStimSet(params)
 
 	Make/FREE/WAVE/N=3 cache

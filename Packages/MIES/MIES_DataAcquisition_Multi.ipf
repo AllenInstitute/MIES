@@ -9,10 +9,6 @@
 /// @file MIES_DataAcquisition_Multi.ipf
 /// @brief __DQM__ Routines for Multi Device Data acquisition
 
-//Reinitialize Device 1 with intrabox clock
-// Execute "ITCInitialize /M = 1"
-// Execute "ITCStartAcq 1, 256"
-
 /// @brief Fifo monitor for DAQ Multi Device
 ///
 /// @ingroup BackgroundFunctions
@@ -169,8 +165,6 @@ Function DQM_FIFOMonitor(s)
 End
 
 /// @brief Stop ongoing multi device DAQ
-///
-/// Follower handling for yoked devices is done by the caller.
 Function DQM_TerminateOngoingDAQHelper(device)
 	String device
 
@@ -206,7 +200,7 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	endif
 END
 
-/// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
+/// @brief Handles function calls for data acquistion
 ///
 /// Handles the calls to the data configurator (DC) functions and BackgroundMD
 /// it is required because of the special handling syncronous ITC1600s require
@@ -217,9 +211,6 @@ END
 Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	string device
 	variable initialSetupReq
-
-	variable numFollower, acrossYokingMaxITI, i
-	string followerDevice
 
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
 		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
@@ -240,7 +231,7 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	catch
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
-		else // required for RA for the lead device only
+		else // required for RA
 			DQ_StopDAQDeviceTimer(device)
 		endif
 
@@ -251,85 +242,8 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	NVAR deviceID = $GetDAQDeviceID(device)
 	HW_PrepareAcq(GetHardwareType(device), deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
-	if(!DeviceHasFollower(device))
-		DAP_UpdateITIAcrossSets(device, maxITI)
-		DQM_BkrdDataAcq(device)
-		return NaN
-	endif
-
-	acrossYokingMaxITI = maxITI
-
-	SVAR listOfFollowerDevices = $GetFollowerList(device)
-	numFollower = ItemsInList(listOfFollowerDevices)
-
-	AssertOnAndClearRTError()
-	try
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-
-			if(initialSetupReq)
-				DAP_OneTimeCallBeforeDAQ(followerDevice, DAQ_BG_MULTI_DEVICE)
-			endif
-
-			DC_Configure(followerDevice, DATA_ACQUISITION_MODE)
-
-			NVAR maxITI = $GetMaxIntertrialInterval(device)
-			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)
-		endfor
-	catch
-		ClearRTError()
-		if(initialSetupReq)
-			for(i = 0; i < numFollower; i += 1)
-				followerDevice = StringFromList(i, listOfFollowerDevices)
-				DAP_OneTimeCallAfterDAQ(followerDevice, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
-			endfor
-
-			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
-		else // required for RA for the lead device only
-			DQ_StopDAQDeviceTimer(device)
-		endif
-
-		return NaN
-	endtry
-
-	// Sync ITI from lead to follower panel
-	DAP_UpdateITIAcrossSets(device, acrossYokingMaxITI)
-
-	// configure follower devices
-	for(i = 0; i < numFollower; i += 1)
-		followerDevice = StringFromList(i, listOfFollowerDevices)
-
-		NVAR deviceID = $GetDAQDeviceID(followerDevice)
-		HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
-	endfor
-
-	// start lead device
-	DQM_BkrdDataAcq(device, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
-
-	// start follower devices
-	for(i = 0; i < numFollower; i += 1)
-		followerDevice = StringFromList(i, listOfFollowerDevices)
-		DQM_BkrdDataAcq(followerDevice, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
-	endfor
-
-	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartDAQDeviceTimer(device)
-	endif
-
-	// trigger
-	ARDStartSequence()
-End
-
-/// @brief Call a function for a device and if this device is a leader with followers
-/// for all follower too.
-///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function DQM_CallFuncForDevicesYoked(device, func)
-	string device
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func
-
-	string list = GetListofLeaderAndPossFollower(device)
-	CallFunctionForEachListItem(func, list)
+	DAP_UpdateITIAcrossSets(device, maxITI)
+	DQM_BkrdDataAcq(device)
 End
 
 /// @brief Start the background timer for the inter trial interval (ITI)

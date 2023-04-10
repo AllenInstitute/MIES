@@ -57,7 +57,7 @@ Function/Wave GetChanAmpAssign(device)
 		wv = NaN
 
 		// we don't have dimension labels yet
-		if(DeviceCanLead(device) || DeviceCanFollow(device))
+		if(IsITC1600(device))
 			// Use AD channels 0-3 and then 8-11 so that
 			// they are all on the same rack
 			wv[0][0, 7] = q
@@ -2612,7 +2612,7 @@ End
 /// - 20: TTL set sweep counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// - 21: TTL stim sets (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// - 22: TTL channels (NI hardware), string list  in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-/// - 23: Follower Device, list of follower devices
+/// - 23: Follower Device, list of follower devices (not supported anymore and therefore always empty)
 /// - 24: MIES version, multi line mies version string
 /// - 25: Igor Pro version
 /// - 26: Digitizer Hardware Name
@@ -5776,42 +5776,6 @@ threadsafe Function/Wave GetCacheStatsWave()
 	return wv
 End
 /// @}
-
-/// @brief Return the datafolder reference to the oodDAQ folder
-///
-/// UTF_NOINSTRUMENTATION
-Function/DF GetDistDAQFolder()
-	return createDFWithAllParents(GetDistDAQFolderAS())
-End
-
-/// @brief Return the full path to the optimized overlap distributed
-///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
-///
-/// UTF_NOINSTRUMENTATION
-Function/S GetDistDAQFolderAS()
-	return GetDAQDevicesFolderAsString() + ":oodDAQ"
-End
-
-/// @brief Return the wave used for storing preloadable data
-///
-/// Required for yoked oodDAQ only.
-Function/WAVE GetDistDAQPreloadWave(device)
-	string device
-
-	DFREF dfr = GetDistDAQFolder()
-	string wvName = "preload_" + device
-
-	WAVE/Z/SDFR=dfr wv = $wvName
-
-	if(WaveExists(wv))
-		return wv
-	else
-		// wave type is overwritten in OOD_StorePreload
-		Make/R/N=(0) dfr:$wvName/Wave=wv
-	endif
-
-	return wv
-End
 
 /// @brief Returns the names of the electrodes
 ///

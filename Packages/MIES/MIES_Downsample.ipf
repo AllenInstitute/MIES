@@ -84,21 +84,17 @@ static Function/Wave GetDownsampleListWave()
 	return sweepProperties
 End
 
-/// @brief Create a list of all devices with acquired data, honour yoking dependencies
+/// @brief Create a list of all devices with acquired data
 ///
-/// @todo is not very accurate as we should store the yoking dependencies in a permanent way instead of hoping
-/// that ListOfFollowerITC1600s is accurate
-/// @returns list of all devices with data in the format ITC18USB_Dev_1;ITC1600_Dev_1;ITC1600_Dev_0 (2,3);
+/// @returns list of all devices with data in the format ITC18USB_Dev_1;ITC1600_Dev_1
 Function/S GetPopupMenuDeviceListWithData()
 
 	variable i, j, k
-	string path, deviceType, deviceNumber, str, list = ""
-	string follower, followerDeviceIDList, allFollowerDevices = "", deviceString
+	string path, deviceType, deviceNumber, list = ""
+	string deviceString
 
-	string followerDeviceType, followerDeviceNumber
-	variable numFollower
-	variable numDeviceTypes   = ItemsInList(DEVICE_TYPES_ITC)
-	variable numDevices       = ItemsInList(DEVICE_NUMBERS)
+	variable numDeviceTypes = ItemsInList(DEVICE_TYPES_ITC)
+	variable numDevices     = ItemsInList(DEVICE_NUMBERS)
 
 	// @todo: Does not know about NI devices and should probably prefer GetAllDevicesWithContent
 
@@ -119,29 +115,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				continue
 			endif
 
-			str = deviceString
-
-			if(DeviceHasFollower(str))
-				SVAR listOfFollowerDevices = $GetFollowerList(str)
-				allFollowerDevices = AddListItem(listOfFollowerDevices, allFollowerDevices, ";", inf)
-
-				numFollower = ItemsInList(listOfFollowerDevices)
-
-				followerDeviceIDList = ""
-				for(k=0; k<numFollower ;k+=1)
-					follower = StringFromList(k, listOfFollowerDevices)
-					ParseDeviceString(follower, followerDeviceType, followerDeviceNumber)
-					followerDeviceIDList = AddListItem(followerDeviceNumber, followerDeviceIDList, ",", inf)
-				endfor
-
-				if(numFollower > 0)
-					str += " (" + RemoveEnding(followerDeviceIDList, ",") + ")"
-				endif
-			endif
-
-			if(WhichListItem(deviceString, allFollowerDevices) == -1)
-				list = AddListItem(str, list, ";", inf)
-			endif
+			list = AddListItem(deviceString, list, ";", inf)
 		endfor
 	endfor
 
@@ -150,27 +124,6 @@ Function/S GetPopupMenuDeviceListWithData()
 	endif
 
 	return list
-End
-
-/// @brief Parse the given popup item string created by GetPopupMenuDeviceListWithData()
-/// and return the device name, type and possible follower list
-static Function ParsePopupItem(popStr, deviceType, deviceNumber, followerList)
-	string popStr
-	string &deviceType, &deviceNumber, &followerList
-
-	variable firstOpenBracket = strsearch(popStr, "(", 0)
-	variable endDevicePos
-	string device
-	if(firstOpenBracket != -1) // has followerList
-		followerList = popStr[firstOpenBracket+1, strlen(popStr)-2]
-		endDevicePos = firstOpenBracket - 2
-	else
-		followerList = ""
-	    endDevicePos = inf
-	endif
-
-	device = popStr[0, endDevicePos]
-	return ParseDeviceString(device, deviceType, deviceNumber)
 End
 
 /// @brief Searches for sweep waves from all devices
@@ -220,11 +173,10 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 End
 
 /// @brief Updates all waves holding acquired data info
-static Function UpdateDataWaves(deviceType, deviceNumber, followerList)
-	string deviceType, deviceNumber, followerList
+static Function UpdateDataWaves(deviceType, deviceNumber)
+	string deviceType, deviceNumber
 
-	variable i, numFollowerList, idx
-	string follower
+	variable i, idx
 
 	Wave/T list       = GetDownsampleListWave()
 	Wave/Wave dataRef = GetDownsampleDataRefWave()
@@ -235,11 +187,6 @@ static Function UpdateDataWaves(deviceType, deviceNumber, followerList)
 
 	idx = AppendEntries(list, dataRef, rate, idx, deviceType, deviceNumber)
 
-	numFollowerList = ItemsInList(followerList, ",")
-	for(i=0; i < numFollowerList; i+=1)
-		follower = StringFromList(i, followerList, ",")
-		idx = AppendEntries(list, dataRef, rate, idx, deviceType, follower)
-	endfor
 	Redimension/N=(idx, -1) list, dataRef, rate
 End
 
@@ -429,7 +376,7 @@ Function CreateDownsamplePanel()
 
 	PopupMenu popup_deviceselection_id,pos={28,13},size={214,21},bodyWidth=130,proc=PopupMenuDeviceSelection,title="Device Selection"
 	PopupMenu popup_deviceselection_id,mode=1,value= #"GetPopupMenuDeviceListWithData()"
-	PopupMenu popup_deviceselection_id,help={"List of devices, with possible follower lists, having acquired data."}
+	PopupMenu popup_deviceselection_id,help={"List of devices having acquired data."}
 
 	PopupMenu popup_decimationmethod_id,pos={29,126},size={206,21},bodyWidth=111,proc=PopupMenuDecimationMethod,title="Decimation Method"
 	PopupMenu popup_decimationmethod_id,mode=1,popvalue="Omission",value= #"\"Omission;Smoothing;Averaging\""
@@ -462,7 +409,7 @@ Function CreateDownsamplePanel()
 	ValDisplay valdisp_currentsize_id,format="%25g MiB",frame=0
 	ValDisplay valdisp_currentsize_id,valueBackColor=(60928,60928,60928)
 	ValDisplay valdisp_currentsize_id,limits={0,0,0},barmisc={0,1000},value= #"nan"
-	ValDisplay valdisp_currentsize_id,help={"Current size of all data waves from the device including possible followers"}
+	ValDisplay valdisp_currentsize_id,help={"Current size of all data waves from the device"}
 
 	ValDisplay valdisp_estimatedsize_id,pos={297,198},size={180,14},title="Estimated size afterwards:"
 	ValDisplay valdisp_estimatedsize_id,format="%4g MiB",frame=0
@@ -669,19 +616,19 @@ End
 static Function UpdatePanel(win, [deviceSelectionString])
 	string win, deviceSelectionString
 
-	string deviceType, deviceNumber, followerList
+	string deviceType, deviceNumber
 	variable ret
 
 	if(ParamIsDefault(deviceSelectionString))
 		deviceSelectionString = GetPopupMenuString(win, popup_deviceselection)
 	endif
 
-	ret = ParsePopupItem(deviceSelectionString, deviceType, deviceNumber, followerList)
+	ret = ParseDeviceString(deviceSelectionString, deviceType, deviceNumber)
 	if(!ret)
 		return NaN
 	endif
 
-	UpdateDataWaves(deviceType, deviceNumber, followerList)
+	UpdateDataWaves(deviceType, deviceNumber)
 	UpdatePopupMenuTargetRate(win)
 	ApplyConstantRateChanges(win)
 	UpdateEstimatedSizeAfterwards(win)

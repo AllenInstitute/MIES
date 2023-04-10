@@ -1647,19 +1647,12 @@ Function TP_UpdateTPLBNSettings(string device)
 End
 
 /// @brief Return the TP cycle ID for the given device
-///
-/// Follower and leader will have the same TP cycle ID.
 static Function TP_GetTPCycleID(device)
 	string device
 
 	DAP_AbortIfUnlocked(device)
 
-	if(DeviceIsFollower(device))
-		NVAR tpCycleIDLead = $GetTestpulseCycleID(ITC1600_FIRST_DEVICE)
-		return tpCycleIDLead
-	else
-		return GetNextRandomNumberForDevice(device)
-	endif
+	return GetNextRandomNumberForDevice(device)
 End
 
 /// @brief Return the length in points of the power spectrum generated via FFT

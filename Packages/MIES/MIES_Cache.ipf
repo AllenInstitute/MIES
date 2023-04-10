@@ -87,11 +87,7 @@ Function/S CA_DistDAQCreateCacheKey(params)
 	crc = StringCRC(crc, num2str(params.preFeaturePoints))
 	crc = StringCRC(crc, num2str(params.postFeaturePoints))
 
-	if(WaveExists(params.preload))
-		crc = WaveCRC(crc, params.preload)
-	endif
-
-	return num2istr(crc) + "Version 4"
+	return num2istr(crc) + "Version 5"
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()

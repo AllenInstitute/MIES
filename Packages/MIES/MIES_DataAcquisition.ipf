@@ -26,31 +26,18 @@ End
 
 /// @brief Stop the DAQ and testpulse
 ///
-/// Works with single/multi device mode and on yoked devices simultaneously.
+/// Works with single/multi device mode
 ///
-/// @param device      device
+/// @param device          device
 /// @param stopReason      One of @ref DAQStoppingFlags
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
 Function DQ_StopOngoingDAQ(string device, variable stopReason, [variable startTPAfterDAQ])
-	variable i, numEntries
-	string list, leaderAndFollower
 
-	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
-
-	list = GetListofLeaderAndPossFollower(device)
-	numEntries = ItemsInList(list)
-
-	for(i = 0; i < numEntries; i += 1)
-		leaderAndFollower = StringFromList(i, list)
-		DQ_StopOngoingDAQHelper(leaderAndFollower, stopReason, startTPAfterDAQ)
-	endfor
-End
-
-/// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(string device, variable stopReason, variable startTPAfterDAQ)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
+
+	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	if(IsDeviceActiveWithBGTask(device, TASKNAME_TP))
 		TPS_StopTestPulseSingleDevice(device)
@@ -204,7 +191,6 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 	return DAQ_NOT_RUNNING
 End
 
-/// @todo how to handle yoked devices??
 Function DQ_RestartDAQ(device, dataAcqRunMode)
 	string device
 	variable dataAcqRunMode

@@ -2782,90 +2782,6 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo)=A"!!,C$!!#D+J,hso!!#Asz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_Hardware_Yoke,pos={24.00,130.00},size={444.00,167.00}
-	GroupBox group_Hardware_Yoke,title="Yoke"
-	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
-	GroupBox group_Hardware_Yoke,userdata(tabnum)="6",userdata(tabcontrol)="ADC"
-	GroupBox group_Hardware_Yoke,userdata(ResizeControlsInfo)=A"!!,C$!!#A*!!#CCJ,hqKz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	GroupBox group_Hardware_Yoke,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	GroupBox group_Hardware_Yoke,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_Hardware_Yoke,fSize=12
-	Button button_Hardware_Lead1600,pos={43.00,170.00},size={78.00,21.00},disable=3,proc=DAP_ButtonProc_Lead
-	Button button_Hardware_Lead1600,title="Lead"
-	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
-	Button button_Hardware_Lead1600,userdata(tabnum)="6",userdata(tabcontrol)="ADC"
-	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo)=A"!!,CL!!#AR!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={48.00,204.00},size={199.00,19.00},bodyWidth=110,disable=3
-	PopupMenu popup_Hardware_AvailITC1600s,title="Locked ITC1600s"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)="6"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)="ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(ResizeControlsInfo)=A"!!,CL!!#B*!!#@@!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(Config_DontSave)="1"
-	PopupMenu popup_Hardware_AvailITC1600s,userdata(Config_DontRestore)="1"
-	PopupMenu popup_Hardware_AvailITC1600s,mode=1,popvalue="",value=#"DAP_ListOfITCDevices()"
-	Button button_Hardware_AddFollower,pos={251.00,203.00},size={78.00,21.00},disable=3,proc=DAP_ButtonProc_Follow
-	Button button_Hardware_AddFollower,title="Follow"
-	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
-	Button button_Hardware_AddFollower,userdata(tabnum)="6"
-	Button button_Hardware_AddFollower,userdata(tabcontrol)="ADC"
-	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo)=A"!!,Fr!!#B*!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_hardware_1600inst,pos={43.00,149.00},size={305.00,15.00},disable=2
-	TitleBox title_hardware_1600inst,title="Designate the status of the ITC1600 assigned to this device"
-	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
-	TitleBox title_hardware_1600inst,userdata(tabnum)="6",userdata(tabcontrol)="ADC"
-	TitleBox title_hardware_1600inst,userdata(ResizeControlsInfo)=A"!!,CL!!#A?!!#BSJ,hlSz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox title_hardware_1600inst,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	TitleBox title_hardware_1600inst,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_hardware_1600inst,frame=0
-	Button button_Hardware_Independent,pos={127.00,170.00},size={78.00,21.00},disable=3,proc=DAP_ButtonProc_Independent
-	Button button_Hardware_Independent,title="Independent"
-	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
-	Button button_Hardware_Independent,userdata(tabnum)="6"
-	Button button_Hardware_Independent,userdata(tabcontrol)="ADC"
-	Button button_Hardware_Independent,userdata(ResizeControlsInfo)=A"!!,FC!!#AR!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_Hardware_Independent,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_Hardware_Independent,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Hardware_Status,pos={149.00,852.00},size={168.00,18.00},bodyWidth=99,proc=DAP_SetVar_UpdateGuiState
-	SetVariable setvar_Hardware_Status,title="DAC Status:"
-	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo)=A"!!,G\"!!#De!!#AL!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Hardware_Status,userdata(Config_DontSave)="1"
-	SetVariable setvar_Hardware_Status,userdata(Config_DontRestore)="1",frame=0
-	SetVariable setvar_Hardware_Status,fStyle=1,fColor=(65280,0,0)
-	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
-	SetVariable setvar_Hardware_Status,value=_STR:"Independent",noedit=1
-	SetVariable setvar_Hardware_YokeList,pos={44.00,273.00},size={243.00,18.00},proc=DAP_SetVar_UpdateGuiState
-	SetVariable setvar_Hardware_YokeList,title="Yoked DACs:",userdata(tabnum)="6"
-	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)="ADC"
-	SetVariable setvar_Hardware_YokeList,userdata(ResizeControlsInfo)=A"!!,CL!!#BB!!#BP!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Hardware_YokeList,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_Hardware_YokeList,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Hardware_YokeList,userdata(Config_DontSave)="1"
-	SetVariable setvar_Hardware_YokeList,userdata(Config_DontRestore)="1"
-	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value=_STR:"Device is not yokeable",noedit=1
-	Button button_Hardware_RemoveYoke,pos={252.00,232.00},size={77.00,19.00},disable=3,proc=DAP_ButtonProc_YokeRelease
-	Button button_Hardware_RemoveYoke,title="Release",userdata(tabnum)="6"
-	Button button_Hardware_RemoveYoke,userdata(tabcontrol)="ADC"
-	Button button_Hardware_RemoveYoke,userdata(ResizeControlsInfo)=A"!!,HbJ,hrU!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_Hardware_RemoveYoke,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_Hardware_RemoveYoke,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_YokedDACs,pos={138.00,231.00},size={110.00,19.00},bodyWidth=110,disable=3
-	PopupMenu popup_Hardware_YokedDACs,title="Yoked ITC1600s",userdata(tabnum)="6"
-	PopupMenu popup_Hardware_YokedDACs,userdata(tabcontrol)="ADC"
-	PopupMenu popup_Hardware_YokedDACs,userdata(ResizeControlsInfo)=A"!!,Go!!#B*!!#@@!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Hardware_YokedDACs,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_Hardware_YokedDACs,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_YokedDACs,userdata(Config_DontSave)="1"
-	PopupMenu popup_Hardware_YokedDACs,userdata(Config_DontRestore)="1"
-	PopupMenu popup_Hardware_YokedDACs,mode=0,value=#"DAP_GUIListOfYokedDevices()"
 	TabControl tab_DataAcq_Amp,pos={30.00,147.00},size={423.00,120.00},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Amp,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
 	TabControl tab_DataAcq_Amp,userdata(currenttab)="0"
@@ -3224,7 +3140,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_Amp_Chain,userdata(Config_DontSave)="1",value=0
 	GroupBox group_Settings_MDSupport,pos={21.00,24.00},size={444.00,39.00},disable=1
 	GroupBox group_Settings_MDSupport,title="Multiple Device Support"
-	GroupBox group_Settings_MDSupport,help={"Multiple device support includes yoking and multiple independent devices"}
+	GroupBox group_Settings_MDSupport,help={"Support multiple independent devices"}
 	GroupBox group_Settings_MDSupport,userdata(tabnum)="5"
 	GroupBox group_Settings_MDSupport,userdata(tabcontrol)="ADC"
 	GroupBox group_Settings_MDSupport,userdata(ResizeControlsInfo)=A"!!,Ba!!#=3!!#CCJ,hnYz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -4259,13 +4175,6 @@ Window DA_Ephys() : Panel
 	Button button_hardware_rescan,userdata(Config_RestorePriority)="1"
 	Button button_hardware_rescan,fColor=(65535,65535,65535)
 	Button button_hardware_rescan,picture=ProcGlobal#HardwareScanButton
-	GroupBox group_Hardware_YokeInner,pos={44.00,195.00},size={296.00,72.00},disable=3
-	GroupBox group_Hardware_YokeInner,userdata(tabnum)="6"
-	GroupBox group_Hardware_YokeInner,userdata(tabcontrol)="ADC"
-	GroupBox group_Hardware_YokeInner,userdata(ResizeControlsInfo)=A"!!,C$!!#A*!!#CCJ,hqKz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	GroupBox group_Hardware_YokeInner,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	GroupBox group_Hardware_YokeInner,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_Hardware_YokeInner,fSize=12
 	SetVariable setvar_Settings_autoTP_perc,pos={164.00,154.00},size={137.00,18.00},disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable setvar_Settings_autoTP_perc,title="Auto TP Amp (%)"
 	SetVariable setvar_Settings_autoTP_perc,help={"Automatic amplitude percentage"}

@@ -146,9 +146,7 @@ static Function RA_HandleITI(device)
 End
 
 /// @brief Calculate the total number of sweeps for repeated acquisition
-///
-/// Helper function for plain calculation without lead and follower logic
-static Function RA_GetTotalNumberOfSweepsLowLev(device)
+static Function RA_GetTotalNumberOfSweeps(device)
 	string device
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
@@ -156,28 +154,6 @@ static Function RA_GetTotalNumberOfSweepsLowLev(device)
 	else
 		return IDX_CalculcateActiveSetCount(device)
 	endif
-End
-
-/// @brief Calculate the total number of sweeps for repeated acquisition
-static Function RA_GetTotalNumberOfSweeps(device)
-	string device
-
-	variable i, numFollower, numTotalSweeps
-	string followerDevice
-
-	numTotalSweeps = RA_GetTotalNumberOfSweepsLowLev(device)
-
-	if(DeviceHasFollower(device))
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-
-			numTotalSweeps = max(numTotalSweeps, RA_GetTotalNumberOfSweepsLowLev(followerDevice))
-		endfor
-	endif
-
-	return numTotalSweeps
 End
 
 /// @brief Update the "Sweeps remaining" control
@@ -269,21 +245,13 @@ End
 static Function RA_FinishAcquisition(device)
 	string device
 
-	string list
-	variable numEntries, i
-
 	DQ_StopDAQDeviceTimer(device)
 
 #ifdef PERFING_RA
 	RA_PerfFinish(device)
 #endif
 
-	list = GetListofLeaderAndPossFollower(device)
-
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		DAP_OneTimeCallAfterDAQ(StringFromList(i, list), DQ_STOP_REASON_FINISHED)
-	endfor
+	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
 End
 
 static Function RA_BckgTPwithCallToRACounter(device)
@@ -304,8 +272,7 @@ End
 static Function RA_StartMD(device)
 	string device
 
-	variable i, numFollower, numTotalSweeps
-	string followerDevice
+	variable i, numTotalSweeps
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(device)
@@ -317,19 +284,6 @@ static Function RA_StartMD(device)
 
 	if(numTotalSweeps == 1)
 		return RA_FinishAcquisition(device)
-	endif
-
-	if(DeviceHasFollower(device))
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-
-			NVAR followerCount = $GetCount(followerDevice)
-			followerCount = 0
-
-			RA_StepSweepsRemaining(followerDevice)
-		endfor
 	endif
 
 	RA_HandleITI_MD(device)
@@ -389,61 +343,6 @@ static Function RA_BckgTPwithCallToRACounterMD(device)
 	endif
 End
 
-static Function RA_AreLeaderAndFollowerFinished()
-
-	variable numCandidates, i, row
-	string listOfCandidates, candidate
-
-	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
-
-	if(DimSize(ActiveDeviceList, ROWS) == 0)
-		return 1
-	endif
-
-	listOfCandidates = GetListofLeaderAndPossFollower(ITC1600_FIRST_DEVICE)
-	numCandidates = ItemsInList(listOfCandidates)
-
-	for(i = 0; i < numCandidates; i += 1)
-		candidate = StringFromList(i, listOfCandidates)
-		NVAR deviceID = $GetDAQDeviceID(candidate)
-
-		row = DQM_GetActiveDeviceRow(deviceID)
-		if(IsFinite(row)) // device still active
-			return 0
-		endif
-	endfor
-
-	return 1
-End
-
-static Function RA_YokedRAStartMD(device)
-	string device
-
-	// catches independent devices and leader with no follower
-	if(!DeviceCanFollow(device) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
-		RA_StartMD(device)
-		return NaN
-	endif
-
-	if(RA_AreLeaderAndFollowerFinished())
-		RA_StartMD(ITC1600_FIRST_DEVICE)
-	endif
-End
-
-static Function RA_YokedRABckgTPCallRACounter(device)
-	string device
-
-	// catches independent devices and leader with no follower
-	if(!DeviceCanFollow(device) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
-		RA_BckgTPwithCallToRACounterMD(device)
-		return NaN
-	endif
-
-	if(RA_AreLeaderAndFollowerFinished())
-		RA_BckgTPwithCallToRACounterMD(ITC1600_FIRST_DEVICE)
-	endif
-End
-
 /// @brief Return one if we are acquiring currently the very first sweep of a
 ///        possible repeated acquisition cycle. Zero means that we acquire a later
 ///        sweep than the first one in a repeated acquisition cycle.
@@ -467,8 +366,8 @@ Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
 	string device
 	variable source, skipCount, limitToSetBorder
 
-	variable numFollower, i, sweepsInSet, recalculatedCount
-	string followerDevice, msg
+	variable sweepsInSet, recalculatedCount
+	string msg
 
 	NVAR count = $GetCount(device)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -508,19 +407,6 @@ Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
 
 	RA_DocumentSweepSkipping(device, skipCount, source)
 	RA_StepSweepsRemaining(device)
-
-	if(DeviceHasFollower(device))
-		SVAR listOfFollowerDevices = $GetFollowerList(device)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerDevice = StringFromList(i, listOfFollowerDevices)
-			NVAR followerCount = $GetCount(followerDevice)
-			followerCount = RA_SkipSweepCalc(followerDevice, skipCount)
-
-			RA_DocumentSweepSkipping(device, skipCount, source)
-			RA_StepSweepsRemaining(followerDevice)
-		endfor
-	endif
 End
 
 /// @brief Document the number of skipped sweeps
@@ -637,7 +523,7 @@ Function RA_ContinueOrStop(device, [multiDevice])
 	if(RA_IsFirstSweep(device))
 		if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 			if(multiDevice)
-				RA_YokedRAStartMD(device)
+				RA_StartMD(device)
 			else
 				RA_Start(device)
 			endif
@@ -646,7 +532,7 @@ Function RA_ContinueOrStop(device, [multiDevice])
 		endif
 	else
 		if(multiDevice)
-			RA_YokedRABckgTPCallRACounter(device)
+			RA_BckgTPwithCallToRACounterMD(device)
 		else
 			RA_BckgTPwithCallToRACounter(device)
 		endif

@@ -131,7 +131,6 @@ End
 // third party includes
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"
-#include "Arduino_Sequencer_Vs1"
 
 // JSON XOP
 #include "json_functions"

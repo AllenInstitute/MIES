@@ -887,7 +887,7 @@ End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
 	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
-	string func, ctrl, str, followerDevices
+	string func, ctrl, str
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -1012,12 +1012,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentHardwareProperties(device, s.hardwareType)
 
-	if(DeviceCanLead(device))
-		followerDevices = ROStr(GetFollowerList(device))
-	else
-		followerDevices = ""
-	endif
-	DC_DocumentChannelProperty(device, "Follower Device", INDEP_HEADSTAGE, NaN, NaN, str=followerDevices)
+	DC_DocumentChannelProperty(device, "Follower Device", INDEP_HEADSTAGE, NaN, NaN, str="")
 
 	DC_DocumentChannelProperty(device, "Device", INDEP_HEADSTAGE, NaN, NaN, str=device)
 
