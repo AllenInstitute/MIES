@@ -325,21 +325,28 @@ The default suggested x-axis values for the formula plotter are sweep numbers.
 avg and mean
 """"""""""""
 
-`avg` and `mean` are synonyms for the same operation. They calculate the average :math:`\frac{1}{n}\sum_i{x_i}` of a row
-if the wave is 1d.  They evaluate column-based :math:`\frac{1}{n_i}\sum_i{x_{ij}}` if the wave is 2d.
-The operation takes 1 to N arguments. The input data must be 1d or 2d, numeric and have at least one data point.
-The operations works column based, such that for each column e.g. the average of all row values is determined. An 2d input array of size MxN is returned as 1d array of the size N.
-When called with a single argument the operation accepts multiple data waves.
-For this case the operation is applied on each input data wave independently and returns the same number of data waves.
+.. code-block:: bash
+
+   avg(array data[, string mode])
+
+`avg` and `mean` are synonyms for the same operation.
+They calculate the arithmetic average :math:`\frac{1}{n}\sum_i{x_i}`.
+
+data: input data wave(s)
+
+mode: optional parameter that defines in which direction the average is applied.
+      - `in` default, applies the average over each input data wave. In this mode the operation returns the same number of waves as input waves were specified. Each output wave contains a single data point. If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves. The default suggested x-axis values for the formula plotter are sweep numbers.
+      - `over` averages over all input data waves. In this mode the operation returns a single wave. `NaN` values in input waves are ignored in the average calculation. A trace generated from the returned wave will be shown as topmost trace in the default color for averaged data.
+
 The returned data type is `SF_DATATYPE_AVG`.
-If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
-The default suggested x-axis values for the formula plotter are sweep numbers.
 
 .. code-block:: bash
 
-   avg(1, 2, 3) == [2]
+   avg([1, 2, 3]) == [2]
 
-   avg([1, 2, 3],[4, 5, 6],[7, 8, 9]) == [2, 5, 8]
+   avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)
+
+   avg(data(cursors(A,B), select()), in)
 
 root mean square
 """"""""""""""""
