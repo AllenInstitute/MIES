@@ -1487,7 +1487,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent
-	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle
+	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
@@ -1788,6 +1788,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						ModifyGraph/W=$win lStyle($trace)=lineCode
 					endif
 				endif
+
+				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
+				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
+				if(traceToFront)
+					ReorderTraces/W=$win _front_, {$trace}
+				endif
+
 			endfor
 		endfor
 
@@ -3340,6 +3347,8 @@ static Function/WAVE SF_OperationAvgImplOver(WAVE/WAVE input, string graph, stri
 	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
 	JWN_SetWaveInWaveNote(avgData, SF_META_TRACECOLOR, traceColor)
+	JWN_SetNumberInWaveNote(avgData, SF_META_TRACETOFRONT, 1)
+	JWN_SetNumberInWaveNote(avgData, SF_META_LINESTYLE, 0)
 
 	return SFH_GetOutputForExecutorSingle(avgData, graph, opShort, discardOpStack=1)
 End
